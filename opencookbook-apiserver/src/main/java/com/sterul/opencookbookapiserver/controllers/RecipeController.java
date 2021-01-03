@@ -1,9 +1,11 @@
-package com.sterul.opencookbookapiserver;
+package com.sterul.opencookbookapiserver.controllers;
 
 import java.util.List;
 
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.Recipe;
+import com.sterul.opencookbookapiserver.repositories.IngredientNeedRepository;
+import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,12 +25,13 @@ public class RecipeController {
         this.ingredientNeedRepository = ingredientNeedRepository;
     }
 
+
     @GetMapping("/recipes")
-    List<Recipe> all() {
+    List<Recipe> all() { 
         return recipeRepository.findAll();
     }
-
-    @PostMapping("/recipes")
+ 
+    @PostMapping("/recipes") 
     Recipe newRecipe(@RequestBody Recipe newRecipe) {
         for (IngredientNeed ingredientNeed : newRecipe.getNeededIngredients()) {
             ingredientNeedRepository.save(ingredientNeed);

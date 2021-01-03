@@ -1,11 +1,9 @@
 package com.sterul.opencookbookapiserver.entities;
 
-import javax.annotation.Generated;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 
 @Entity
 public class IngredientNeed {
@@ -15,15 +13,21 @@ public class IngredientNeed {
     private Long id;
 
     @ManyToOne
-    private Recipe recipe;
-
-    @ManyToOne
     private Ingredient ingredient;
 
     private int amount;
+    private String unit;
 
     public int getAmount() {
         return amount;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
     }
 
     public void setAmount(int amount) {

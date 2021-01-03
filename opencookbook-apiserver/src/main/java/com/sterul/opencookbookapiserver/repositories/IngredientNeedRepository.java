@@ -1,4 +1,4 @@
-package com.sterul.opencookbookapiserver;
+package com.sterul.opencookbookapiserver.repositories;
 
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 
