@@ -14,7 +14,7 @@ maven-build:
     paths:
       - target/*.jar
 
-build-docker:
+package-docker-qa:
   stage: package
   needs: ["maven-build"]
   resource_group: qa
@@ -30,3 +30,13 @@ build-docker:
       - master
 
 
+deploy_qa:
+  stage: deploy
+  needs: ["package-docker-qa"]
+  resource_group: qa
+  image: registry.gitlab.com/gitlab-org/cluster-integration/helm-install-image/releases/2.16.6-kube-1.13.12
+  environment: 
+    name: qa
+  script: 
+    - kubectl get deployment qa-opencookbook --namespace $KUBE_NAMESPACE && kubectl delete deployment qa-opencookbook --namespace $KUBE_NAMESPACE
+    - kubectl apply -f kubernetes/deployment-qa.yaml

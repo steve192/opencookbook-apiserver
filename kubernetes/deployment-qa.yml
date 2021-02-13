@@ -1,0 +1,33 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: opencookbook-qa
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: opencookbook
+    spec:
+      containers:
+        - name: opencookbook-apiserver
+          image: 'git.sterul.com:5005/opencookbook/opencookbook:qa'
+          ports:
+            - containerPort: 8080
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: opencookbook-qa-apiserver
+  labels:
+    name: opencookbook-qa-apiserver
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: '10080'
+  selector:
+    app: opencookbook
+  type: NodePort
