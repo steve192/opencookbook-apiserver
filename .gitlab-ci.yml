@@ -1,6 +1,3 @@
-services:
-  - docker:dind
-
 variables:
   SPRING_PROFILES_ACTIVE: gitlab-ci
 
@@ -18,7 +15,7 @@ maven-build:
       - target/*.jar
 
 build-docker:
-  stage: build
+  stage: package
   needs: ["maven-build"]
   resource_group: qa
   image:
