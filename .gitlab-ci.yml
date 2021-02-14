@@ -39,4 +39,4 @@ deploy_qa:
     name: qa
   script: 
     - kubectl get deployment qa-opencookbook --namespace $KUBE_NAMESPACE && kubectl delete deployment qa-opencookbook --namespace $KUBE_NAMESPACE
-    - kubectl apply -f kubernetes/deployment-qa.yaml
+    - kubectl apply -f kubernetes/deployment-qa.yml
