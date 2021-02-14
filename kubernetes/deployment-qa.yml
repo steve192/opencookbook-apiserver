@@ -10,7 +10,7 @@ spec:
   template:
     metadata:
       labels:
-        app: opencookbook
+        app: opencookbook-qa
     spec:
       containers:
         - name: opencookbook-apiserver
@@ -32,5 +32,5 @@ spec:
       protocol: TCP
       name: '10080'
   selector:
-    app: opencookbook
+    app: opencookbook-qa
   type: NodePort
