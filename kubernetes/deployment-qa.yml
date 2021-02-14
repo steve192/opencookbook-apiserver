@@ -49,4 +49,4 @@ spec:
       - path: /opencookbook-apiserver
         backend:
           serviceName: opencookbook-qa-apiserver
-          servicePort: 80
+          servicePort: 10080
