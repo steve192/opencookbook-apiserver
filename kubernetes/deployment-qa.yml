@@ -32,7 +32,22 @@ spec:
     - port: 80
       targetPort: 8080
       protocol: TCP
-      name: '10080'
+      name: 'apiserver-http'
   selector:
     app: opencookbook-qa
-  type: NodePort
+#  type: NodePort
+---
+apiVersion: v1
+kind: Ingress
+metadata:
+  name: opencookbook-qa-ingress
+  annotations:
+    kubernetes.io/ingress.class: "traefik"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        backend:
+          serviceName: opencookbook-qa-apiserver
+          servicePort: 80
