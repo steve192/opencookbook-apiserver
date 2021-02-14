@@ -44,9 +44,10 @@ metadata:
   name: opencookbook-qa-ingress
 spec:
   rules:
+  - host: opencookbook-qa.k8s.sterul.com
   - http:
       paths:
-      - path: /opencookbook-apiserver
+      - path: /
         backend:
           serviceName: opencookbook-qa-apiserver
           servicePort: 10080
