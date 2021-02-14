@@ -40,12 +40,12 @@ deploy_qa:
   script: 
     - kubectl get secret opencookbook-registry --namespace $KUBE_NAMESPACE && kubectl delete secret opencookbook-registry --namespace $KUBE_NAMESPACE
     - kubectl create secret docker-registry opencookbook-registry --namespace $KUBE_NAMESPACE --docker-server=git.sterul.com:5005 --docker-username=$registry_user --docker-password=$registry_password
-    - kubectl get deployment qa-opencookbook --namespace $KUBE_NAMESPACE && kubectl delete deployment qa-opencookbook --namespace $KUBE_NAMESPACE
+    - kubectl get deployment opencookbook-qa --namespace $KUBE_NAMESPACE && kubectl delete deployment opencookbook-qa --namespace $KUBE_NAMESPACE
     - kubectl apply -f kubernetes/deployment-qa.yml
 
 
     # Wait for pod
-    - kubectl -n $KUBE_NAMESPACE wait --for=condition=available deployment/qa-opencookbook --timeout=300s
+    - kubectl -n $KUBE_NAMESPACE wait --for=condition=available deployment/opencookbook-qa --timeout=300s
 
 
 # stop-qa:
