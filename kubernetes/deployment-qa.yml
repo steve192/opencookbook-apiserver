@@ -3,6 +3,9 @@ kind: Deployment
 metadata:
   name: opencookbook-qa
 spec:
+  selector:
+    matchLabels:
+      app: opencookbook-qa
   replicas: 1
   template:
     metadata:
