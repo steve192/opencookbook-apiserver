@@ -12,6 +12,8 @@ spec:
       labels:
         app: opencookbook-qa
     spec:
+      imagePullSecrets:
+      - name: opencookbook-registry
       containers:
         - name: opencookbook-apiserver
           image: 'git.sterul.com:5005/opencookbook/opencookbook:qa'
