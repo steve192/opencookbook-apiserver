@@ -32,11 +32,12 @@ spec:
     - port: 10080
       targetPort: 8080
       protocol: TCP
-#      name: 'apiserver-http'
+      name: apiserver-http
   selector:
     app: opencookbook-qa
 # type: LoadBalancer
 #  type: NodePort
+  type: ClusterIP
 ---
 #apiVersion: extensions/v1beta1
 apiVersion: networking.k8s.io/v1beta1
@@ -51,4 +52,4 @@ spec:
       - path: /
         backend:
           serviceName: opencookbook-qa-apiserver
-          servicePort: 10080
+          servicePort: apiserver-http
