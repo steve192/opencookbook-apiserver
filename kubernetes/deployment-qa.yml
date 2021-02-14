@@ -29,7 +29,7 @@ metadata:
     name: opencookbook-qa-apiserver
 spec:
   ports:
-    - port: 80
+    - port: 10080
       targetPort: 8080
       protocol: TCP
       name: 'apiserver-http'
@@ -46,7 +46,7 @@ spec:
   rules:
   - http:
       paths:
-      - path: /
+      - path: /opencookbook-apiserver
         backend:
           serviceName: opencookbook-qa-apiserver
           servicePort: 80
