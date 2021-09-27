@@ -1,22 +1,14 @@
 package com.sterul.opencookbookapiserver.controllers;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
 
 import com.sterul.opencookbookapiserver.Constants;
 import com.sterul.opencookbookapiserver.entities.Recipe;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 import com.sterul.opencookbookapiserver.util.FileUploadUtil;
 
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
