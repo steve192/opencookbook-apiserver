@@ -18,6 +18,9 @@ public class RecipeImagesController {
     ResponseEntity<byte[]> getRecipeImage(@PathVariable String filename) throws IOException {
         var path = Paths.get(Constants.imageUploadDir).resolve(filename);
         
-        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(Files.readAllBytes(path));
+        return ResponseEntity
+            .ok()
+            .contentType(MediaType.IMAGE_JPEG)
+            .body(Files.readAllBytes(path));
     }
 }
