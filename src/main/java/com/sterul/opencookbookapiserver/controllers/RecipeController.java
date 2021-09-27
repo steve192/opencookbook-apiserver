@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.Recipe;
+import com.sterul.opencookbookapiserver.entities.RecipePreparationStep;
 import com.sterul.opencookbookapiserver.repositories.IngredientNeedRepository;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 
@@ -18,11 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class RecipeController {
     private final RecipeRepository recipeRepository;
-    private final IngredientNeedRepository ingredientNeedRepository;
 
-    RecipeController(RecipeRepository repository, IngredientNeedRepository ingredientNeedRepository) {
+    RecipeController(RecipeRepository repository) {
         this.recipeRepository = repository;
-        this.ingredientNeedRepository = ingredientNeedRepository;
     }
 
 
@@ -33,9 +32,6 @@ public class RecipeController {
  
     @PostMapping("/recipes") 
     Recipe newRecipe(@RequestBody Recipe newRecipe) {
-        for (IngredientNeed ingredientNeed : newRecipe.getNeededIngredients()) {
-            ingredientNeedRepository.save(ingredientNeed);
-        }
         return recipeRepository.save(newRecipe);
     }
 

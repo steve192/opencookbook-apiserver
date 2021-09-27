@@ -2,18 +2,31 @@ package com.sterul.opencookbookapiserver.entities;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+
 
 @Entity
 public class Recipe {
     private @Id @GeneratedValue Long id;
     private String title;
 
-    @OneToMany
+    @OneToMany( cascade= CascadeType.ALL)
     private List<IngredientNeed> neededIngredients;
+
+    @OneToMany( cascade = CascadeType.ALL )
+    private List<RecipePreparationStep> preparationSteps;
+
+    public List<RecipePreparationStep> getPreparationSteps() {
+        return preparationSteps;
+    }
+
+    public void setPreparationSteps(List<RecipePreparationStep> preparationSteps) {
+        this.preparationSteps = preparationSteps;
+    }
 
     public Long getId() {
         return id;

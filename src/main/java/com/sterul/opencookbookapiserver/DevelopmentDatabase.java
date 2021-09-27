@@ -1,7 +1,6 @@
 package com.sterul.opencookbookapiserver;
 
 import com.sterul.opencookbookapiserver.entities.Ingredient;
-import com.sterul.opencookbookapiserver.repositories.IngredientNeedRepository;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 
@@ -16,7 +15,7 @@ public class DevelopmentDatabase {
     private static final Logger log = LoggerFactory.getLogger(DevelopmentDatabase.class);
 
     // @Bean
-    CommandLineRunner initDatabase(RecipeRepository repository, IngredientRepository ingredientRepository, IngredientNeedRepository ingredientNeedRepository) {
+    CommandLineRunner initDatabase(RecipeRepository repository, IngredientRepository ingredientRepository) {
         return args -> {
             log.info("Creating ingredient" + ingredientRepository.save(new Ingredient()));
         };
