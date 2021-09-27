@@ -3,6 +3,7 @@ package com.sterul.opencookbookapiserver.entities;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -20,8 +21,19 @@ public class Recipe {
     @OneToMany( cascade = CascadeType.ALL )
     private List<RecipePreparationStep> preparationSteps;
 
+    @ElementCollection
+    private List<String> images;
+
     public List<RecipePreparationStep> getPreparationSteps() {
         return preparationSteps;
+    }
+
+    public List<String> getImages() {
+        return images;
+    }
+
+    public void setImages(List<String> images) {
+        this.images = images;
     }
 
     public void setPreparationSteps(List<RecipePreparationStep> preparationSteps) {
