@@ -15,14 +15,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import io.micrometer.core.lang.Nullable;
-
-
 @RestController
+@RequestMapping("/api/v1/recipes")
 public class RecipeController {
     private final RecipeRepository recipeRepository;
 
@@ -30,8 +29,8 @@ public class RecipeController {
         this.recipeRepository = repository;
     }
 
-    @GetMapping("/recipes")
-    List<Recipe> searchRecipe(@RequestParam @Nullable String searchString) {
+    @GetMapping("")
+    List<Recipe> searchRecipe(@RequestParam(required = false) String searchString) {
         if (searchString != null) {
             return recipeRepository.findByTitleIgnoreCaseContaining(searchString);
         } else {
@@ -39,17 +38,17 @@ public class RecipeController {
         }
     }
 
-    @PostMapping("/recipes") 
+    @PostMapping("") 
     Recipe newRecipe(@RequestBody Recipe newRecipe) {
         return recipeRepository.save(newRecipe);
     }
 
-    @GetMapping("/recipes/{id}")
+    @GetMapping("/{id}")
     Recipe single(@PathVariable Long id) {
         return recipeRepository.findById(id).get();
     }
 
-    @PutMapping("/recipes/{id}")
+    @PutMapping("/{id}")
     Recipe updateRecipe(@PathVariable Long id, @RequestBody Recipe recipeUpdate) {
         return recipeRepository.findById(id).map(recipe -> {
             recipe.setTitle(recipeUpdate.getTitle());
@@ -61,7 +60,7 @@ public class RecipeController {
         
     }
 
-    @PostMapping("/recipes/{id}/images")
+    @PostMapping("/{id}/images")
     void uploadRecipeImage(@PathVariable Long id, @RequestParam("image") MultipartFile multipartFile) throws IOException {
         Recipe recipe = recipeRepository.getOne(id);
 

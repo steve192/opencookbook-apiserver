@@ -18,13 +18,13 @@ public class Recipe {
     @OneToMany( cascade= CascadeType.ALL)
     private List<IngredientNeed> neededIngredients;
 
-    @OneToMany( cascade = CascadeType.ALL )
-    private List<RecipePreparationStep> preparationSteps;
+    @ElementCollection
+    private List<String> preparationSteps;
 
     @ElementCollection
     private List<String> images;
 
-    public List<RecipePreparationStep> getPreparationSteps() {
+    public List<String> getPreparationSteps() {
         return preparationSteps;
     }
 
@@ -36,7 +36,7 @@ public class Recipe {
         this.images = images;
     }
 
-    public void setPreparationSteps(List<RecipePreparationStep> preparationSteps) {
+    public void setPreparationSteps(List<String> preparationSteps) {
         this.preparationSteps = preparationSteps;
     }
 
