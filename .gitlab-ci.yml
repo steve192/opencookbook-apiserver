@@ -7,10 +7,9 @@ stages:
   - deploy
 
 maven-build:
-  image: openjdk:11-jdk-slim
+  image: maven:3-jdk-11
   stage: build
   script: 
-    - "apt update && apt install maven -y"
     - "mvn clean package"
   artifacts:
     paths:
