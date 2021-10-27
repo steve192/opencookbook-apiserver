@@ -9,10 +9,12 @@ stages:
 maven-build:
   image: maven:3-jdk-11
   stage: build
-  script: "mvn clean package"
+  script: 
+    - "mvn clean package"
+    - java -jar target/opencookbook-apiserver-0.0.1-SNAPSHOT.jar
   artifacts:
     paths:
-      - target/*
+      - target/*.jar
 
 package-docker-qa:
   stage: package
