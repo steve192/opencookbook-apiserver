@@ -31,22 +31,22 @@ package-docker-qa:
       - master
 
 
-deploy_qa:
-  stage: deploy
-  needs: ["package-docker-qa"]
-  resource_group: qa
-  image: registry.gitlab.com/gitlab-org/cluster-integration/helm-install-image/releases/2.16.6-kube-1.13.12
-  environment: 
-    name: qa
-  script: 
-    - kubectl get secret opencookbook-registry --namespace $KUBE_NAMESPACE && kubectl delete secret opencookbook-registry --namespace $KUBE_NAMESPACE
-    - kubectl create secret docker-registry opencookbook-registry --namespace $KUBE_NAMESPACE --docker-server=git.sterul.com:5005 --docker-username=$registry_user --docker-password=$registry_password
-    - kubectl get deployment opencookbook-qa --namespace $KUBE_NAMESPACE && kubectl delete deployment opencookbook-qa --namespace $KUBE_NAMESPACE
-    - kubectl apply -f kubernetes/deployment-qa.yml
+# deploy_qa:
+#   stage: deploy
+#   needs: ["package-docker-qa"]
+#   resource_group: qa
+#   image: registry.gitlab.com/gitlab-org/cluster-integration/helm-install-image/releases/2.16.6-kube-1.13.12
+#   environment: 
+#     name: qa
+#   script: 
+#     - kubectl get secret opencookbook-registry --namespace $KUBE_NAMESPACE && kubectl delete secret opencookbook-registry --namespace $KUBE_NAMESPACE
+#     - kubectl create secret docker-registry opencookbook-registry --namespace $KUBE_NAMESPACE --docker-server=git.sterul.com:5005 --docker-username=$registry_user --docker-password=$registry_password
+#     - kubectl get deployment opencookbook-qa --namespace $KUBE_NAMESPACE && kubectl delete deployment opencookbook-qa --namespace $KUBE_NAMESPACE
+#     - kubectl apply -f kubernetes/deployment-qa.yml
 
 
-    # Wait for pod
-    - kubectl -n $KUBE_NAMESPACE wait --for=condition=available deployment/opencookbook-qa --timeout=300s
+#     # Wait for pod
+#     - kubectl -n $KUBE_NAMESPACE wait --for=condition=available deployment/opencookbook-qa --timeout=300s
 
 
 # stop-qa:
