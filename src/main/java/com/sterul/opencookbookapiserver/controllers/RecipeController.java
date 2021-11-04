@@ -1,15 +1,10 @@
 package com.sterul.opencookbookapiserver.controllers;
 
-import java.io.IOException;
 import java.util.List;
 
-
-import com.sterul.opencookbookapiserver.Constants;
 import com.sterul.opencookbookapiserver.entities.Recipe;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
-import com.sterul.opencookbookapiserver.util.FileUploadUtil;
 
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1/recipes")
@@ -60,16 +54,5 @@ public class RecipeController {
         
     }
 
-    @PostMapping("/{id}/images")
-    void uploadRecipeImage(@PathVariable Long id, @RequestParam("image") MultipartFile multipartFile) throws IOException {
-        Recipe recipe = recipeRepository.getOne(id);
-
-        String filename = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-        FileUploadUtil.saveFile(Constants.imageUploadDir, filename, multipartFile);
-
-        List<String> imageList = recipe.getImages();
-        imageList.add(filename);
-        recipe.setImages(imageList);
-        recipeRepository.save(recipe);
-    }
+    
 }

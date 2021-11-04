@@ -1,7 +1,6 @@
 package com.sterul.opencookbookapiserver.entities;
 
 import java.util.List;
-
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -22,19 +21,25 @@ public class Recipe {
     private List<String> preparationSteps;
 
     @ElementCollection
-    private List<String> images;
+    private List<RecipeImage> images;
+
+    public List<RecipeImage> getImages() {
+        return images;
+    }
+
+
+
+    public void setImages(List<RecipeImage> images) {
+        this.images = images;
+    }
+
+
 
     public List<String> getPreparationSteps() {
         return preparationSteps;
     }
 
-    public List<String> getImages() {
-        return images;
-    }
 
-    public void setImages(List<String> images) {
-        this.images = images;
-    }
 
     public void setPreparationSteps(List<String> preparationSteps) {
         this.preparationSteps = preparationSteps;

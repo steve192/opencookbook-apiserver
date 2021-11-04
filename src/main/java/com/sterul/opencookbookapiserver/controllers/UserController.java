@@ -53,6 +53,11 @@ public class UserController {
         return createdUser;
     }
 
+    @PostMapping("/login")
+    public User login(@RequestBody User user) {
+        
+    }
+
     
     
 }
