@@ -4,7 +4,6 @@ import com.sterul.opencookbookapiserver.requestfilters.AuthenticationFilter;
 import com.sterul.opencookbookapiserver.requestfilters.AuthorizationFilter;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,10 +11,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
-
 
 @Configuration
 @EnableWebSecurity
@@ -31,7 +28,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter{
         "/login",
         "/swagger-ui/*",
         "/v3/api-docs",
-        "/v3/api-docs/*"
+        "/v3/api-docs/*",
+        "/api-doc"
     };
     
     @Override
@@ -46,7 +44,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter{
              .addFilter(new AuthorizationFilter(authenticationManager()))
              .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
-
+ 
+    @Override
     protected void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         // Use own authentication manager (UserDetailsServiceImpl)
         authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
