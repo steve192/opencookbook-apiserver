@@ -105,7 +105,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserLoginRequest authenticationRequest) throws Exception {
+    public ResponseEntity<UserLoginResponse> login(@RequestBody UserLoginRequest authenticationRequest) throws Exception {
         login(authenticationRequest.getEmailAddress(), authenticationRequest.getPassword());
 
 		final UserDetails userDetails = userDetailsService
