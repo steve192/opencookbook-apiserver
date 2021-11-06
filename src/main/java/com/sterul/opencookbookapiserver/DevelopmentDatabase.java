@@ -33,11 +33,11 @@ public class DevelopmentDatabase {
     @Bean
     CommandLineRunner initDatabase() {
         return args -> {
-            saveRecipe(
-                "Demo recipe 1",
-                Arrays.asList("Do stuff", "Do more stuff", "Do very long stuff that takes a lot of time\nthen be happen when you are done\nok?"),
-                Arrays.asList(createIngredientNeed("Eatable stuff", 3, "Stück"), createIngredientNeed("Healthy stuff", 3, "g"))
-            );
+            // saveRecipe(
+            //     "Demo recipe 1",
+            //     Arrays.asList("Do stuff", "Do more stuff", "Do very long stuff that takes a lot of time\nthen be happen when you are done\nok?"),
+            //     Arrays.asList(createIngredientNeed("Eatable stuff", 3, "Stück"), createIngredientNeed("Healthy stuff", 3, "g"))
+            // );
 
             saveRecipe(
                 "Demo recipe 2",
@@ -50,11 +50,11 @@ public class DevelopmentDatabase {
                     createIngredientNeed("Healthy stuff4", 3, "g"))
             );
 
-            saveRecipe(
-                "Demo recipe 3",
-                Arrays.asList("Do stuff", "Do more stuff", "Do very long stuff that takes a lot of time\nthen be happen when you are done\nok?"),
-                Arrays.asList(createIngredientNeed("Eatable stuff", 3, "Stück"), createIngredientNeed("Healthy stuff", 3, "g"))
-            );
+            // saveRecipe(
+            //     "Demo recipe 3",
+            //     Arrays.asList("Do stuff", "Do more stuff", "Do very long stuff that takes a lot of time\nthen be happen when you are done\nok?"),
+            //     Arrays.asList(createIngredientNeed("Eatable stuff", 3, "Stück"), createIngredientNeed("Healthy stuff", 3, "g"))
+            // );
 
             userDetailsService.createUser("1", "1");
         };
