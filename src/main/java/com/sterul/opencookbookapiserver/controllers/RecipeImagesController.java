@@ -6,13 +6,12 @@ import java.nio.file.Paths;
 
 import com.sterul.opencookbookapiserver.Constants;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
+import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
 import com.sterul.opencookbookapiserver.services.RecipeImageService;
-import com.sterul.opencookbookapiserver.util.FileUploadUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,7 +33,7 @@ public class RecipeImagesController {
         
         return ResponseEntity
             .ok()
-            .contentType(MediaType.IMAGE_JPEG)
+            // .contentType(MediaType.IMAGE_JPEG)
             .body(Files.readAllBytes(path));
     }
 
@@ -52,7 +51,7 @@ public class RecipeImagesController {
     }
 
     @PostMapping("")
-    public RecipeImage uploadRecipeImage(@RequestParam("image") MultipartFile multipartFile) throws IOException {
-        return recipeImageService.saveNewImage(multipartFile.getInputStream());
+    public RecipeImage uploadRecipeImage(@RequestParam("image") MultipartFile multipartFile) throws IOException, IllegalFiletypeException {
+        return recipeImageService.saveNewImage(multipartFile.getInputStream(), multipartFile.getSize());
     }
 }

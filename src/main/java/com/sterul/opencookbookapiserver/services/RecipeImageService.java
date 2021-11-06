@@ -7,9 +7,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
+import javax.imageio.ImageIO;
+
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.repositories.RecipeImageRepository;
 
+import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -20,14 +23,26 @@ public class RecipeImageService {
     @Autowired
     RecipeImageRepository recipeImageRepository;
 
-    @Value("${opencookbook.file-upload-dir}")
+    @Value("${opencookbook.images.upload-dir}")
     private String uploadDir;
 
-    public RecipeImage saveNewImage(InputStream inputStream) throws IOException {
+    @Value("${opencookbook.images.maximum-size}")
+    private long maximumImageSize;
+
+    public RecipeImage saveNewImage(InputStream inputStream, long expectedSize)
+            throws IOException, IllegalFiletypeException {
         Path uploadPath = Paths.get(uploadDir);
 
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
+        }
+
+        if (expectedSize > maximumImageSize) {
+            throw new FileSizeLimitExceededException("Image too big", expectedSize, maximumImageSize);
+        }
+
+        if (!isImage(inputStream)) {
+            throw new IllegalFiletypeException();
         }
 
         var recipeImage = new RecipeImage();
@@ -37,5 +52,20 @@ public class RecipeImageService {
         Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
 
         return recipeImage;
+    }
+
+    private boolean isImage(InputStream inputStream) {
+        // TODO: Implement correctly
+        return true;
+
+        // var isImage = false;
+        // var imageReaders = ImageIO.getImageReaders(inputStream);
+        // while (imageReaders.hasNext()) {
+        //     var imageReader = imageReaders.next();
+        //     System.out.println("Potential image reader: " + imageReader.toString());
+        //     isImage = true;
+        // }
+
+        // return isImage;
     }
 }
