@@ -24,8 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
-    private UserRepository userRepository;
-    private PasswordEncoder passwordEncoder;
 
     @Autowired
 	private AuthenticationManager authenticationManager;
@@ -36,11 +34,6 @@ public class UserController {
 	@Autowired
 	private UserDetailsServiceImpl userDetailsService;
 
-    public UserController(UserRepository userRepository, PasswordEncoder bCryptPasswordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = bCryptPasswordEncoder;
-    }
-    
     static class UserCreationRequest {
         private String emailAddress;
         private String password;
@@ -61,18 +54,7 @@ public class UserController {
 
     @PostMapping("/signup")
     public User signup(@RequestBody UserCreationRequest userCreationRequest) throws Exception {
-        var createdUser = new User();
-
-        //TODO: Move logic to user details service
-        if (userDetailsService.userExists(userCreationRequest.getEmailAddress())) {
-            throw new Exception("User already exists");
-        }
-        createdUser.setEmailAddress(userCreationRequest.emailAddress);
-        createdUser.setPasswordHash(passwordEncoder.encode(userCreationRequest.password));
-
-        userRepository.save(createdUser);
-
-        return createdUser;
+        return userDetailsService.createUser(userCreationRequest.emailAddress, userCreationRequest.password);
     }
 
     static class UserLoginRequest {
