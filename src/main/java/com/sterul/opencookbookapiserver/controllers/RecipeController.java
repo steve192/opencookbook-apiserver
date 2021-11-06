@@ -2,9 +2,12 @@ package com.sterul.opencookbookapiserver.controllers;
 
 import java.util.List;
 
+import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.Recipe;
+import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,11 +20,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/recipes")
 public class RecipeController {
-    private final RecipeRepository recipeRepository;
 
-    RecipeController(RecipeRepository repository) {
-        this.recipeRepository = repository;
-    }
+    @Autowired
+    private  RecipeRepository recipeRepository;
+
+    @Autowired
+    private  IngredientRepository ingredientRepository;
+
 
     @GetMapping("")
     List<Recipe> searchRecipe(@RequestParam(required = false) String searchString) {
@@ -34,6 +39,13 @@ public class RecipeController {
 
     @PostMapping("") 
     Recipe newRecipe(@RequestBody Recipe newRecipe) {
+        for (IngredientNeed ingredientNeed : newRecipe.getNeededIngredients()) {
+            var ingredient = ingredientNeed.getIngredient();
+            if (ingredient.getId() == null){
+                // Convenience api which creates ingredients
+                ingredientNeed.setIngredient(ingredientRepository.save(ingredient));
+            }
+        }
         return recipeRepository.save(newRecipe);
     }
 

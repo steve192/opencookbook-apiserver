@@ -1,6 +1,7 @@
 package com.sterul.opencookbookapiserver.entities;
 
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -8,6 +9,8 @@ import javax.persistence.Id;
 @Entity
 public class Ingredient {
     private @Id @GeneratedValue Long id;
+
+    // @Column( unique = true )
     private String name;
 
     // @ManyToMany(fetch = FetchType.LAZY)
