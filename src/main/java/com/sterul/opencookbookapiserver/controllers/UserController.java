@@ -3,6 +3,7 @@ package com.sterul.opencookbookapiserver.controllers;
 
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
+import com.sterul.opencookbookapiserver.services.UserAlreadyExistsException;
 import com.sterul.opencookbookapiserver.services.UserDetailsServiceImpl;
 import com.sterul.opencookbookapiserver.util.JwtTokenUtil;
 
@@ -18,8 +19,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import io.micrometer.core.ipc.http.HttpSender.Response;
 
 
 @RestController
@@ -61,10 +60,13 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public User signup(@RequestBody UserCreationRequest userCreationRequest) {
+    public User signup(@RequestBody UserCreationRequest userCreationRequest) throws Exception {
         var createdUser = new User();
 
-        //TODO: Check if user already exists
+        //TODO: Move logic to user details service
+        if (userDetailsService.userExists(userCreationRequest.getEmailAddress())) {
+            throw new Exception("User already exists");
+        }
         createdUser.setEmailAddress(userCreationRequest.emailAddress);
         createdUser.setPasswordHash(passwordEncoder.encode(userCreationRequest.password));
 

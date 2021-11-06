@@ -25,5 +25,9 @@ public class UserDetailsServiceImpl implements UserDetailsService{
         }
         return new User(foundUser.getEmailAddress(), foundUser.getPasswordHash(), Collections.emptyList());
     }
+
+    public Boolean userExists(String emailAddress) {
+        return userRepository.existsByEmailAddress(emailAddress);
+    }
     
 }
