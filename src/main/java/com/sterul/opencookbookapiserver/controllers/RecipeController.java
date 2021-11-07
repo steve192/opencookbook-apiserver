@@ -6,6 +6,10 @@ import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.Recipe;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
+import com.sterul.opencookbookapiserver.services.RecipeImportService;
+import com.sterul.opencookbookapiserver.services.RecipeService;
+import com.sterul.opencookbookapiserver.services.recipeimport.ImportNotSupportedException;
+import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImportFailedException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,13 +24,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/recipes")
 public class RecipeController {
+//TODO: Move things to recipe service
+    @Autowired
+    private RecipeRepository recipeRepository;
 
     @Autowired
-    private  RecipeRepository recipeRepository;
+    private IngredientRepository ingredientRepository;
 
     @Autowired
-    private  IngredientRepository ingredientRepository;
+    private RecipeImportService recipeImportService;
 
+    @Autowired
+    private RecipeService recipeService;
 
     @GetMapping("")
     List<Recipe> searchRecipe(@RequestParam(required = false) String searchString) {
@@ -37,16 +46,9 @@ public class RecipeController {
         }
     }
 
-    @PostMapping("") 
+    @PostMapping("")
     Recipe newRecipe(@RequestBody Recipe newRecipe) {
-        for (IngredientNeed ingredientNeed : newRecipe.getNeededIngredients()) {
-            var ingredient = ingredientNeed.getIngredient();
-            if (ingredient.getId() == null){
-                // Convenience api which creates ingredients
-                ingredientNeed.setIngredient(ingredientRepository.save(ingredient));
-            }
-        }
-        return recipeRepository.save(newRecipe);
+        return recipeService.createNewRecipe(newRecipe);
     }
 
     @GetMapping("/{id}")
@@ -63,8 +65,13 @@ public class RecipeController {
             recipeUpdate.setId(id);
             return recipeRepository.save(recipeUpdate);
         });
-        
+
     }
 
-    
+    @GetMapping("/import")
+    Recipe importRecipe(@RequestParam String importUrl)
+            throws ImportNotSupportedException, RecipeImportFailedException {
+        return recipeImportService.importRecipe(importUrl);
+    }
+
 }

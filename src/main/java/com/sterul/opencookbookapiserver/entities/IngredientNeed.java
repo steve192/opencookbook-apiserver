@@ -16,10 +16,10 @@ public class IngredientNeed {
     @ManyToOne
     private Ingredient ingredient;
 
-    private int amount;
+    private Float amount;
     private String unit;
 
-    public int getAmount() {
+    public Float getAmount() {
         return amount;
     }
 
@@ -31,7 +31,7 @@ public class IngredientNeed {
         this.unit = unit;
     }
 
-    public void setAmount(int amount) {
+    public void setAmount(Float amount) {
         this.amount = amount;
     }
 

@@ -43,11 +43,11 @@ public class DevelopmentDatabase {
                 "Demo recipe 2",
                 Arrays.asList("Do stuff", "Do more stuff", "Do very long stuff that takes a lot of time\nthen be happen when you are done\nok?", "Be done and happy", "very happy"),
                 Arrays.asList(
-                    createIngredientNeed("Eatable stuff", 3, "Stück"), 
-                    createIngredientNeed("Healthy stuff", 3, "g"),
-                    createIngredientNeed("Healthy stuff2", 3, "g"),
-                    createIngredientNeed("Healthy stuff3", 3, "g"),
-                    createIngredientNeed("Healthy stuff4", 3, "g"))
+                    createIngredientNeed("Eatable stuff", 3f, "Stück"), 
+                    createIngredientNeed("Healthy stuff", 3f, "g"),
+                    createIngredientNeed("Healthy stuff2", 3f, "g"),
+                    createIngredientNeed("Healthy stuff3", 3f, "g"),
+                    createIngredientNeed("Healthy stuff4", 3f, "g"))
             );
 
             // saveRecipe(
@@ -70,7 +70,7 @@ public class DevelopmentDatabase {
         repository.save(recipe);
     }
 
-    IngredientNeed createIngredientNeed(String name, int amount, String unit) {
+    IngredientNeed createIngredientNeed(String name, Float amount, String unit) {
         var ingredient = new Ingredient();
         ingredient.setName(name);
         ingredient = ingredientRepository.save(ingredient);
