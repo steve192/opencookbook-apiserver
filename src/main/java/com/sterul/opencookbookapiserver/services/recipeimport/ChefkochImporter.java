@@ -118,8 +118,8 @@ public class ChefkochImporter implements IRecipeImporter {
 
     private void extractPreparationSteps(Recipe importedRecipe, ChefkocPublicRecipe publicRecipe) {
         // Depending on which os the recipe was created it contains \n or \r\n line breaks
-        publicRecipe.recipe.instructions.replace("\r", "");
-        var possibleRecipeSteps = publicRecipe.recipe.instructions.split("\n");
+        var instructionString = publicRecipe.recipe.instructions.replace("\r", "");
+        var possibleRecipeSteps = instructionString.split("\n");
         if (possibleRecipeSteps.length == 0) {
             importedRecipe.setPreparationSteps(Arrays.asList(publicRecipe.recipe.instructions));
         } else {
