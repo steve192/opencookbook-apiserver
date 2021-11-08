@@ -4,7 +4,7 @@ variables:
 stages:
   - build
   - package
-  - deploy
+  - publish
 
 maven-build:
   image: maven:3-jdk-11
@@ -30,9 +30,16 @@ package-docker-qa:
   only:
       - master
 
+publish-cluster:
+  stage: publish
+  needs: ["package-docker-qa"]
+  trigger:
+    project: opencookbook/opencookbook-docker
+    branch: master
+
 
 # deploy_qa:
-#   stage: deploy
+#   stage: publish
 #   needs: ["package-docker-qa"]
 #   resource_group: qa
 #   image: registry.gitlab.com/gitlab-org/cluster-integration/helm-install-image/releases/2.16.6-kube-1.13.12
