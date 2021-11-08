@@ -12,6 +12,7 @@ import com.sterul.opencookbookapiserver.services.recipeimport.ImportNotSupported
 import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImportFailedException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,9 +28,6 @@ public class RecipeController {
 //TODO: Move things to recipe service
     @Autowired
     private RecipeRepository recipeRepository;
-
-    @Autowired
-    private IngredientRepository ingredientRepository;
 
     @Autowired
     private RecipeImportService recipeImportService;
@@ -66,6 +64,11 @@ public class RecipeController {
             return recipeRepository.save(recipeUpdate);
         });
 
+    }
+
+    @DeleteMapping("/{id}")
+    void deleteRecipe(@PathVariable Long id) {
+        recipeService.deleteRecipe(id);
     }
 
     @GetMapping("/import")
