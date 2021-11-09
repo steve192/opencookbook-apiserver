@@ -44,16 +44,15 @@ public class ChefkochImporter implements IRecipeImporter {
     @Override
     public Recipe importRecipe(String url) throws RecipeImportFailedException {
         var importRecipe = new Recipe();
-
         var recipeId = url.split("//")[1].split("/")[2];
 
         var request = new HttpGet("https://api.chefkoch.de/v2/aggregations/recipe/public/screen-v4/" + recipeId);
 
-        ChefkocPublicRecipe publicRecipe;
+        ChefkochPublicRecipe publicRecipe;
         try {
             var response = client.execute(request);
             var jsonString = EntityUtils.toString(response.getEntity(), "UTF-8");
-            publicRecipe = gson.fromJson(jsonString, ChefkocPublicRecipe.class);
+            publicRecipe = gson.fromJson(jsonString, ChefkochPublicRecipe.class);
         } catch (IOException e) {
             throw new RecipeImportFailedException();
         }
@@ -73,7 +72,7 @@ public class ChefkochImporter implements IRecipeImporter {
         return importRecipe;
     }
 
-    private void extractIngredientNeeds(Recipe importedRecipe, ChefkocPublicRecipe publicRecipe) {
+    private void extractIngredientNeeds(Recipe importedRecipe, ChefkochPublicRecipe publicRecipe) {
         importedRecipe.setNeededIngredients(new ArrayList<IngredientNeed>());
         for (var ingredientGroup : publicRecipe.recipe.ingredientGroups) {
             // Ingredient groups are not supported for now, just import all
@@ -93,7 +92,7 @@ public class ChefkochImporter implements IRecipeImporter {
         }
     }
 
-    private void extractAndSaveImages(Recipe importedRecipe, String recipeId, ChefkocPublicRecipe publicRecipe)
+    private void extractAndSaveImages(Recipe importedRecipe, String recipeId, ChefkochPublicRecipe publicRecipe)
             throws IOException, ClientProtocolException {
         importedRecipe.setImages(new ArrayList<RecipeImage>());
         for (var image : publicRecipe.recipeImages) {
@@ -112,11 +111,11 @@ public class ChefkochImporter implements IRecipeImporter {
         }
     }
 
-    private void extractGeneralInformation(Recipe importedRecipe, ChefkocPublicRecipe publicRecipe) {
+    private void extractGeneralInformation(Recipe importedRecipe, ChefkochPublicRecipe publicRecipe) {
         importedRecipe.setTitle(publicRecipe.recipe.title);
     }
 
-    private void extractPreparationSteps(Recipe importedRecipe, ChefkocPublicRecipe publicRecipe) {
+    private void extractPreparationSteps(Recipe importedRecipe, ChefkochPublicRecipe publicRecipe) {
         // Depending on which os the recipe was created it contains \n or \r\n line breaks
         var instructionString = publicRecipe.recipe.instructions.replace("\r", "");
         var possibleRecipeSteps = instructionString.split("\n");
@@ -129,7 +128,7 @@ public class ChefkochImporter implements IRecipeImporter {
         }
     }
 
-    private class ChefkocPublicRecipe {
+    private class ChefkochPublicRecipe {
 
         ChefkochRecipe recipe;
 
