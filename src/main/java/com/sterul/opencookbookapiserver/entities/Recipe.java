@@ -1,6 +1,7 @@
 package com.sterul.opencookbookapiserver.entities;
 
 import java.util.List;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -9,37 +10,42 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
-
 @Entity
 public class Recipe {
     private @Id @GeneratedValue Long id;
     private String title;
 
-    @OneToMany( cascade= CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<IngredientNeed> neededIngredients;
 
     @ElementCollection
-    @Column( length = 10000 )
+    @Column(length = 10000)
     private List<String> preparationSteps;
 
     @OneToMany
     private List<RecipeImage> images;
 
+    private int servings;
+
     public List<RecipeImage> getImages() {
         return images;
+    }
+
+    public int getServings() {
+        return servings;
+    }
+
+    public void setServings(int servings) {
+        this.servings = servings;
     }
 
     public void setImages(List<RecipeImage> images) {
         this.images = images;
     }
 
-
-
     public List<String> getPreparationSteps() {
         return preparationSteps;
     }
-
-
 
     public void setPreparationSteps(List<String> preparationSteps) {
         this.preparationSteps = preparationSteps;
@@ -69,5 +75,4 @@ public class Recipe {
         this.neededIngredients = neededIngredients;
     }
 
-    
 }
