@@ -113,6 +113,7 @@ public class ChefkochImporter implements IRecipeImporter {
 
     private void extractGeneralInformation(Recipe importedRecipe, ChefkochPublicRecipe publicRecipe) {
         importedRecipe.setTitle(publicRecipe.recipe.title);
+        importedRecipe.setServings(publicRecipe.recipe.servings);
     }
 
     private void extractPreparationSteps(Recipe importedRecipe, ChefkochPublicRecipe publicRecipe) {
