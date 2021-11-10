@@ -1,10 +1,9 @@
 package com.sterul.opencookbookapiserver.controllers;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
-import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.Recipe;
-import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 import com.sterul.opencookbookapiserver.services.RecipeImportService;
 import com.sterul.opencookbookapiserver.services.RecipeService;
@@ -55,14 +54,12 @@ public class RecipeController {
     }
 
     @PutMapping("/{id}")
-    Recipe updateRecipe(@PathVariable Long id, @RequestBody Recipe recipeUpdate) {
-        return recipeRepository.findById(id).map(recipe -> {
-            recipe.setTitle(recipeUpdate.getTitle());
-            return recipeRepository.save(recipe);
-        }).orElseGet(() -> {
-            recipeUpdate.setId(id);
+    Recipe updateRecipe(@PathVariable Long id, @RequestBody Recipe recipeUpdate)  throws NoSuchElementException{
+        return recipeRepository.findById(id).map(existingRecipe -> {
+            existingRecipe.setTitle(recipeUpdate.getTitle());
+            recipeUpdate.setId(existingRecipe.getId());
             return recipeRepository.save(recipeUpdate);
-        });
+        }).orElseThrow();
 
     }
 
