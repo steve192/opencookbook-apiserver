@@ -17,18 +17,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/recipes/group")
+@RequestMapping("/api/v1/recipe-groups")
 public class RecipeGroupController extends BaseController {
 
     @Autowired
     RecipeGroupService recipeGroupService;
 
-    @GetMapping("/")
+    @GetMapping("")
     public List<RecipeGroup> getAll() {
         return recipeGroupService.getRecipeGroupsByOwner(getLoggedInUser());
     }
 
-    @PostMapping("/")
+    @PostMapping("")
     public RecipeGroup create(@RequestBody RecipeGroup recipeGroup) {
         recipeGroup.setOwner(getLoggedInUser());
         return recipeGroupService.createRecipeGroup(recipeGroup);
