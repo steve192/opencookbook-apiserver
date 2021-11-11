@@ -9,9 +9,7 @@ import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.Recipe;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
-import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
-import com.sterul.opencookbookapiserver.repositories.RecipeImageRepository;
-import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
+import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
 import com.sterul.opencookbookapiserver.services.RecipeImageService;
 import com.sterul.opencookbookapiserver.services.RecipeService;
@@ -42,7 +40,7 @@ public class ChefkochImporter implements IRecipeImporter {
     }
 
     @Override
-    public Recipe importRecipe(String url) throws RecipeImportFailedException {
+    public Recipe importRecipe(String url, User owner) throws RecipeImportFailedException {
         var importRecipe = new Recipe();
         var recipeId = url.split("//")[1].split("/")[2];
 
@@ -67,6 +65,7 @@ public class ChefkochImporter implements IRecipeImporter {
         }
         extractIngredientNeeds(importRecipe, publicRecipe);
 
+        importRecipe.setOwner(owner);
         recipeService.createNewRecipe(importRecipe);
 
         return importRecipe;

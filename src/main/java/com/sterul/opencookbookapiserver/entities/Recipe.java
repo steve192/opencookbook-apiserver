@@ -8,7 +8,10 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+
+import com.sterul.opencookbookapiserver.entities.account.User;
 
 @Entity
 public class Recipe {
@@ -22,10 +25,21 @@ public class Recipe {
     @Column(length = 10000)
     private List<String> preparationSteps;
 
+    @ManyToOne
+    private User owner;
+
     @OneToMany
     private List<RecipeImage> images;
 
     private int servings;
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
 
     public List<RecipeImage> getImages() {
         return images;

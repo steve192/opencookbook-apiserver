@@ -6,6 +6,7 @@ import java.util.List;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.Recipe;
+import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 import com.sterul.opencookbookapiserver.services.UserDetailsServiceImpl;
@@ -30,6 +31,8 @@ public class DevelopmentDatabase {
     @Autowired
     UserDetailsServiceImpl userDetailsService;
 
+    private User user;
+
     @Bean
     CommandLineRunner initDatabase() {
         return args -> {
@@ -39,6 +42,7 @@ public class DevelopmentDatabase {
             //     Arrays.asList(createIngredientNeed("Eatable stuff", 3, "Stück"), createIngredientNeed("Healthy stuff", 3, "g"))
             // );
 
+            this.user = userDetailsService.createUser("1", "1");
             saveRecipe(
                 "Demo recipe 2",
                 Arrays.asList("Do stuff", "Do more stuff", "Do very long stuff that takes a lot of time\nthen be happen when you are done\nok?", "Be done and happy", "very happy"),
@@ -56,7 +60,6 @@ public class DevelopmentDatabase {
             //     Arrays.asList(createIngredientNeed("Eatable stuff", 3, "Stück"), createIngredientNeed("Healthy stuff", 3, "g"))
             // );
 
-            userDetailsService.createUser("1", "1");
         };
     }
 
@@ -67,6 +70,7 @@ public class DevelopmentDatabase {
         recipe.setTitle(title);
         recipe.setPreparationSteps(preparationSteps);
         recipe.setNeededIngredients(neededIngredients);
+        recipe.setOwner(this.user);
         repository.save(recipe);
     }
 
