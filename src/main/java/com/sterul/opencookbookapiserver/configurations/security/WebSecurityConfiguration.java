@@ -40,7 +40,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private PasswordEncoder passwordEncoder;
 
     private static final String[] AUTH_WHITELIST = { "/api/v1/users/signup", "/api/v1/users/login", "/swagger-ui/*",
-            "/v3/api-docs", "/v3/api-docs/*", "/api-doc" };
+            "/v3/api-docs", "/v3/api-docs/*", "/api-doc", "/h2-console/*" };
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
@@ -64,7 +64,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         var corsConfiguration = new CorsConfiguration().applyPermitDefaultValues();
         corsConfiguration.setAllowedMethods(permittedCorsMethods);
 
-        http.cors().configurationSource(request -> corsConfiguration).and().csrf().disable().authorizeRequests()
+        http.cors().configurationSource(request -> corsConfiguration)
+                .and().headers().frameOptions().sameOrigin() // TODO: Check if this is a security risk (currently used for h2 console)
+                .and().csrf().disable().authorizeRequests()
                 .antMatchers(AUTH_WHITELIST).permitAll().anyRequest().authenticated().and()
                 // make sure we use stateless session; session won't be used to
                 // store user's state.
