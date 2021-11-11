@@ -32,7 +32,7 @@ public class RecipeGroupService {
 
     public boolean hasAccessPermissionToRecipeGroup(Long recipeGroupId, User user) {
         var recipeGroup = recipeGroupRepository.getOne(recipeGroupId);
-        return recipeGroup.getOwner().getUserId() == user.getUserId();
+        return recipeGroup.getOwner().getUserId().equals(user.getUserId());
     }
 
     public List<RecipeGroup> getRecipeGroupsByOwner(User owner) {
