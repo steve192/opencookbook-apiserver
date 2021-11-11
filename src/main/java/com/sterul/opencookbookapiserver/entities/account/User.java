@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class User {
 
@@ -11,6 +13,8 @@ public class User {
     @GeneratedValue
     private Long userId;
     private String emailAddress;
+
+    @JsonIgnore
     private String passwordHash;
 
     public Long getUserId() {
@@ -29,7 +33,6 @@ public class User {
         this.userId = userId;
     }
 
-
     public String getEmailAddress() {
         return emailAddress;
     }
@@ -38,5 +41,4 @@ public class User {
         this.emailAddress = emailAddress;
     }
 
-    
 }

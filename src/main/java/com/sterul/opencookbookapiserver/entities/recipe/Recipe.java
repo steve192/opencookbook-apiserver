@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.entities.account.User;
@@ -28,6 +29,7 @@ public class Recipe {
     private List<String> preparationSteps;
 
     @ManyToOne
+    @JsonIgnore
     private User owner;
 
     @OneToMany
@@ -37,6 +39,14 @@ public class Recipe {
 
     @OneToMany
     private List<RecipeGroup> recipeGroups;
+
+    public List<RecipeGroup> getRecipeGroups() {
+        return recipeGroups;
+    }
+
+    public void setRecipeGroups(List<RecipeGroup> recipeGroups) {
+        this.recipeGroups = recipeGroups;
+    }
 
     public User getOwner() {
         return owner;
