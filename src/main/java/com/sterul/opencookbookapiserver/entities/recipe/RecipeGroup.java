@@ -5,6 +5,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sterul.opencookbookapiserver.entities.account.User;
 
 @Entity
@@ -16,6 +17,7 @@ public class RecipeGroup {
     private String title;
 
     @ManyToOne
+    @JsonIgnore
     private User owner;
 
     public Long getId() {
