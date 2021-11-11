@@ -1,10 +1,8 @@
 package com.sterul.opencookbookapiserver.controllers;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.NoSuchElementException;
 
-import com.sterul.opencookbookapiserver.Constants;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
 import com.sterul.opencookbookapiserver.services.RecipeImageService;
@@ -27,14 +25,18 @@ public class RecipeImagesController {
     @Autowired
     RecipeImageService recipeImageService;
 
-    @GetMapping( value = "/{filename}", produces = MediaType.IMAGE_JPEG_VALUE)
-    ResponseEntity<byte[]> getRecipeImage(@PathVariable String filename) throws IOException {
-        var path = Paths.get(Constants.imageUploadDir).resolve(filename);
-        
-        return ResponseEntity
-            .ok()
-            // .contentType(MediaType.IMAGE_JPEG)
-            .body(Files.readAllBytes(path));
+    @GetMapping(value = "/{uuid}", produces = MediaType.IMAGE_JPEG_VALUE)
+    ResponseEntity<byte[]> getRecipeImage(@PathVariable String uuid) throws NoSuchElementException {
+        byte[] imageData;
+        try {
+            imageData = recipeImageService.getImage(uuid);
+        } catch (IOException e) {
+            throw new NoSuchElementException();
+        }
+
+        return ResponseEntity.ok()
+                // .contentType(MediaType.IMAGE_JPEG)
+                .body(imageData);
     }
 
     static class ImageCreationResult {
@@ -51,7 +53,8 @@ public class RecipeImagesController {
     }
 
     @PostMapping("")
-    public RecipeImage uploadRecipeImage(@RequestParam("image") MultipartFile multipartFile) throws IOException, IllegalFiletypeException {
+    public RecipeImage uploadRecipeImage(@RequestParam("image") MultipartFile multipartFile)
+            throws IOException, IllegalFiletypeException {
         return recipeImageService.saveNewImage(multipartFile.getInputStream(), multipartFile.getSize());
     }
 }

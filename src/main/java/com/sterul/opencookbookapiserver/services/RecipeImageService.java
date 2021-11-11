@@ -66,4 +66,9 @@ public class RecipeImageService {
 
         // return isImage;
     }
+
+    public byte[] getImage(String uuid) throws IOException {
+        var path = Paths.get(uploadDir).resolve(uuid);
+        return Files.readAllBytes(path);
+    }
 }
