@@ -39,18 +39,7 @@ public class RecipeImagesController {
                 .body(imageData);
     }
 
-    static class ImageCreationResult {
-        private String uuid;
-
-        public String getUuid() {
-            return uuid;
-        }
-
-        public void setUuid(String uuid) {
-            this.uuid = uuid;
-        }
-
-    }
+    
 
     @PostMapping("")
     public RecipeImage uploadRecipeImage(@RequestParam("image") MultipartFile multipartFile)

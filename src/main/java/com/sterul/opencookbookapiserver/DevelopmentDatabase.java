@@ -5,8 +5,8 @@ import java.util.List;
 
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
-import com.sterul.opencookbookapiserver.entities.Recipe;
 import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 import com.sterul.opencookbookapiserver.services.UserDetailsServiceImpl;

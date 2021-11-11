@@ -1,7 +1,7 @@
 package com.sterul.opencookbookapiserver.services;
 
-import com.sterul.opencookbookapiserver.entities.Recipe;
 import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.services.recipeimport.ImportNotSupportedException;
 import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImportFailedException;
 import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImporterFactory;

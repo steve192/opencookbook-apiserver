@@ -1,4 +1,4 @@
-package com.sterul.opencookbookapiserver.entities;
+package com.sterul.opencookbookapiserver.entities.recipe;
 
 import java.util.List;
 
@@ -11,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import com.sterul.opencookbookapiserver.entities.IngredientNeed;
+import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.entities.account.User;
 
 @Entity
@@ -32,6 +34,9 @@ public class Recipe {
     private List<RecipeImage> images;
 
     private int servings;
+
+    @OneToMany
+    private List<RecipeGroup> recipeGroups;
 
     public User getOwner() {
         return owner;

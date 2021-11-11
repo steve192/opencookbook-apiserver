@@ -4,10 +4,9 @@ import java.security.Principal;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import com.sterul.opencookbookapiserver.entities.Recipe;
-import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.controllers.exceptions.NotAuthorizedException;
+import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
-import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.RecipeImportService;
 import com.sterul.opencookbookapiserver.services.RecipeService;
 import com.sterul.opencookbookapiserver.services.recipeimport.ImportNotSupportedException;
@@ -26,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/recipes")
-public class RecipeController {
+public class RecipeController extends BaseController{
     // TODO: Move things to recipe service
     @Autowired
     private RecipeRepository recipeRepository;
@@ -37,39 +36,32 @@ public class RecipeController {
     @Autowired
     private RecipeService recipeService;
 
-    @Autowired
-    private UserRepository userRepository;
-
     @GetMapping("")
-    List<Recipe> searchRecipe(@RequestParam(required = false) String searchString, Principal principal) {
+    List<Recipe> searchRecipe(@RequestParam(required = false) String searchString) {
         // userRepository.findByEmailAddress()
         // recipeService.getRecipesByOwner()
-        var user = getLoggedInUser(principal);
+        var user = getLoggedInUser();
         return recipeService.getRecipesByOwner(user);
     }
 
-    private User getLoggedInUser(Principal principal) {
-        return userRepository.findByEmailAddress(principal.getName());
-    }
-
     @PostMapping("")
-    Recipe newRecipe(@RequestBody Recipe newRecipe, Principal principal) {
-        newRecipe.setOwner(getLoggedInUser(principal));
+    Recipe newRecipe(@RequestBody Recipe newRecipe) {
+        newRecipe.setOwner(getLoggedInUser());
         return recipeService.createNewRecipe(newRecipe);
     }
 
     @GetMapping("/{id}")
-    Recipe single(@PathVariable Long id, Principal principal) throws NotAuthorizedException {
-        if (!recipeService.hasAccessPermissionToRecipe(id, getLoggedInUser(principal))) {
+    Recipe single(@PathVariable Long id) throws NotAuthorizedException {
+        if (!recipeService.hasAccessPermissionToRecipe(id, getLoggedInUser())) {
             throw new NotAuthorizedException();
         }
         return recipeRepository.findById(id).get();
     }
 
     @PutMapping("/{id}")
-    Recipe updateRecipe(@PathVariable Long id, @RequestBody Recipe recipeUpdate, Principal principal)
+    Recipe updateRecipe(@PathVariable Long id, @RequestBody Recipe recipeUpdate)
             throws NoSuchElementException, NotAuthorizedException {
-        if (!recipeService.hasAccessPermissionToRecipe(id, getLoggedInUser(principal))) {
+        if (!recipeService.hasAccessPermissionToRecipe(id, getLoggedInUser())) {
             throw new NotAuthorizedException();
         }
         return recipeRepository.findById(id).map(existingRecipe -> {
@@ -81,17 +73,17 @@ public class RecipeController {
     }
 
     @DeleteMapping("/{id}")
-    void deleteRecipe(@PathVariable Long id, Principal principal) throws NotAuthorizedException {
-        if (!recipeService.hasAccessPermissionToRecipe(id, getLoggedInUser(principal))) {
+    void deleteRecipe(@PathVariable Long id) throws NotAuthorizedException {
+        if (!recipeService.hasAccessPermissionToRecipe(id, getLoggedInUser())) {
             throw new NotAuthorizedException();
         }
         recipeService.deleteRecipe(id);
     }
 
     @GetMapping("/import")
-    Recipe importRecipe(@RequestParam String importUrl, Principal principal)
+    Recipe importRecipe(@RequestParam String importUrl)
             throws ImportNotSupportedException, RecipeImportFailedException {
-        var owner = getLoggedInUser(principal);
+        var owner = getLoggedInUser();
         return recipeImportService.importRecipe(importUrl, owner);
     }
 
