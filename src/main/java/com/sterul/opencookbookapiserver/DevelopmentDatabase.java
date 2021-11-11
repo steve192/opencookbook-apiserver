@@ -7,7 +7,9 @@ import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
+import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
+import com.sterul.opencookbookapiserver.repositories.RecipeGroupRepository;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 import com.sterul.opencookbookapiserver.services.UserDetailsServiceImpl;
 
@@ -29,6 +31,9 @@ public class DevelopmentDatabase {
     IngredientRepository ingredientRepository;
 
     @Autowired
+    RecipeGroupRepository recipeGroupRepository;
+
+    @Autowired
     UserDetailsServiceImpl userDetailsService;
 
     private User user;
@@ -43,6 +48,8 @@ public class DevelopmentDatabase {
             // );
 
             this.user = userDetailsService.createUser("1", "1");
+
+            saveRecipeGroup("Test group");
             saveRecipe(
                 "Demo recipe 2",
                 Arrays.asList("Do stuff", "Do more stuff", "Do very long stuff that takes a lot of time\nthen be happen when you are done\nok?", "Be done and happy", "very happy"),
@@ -54,6 +61,8 @@ public class DevelopmentDatabase {
                     createIngredientNeed("Healthy stuff4", 3f, "g"))
             );
 
+
+
             // saveRecipe(
             //     "Demo recipe 3",
             //     Arrays.asList("Do stuff", "Do more stuff", "Do very long stuff that takes a lot of time\nthen be happen when you are done\nok?"),
@@ -63,7 +72,13 @@ public class DevelopmentDatabase {
         };
     }
 
+    void saveRecipeGroup(String title) {
+        var recipeGroup = new RecipeGroup();
+        recipeGroup.setOwner(this.user);
+        recipeGroup.setTitle(title);
 
+        recipeGroupRepository.save(recipeGroup);
+    }
 
     void saveRecipe(String title, List<String> preparationSteps, List<IngredientNeed> neededIngredients) {
         var recipe = new Recipe();
