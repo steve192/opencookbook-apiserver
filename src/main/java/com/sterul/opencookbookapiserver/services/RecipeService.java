@@ -40,7 +40,7 @@ public class RecipeService {
 
     public boolean hasAccessPermissionToRecipe(Long recipeId, User user) {
         var recipe = recipeRepository.getOne(recipeId);
-        return recipe.getOwner().getUserId() == user.getUserId();
+        return recipe.getOwner().getUserId().equals(user.getUserId());
     }
 
 }
