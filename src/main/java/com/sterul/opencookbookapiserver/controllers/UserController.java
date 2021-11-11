@@ -1,9 +1,10 @@
 package com.sterul.opencookbookapiserver.controllers;
 
 
+import com.sterul.opencookbookapiserver.controllers.requests.UserCreationRequest;
+import com.sterul.opencookbookapiserver.controllers.requests.UserLoginRequest;
+import com.sterul.opencookbookapiserver.controllers.responses.UserLoginResponse;
 import com.sterul.opencookbookapiserver.entities.account.User;
-import com.sterul.opencookbookapiserver.repositories.UserRepository;
-import com.sterul.opencookbookapiserver.services.UserAlreadyExistsException;
 import com.sterul.opencookbookapiserver.services.UserDetailsServiceImpl;
 import com.sterul.opencookbookapiserver.util.JwtTokenUtil;
 
@@ -14,7 +15,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,58 +34,10 @@ public class UserController {
 	@Autowired
 	private UserDetailsServiceImpl userDetailsService;
 
-    static class UserCreationRequest {
-        private String emailAddress;
-        private String password;
-
-        public String getEmailAddress() {
-            return emailAddress;
-        }
-        public void setEmailAddress(String emailAddress) {
-            this.emailAddress = emailAddress;
-        }
-        public String getPassword() {
-            return password;
-        }
-        public void setPassword(String password) {
-            this.password = password;
-        }
-    }
 
     @PostMapping("/signup")
     public User signup(@RequestBody UserCreationRequest userCreationRequest) throws Exception {
-        return userDetailsService.createUser(userCreationRequest.emailAddress, userCreationRequest.password);
-    }
-
-    static class UserLoginRequest {
-        private String emailAddress;
-        private String password;
-
-        public String getEmailAddress() {
-            return emailAddress;
-        }
-        public void setEmailAddress(String emailAddress) {
-            this.emailAddress = emailAddress;
-        }
-        public String getPassword() {
-            return password;
-        }
-        public void setPassword(String password) {
-            this.password = password;
-        }
-    }
-
-    public class UserLoginResponse{
-
-        private final String token;
-    
-        public UserLoginResponse(String token) {
-            this.token = token;
-        }
-    
-        public String getToken() {
-            return this.token;
-        }
+        return userDetailsService.createUser(userCreationRequest.getEmailAddress(), userCreationRequest.getPassword());
     }
 
     @PostMapping("/login")
