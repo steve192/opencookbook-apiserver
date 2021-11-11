@@ -34,6 +34,7 @@ public class RecipeService {
         for (var recipeGroup : newRecipe.getRecipeGroups()) {
             if (recipeGroup.getId() == null) {
                 // Convenience api which creates recipe groups
+                recipeGroup.setOwner(newRecipe.getOwner());
                 var createdRecipeGroup = recipeGroupService.createRecipeGroup(recipeGroup);
                 recipeGroup.setId(createdRecipeGroup.getId());
             }
