@@ -19,12 +19,23 @@ public class RecipeService {
     @Autowired
     RecipeRepository recipeRepository;
 
+    @Autowired
+    RecipeGroupService recipeGroupService;
+
     public Recipe createNewRecipe(Recipe newRecipe) {
         for (var ingredientNeed : newRecipe.getNeededIngredients()) {
             var ingredient = ingredientNeed.getIngredient();
             if (ingredient.getId() == null) {
                 // Convenience api which creates ingredients
                 ingredientNeed.setIngredient(ingredientRepository.save(ingredient));
+            }
+        }
+
+        for (var recipeGroup : newRecipe.getRecipeGroups()) {
+            if (recipeGroup.getId() == null) {
+                // Convenience api which creates recipe groups
+                var createdRecipeGroup = recipeGroupService.createRecipeGroup(recipeGroup);
+                recipeGroup.setId(createdRecipeGroup.getId());
             }
         }
         return recipeRepository.save(newRecipe);
