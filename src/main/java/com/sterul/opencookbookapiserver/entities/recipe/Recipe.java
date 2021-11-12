@@ -8,6 +8,7 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
@@ -37,7 +38,7 @@ public class Recipe {
 
     private int servings;
 
-    @OneToMany
+    @ManyToMany
     private List<RecipeGroup> recipeGroups;
 
     public List<RecipeGroup> getRecipeGroups() {
