@@ -65,8 +65,8 @@ public class RecipeController extends BaseController{
             throw new NotAuthorizedException();
         }
         return recipeRepository.findById(id).map(existingRecipe -> {
-            existingRecipe.setTitle(recipeUpdate.getTitle());
             recipeUpdate.setId(existingRecipe.getId());
+            recipeUpdate.setOwner(existingRecipe.getOwner());
             return recipeRepository.save(recipeUpdate);
         }).orElseThrow();
 
