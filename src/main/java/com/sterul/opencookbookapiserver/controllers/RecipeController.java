@@ -1,12 +1,12 @@
 package com.sterul.opencookbookapiserver.controllers;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 import com.sterul.opencookbookapiserver.controllers.exceptions.NotAuthorizedException;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
+import com.sterul.opencookbookapiserver.services.RecipeGroupService;
 import com.sterul.opencookbookapiserver.services.RecipeImportService;
 import com.sterul.opencookbookapiserver.services.RecipeService;
 import com.sterul.opencookbookapiserver.services.recipeimport.ImportNotSupportedException;
@@ -35,6 +35,9 @@ public class RecipeController extends BaseController{
 
     @Autowired
     private RecipeService recipeService;
+
+    @Autowired
+    private RecipeGroupService recipeGroupService;
 
     @GetMapping("")
     List<Recipe> searchRecipe(@RequestParam(required = false) String searchString) {
@@ -67,6 +70,15 @@ public class RecipeController extends BaseController{
         return recipeRepository.findById(id).map(existingRecipe -> {
             recipeUpdate.setId(existingRecipe.getId());
             recipeUpdate.setOwner(existingRecipe.getOwner());
+
+            for (var recipeGroup : recipeUpdate.getRecipeGroups()) {
+                if (recipeGroup.getId() == null) {
+                    // Convenience api which creates recipe groups
+                    recipeGroup.setOwner(recipeUpdate.getOwner());
+                    var createdRecipeGroup = recipeGroupService.createRecipeGroup(recipeGroup);
+                    recipeGroup.setId(createdRecipeGroup.getId());
+                }
+            }
             return recipeRepository.save(recipeUpdate);
         }).orElseThrow();
 
