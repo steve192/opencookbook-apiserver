@@ -9,6 +9,7 @@ import java.nio.file.StandardCopyOption;
 
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.repositories.RecipeImageRepository;
+import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,5 +71,12 @@ public class RecipeImageService {
     public byte[] getImage(String uuid) throws IOException {
         var path = Paths.get(uploadDir).resolve(uuid);
         return Files.readAllBytes(path);
+    }
+
+    public void deleteImage(String uuid) throws IOException {
+        recipeImageRepository.deleteById(uuid);
+        Path uploadPath = Paths.get(uploadDir);
+
+        Files.delete(uploadPath.resolve(uuid));
     }
 }

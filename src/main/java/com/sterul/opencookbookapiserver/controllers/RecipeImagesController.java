@@ -12,6 +12,7 @@ import com.sterul.opencookbookapiserver.services.RecipeImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,7 +29,8 @@ public class RecipeImagesController {
     RecipeImageService recipeImageService;
 
     @GetMapping(value = "/{uuid}", produces = MediaType.IMAGE_JPEG_VALUE)
-    ResponseEntity<byte[]> getRecipeImage(@PathVariable String uuid, HttpServletResponse response) throws NoSuchElementException {
+    ResponseEntity<byte[]> getRecipeImage(@PathVariable String uuid, HttpServletResponse response)
+            throws NoSuchElementException {
         byte[] imageData;
         try {
             imageData = recipeImageService.getImage(uuid);
@@ -42,11 +44,18 @@ public class RecipeImagesController {
                 .body(imageData);
     }
 
-    
-
     @PostMapping("")
     public RecipeImage uploadRecipeImage(@RequestParam("image") MultipartFile multipartFile)
             throws IOException, IllegalFiletypeException {
         return recipeImageService.saveNewImage(multipartFile.getInputStream(), multipartFile.getSize());
+    }
+
+    @DeleteMapping("/{uuid}")
+    public void deleteImage(@PathVariable String uuid) throws NoSuchElementException {
+        try {
+            recipeImageService.deleteImage(uuid);
+        } catch (IOException e) {
+            throw new NoSuchElementException();
+        }
     }
 }
