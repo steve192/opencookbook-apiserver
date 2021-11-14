@@ -60,7 +60,7 @@ public class ChefkochImporter implements IRecipeImporter {
         extractPreparationSteps(importRecipe, publicRecipe);
 
         try {
-            extractAndSaveImages(importRecipe, recipeId, publicRecipe);
+            extractAndSaveImages(importRecipe, recipeId, publicRecipe, owner);
         } catch (IOException e) {
             throw new RecipeImportFailedException();
         }
@@ -93,8 +93,8 @@ public class ChefkochImporter implements IRecipeImporter {
         }
     }
 
-    private void extractAndSaveImages(Recipe importedRecipe, String recipeId, ChefkochPublicRecipe publicRecipe)
-            throws IOException, ClientProtocolException {
+    private void extractAndSaveImages(Recipe importedRecipe, String recipeId, ChefkochPublicRecipe publicRecipe,
+            User owner) throws IOException, ClientProtocolException {
         importedRecipe.setImages(new ArrayList<RecipeImage>());
         for (var image : publicRecipe.recipeImages) {
             var request2 = new HttpGet(
@@ -103,7 +103,7 @@ public class ChefkochImporter implements IRecipeImporter {
 
             try {
                 var importImage = recipeImageService.saveNewImage(response2.getEntity().getContent(),
-                        response2.getEntity().getContentLength());
+                        response2.getEntity().getContentLength(), owner);
                 importedRecipe.getImages().add(importImage);
             } catch (UnsupportedOperationException | IllegalFiletypeException e) {
                 // Images cannot be added, ignore
@@ -118,7 +118,8 @@ public class ChefkochImporter implements IRecipeImporter {
     }
 
     private void extractPreparationSteps(Recipe importedRecipe, ChefkochPublicRecipe publicRecipe) {
-        // Depending on which os the recipe was created it contains \n or \r\n line breaks
+        // Depending on which os the recipe was created it contains \n or \r\n line
+        // breaks
         var instructionString = publicRecipe.recipe.instructions.replace("\r", "");
         var possibleRecipeSteps = instructionString.split("\n");
         if (possibleRecipeSteps.length == 0) {

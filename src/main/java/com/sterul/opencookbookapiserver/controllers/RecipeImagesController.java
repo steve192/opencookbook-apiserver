@@ -5,6 +5,7 @@ import java.util.NoSuchElementException;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.sterul.opencookbookapiserver.controllers.exceptions.NotAuthorizedException;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
 import com.sterul.opencookbookapiserver.services.RecipeImageService;
@@ -23,14 +24,19 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1/recipes-images")
-public class RecipeImagesController {
+public class RecipeImagesController extends BaseController {
 
     @Autowired
     RecipeImageService recipeImageService;
 
     @GetMapping(value = "/{uuid}", produces = MediaType.IMAGE_JPEG_VALUE)
     ResponseEntity<byte[]> getRecipeImage(@PathVariable String uuid, HttpServletResponse response)
-            throws NoSuchElementException {
+            throws NoSuchElementException, NotAuthorizedException {
+
+        if (!recipeImageService.hasAccessPermissionToRecipeGroup(uuid, getLoggedInUser())) {
+            throw new NotAuthorizedException();
+        }
+
         byte[] imageData;
         try {
             imageData = recipeImageService.getImage(uuid);
@@ -47,11 +53,15 @@ public class RecipeImagesController {
     @PostMapping("")
     public RecipeImage uploadRecipeImage(@RequestParam("image") MultipartFile multipartFile)
             throws IOException, IllegalFiletypeException {
-        return recipeImageService.saveNewImage(multipartFile.getInputStream(), multipartFile.getSize());
+        return recipeImageService.saveNewImage(multipartFile.getInputStream(), multipartFile.getSize(), getLoggedInUser());
     }
 
     @DeleteMapping("/{uuid}")
-    public void deleteImage(@PathVariable String uuid) throws NoSuchElementException {
+    public void deleteImage(@PathVariable String uuid) throws NoSuchElementException, NotAuthorizedException {
+        if (!recipeImageService.hasAccessPermissionToRecipeGroup(uuid, getLoggedInUser())) {
+            throw new NotAuthorizedException();
+        }
+
         try {
             recipeImageService.deleteImage(uuid);
         } catch (IOException e) {

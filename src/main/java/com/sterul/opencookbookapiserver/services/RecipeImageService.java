@@ -8,8 +8,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
+import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.repositories.RecipeImageRepository;
-import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class RecipeImageService {
     @Value("${opencookbook.images.maximum-size}")
     private long maximumImageSize;
 
-    public RecipeImage saveNewImage(InputStream inputStream, long expectedSize)
+    public RecipeImage saveNewImage(InputStream inputStream, long expectedSize, User owner)
             throws IOException, IllegalFiletypeException {
         Path uploadPath = Paths.get(uploadDir);
 
@@ -45,6 +45,7 @@ public class RecipeImageService {
         }
 
         var recipeImage = new RecipeImage();
+        recipeImage.setOwner(owner);
         recipeImage = recipeImageRepository.save(recipeImage);
 
         Path filePath = uploadPath.resolve(recipeImage.getUuid());
@@ -66,6 +67,11 @@ public class RecipeImageService {
         // }
 
         // return isImage;
+    }
+
+    public boolean hasAccessPermissionToRecipeGroup(String imageUUID, User user) {
+        var image = recipeImageRepository.findById(imageUUID).get();
+        return image.getOwner().getUserId().equals(user.getUserId());
     }
 
     public byte[] getImage(String uuid) throws IOException {
