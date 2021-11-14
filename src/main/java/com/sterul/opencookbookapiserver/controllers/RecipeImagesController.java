@@ -36,7 +36,7 @@ public class RecipeImagesController {
             throw new NoSuchElementException();
         }
 
-        response.setHeader("Cache-Control", "no-transform, public, max-age=86400");
+        response.setHeader("Cache-Control", "no-transform, private, max-age=86400");
         return ResponseEntity.ok()
                 // .contentType(MediaType.IMAGE_JPEG)
                 .body(imageData);
