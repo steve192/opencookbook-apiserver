@@ -3,6 +3,8 @@ package com.sterul.opencookbookapiserver.controllers;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
+import javax.servlet.http.HttpServletResponse;
+
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
 import com.sterul.opencookbookapiserver.services.RecipeImageService;
@@ -26,7 +28,7 @@ public class RecipeImagesController {
     RecipeImageService recipeImageService;
 
     @GetMapping(value = "/{uuid}", produces = MediaType.IMAGE_JPEG_VALUE)
-    ResponseEntity<byte[]> getRecipeImage(@PathVariable String uuid) throws NoSuchElementException {
+    ResponseEntity<byte[]> getRecipeImage(@PathVariable String uuid, HttpServletResponse response) throws NoSuchElementException {
         byte[] imageData;
         try {
             imageData = recipeImageService.getImage(uuid);
@@ -34,6 +36,7 @@ public class RecipeImagesController {
             throw new NoSuchElementException();
         }
 
+        response.setHeader("Cache-Control", "no-transform, public, max-age=86400");
         return ResponseEntity.ok()
                 // .contentType(MediaType.IMAGE_JPEG)
                 .body(imageData);
