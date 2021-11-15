@@ -2,6 +2,8 @@ package com.sterul.opencookbookapiserver.controllers;
 
 import java.util.List;
 
+import javax.websocket.server.PathParam;
+
 import com.sterul.opencookbookapiserver.controllers.exceptions.NotAuthorizedException;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.services.RecipeGroupService;
@@ -9,6 +11,7 @@ import com.sterul.opencookbookapiserver.services.RecipeGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,7 +38,7 @@ public class RecipeGroupController extends BaseController {
     }
 
     @PutMapping("/{id}")
-    public RecipeGroup change(@RequestParam Long id, @RequestBody RecipeGroup updatedRecipeGroup)
+    public RecipeGroup change(@PathVariable Long id, @RequestBody RecipeGroup updatedRecipeGroup)
             throws NotAuthorizedException {
 
         if (!recipeGroupService.hasAccessPermissionToRecipeGroup(id, getLoggedInUser())) {
@@ -45,7 +48,7 @@ public class RecipeGroupController extends BaseController {
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@RequestParam Long id) throws NotAuthorizedException {
+    public void delete(@PathVariable Long id) throws NotAuthorizedException {
         if (!recipeGroupService.hasAccessPermissionToRecipeGroup(id, getLoggedInUser())) {
             throw new NotAuthorizedException();
         }
