@@ -15,6 +15,9 @@ public class RecipeGroupService {
     @Autowired
     private RecipeGroupRepository recipeGroupRepository;
 
+    @Autowired
+    private RecipeService recipeService;
+
     public RecipeGroup createRecipeGroup(RecipeGroup recipeGroup) {
         return recipeGroupRepository.save(recipeGroup);
     }
@@ -27,6 +30,15 @@ public class RecipeGroupService {
     }
 
     public void deleteRecipeGroup(Long recipeGroupId) {
+        var recipeGroup = recipeGroupRepository.getOne(recipeGroupId);
+        var recipesToUnassignGroup = recipeService.getRecipesByRecipeGroup(recipeGroup);
+
+        //TODO: Replace clean with specific group if multi groups are implemented
+        recipesToUnassignGroup.forEach(recipe -> {
+            recipe.getRecipeGroups().clear();
+            recipeService.updateSingleRecipe(recipe);
+        });
+
         recipeGroupRepository.deleteById(recipeGroupId);
     }
 

@@ -67,20 +67,7 @@ public class RecipeController extends BaseController{
         if (!recipeService.hasAccessPermissionToRecipe(id, getLoggedInUser())) {
             throw new NotAuthorizedException();
         }
-        return recipeRepository.findById(id).map(existingRecipe -> {
-            recipeUpdate.setId(existingRecipe.getId());
-            recipeUpdate.setOwner(existingRecipe.getOwner());
-
-            for (var recipeGroup : recipeUpdate.getRecipeGroups()) {
-                if (recipeGroup.getId() == null) {
-                    // Convenience api which creates recipe groups
-                    recipeGroup.setOwner(recipeUpdate.getOwner());
-                    var createdRecipeGroup = recipeGroupService.createRecipeGroup(recipeGroup);
-                    recipeGroup.setId(createdRecipeGroup.getId());
-                }
-            }
-            return recipeRepository.save(recipeUpdate);
-        }).orElseThrow();
+        return recipeService.updateSingleRecipe(recipeUpdate);
 
     }
 

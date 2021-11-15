@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
+import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 
@@ -53,6 +54,27 @@ public class RecipeService {
     public boolean hasAccessPermissionToRecipe(Long recipeId, User user) {
         var recipe = recipeRepository.findById(recipeId).get();
         return recipe.getOwner().getUserId().equals(user.getUserId());
+    }
+
+    public List<Recipe> getRecipesByRecipeGroup(RecipeGroup recipeGroup) {
+        return recipeRepository.findByRecipeGroups(recipeGroup);
+    }
+
+    public Recipe updateSingleRecipe(Recipe recipeUpdate) {
+        return recipeRepository.findById(recipeUpdate.getId()).map(existingRecipe -> {
+            recipeUpdate.setId(existingRecipe.getId());
+            recipeUpdate.setOwner(existingRecipe.getOwner());
+
+            for (var recipeGroup : recipeUpdate.getRecipeGroups()) {
+                if (recipeGroup.getId() == null) {
+                    // Convenience api which creates recipe groups
+                    recipeGroup.setOwner(recipeUpdate.getOwner());
+                    var createdRecipeGroup = recipeGroupService.createRecipeGroup(recipeGroup);
+                    recipeGroup.setId(createdRecipeGroup.getId());
+                }
+            }
+            return recipeRepository.save(recipeUpdate);
+        }).orElseThrow();
     }
 
 }
