@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/recipes")
-public class RecipeController extends BaseController{
+public class RecipeController extends BaseController {
     // TODO: Move things to recipe service
     @Autowired
     private RecipeRepository recipeRepository;
@@ -50,6 +50,9 @@ public class RecipeController extends BaseController{
     @PostMapping("")
     Recipe newRecipe(@RequestBody Recipe newRecipe) {
         newRecipe.setOwner(getLoggedInUser());
+        if (newRecipe.getServings() <= 0) {
+            newRecipe.setServings(1);
+        }
         return recipeService.createNewRecipe(newRecipe);
     }
 
