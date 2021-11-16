@@ -49,17 +49,17 @@ public class DevelopmentDatabase {
 
             this.user = userDetailsService.createUser("1", "1");
 
-            saveRecipeGroup("Test group");
-            saveRecipe(
-                "Demo recipe 2",
-                Arrays.asList("Do stuff", "Do more stuff", "Do very long stuff that takes a lot of time\nthen be happen when you are done\nok?", "Be done and happy", "very happy"),
-                Arrays.asList(
-                    createIngredientNeed("Eatable stuff", 3f, "Stück"), 
-                    createIngredientNeed("Healthy stuff", 3f, "g"),
-                    createIngredientNeed("Healthy stuff2", 3f, "g"),
-                    createIngredientNeed("Healthy stuff3", 3f, "g"),
-                    createIngredientNeed("Healthy stuff4", 3f, "g"))
-            );
+            // saveRecipeGroup("Test group");
+            // saveRecipe(
+            //     "Demo recipe 2",
+            //     Arrays.asList("Do stuff", "Do more stuff", "Do very long stuff that takes a lot of time\nthen be happen when you are done\nok?", "Be done and happy", "very happy"),
+            //     Arrays.asList(
+            //         createIngredientNeed("Eatable stuff", 3f, "Stück"), 
+            //         createIngredientNeed("Healthy stuff", 3f, "g"),
+            //         createIngredientNeed("Healthy stuff2", 3f, "g"),
+            //         createIngredientNeed("Healthy stuff3", 3f, "g"),
+            //         createIngredientNeed("Healthy stuff4", 3f, "g"))
+            // );
 
 
 
