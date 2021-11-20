@@ -10,6 +10,9 @@ import com.sterul.opencookbookapiserver.entities.account.User;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import lombok.Getter;
+import lombok.Setter;
+
 @Entity
 public class RecipeImage {
     
@@ -19,26 +22,15 @@ public class RecipeImage {
         name = "UUID",
         strategy = "org.hibernate.id.UUIDGenerator"
     )
+    @Getter
+    @Setter
     private String uuid;
 
     @JsonIgnore
     @ManyToOne
+    @Getter
+    @Setter
     private User owner;
 
-    public String getUuid() {
-        return uuid;
-    }
-
-    public User getOwner() {
-        return owner;
-    }
-
-    public void setOwner(User owner) {
-        this.owner = owner;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
 
 }

@@ -6,39 +6,25 @@ import javax.persistence.Id;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.Getter;
+import lombok.Setter;
+
 @Entity
 public class User {
 
     @Id
     @GeneratedValue
+    @Getter
+    @Setter
     private Long userId;
+    @Getter
+    @Setter
     private String emailAddress;
 
     @JsonIgnore
+    @Getter
+    @Setter
     private String passwordHash;
 
-    public Long getUserId() {
-        return userId;
-    }
-
-    public String getPasswordHash() {
-        return passwordHash;
-    }
-
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public String getEmailAddress() {
-        return emailAddress;
-    }
-
-    public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
-    }
 
 }
