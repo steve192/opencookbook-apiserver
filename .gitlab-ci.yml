@@ -10,7 +10,7 @@ maven-build:
   image: maven:3-jdk-11
   stage: build
   script: 
-    - "mvn clean package"
+    - "mvn clean package -X"
   artifacts:
     paths:
       - target/*.jar
