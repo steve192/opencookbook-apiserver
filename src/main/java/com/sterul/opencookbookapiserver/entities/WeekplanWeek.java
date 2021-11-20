@@ -14,49 +14,36 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 @Entity
+@Data
 public class WeekplanWeek {
     @Id
     @GeneratedValue
-    @Getter
-    @Setter
     private Long id;
 
-    @Getter
-    @Setter
     private int year;
-    @Getter
-    @Setter
     private int weekNumber;
 
     @ManyToOne
     @JsonIgnore
-    @Getter
-    @Setter
     private User owner;
 
     @OneToMany(cascade = CascadeType.ALL)
-    @Getter
-    @Setter
     private List<WeekplanDay> weekDays;
 
     /**
      * WeekplanDay
      */
     @Entity
+    @Data
     private class WeekplanDay {
         @Id
         @GeneratedValue
-        @Getter
-        @Setter
         private Long id;
 
         @ManyToMany
-        @Getter
-        @Setter
         private List<Recipe> recipes;
 
 

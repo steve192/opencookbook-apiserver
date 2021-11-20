@@ -10,10 +10,10 @@ import com.sterul.opencookbookapiserver.entities.account.User;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 @Entity
+@Data
 public class RecipeImage {
     
     @Id
@@ -22,14 +22,10 @@ public class RecipeImage {
         name = "UUID",
         strategy = "org.hibernate.id.UUIDGenerator"
     )
-    @Getter
-    @Setter
     private String uuid;
 
     @JsonIgnore
     @ManyToOne
-    @Getter
-    @Setter
     private User owner;
 
 

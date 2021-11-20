@@ -5,28 +5,20 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 @Entity
+@Data
 public class IngredientNeed {
 
     @Id
     @GeneratedValue
-    @Getter
-    @Setter
     private Long id;
 
     @ManyToOne
-    @Getter
-    @Setter
     private Ingredient ingredient;
 
-    @Getter
-    @Setter
     private Float amount;
-    @Getter
-    @Setter
     private String unit;
 
 

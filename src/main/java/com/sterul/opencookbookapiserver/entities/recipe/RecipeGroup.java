@@ -8,25 +8,19 @@ import javax.persistence.ManyToOne;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sterul.opencookbookapiserver.entities.account.User;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 @Entity
+@Data
 public class RecipeGroup {
     @Id
     @GeneratedValue
-    @Getter
-    @Setter
     private Long id;
 
-    @Getter
-    @Setter
     private String title;
 
     @ManyToOne
     @JsonIgnore
-    @Getter
-    @Setter
     private User owner;
 
 }

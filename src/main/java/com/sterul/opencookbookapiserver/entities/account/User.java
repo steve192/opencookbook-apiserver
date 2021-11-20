@@ -6,24 +6,18 @@ import javax.persistence.Id;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 @Entity
+@Data
 public class User {
 
     @Id
     @GeneratedValue
-    @Getter
-    @Setter
     private Long userId;
-    @Getter
-    @Setter
     private String emailAddress;
 
     @JsonIgnore
-    @Getter
-    @Setter
     private String passwordHash;
 
 
