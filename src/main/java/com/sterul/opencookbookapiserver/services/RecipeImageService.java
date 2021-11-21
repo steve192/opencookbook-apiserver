@@ -22,10 +22,10 @@ public class RecipeImageService {
     @Autowired
     RecipeImageRepository recipeImageRepository;
 
-    @Value("${opencookbook.images.upload-dir}")
+    @Value("${opencookbook.uploadDir}")
     private String uploadDir;
 
-    @Value("${opencookbook.images.maximum-size}")
+    @Value("${opencookbook.maxImageSize}")
     private long maximumImageSize;
 
     public RecipeImage saveNewImage(InputStream inputStream, long expectedSize, User owner)
