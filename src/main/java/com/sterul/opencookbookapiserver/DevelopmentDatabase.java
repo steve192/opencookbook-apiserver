@@ -47,7 +47,7 @@ public class DevelopmentDatabase {
             //     Arrays.asList(createIngredientNeed("Eatable stuff", 3, "Stück"), createIngredientNeed("Healthy stuff", 3, "g"))
             // );
 
-            this.user = userDetailsService.createUser("1", "1");
+            // this.user = userDetailsService.createUser("1", "1");
 
             // saveRecipeGroup("Test group");
             // saveRecipe(
