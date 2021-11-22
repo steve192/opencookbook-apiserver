@@ -30,6 +30,7 @@ public class WeekplanController extends BaseController {
     @PutMapping("/{date}")
     public WeekplanDay createAndUpdate(@PathVariable @DateTimeFormat(pattern = "yyy-MM-dd") Date date) {
         //TODO: Implement
+        return new WeekplanDay();
     }
 
 }
