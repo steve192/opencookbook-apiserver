@@ -40,7 +40,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private PasswordEncoder passwordEncoder;
 
     private static final String[] AUTH_WHITELIST = { "/api/v1/users/signup", "/api/v1/users/login", "/swagger-ui/*",
-            "/v3/api-docs", "/v3/api-docs/*", "/api-doc", "/h2-console/*" };
+             "/v3/api-docs/*", "/api-docs*", "/api-docs/*", "/h2-console/*" };
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
