@@ -2,6 +2,7 @@ package com.sterul.opencookbookapiserver.services;
 
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import com.sterul.opencookbookapiserver.entities.WeekplanDay;
 import com.sterul.opencookbookapiserver.entities.account.User;
@@ -19,4 +20,21 @@ public class WeekplanService {
     public List<WeekplanDay> getWeekplanDaysBetweenTime(Date startTime, Date endTime, User owner) {
         return weekplanDayRepository.findAllByDayBetweenAndOwner(startTime, endTime, owner);
     }
+
+    public WeekplanDay getWeekplanDayByDate(Date date, User owner) throws NoSuchElementException {
+        var weekplanDay = weekplanDayRepository.findSingleByDayAndOwner(date, owner);
+        if (weekplanDay == null) {
+            throw new NoSuchElementException();
+        }
+        return weekplanDay;
+    }
+
+    public WeekplanDay createWeekplanDay(WeekplanDay weekplanDay) {
+        return weekplanDayRepository.save(weekplanDay);
+    }
+
+    public WeekplanDay updateWeekplanDay(WeekplanDay weekplanDay) {
+        return weekplanDayRepository.save(weekplanDay);
+    }
+
 }

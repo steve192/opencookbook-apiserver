@@ -2,6 +2,7 @@ package com.sterul.opencookbookapiserver.controllers;
 
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import com.sterul.opencookbookapiserver.entities.WeekplanDay;
 import com.sterul.opencookbookapiserver.services.WeekplanService;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @Controller
 @RequestMapping("/api/v1/weekplan")
@@ -28,9 +31,23 @@ public class WeekplanController extends BaseController {
     }
 
     @PutMapping("/{date}")
-    public WeekplanDay createAndUpdate(@PathVariable @DateTimeFormat(pattern = "yyy-MM-dd") Date date) {
-        //TODO: Implement
-        return new WeekplanDay();
+    public WeekplanDay createAndUpdate(@PathVariable @DateTimeFormat(pattern = "yyy-MM-dd") Date date,
+            @RequestBody WeekplanDay weekplanDayPut) {
+
+        WeekplanDay changedWeekplanDay;
+        try {
+            var existingWeekplanDay = weekplanService.getWeekplanDayByDate(date, getLoggedInUser());
+            weekplanDayPut.setId(existingWeekplanDay.getId());
+            weekplanDayPut.setDay(date);
+            weekplanDayPut.setOwner(existingWeekplanDay.getOwner());
+            changedWeekplanDay = weekplanService.updateWeekplanDay(weekplanDayPut);
+        } catch (NoSuchElementException e) {
+            weekplanDayPut.setOwner(getLoggedInUser());
+            weekplanDayPut.setDay(date);
+            changedWeekplanDay = weekplanService.createWeekplanDay(weekplanDayPut);
+        }
+
+        return changedWeekplanDay;
     }
 
 }

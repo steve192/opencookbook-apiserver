@@ -10,4 +10,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface WeekplanDayRepository extends JpaRepository<WeekplanDay, Long> {
     public List<WeekplanDay> findAllByDayBetweenAndOwner(Date dayStart, Date dayEnd, User owner);
+    public WeekplanDay findSingleByDayAndOwner(Date day, User owner);
 }
