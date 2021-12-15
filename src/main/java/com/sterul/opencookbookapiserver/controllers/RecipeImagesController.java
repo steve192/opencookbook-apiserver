@@ -9,8 +9,10 @@ import com.sterul.opencookbookapiserver.controllers.exceptions.NotAuthorizedExce
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
 import com.sterul.opencookbookapiserver.services.RecipeImageService;
+import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,9 +33,9 @@ public class RecipeImagesController extends BaseController {
 
     @GetMapping(value = "/{uuid}", produces = MediaType.IMAGE_JPEG_VALUE)
     ResponseEntity<byte[]> getRecipeImage(@PathVariable String uuid, HttpServletResponse response)
-            throws NoSuchElementException, NotAuthorizedException {
+            throws ElementNotFound, NotAuthorizedException {
 
-        if (!recipeImageService.hasAccessPermissionToRecipeGroup(uuid, getLoggedInUser())) {
+        if (!recipeImageService.hasAccessPermissionToRecipeImage(uuid, getLoggedInUser())) {
             throw new NotAuthorizedException();
         }
 
@@ -41,7 +43,7 @@ public class RecipeImagesController extends BaseController {
         try {
             imageData = recipeImageService.getImage(uuid);
         } catch (IOException e) {
-            throw new NoSuchElementException();
+            throw new ElementNotFound();
         }
 
         response.setHeader("Cache-Control", "no-transform, private, max-age=86400");
@@ -57,15 +59,15 @@ public class RecipeImagesController extends BaseController {
     }
 
     @DeleteMapping("/{uuid}")
-    public void deleteImage(@PathVariable String uuid) throws NoSuchElementException, NotAuthorizedException {
-        if (!recipeImageService.hasAccessPermissionToRecipeGroup(uuid, getLoggedInUser())) {
+    public void deleteImage(@PathVariable String uuid) throws ElementNotFound, NotAuthorizedException {
+        if (!recipeImageService.hasAccessPermissionToRecipeImage(uuid, getLoggedInUser())) {
             throw new NotAuthorizedException();
         }
 
         try {
             recipeImageService.deleteImage(uuid);
         } catch (IOException e) {
-            throw new NoSuchElementException();
+            throw new ElementNotFound();
         }
     }
 }

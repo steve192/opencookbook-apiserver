@@ -6,15 +6,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.NoSuchElementException;
 
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.repositories.RecipeImageRepository;
+import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException.NotFound;
 
 @Service
 public class RecipeImageService {
@@ -69,9 +72,12 @@ public class RecipeImageService {
         // return isImage;
     }
 
-    public boolean hasAccessPermissionToRecipeGroup(String imageUUID, User user) {
-        var image = recipeImageRepository.findById(imageUUID).get();
-        return image.getOwner().getUserId().equals(user.getUserId());
+    public boolean hasAccessPermissionToRecipeImage(String imageUUID, User user) throws ElementNotFound{
+        var image = recipeImageRepository.findById(imageUUID);
+        if (!image.isPresent()) {
+            throw new ElementNotFound();
+        }
+        return image.get().getOwner().getUserId().equals(user.getUserId());
     }
 
     public byte[] getImage(String uuid) throws IOException {

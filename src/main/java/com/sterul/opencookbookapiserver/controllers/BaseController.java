@@ -12,7 +12,7 @@ public abstract class BaseController {
 
     @Autowired
     private UserRepository userRepository;
-    
+
     protected User getLoggedInUser() {
         var userEmailAddress = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByEmailAddress(userEmailAddress);
