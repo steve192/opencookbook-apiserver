@@ -7,6 +7,7 @@ import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
+import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -75,6 +76,14 @@ public class RecipeService {
             }
             return recipeRepository.save(recipeUpdate);
         }).orElseThrow();
+    }
+
+    public Recipe getRecipeById(Long id) throws ElementNotFound {
+        var recipe = recipeRepository.findById(id);
+        if (!recipe.isPresent()) {
+            throw new ElementNotFound();
+        }
+        return recipe.get();
     }
 
 }
