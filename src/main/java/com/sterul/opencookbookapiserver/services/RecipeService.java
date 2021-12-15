@@ -52,9 +52,12 @@ public class RecipeService {
         recipeRepository.deleteById(id);
     }
 
-    public boolean hasAccessPermissionToRecipe(Long recipeId, User user) {
-        var recipe = recipeRepository.findById(recipeId).get();
-        return recipe.getOwner().getUserId().equals(user.getUserId());
+    public boolean hasAccessPermissionToRecipe(Long recipeId, User user) throws ElementNotFound {
+        var recipe = recipeRepository.findById(recipeId);
+        if(!recipe.isPresent()) {
+            throw new ElementNotFound();
+        }
+        return recipe.get().getOwner().getUserId().equals(user.getUserId());
     }
 
     public List<Recipe> getRecipesByRecipeGroup(RecipeGroup recipeGroup) {

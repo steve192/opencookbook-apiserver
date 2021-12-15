@@ -9,6 +9,7 @@ import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 import com.sterul.opencookbookapiserver.services.RecipeGroupService;
 import com.sterul.opencookbookapiserver.services.RecipeImportService;
 import com.sterul.opencookbookapiserver.services.RecipeService;
+import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.recipeimport.ImportNotSupportedException;
 import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImportFailedException;
 
@@ -57,7 +58,7 @@ public class RecipeController extends BaseController {
     }
 
     @GetMapping("/{id}")
-    Recipe single(@PathVariable Long id) throws NotAuthorizedException {
+    Recipe single(@PathVariable Long id) throws NotAuthorizedException, ElementNotFound {
         if (!recipeService.hasAccessPermissionToRecipe(id, getLoggedInUser())) {
             throw new NotAuthorizedException();
         }
@@ -66,7 +67,7 @@ public class RecipeController extends BaseController {
 
     @PutMapping("/{id}")
     Recipe updateRecipe(@PathVariable Long id, @RequestBody Recipe recipeUpdate)
-            throws NoSuchElementException, NotAuthorizedException {
+            throws NoSuchElementException, NotAuthorizedException, ElementNotFound {
         if (!recipeService.hasAccessPermissionToRecipe(id, getLoggedInUser())) {
             throw new NotAuthorizedException();
         }
@@ -75,7 +76,7 @@ public class RecipeController extends BaseController {
     }
 
     @DeleteMapping("/{id}")
-    void deleteRecipe(@PathVariable Long id) throws NotAuthorizedException {
+    void deleteRecipe(@PathVariable Long id) throws NotAuthorizedException, ElementNotFound {
         if (!recipeService.hasAccessPermissionToRecipe(id, getLoggedInUser())) {
             throw new NotAuthorizedException();
         }

@@ -40,28 +40,27 @@ public class WeekplanController extends BaseController {
     public WeekplanDay createAndUpdate(@PathVariable @DateTimeFormat(pattern = "yyy-MM-dd") Date date,
             @RequestBody WeekplanDayPut weekplanDayPut) throws NotAuthorizedException, ElementNotFound {
 
-        WeekplanDay changedWeekplanDay;
+        WeekplanDay weekplanDayEntity;
         try {
-            final var existingWeekplanDay = weekplanService.getWeekplanDayByDate(date, getLoggedInUser());
-            populateWeekplanDayWithRecipes(weekplanDayPut, existingWeekplanDay);
-
-            changedWeekplanDay = weekplanService.updateWeekplanDay(existingWeekplanDay);
+            weekplanDayEntity = weekplanService.getWeekplanDayByDate(date, getLoggedInUser());
+            populateWeekplanDayWithRecipes(weekplanDayPut, weekplanDayEntity);
+            weekplanDayEntity = weekplanService.updateWeekplanDay(weekplanDayEntity);
         } catch (NoSuchElementException e) {
-            final var newWeekplanDay = new WeekplanDay();
-            newWeekplanDay.setRecipes(new ArrayList<>());
-            newWeekplanDay.setOwner(getLoggedInUser());
-            newWeekplanDay.setDay(date);
-            populateWeekplanDayWithRecipes(weekplanDayPut, newWeekplanDay);
+            weekplanDayEntity = new WeekplanDay();
+            weekplanDayEntity.setRecipes(new ArrayList<>());
+            weekplanDayEntity.setOwner(getLoggedInUser());
+            weekplanDayEntity.setDay(date);
+            populateWeekplanDayWithRecipes(weekplanDayPut, weekplanDayEntity);
 
-            changedWeekplanDay = weekplanService.createWeekplanDay(newWeekplanDay);
+            weekplanDayEntity = weekplanService.createWeekplanDay(weekplanDayEntity);
         }
 
-        return changedWeekplanDay;
+        return weekplanDayEntity;
     }
 
     private void populateWeekplanDayWithRecipes(WeekplanDayPut weekplanDayPut, final WeekplanDay newWeekplanDay)
             throws NotAuthorizedException, ElementNotFound {
-                
+
         newWeekplanDay.getRecipes().clear();
         for (Long recipeId : weekplanDayPut.getRecipeIds()) {
             if (!recipeService.hasAccessPermissionToRecipe(recipeId, getLoggedInUser())) {
