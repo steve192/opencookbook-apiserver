@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-
 @Controller
 @RequestMapping("/api/v1/weekplan")
 public class WeekplanController extends BaseController {
@@ -62,6 +61,8 @@ public class WeekplanController extends BaseController {
 
     private void populateWeekplanDayWithRecipes(WeekplanDayPut weekplanDayPut, final WeekplanDay newWeekplanDay)
             throws NotAuthorizedException, ElementNotFound {
+                
+        newWeekplanDay.getRecipes().clear();
         for (Long recipeId : weekplanDayPut.getRecipeIds()) {
             if (!recipeService.hasAccessPermissionToRecipe(recipeId, getLoggedInUser())) {
                 throw new NotAuthorizedException();
