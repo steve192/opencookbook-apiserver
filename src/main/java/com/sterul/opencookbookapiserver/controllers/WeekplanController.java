@@ -7,6 +7,7 @@ import java.util.NoSuchElementException;
 
 import com.sterul.opencookbookapiserver.controllers.exceptions.NotAuthorizedException;
 import com.sterul.opencookbookapiserver.controllers.requests.WeekplanDayPut;
+import com.sterul.opencookbookapiserver.controllers.responses.WeekplanDayResponse;
 import com.sterul.opencookbookapiserver.entities.WeekplanDay;
 import com.sterul.opencookbookapiserver.services.RecipeService;
 import com.sterul.opencookbookapiserver.services.WeekplanService;
@@ -37,7 +38,7 @@ public class WeekplanController extends BaseController {
     }
 
     @PutMapping("/{date}")
-    public WeekplanDay createAndUpdate(@PathVariable @DateTimeFormat(pattern = "yyy-MM-dd") Date date,
+    public WeekplanDayResponse createAndUpdate(@PathVariable @DateTimeFormat(pattern = "yyy-MM-dd") Date date,
             @RequestBody WeekplanDayPut weekplanDayPut) throws NotAuthorizedException, ElementNotFound {
 
         WeekplanDay weekplanDayEntity;
@@ -55,7 +56,20 @@ public class WeekplanController extends BaseController {
             weekplanDayEntity = weekplanService.createWeekplanDay(weekplanDayEntity);
         }
 
-        return weekplanDayEntity;
+        return entityToResponse(weekplanDayEntity);
+    }
+
+    private WeekplanDayResponse entityToResponse(WeekplanDay weekplanDayEntity) {
+        var response = new WeekplanDayResponse();
+        response.setDay(weekplanDayEntity.getDay());
+        response.setRecipes(new ArrayList<>());
+        for (var recipe : weekplanDayEntity.getRecipes()) {
+            var minimalRecipe = response.new MinimalRecipe();
+            minimalRecipe.setId(recipe.getId());
+            minimalRecipe.setTitle(recipe.getTitle());
+            response.getRecipes().add(minimalRecipe);
+        }
+        return response;
     }
 
     private void populateWeekplanDayWithRecipes(WeekplanDayPut weekplanDayPut, final WeekplanDay newWeekplanDay)
