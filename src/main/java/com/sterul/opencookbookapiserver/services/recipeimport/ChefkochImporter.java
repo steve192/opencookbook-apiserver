@@ -7,21 +7,20 @@ import java.util.Arrays;
 import com.google.gson.Gson;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
-import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
-import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
 import com.sterul.opencookbookapiserver.services.RecipeImageService;
 import com.sterul.opencookbookapiserver.services.RecipeService;
 
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import lombok.Data;
 
 @Component
 public class ChefkochImporter implements IRecipeImporter {
@@ -66,7 +65,7 @@ public class ChefkochImporter implements IRecipeImporter {
         }
         extractIngredientNeeds(importRecipe, publicRecipe);
 
-        importRecipe.setRecipeGroups(new ArrayList<RecipeGroup>());
+        importRecipe.setRecipeGroups(new ArrayList<>());
         importRecipe.setOwner(owner);
         recipeService.createNewRecipe(importRecipe);
 
@@ -74,7 +73,7 @@ public class ChefkochImporter implements IRecipeImporter {
     }
 
     private void extractIngredientNeeds(Recipe importedRecipe, ChefkochPublicRecipe publicRecipe) {
-        importedRecipe.setNeededIngredients(new ArrayList<IngredientNeed>());
+        importedRecipe.setNeededIngredients(new ArrayList<>());
         for (var ingredientGroup : publicRecipe.recipe.ingredientGroups) {
             // Ingredient groups are not supported for now, just import all
             for (var ingredient : ingredientGroup.ingredients) {
@@ -94,8 +93,8 @@ public class ChefkochImporter implements IRecipeImporter {
     }
 
     private void extractAndSaveImages(Recipe importedRecipe, String recipeId, ChefkochPublicRecipe publicRecipe,
-            User owner) throws IOException, ClientProtocolException {
-        importedRecipe.setImages(new ArrayList<RecipeImage>());
+            User owner) throws IOException {
+        importedRecipe.setImages(new ArrayList<>());
         for (var image : publicRecipe.recipeImages) {
             var request2 = new HttpGet(
                     "https://api.chefkoch.de/v2/recipes/" + recipeId + "/images/" + image.id + "/crop-960x640");
@@ -135,6 +134,7 @@ public class ChefkochImporter implements IRecipeImporter {
 
         ChefkochRecipe recipe;
 
+        @Data
         private class ChefkochRecipe {
             String title;
             Integer preparationTime;
@@ -149,9 +149,11 @@ public class ChefkochImporter implements IRecipeImporter {
 
             IngredientGroup[] ingredientGroups;
 
+            @Data
             private class IngredientGroup {
                 Ingredient[] ingredients;
 
+                @Data
                 private class Ingredient {
                     String name;
                     String usageInfo;

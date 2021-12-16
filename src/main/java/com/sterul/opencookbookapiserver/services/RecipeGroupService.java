@@ -5,6 +5,7 @@ import java.util.List;
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.repositories.RecipeGroupRepository;
+import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,7 @@ public class RecipeGroupService {
         var recipeGroup = recipeGroupRepository.getOne(recipeGroupId);
         var recipesToUnassignGroup = recipeService.getRecipesByRecipeGroup(recipeGroup);
 
-        //TODO: Replace clean with specific group if multi groups are implemented
+        // TODO: Replace clean with specific group if multi groups are implemented
         recipesToUnassignGroup.forEach(recipe -> {
             recipe.getRecipeGroups().clear();
             recipeService.updateSingleRecipe(recipe);
@@ -42,9 +43,12 @@ public class RecipeGroupService {
         recipeGroupRepository.deleteById(recipeGroupId);
     }
 
-    public boolean hasAccessPermissionToRecipeGroup(Long recipeGroupId, User user) {
-        var recipeGroup = recipeGroupRepository.findById(recipeGroupId).get();
-        return recipeGroup.getOwner().getUserId().equals(user.getUserId());
+    public boolean hasAccessPermissionToRecipeGroup(Long recipeGroupId, User user) throws ElementNotFound {
+        var recipeGroup = recipeGroupRepository.findById(recipeGroupId);
+        if (recipeGroup.isEmpty()) {
+            throw new ElementNotFound();
+        }
+        return recipeGroup.get().getOwner().getUserId().equals(user.getUserId());
     }
 
     public List<RecipeGroup> getRecipeGroupsByOwner(User owner) {

@@ -1,7 +1,6 @@
 package com.sterul.opencookbookapiserver.controllers;
 
 import java.io.IOException;
-import java.util.NoSuchElementException;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -12,7 +11,6 @@ import com.sterul.opencookbookapiserver.services.RecipeImageService;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,7 +30,7 @@ public class RecipeImagesController extends BaseController {
     RecipeImageService recipeImageService;
 
     @GetMapping(value = "/{uuid}", produces = MediaType.IMAGE_JPEG_VALUE)
-    ResponseEntity<byte[]> getRecipeImage(@PathVariable String uuid, HttpServletResponse response)
+    public ResponseEntity<byte[]> getRecipeImage(@PathVariable String uuid, HttpServletResponse response)
             throws ElementNotFound, NotAuthorizedException {
 
         if (!recipeImageService.hasAccessPermissionToRecipeImage(uuid, getLoggedInUser())) {
@@ -55,7 +53,8 @@ public class RecipeImagesController extends BaseController {
     @PostMapping("")
     public RecipeImage uploadRecipeImage(@RequestParam("image") MultipartFile multipartFile)
             throws IOException, IllegalFiletypeException {
-        return recipeImageService.saveNewImage(multipartFile.getInputStream(), multipartFile.getSize(), getLoggedInUser());
+        return recipeImageService.saveNewImage(multipartFile.getInputStream(), multipartFile.getSize(),
+                getLoggedInUser());
     }
 
     @DeleteMapping("/{uuid}")

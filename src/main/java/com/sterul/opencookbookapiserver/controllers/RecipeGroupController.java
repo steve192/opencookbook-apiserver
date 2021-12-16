@@ -2,11 +2,10 @@ package com.sterul.opencookbookapiserver.controllers;
 
 import java.util.List;
 
-import javax.websocket.server.PathParam;
-
 import com.sterul.opencookbookapiserver.controllers.exceptions.NotAuthorizedException;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.services.RecipeGroupService;
+import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -39,7 +37,7 @@ public class RecipeGroupController extends BaseController {
 
     @PutMapping("/{id}")
     public RecipeGroup change(@PathVariable Long id, @RequestBody RecipeGroup updatedRecipeGroup)
-            throws NotAuthorizedException {
+            throws NotAuthorizedException, ElementNotFound {
 
         if (!recipeGroupService.hasAccessPermissionToRecipeGroup(id, getLoggedInUser())) {
             throw new NotAuthorizedException();
@@ -48,7 +46,7 @@ public class RecipeGroupController extends BaseController {
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) throws NotAuthorizedException {
+    public void delete(@PathVariable Long id) throws NotAuthorizedException, ElementNotFound {
         if (!recipeGroupService.hasAccessPermissionToRecipeGroup(id, getLoggedInUser())) {
             throw new NotAuthorizedException();
         }

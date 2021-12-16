@@ -1,6 +1,6 @@
 package com.sterul.opencookbookapiserver.controllers;
 
-
+import com.sterul.opencookbookapiserver.controllers.exceptions.UnauthorizedException;
 import com.sterul.opencookbookapiserver.controllers.requests.UserCreationRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.UserLoginRequest;
 import com.sterul.opencookbookapiserver.controllers.responses.UserLoginResponse;
@@ -21,12 +21,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
 
-    @Autowired
+	@Autowired
 	private AuthenticationManager authenticationManager;
 
 	@Autowired
@@ -35,15 +34,15 @@ public class UserController {
 	@Autowired
 	private UserDetailsServiceImpl userDetailsService;
 
+	@PostMapping("/signup")
+	public User signup(@RequestBody UserCreationRequest userCreationRequest) throws Exception {
+		return userDetailsService.createUser(userCreationRequest.getEmailAddress(), userCreationRequest.getPassword());
+	}
 
-    @PostMapping("/signup")
-    public User signup(@RequestBody UserCreationRequest userCreationRequest) throws Exception {
-        return userDetailsService.createUser(userCreationRequest.getEmailAddress(), userCreationRequest.getPassword());
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<UserLoginResponse> login(@RequestBody UserLoginRequest authenticationRequest) throws Exception {
-        login(authenticationRequest.getEmailAddress(), authenticationRequest.getPassword());
+	@PostMapping("/login")
+	public ResponseEntity<UserLoginResponse> login(@RequestBody UserLoginRequest authenticationRequest)
+			throws Exception {
+		login(authenticationRequest.getEmailAddress(), authenticationRequest.getPassword());
 
 		final UserDetails userDetails = userDetailsService
 				.loadUserByUsername(authenticationRequest.getEmailAddress());
@@ -51,23 +50,19 @@ public class UserController {
 		final String token = jwtTokenUtil.generateToken(userDetails);
 
 		return ResponseEntity.ok(new UserLoginResponse(token));
-    }
+	}
 
-    @GetMapping("/renewToken")
-    public void renewToken() {
-        //TODO: Implement
-    }
+	@GetMapping("/renewToken")
+	public void renewToken() {
+		// TODO: Implement
+	}
 
-    private void login(String username, String password) throws Exception {
+	private void login(String username, String password) throws Exception {
 		try {
 			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-		} catch (DisabledException e) {
-			throw new Exception("USER_DISABLED", e);
-		} catch (BadCredentialsException e) {
-			throw new Exception("INVALID_CREDENTIALS", e);
+		} catch (DisabledException | BadCredentialsException e) {
+			throw new UnauthorizedException();
 		}
 	}
 
-    
-    
 }

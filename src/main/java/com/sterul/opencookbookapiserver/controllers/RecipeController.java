@@ -5,8 +5,6 @@ import java.util.NoSuchElementException;
 
 import com.sterul.opencookbookapiserver.controllers.exceptions.NotAuthorizedException;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
-import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
-import com.sterul.opencookbookapiserver.services.RecipeGroupService;
 import com.sterul.opencookbookapiserver.services.RecipeImportService;
 import com.sterul.opencookbookapiserver.services.RecipeService;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
@@ -27,9 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/recipes")
 public class RecipeController extends BaseController {
-    // TODO: Move things to recipe service
-    @Autowired
-    private RecipeRepository recipeRepository;
 
     @Autowired
     private RecipeImportService recipeImportService;
@@ -37,11 +32,8 @@ public class RecipeController extends BaseController {
     @Autowired
     private RecipeService recipeService;
 
-    @Autowired
-    private RecipeGroupService recipeGroupService;
-
     @GetMapping("")
-    List<Recipe> searchRecipe(@RequestParam(required = false) String searchString) {
+    public List<Recipe> searchRecipe(@RequestParam(required = false) String searchString) {
         // userRepository.findByEmailAddress()
         // recipeService.getRecipesByOwner()
         var user = getLoggedInUser();
@@ -49,7 +41,7 @@ public class RecipeController extends BaseController {
     }
 
     @PostMapping("")
-    Recipe newRecipe(@RequestBody Recipe newRecipe) {
+    public Recipe newRecipe(@RequestBody Recipe newRecipe) {
         newRecipe.setOwner(getLoggedInUser());
         if (newRecipe.getServings() <= 0) {
             newRecipe.setServings(1);
@@ -58,15 +50,15 @@ public class RecipeController extends BaseController {
     }
 
     @GetMapping("/{id}")
-    Recipe single(@PathVariable Long id) throws NotAuthorizedException, ElementNotFound {
+    public Recipe single(@PathVariable Long id) throws NotAuthorizedException, ElementNotFound {
         if (!recipeService.hasAccessPermissionToRecipe(id, getLoggedInUser())) {
             throw new NotAuthorizedException();
         }
-        return recipeRepository.findById(id).get();
+        return recipeService.getRecipeById(id);
     }
 
     @PutMapping("/{id}")
-    Recipe updateRecipe(@PathVariable Long id, @RequestBody Recipe recipeUpdate)
+    public Recipe updateRecipe(@PathVariable Long id, @RequestBody Recipe recipeUpdate)
             throws NoSuchElementException, NotAuthorizedException, ElementNotFound {
         if (!recipeService.hasAccessPermissionToRecipe(id, getLoggedInUser())) {
             throw new NotAuthorizedException();
@@ -76,7 +68,7 @@ public class RecipeController extends BaseController {
     }
 
     @DeleteMapping("/{id}")
-    void deleteRecipe(@PathVariable Long id) throws NotAuthorizedException, ElementNotFound {
+    public void deleteRecipe(@PathVariable Long id) throws NotAuthorizedException, ElementNotFound {
         if (!recipeService.hasAccessPermissionToRecipe(id, getLoggedInUser())) {
             throw new NotAuthorizedException();
         }
@@ -84,7 +76,7 @@ public class RecipeController extends BaseController {
     }
 
     @GetMapping("/import")
-    Recipe importRecipe(@RequestParam String importUrl)
+    public Recipe importRecipe(@RequestParam String importUrl)
             throws ImportNotSupportedException, RecipeImportFailedException {
         var owner = getLoggedInUser();
         return recipeImportService.importRecipe(importUrl, owner);
