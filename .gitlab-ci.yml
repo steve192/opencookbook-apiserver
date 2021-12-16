@@ -37,6 +37,7 @@ sonarqube:
       -Dsonar.scm.revision="$CI_COMMIT_SHA" 
       -Dsonar.scm.disabled=False 
       -Dsonar.projectVersion="$CI_PIPELINE_IID"
+      -Dsonar.java.binaries=./target
 
 package-docker-qa:
   stage: package
