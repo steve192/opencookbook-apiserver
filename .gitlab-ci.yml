@@ -14,12 +14,13 @@ maven-build:
     - "mvn clean package -X"
   artifacts:
     paths:
-      - target/*.jar
+      - target/*
 
 sonarqube:
   stage: test
   only:
   - master
+  needs: ["maven-build"]
   image: sonarsource/sonar-scanner-cli:latest
   allow_failure: true
   variables:
