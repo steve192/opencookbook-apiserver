@@ -3,6 +3,7 @@ variables:
 
 stages:
   - build
+  - test
   - package
   - publish
 
@@ -14,6 +15,23 @@ maven-build:
   artifacts:
     paths:
       - target/*.jar
+
+sonarqube:
+  stage: test
+  only:
+  - master
+  image: sonarsource/sonar-scanner-cli:latest
+  allow_failure: true
+  script:
+    - sonar-scanner 
+      -Dsonar.qualitygate.wait=true 
+      -Dsonar.sources=src 
+      -Dsonar.login="$SONAR_TOKEN" 
+      -Dsonar.projectKey="$CI_PROJECT_NAME" 
+      -Dsonar.links.scm="$CI_PROJECT_URL" 
+      -Dsonar.scm.revision="$CI_COMMIT_SHA" 
+      -Dsonar.scm.disabled=False 
+      -Dsonar.projectVersion="$CI_PIPELINE_IID"
 
 package-docker-qa:
   stage: package
