@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import com.sterul.opencookbookapiserver.controllers.exceptions.NotAuthorizedException;
 import com.sterul.opencookbookapiserver.controllers.requests.WeekplanDayPut;
@@ -32,9 +33,12 @@ public class WeekplanController extends BaseController {
     RecipeService recipeService;
 
     @GetMapping("/{from}/to/{to}")
-    public List<WeekplanDay> getBetweenDates(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date from,
+    public List<WeekplanDayResponse> getBetweenDates(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date from,
             @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date to) {
-        return weekplanService.getWeekplanDaysBetweenTime(from, to, getLoggedInUser());
+        return weekplanService.getWeekplanDaysBetweenTime(from, to, getLoggedInUser()).stream()
+                .map(weekplanDayEntity -> {
+                    return entityToResponse(weekplanDayEntity);
+                }).collect(Collectors.toList());
     }
 
     @PutMapping("/{date}")
