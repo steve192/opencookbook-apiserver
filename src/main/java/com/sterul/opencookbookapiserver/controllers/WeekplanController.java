@@ -67,6 +67,9 @@ public class WeekplanController extends BaseController {
             var minimalRecipe = response.new MinimalRecipe();
             minimalRecipe.setId(recipe.getId());
             minimalRecipe.setTitle(recipe.getTitle());
+            if (!recipe.getImages().isEmpty()) {
+                minimalRecipe.setTitleImageUuid(recipe.getImages().get(0).getUuid());
+            }
             response.getRecipes().add(minimalRecipe);
         }
         return response;

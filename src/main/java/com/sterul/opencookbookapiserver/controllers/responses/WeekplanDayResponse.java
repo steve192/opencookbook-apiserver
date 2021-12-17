@@ -18,5 +18,6 @@ public class WeekplanDayResponse {
     public class MinimalRecipe {
         private Long id;
         private String title;
+        private String titleImageUuid;
     }
 }
