@@ -37,4 +37,8 @@ public class WeekplanService {
         return weekplanDayRepository.save(weekplanDay);
     }
 
+    public List<WeekplanDay> getWeekplanDaysByRecipe(Long id) {
+        return weekplanDayRepository.findAllByRecipes_Id(id);
+    }
+
 }

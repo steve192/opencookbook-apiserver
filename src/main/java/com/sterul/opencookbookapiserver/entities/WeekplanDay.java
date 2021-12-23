@@ -30,7 +30,6 @@ public class WeekplanDay {
     @JsonIgnore
     private User owner;
 
-    
     @ManyToMany
     private List<Recipe> recipes;
 

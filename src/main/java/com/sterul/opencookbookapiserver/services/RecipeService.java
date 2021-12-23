@@ -24,6 +24,9 @@ public class RecipeService {
     @Autowired
     RecipeGroupService recipeGroupService;
 
+    @Autowired
+    WeekplanService weekplanService;
+
     public Recipe createNewRecipe(Recipe newRecipe) {
         for (var ingredientNeed : newRecipe.getNeededIngredients()) {
             var ingredient = ingredientNeed.getIngredient();
@@ -49,12 +52,21 @@ public class RecipeService {
     }
 
     public void deleteRecipe(Long id) {
+        var weekplanDays = weekplanService.getWeekplanDaysByRecipe(id);
+        for (var weekplanDay : weekplanDays) {
+            for (var recipe : weekplanDay.getRecipes()) {
+                if (recipe.getId().equals(id)) {
+                    weekplanDay.getRecipes().remove(recipe);
+                }
+            }
+            weekplanService.updateWeekplanDay(weekplanDay);
+        }
         recipeRepository.deleteById(id);
     }
 
     public boolean hasAccessPermissionToRecipe(Long recipeId, User user) throws ElementNotFound {
         var recipe = recipeRepository.findById(recipeId);
-        if(!recipe.isPresent()) {
+        if (!recipe.isPresent()) {
             throw new ElementNotFound();
         }
         return recipe.get().getOwner().getUserId().equals(user.getUserId());
