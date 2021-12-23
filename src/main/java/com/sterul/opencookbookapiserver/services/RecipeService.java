@@ -54,9 +54,11 @@ public class RecipeService {
     public void deleteRecipe(Long id) {
         var weekplanDays = weekplanService.getWeekplanDaysByRecipe(id);
         for (var weekplanDay : weekplanDays) {
-            for (var recipe : weekplanDay.getRecipes()) {
+            var iterator = weekplanDay.getRecipes().iterator();
+            while (iterator.hasNext()) {
+                var recipe = iterator.next();
                 if (recipe.getId().equals(id)) {
-                    weekplanDay.getRecipes().remove(recipe);
+                    iterator.remove();
                 }
             }
             weekplanService.updateWeekplanDay(weekplanDay);
