@@ -6,6 +6,7 @@ import com.sterul.opencookbookapiserver.controllers.requests.RefreshTokenRequest
 import com.sterul.opencookbookapiserver.controllers.requests.UserCreationRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.UserLoginRequest;
 import com.sterul.opencookbookapiserver.controllers.responses.RefreshTokenResponse;
+import com.sterul.opencookbookapiserver.controllers.responses.UserInfoResponse;
 import com.sterul.opencookbookapiserver.controllers.responses.UserLoginResponse;
 import com.sterul.opencookbookapiserver.entities.RefreshToken;
 import com.sterul.opencookbookapiserver.entities.account.User;
@@ -22,6 +23,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,6 +69,13 @@ public class UserController extends BaseController {
 				.createRefreshTokenForUser(userService.getUserByEmail(userDetails.getUsername())).getToken());
 
 		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("/self")
+	public UserInfoResponse getOwnUserInfo() {
+		var response = new UserInfoResponse();
+		response.setEmail(getLoggedInUser().getEmailAddress());
+		return response;
 	}
 
 	@PostMapping("/refreshToken")
