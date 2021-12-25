@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
+import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.repositories.RecipeImageRepository;
@@ -14,7 +15,6 @@ import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,22 +23,20 @@ public class RecipeImageService {
     @Autowired
     RecipeImageRepository recipeImageRepository;
 
-    @Value("${opencookbook.uploadDir}")
-    private String uploadDir;
-
-    @Value("${opencookbook.maxImageSize}")
-    private long maximumImageSize;
+    @Autowired
+    OpencookbookConfiguration opencookbookConfiguration;
 
     public RecipeImage saveNewImage(InputStream inputStream, long expectedSize, User owner)
             throws IOException, IllegalFiletypeException {
-        Path uploadPath = Paths.get(uploadDir);
+        Path uploadPath = Paths.get(opencookbookConfiguration.getUploadDir());
 
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
 
-        if (expectedSize > maximumImageSize) {
-            throw new FileSizeLimitExceededException("Image too big", expectedSize, maximumImageSize);
+        if (expectedSize > opencookbookConfiguration.getMaxImageSize()) {
+            throw new FileSizeLimitExceededException("Image too big", expectedSize,
+                    opencookbookConfiguration.getMaxImageSize());
         }
 
         if (!isImage(inputStream)) {
@@ -79,13 +77,13 @@ public class RecipeImageService {
     }
 
     public byte[] getImage(String uuid) throws IOException {
-        var path = Paths.get(uploadDir).resolve(uuid);
+        var path = Paths.get(opencookbookConfiguration.getUploadDir()).resolve(uuid);
         return Files.readAllBytes(path);
     }
 
     public void deleteImage(String uuid) throws IOException {
         recipeImageRepository.deleteById(uuid);
-        Path uploadPath = Paths.get(uploadDir);
+        Path uploadPath = Paths.get(opencookbookConfiguration.getUploadDir());
 
         Files.delete(uploadPath.resolve(uuid));
     }

@@ -1,11 +1,15 @@
 package com.sterul.opencookbookapiserver.configurations;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
 import lombok.Getter;
+import lombok.Setter;
 
-@ConfigurationProperties("opencookbook")
+@Configuration
+@ConfigurationProperties(prefix = "opencookbook")
 @Getter
+@Setter
 public class OpencookbookConfiguration {
 
     /**
@@ -14,8 +18,23 @@ public class OpencookbookConfiguration {
     private String uploadDir;
 
     /**
-     * Maximum image size for image uploads
+     * Maximum image size for image uploads in bytes
      */
-    private String maxImageSize;
+    private Long maxImageSize;
+
+    /**
+     * Refresh token validity duration in seconds
+     */
+    private Long refreshTokenDuration;
+
+    /**
+     * JWT token validity duration in seconds
+     */
+    private Long jwtDuration;
+
+    /**
+     * Secret for generating JWT session tokens
+     */
+    private String jwtSecret;
 
 }
