@@ -9,4 +9,4 @@ EXPOSE 8080
 # Secret used to generate session tokens
 ENV JWT_SECRET=default-jwt-secret
 
-ENTRYPOINT ["java","-jar","app.jar", "--opencookbook.jwtSecret", "$JWT_SECRET"]
+ENTRYPOINT ["java","-jar","app.jar", "--opencookbook.jwtSecret=$JWT_SECRET"]
