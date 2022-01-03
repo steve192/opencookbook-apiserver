@@ -24,7 +24,7 @@ jobs:
           path: target/
   sonarcloud:
     name: SonarCloud
-    needs: build
+    needs: maven-package
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
