@@ -3,10 +3,10 @@
 
 name: build
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
-  build:
+  maven-package:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -24,6 +24,7 @@ jobs:
           path: target/
   sonarcloud:
     name: SonarCloud
+    needs: maven-package
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
