@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
@@ -24,6 +25,8 @@ public class JwtTokenUtil implements Serializable {
     @Autowired
     OpencookbookConfiguration opencookbookConfiguration;
 
+    private String jwtSigningKey = UUID.randomUUID().toString();
+
     // retrieve username from jwt token
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
@@ -41,7 +44,7 @@ public class JwtTokenUtil implements Serializable {
 
     // for retrieveing any information from token we will need the secret key
     private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parser().setSigningKey(opencookbookConfiguration.getJwtSecret()).parseClaimsJws(token).getBody();
+        return Jwts.parser().setSigningKey(jwtSigningKey).parseClaimsJws(token).getBody();
     }
 
     // check if the token has expired
@@ -66,7 +69,7 @@ public class JwtTokenUtil implements Serializable {
 
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + opencookbookConfiguration.getJwtDuration() * 1000))
-                .signWith(SignatureAlgorithm.HS512, opencookbookConfiguration.getJwtSecret()).compact();
+                .signWith(SignatureAlgorithm.HS512, jwtSigningKey).compact();
     }
 
     // validate token
