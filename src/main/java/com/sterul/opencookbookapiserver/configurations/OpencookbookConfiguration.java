@@ -32,9 +32,4 @@ public class OpencookbookConfiguration {
      */
     private Long jwtDuration;
 
-    /**
-     * Secret for generating JWT session tokens
-     */
-    private String jwtSecret;
-
 }
