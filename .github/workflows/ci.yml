@@ -18,7 +18,7 @@ jobs:
           distribution: "adopt"
           cache: maven
       - name: Build with Maven
-        run: mvn verfiy --file pom.xml
+        run: mvn verify --file pom.xml
       - uses: actions/upload-artifact@master
         with:
           name: java-build
