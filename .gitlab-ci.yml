@@ -10,7 +10,7 @@ stages:
 maven-build:
   image: maven:3-jdk-11
   stage: build
-  script: 
+  script:
     - "mvn clean package -X"
   artifacts:
     paths:
@@ -19,7 +19,7 @@ maven-build:
 sonarqube:
   stage: test
   only:
-  - master
+    - main
   needs: ["maven-build"]
   image: sonarsource/sonar-scanner-cli:latest
   allow_failure: true
@@ -29,14 +29,14 @@ sonarqube:
     GIT_DEPTH: 0
     GIT_STRATEGY: clone
   script:
-    - sonar-scanner 
-      -Dsonar.qualitygate.wait=true 
-      -Dsonar.sources=src 
-      -Dsonar.login="$SONAR_TOKEN" 
-      -Dsonar.projectKey="$CI_PROJECT_NAME" 
-      -Dsonar.links.scm="$CI_PROJECT_URL" 
-      -Dsonar.scm.revision="$CI_COMMIT_SHA" 
-      -Dsonar.scm.disabled=False 
+    - sonar-scanner
+      -Dsonar.qualitygate.wait=true
+      -Dsonar.sources=src
+      -Dsonar.login="$SONAR_TOKEN"
+      -Dsonar.projectKey="$CI_PROJECT_NAME"
+      -Dsonar.links.scm="$CI_PROJECT_URL"
+      -Dsonar.scm.revision="$CI_COMMIT_SHA"
+      -Dsonar.scm.disabled=False
       -Dsonar.projectVersion="$CI_PIPELINE_IID"
       -Dsonar.java.binaries=./target
 
@@ -53,7 +53,7 @@ package-docker-qa:
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
     - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:$REGISTRY_TAG --cache=true --cache-ttl=100h
   only:
-      - master
+    - main
 
 publish-cluster:
   stage: publish
@@ -61,33 +61,29 @@ publish-cluster:
   trigger:
     project: opencookbook/opencookbook-docker
     branch: main
-
-
 # deploy_qa:
 #   stage: publish
 #   needs: ["package-docker-qa"]
 #   resource_group: qa
 #   image: registry.gitlab.com/gitlab-org/cluster-integration/helm-install-image/releases/2.16.6-kube-1.13.12
-#   environment: 
+#   environment:
 #     name: qa
-#   script: 
+#   script:
 #     - kubectl get secret opencookbook-registry --namespace $KUBE_NAMESPACE && kubectl delete secret opencookbook-registry --namespace $KUBE_NAMESPACE
 #     - kubectl create secret docker-registry opencookbook-registry --namespace $KUBE_NAMESPACE --docker-server=git.sterul.com:5005 --docker-username=$registry_user --docker-password=$registry_password
 #     - kubectl get deployment opencookbook-qa --namespace $KUBE_NAMESPACE && kubectl delete deployment opencookbook-qa --namespace $KUBE_NAMESPACE
 #     - kubectl apply -f kubernetes/deployment-qa.yml
 
-
 #     # Wait for pod
 #     - kubectl -n $KUBE_NAMESPACE wait --for=condition=available deployment/opencookbook-qa --timeout=300s
-
 
 # stop-qa:
 #   stage: deploy
 #   script:
-#     - 
+#     -
 #   environment:
 #     name: qa
 #     action: stop
-#   rules: 
+#   rules:
 #     - if: $CI_MERGE_REQUEST_ID
 #       when: manual
