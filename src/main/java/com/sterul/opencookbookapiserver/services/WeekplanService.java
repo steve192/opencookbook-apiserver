@@ -41,4 +41,12 @@ public class WeekplanService {
         return weekplanDayRepository.findAllByRecipes_Id(id);
     }
 
+    public List<WeekplanDay> getWeekplanDaysByOwner(User user) {
+        return weekplanDayRepository.findAllByOwner(user);
+    }
+
+    public void deleteWeekplanDay(Long id) {
+        weekplanDayRepository.deleteById(id);
+    }
+
 }

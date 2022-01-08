@@ -14,4 +14,6 @@ public interface WeekplanDayRepository extends JpaRepository<WeekplanDay, Long> 
     public WeekplanDay findSingleByDayAndOwner(Date day, User owner);
 
     public List<WeekplanDay> findAllByRecipes_Id(Long recipeId);
+
+    public List<WeekplanDay> findAllByOwner(User owner);
 }

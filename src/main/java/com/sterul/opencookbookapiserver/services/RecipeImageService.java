@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
@@ -87,4 +88,9 @@ public class RecipeImageService {
 
         Files.delete(uploadPath.resolve(uuid));
     }
+
+    public List<RecipeImage> getImagesByUser(User user) {
+        return recipeImageRepository.findAllByOwner(user);
+    }
+
 }
