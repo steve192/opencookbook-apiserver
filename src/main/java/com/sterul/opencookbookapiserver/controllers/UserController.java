@@ -23,6 +23,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -76,6 +77,11 @@ public class UserController extends BaseController {
 		var response = new UserInfoResponse();
 		response.setEmail(getLoggedInUser().getEmailAddress());
 		return response;
+	}
+
+	@DeleteMapping("/self")
+	public void deleteOwnUser() {
+		userService.deleteUser(getLoggedInUser());
 	}
 
 	@PostMapping("/refreshToken")

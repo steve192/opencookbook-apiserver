@@ -11,4 +11,6 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Stri
 
     public RefreshToken findByTokenAndOwner(String token, User owner);
 
+    public void deleteAllByOwner(User owner);
+
 }

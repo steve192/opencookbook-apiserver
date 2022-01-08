@@ -11,6 +11,7 @@ import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RefreshTokenService {
@@ -52,5 +53,10 @@ public class RefreshTokenService {
         }
 
         return token.get();
+    }
+
+    @Transactional
+    public void deleteAllRefreshTokenForUser(User user) {
+        refreshTokenRepository.deleteAllByOwner(user);
     }
 }
