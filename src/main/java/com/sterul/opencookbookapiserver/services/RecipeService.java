@@ -30,23 +30,31 @@ public class RecipeService {
     WeekplanService weekplanService;
 
     public Recipe createNewRecipe(Recipe newRecipe) {
-        for (var ingredientNeed : newRecipe.getNeededIngredients()) {
+        createMissingIngredients(newRecipe);
+        createMissingRecipeGroup(newRecipe);
+
+        return recipeRepository.save(newRecipe);
+    }
+
+    private void createMissingIngredients(Recipe recipe) {
+        for (var ingredientNeed : recipe.getNeededIngredients()) {
             var ingredient = ingredientNeed.getIngredient();
             if (ingredient.getId() == null) {
                 // Convenience api which creates ingredients
                 ingredientNeed.setIngredient(ingredientRepository.save(ingredient));
             }
         }
+    }
 
-        for (var recipeGroup : newRecipe.getRecipeGroups()) {
+    private void createMissingRecipeGroup(Recipe recipe) {
+        for (var recipeGroup : recipe.getRecipeGroups()) {
             if (recipeGroup.getId() == null) {
                 // Convenience api which creates recipe groups
-                recipeGroup.setOwner(newRecipe.getOwner());
+                recipeGroup.setOwner(recipe.getOwner());
                 var createdRecipeGroup = recipeGroupService.createRecipeGroup(recipeGroup);
                 recipeGroup.setId(createdRecipeGroup.getId());
             }
         }
-        return recipeRepository.save(newRecipe);
     }
 
     public List<Recipe> getRecipesByOwner(User owner) {
@@ -85,14 +93,9 @@ public class RecipeService {
             recipeUpdate.setId(existingRecipe.getId());
             recipeUpdate.setOwner(existingRecipe.getOwner());
 
-            for (var recipeGroup : recipeUpdate.getRecipeGroups()) {
-                if (recipeGroup.getId() == null) {
-                    // Convenience api which creates recipe groups
-                    recipeGroup.setOwner(recipeUpdate.getOwner());
-                    var createdRecipeGroup = recipeGroupService.createRecipeGroup(recipeGroup);
-                    recipeGroup.setId(createdRecipeGroup.getId());
-                }
-            }
+            createMissingIngredients(recipeUpdate);
+            createMissingRecipeGroup(recipeUpdate);
+
             return recipeRepository.save(recipeUpdate);
         }).orElseThrow();
     }
