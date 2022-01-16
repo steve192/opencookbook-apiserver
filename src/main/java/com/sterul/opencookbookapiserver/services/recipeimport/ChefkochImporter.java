@@ -41,7 +41,7 @@ public class ChefkochImporter implements IRecipeImporter {
 
     @Override
     public Recipe importRecipe(String url, User owner) throws RecipeImportFailedException {
-        var importRecipe = new Recipe();
+        var importRecipe = Recipe.builder().build();
         var recipeId = url.split("//")[1].split("/")[2];
 
         var request = new HttpGet("https://api.chefkoch.de/v2/aggregations/recipe/public/screen-v4/" + recipeId);
@@ -79,13 +79,15 @@ public class ChefkochImporter implements IRecipeImporter {
             for (var ingredient : ingredientGroup.ingredients) {
 
                 // TODO: Fetch ingredients form ingredient service
-                var importIngredient = new Ingredient();
-                importIngredient.setName(ingredient.name);
+                var importIngredient = Ingredient.builder()
+                        .name(ingredient.name)
+                        .build();
 
-                var importIngredientNeed = new IngredientNeed();
-                importIngredientNeed.setIngredient(importIngredient);
-                importIngredientNeed.setAmount(ingredient.amount);
-                importIngredientNeed.setUnit(ingredient.unit);
+                var importIngredientNeed = IngredientNeed.builder()
+                        .ingredient(importIngredient)
+                        .amount(ingredient.amount)
+                        .unit(ingredient.unit)
+                        .build();
 
                 importedRecipe.getNeededIngredients().add(importIngredientNeed);
             }
