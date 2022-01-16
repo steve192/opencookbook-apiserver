@@ -80,23 +80,26 @@ public class DevelopmentDatabase {
     }
 
     void saveRecipe(String title, List<String> preparationSteps, List<IngredientNeed> neededIngredients) {
-        var recipe = new Recipe();
-        recipe.setTitle(title);
-        recipe.setPreparationSteps(preparationSteps);
-        recipe.setNeededIngredients(neededIngredients);
-        recipe.setOwner(this.user);
+        var recipe = Recipe.builder()
+                .title(title)
+                .preparationSteps(preparationSteps)
+                .neededIngredients(neededIngredients)
+                .owner(this.user)
+                .build();
         repository.save(recipe);
     }
 
     IngredientNeed createIngredientNeed(String name, Float amount, String unit) {
-        var ingredient = new Ingredient();
-        ingredient.setName(name);
+        var ingredient = Ingredient.builder()
+                .name(name)
+                .build();
         ingredient = ingredientRepository.save(ingredient);
 
-        var ingredientNeed = new IngredientNeed();
-        ingredientNeed.setIngredient(ingredient);
-        ingredientNeed.setAmount(amount);
-        ingredientNeed.setUnit(unit);
+        var ingredientNeed = IngredientNeed.builder()
+                .ingredient(ingredient)
+                .amount(amount)
+                .unit(unit)
+                .build();
 
         return ingredientNeed;
     }

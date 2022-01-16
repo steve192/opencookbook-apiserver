@@ -19,17 +19,17 @@ public class IngredientsController {
     private IngredientRepository repository;
 
     @GetMapping("")
-    List<Ingredient> all() {
+    public List<Ingredient> all() {
         return repository.findAll();
     }
 
     @GetMapping("/{id}")
-    List<Ingredient> all(@PathVariable Long id) {
+    public List<Ingredient> all(@PathVariable Long id) {
         return repository.findAll();
     }
 
     @PostMapping("")
-    Ingredient create(@RequestBody Ingredient newIngredient) {
+    public Ingredient create(@RequestBody Ingredient newIngredient) {
         return repository.save(newIngredient);
     }
 
