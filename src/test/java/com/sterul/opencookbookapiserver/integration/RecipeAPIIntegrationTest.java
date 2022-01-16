@@ -2,7 +2,9 @@ package com.sterul.opencookbookapiserver.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import com.sterul.opencookbookapiserver.controllers.IngredientsController;
 import com.sterul.opencookbookapiserver.controllers.RecipeController;
@@ -76,12 +78,17 @@ class RecipeAPIIntegrationTest {
         var newRecipeResponse = cut.newRecipe(newRecipe);
         assertEquals(newRecipeResponse.getTitle(), newRecipe.getTitle());
         assertEquals(newRecipeResponse.getServings(), newRecipe.getServings());
-        assertEquals(newRecipeResponse.getPreparationSteps(), newRecipe.getPreparationSteps());
-        assertEquals(newRecipeResponse.getNeededIngredients(),
-                newRecipe.getNeededIngredients());
-        assertEquals(newRecipeResponse.getRecipeGroups(), newRecipe.getRecipeGroups());
-        assertEquals(newRecipeResponse.getImages(), newRecipe.getImages());
+        assertListsEqual(newRecipeResponse.getPreparationSteps(), newRecipe.getPreparationSteps());
+        assertListsEqual(newRecipeResponse.getNeededIngredients(), newRecipe.getNeededIngredients());
 
+        assertListsEqual(newRecipeResponse.getRecipeGroups(), newRecipe.getRecipeGroups());
+        assertListsEqual(newRecipeResponse.getImages(), newRecipe.getImages());
+
+    }
+
+    private void assertListsEqual(List list1, List list2) {
+        assertEquals(new ArrayList(list1),
+                new ArrayList(list2));
     }
 
 }
