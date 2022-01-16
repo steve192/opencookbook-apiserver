@@ -59,12 +59,12 @@ public class RecipeController extends BaseController {
     }
 
     @PutMapping("/{id}")
-    public RecipeResponse updateRecipe(@PathVariable Long id, @RequestBody Recipe recipeUpdate)
+    public RecipeResponse updateRecipe(@PathVariable Long id, @RequestBody RecipeRequest recipeUpdate)
             throws NoSuchElementException, NotAuthorizedException, ElementNotFound {
         if (!recipeService.hasAccessPermissionToRecipe(id, getLoggedInUser())) {
             throw new NotAuthorizedException();
         }
-        return entityToResponse(recipeService.updateSingleRecipe(recipeUpdate));
+        return entityToResponse(recipeService.updateSingleRecipe(requestToEntity(recipeUpdate)));
 
     }
 
