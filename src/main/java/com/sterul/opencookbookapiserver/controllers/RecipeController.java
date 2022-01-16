@@ -64,6 +64,7 @@ public class RecipeController extends BaseController {
         if (!recipeService.hasAccessPermissionToRecipe(id, getLoggedInUser())) {
             throw new NotAuthorizedException();
         }
+        recipeUpdate.setId(id);
         return entityToResponse(recipeService.updateSingleRecipe(requestToEntity(recipeUpdate)));
 
     }
