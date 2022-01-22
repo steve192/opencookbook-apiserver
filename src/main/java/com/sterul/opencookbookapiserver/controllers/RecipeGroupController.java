@@ -3,6 +3,8 @@ package com.sterul.opencookbookapiserver.controllers;
 import java.util.List;
 
 import com.sterul.opencookbookapiserver.controllers.exceptions.NotAuthorizedException;
+import com.sterul.opencookbookapiserver.controllers.requests.RecipeGroupRequest;
+import com.sterul.opencookbookapiserver.controllers.responses.RecipeGroupResponse;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.services.RecipeGroupService;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
@@ -22,27 +24,34 @@ import org.springframework.web.bind.annotation.RestController;
 public class RecipeGroupController extends BaseController {
 
     @Autowired
-    RecipeGroupService recipeGroupService;
+    private RecipeGroupService recipeGroupService;
 
     @GetMapping("")
-    public List<RecipeGroup> getAll() {
-        return recipeGroupService.getRecipeGroupsByOwner(getLoggedInUser());
+    public List<RecipeGroupResponse> getAll() {
+        return recipeGroupService.getRecipeGroupsByOwner(getLoggedInUser()).stream()
+                .map(this::entityToResponse)
+                .toList();
     }
 
     @PostMapping("")
-    public RecipeGroup create(@RequestBody RecipeGroup recipeGroup) {
-        recipeGroup.setOwner(getLoggedInUser());
-        return recipeGroupService.createRecipeGroup(recipeGroup);
+    public RecipeGroupResponse create(@RequestBody RecipeGroupRequest recipeGroup) {
+        var recipeGroupEntity = requestToEntity(recipeGroup);
+        recipeGroupEntity.setOwner(getLoggedInUser());
+        recipeGroupEntity.setId(null);
+        return entityToResponse(recipeGroupService.createRecipeGroup(recipeGroupEntity));
     }
 
     @PutMapping("/{id}")
-    public RecipeGroup change(@PathVariable Long id, @RequestBody RecipeGroup updatedRecipeGroup)
+    public RecipeGroupResponse change(@PathVariable Long id, @RequestBody RecipeGroupRequest updatedRecipeGroup)
             throws NotAuthorizedException, ElementNotFound {
 
         if (!recipeGroupService.hasAccessPermissionToRecipeGroup(id, getLoggedInUser())) {
             throw new NotAuthorizedException();
         }
-        return recipeGroupService.updateRecipeGroup(updatedRecipeGroup);
+        var groupEntity = requestToEntity(updatedRecipeGroup);
+        groupEntity.setId(id);
+
+        return entityToResponse(recipeGroupService.updateRecipeGroup(groupEntity));
     }
 
     @DeleteMapping("/{id}")
@@ -52,5 +61,19 @@ public class RecipeGroupController extends BaseController {
         }
 
         recipeGroupService.deleteRecipeGroup(id);
+    }
+
+    private RecipeGroupResponse entityToResponse(RecipeGroup recipeGroup) {
+        return RecipeGroupResponse.builder()
+                .id(recipeGroup.getId())
+                .title(recipeGroup.getTitle())
+                .build();
+    }
+
+    private RecipeGroup requestToEntity(RecipeGroupRequest recipeGroupRequest) {
+        return RecipeGroup.builder()
+                .id(recipeGroupRequest.getId())
+                .title(recipeGroupRequest.getTitle())
+                .build();
     }
 }
