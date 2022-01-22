@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.sterul.opencookbookapiserver.controllers.IngredientsController;
 import com.sterul.opencookbookapiserver.controllers.RecipeController;
+import com.sterul.opencookbookapiserver.controllers.requests.IngredientRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.RecipeRequest;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
@@ -60,7 +61,7 @@ class RecipeAPIIntegrationTest {
     void testRecipeCreation() {
 
         var ingredient = ingredientsController.create(
-                Ingredient.builder()
+                IngredientRequest.builder()
                         .name("TestIngredient")
                         .build());
 
@@ -71,7 +72,9 @@ class RecipeAPIIntegrationTest {
                 .neededIngredients(Arrays.asList(
                         IngredientNeed.builder()
                                 .amount(4F)
-                                .ingredient(ingredient)
+                                .ingredient(Ingredient.builder()
+                                        .id(ingredient.getId())
+                                        .build())
                                 .build()))
                 .build();
 
