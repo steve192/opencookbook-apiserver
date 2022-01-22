@@ -2,6 +2,8 @@ package com.sterul.opencookbookapiserver.controllers;
 
 import java.util.List;
 
+import com.sterul.opencookbookapiserver.controllers.requests.IngredientRequest;
+import com.sterul.opencookbookapiserver.controllers.responses.IngredientResponse;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 
@@ -19,21 +21,36 @@ public class IngredientsController {
     private IngredientRepository repository;
 
     @GetMapping("")
-    public List<Ingredient> all() {
-        return repository.findAll();
+    public List<IngredientResponse> all() {
+        return repository.findAll().stream().map(this::entityToResponse).toList();
     }
 
     @GetMapping("/{id}")
-    public List<Ingredient> all(@PathVariable Long id) {
-        return repository.findAll();
+    public List<IngredientResponse> all(@PathVariable Long id) {
+        return repository.findAll().stream().map(this::entityToResponse).toList();
     }
 
     @PostMapping("")
-    public Ingredient create(@RequestBody Ingredient newIngredient) {
-        return repository.save(newIngredient);
+    public IngredientResponse create(@RequestBody IngredientRequest newIngredient) {
+        return entityToResponse(
+                repository.save(requestToEntity(newIngredient)));
     }
 
     public IngredientsController(IngredientRepository repository) {
         this.repository = repository;
     }
+
+    private Ingredient requestToEntity(IngredientRequest ingredientRequest) {
+        return Ingredient.builder()
+                .name(ingredientRequest.getName())
+                .build();
+    }
+
+    private IngredientResponse entityToResponse(Ingredient ingredient) {
+        return IngredientResponse.builder()
+                .id(ingredient.getId())
+                .name(ingredient.getName())
+                .build();
+    }
+
 }
