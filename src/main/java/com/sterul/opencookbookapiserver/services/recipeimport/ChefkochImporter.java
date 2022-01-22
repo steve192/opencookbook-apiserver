@@ -4,18 +4,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import com.google.gson.Gson;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
-import com.sterul.opencookbookapiserver.services.RecipeImageService;
 import com.sterul.opencookbookapiserver.services.RecipeService;
 
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,21 +19,10 @@ import org.springframework.stereotype.Component;
 import lombok.Data;
 
 @Component
-public class ChefkochImporter implements IRecipeImporter {
-
-    private CloseableHttpClient client;
-    private Gson gson;
-
-    @Autowired
-    private RecipeImageService recipeImageService;
+public class ChefkochImporter extends AbstractRecipeImporter {
 
     @Autowired
     private RecipeService recipeService;
-
-    public ChefkochImporter() {
-        client = HttpClientBuilder.create().build();
-        gson = new Gson();
-    }
 
     @Override
     public Recipe importRecipe(String url, User owner) throws RecipeImportFailedException {
@@ -98,18 +83,14 @@ public class ChefkochImporter implements IRecipeImporter {
             User owner) throws IOException {
         importedRecipe.setImages(new ArrayList<>());
         for (var image : publicRecipe.recipeImages) {
-            var request2 = new HttpGet(
-                    "https://api.chefkoch.de/v2/recipes/" + recipeId + "/images/" + image.id + "/crop-960x640");
-            var response2 = client.execute(request2);
-
             try {
-                var importImage = recipeImageService.saveNewImage(response2.getEntity().getContent(),
-                        response2.getEntity().getContentLength(), owner);
-                importedRecipe.getImages().add(importImage);
-            } catch (UnsupportedOperationException | IllegalFiletypeException e) {
-                // Images cannot be added, ignore
+                var fetchedImage = fetchImage(
+                        "https://api.chefkoch.de/v2/recipes/" + recipeId + "/images/" + image.id + "/crop-960x640",
+                        owner);
+                importedRecipe.getImages().add(fetchedImage);
+            } catch (UnsupportedOperationException | IllegalFiletypeException | IOException e) {
+                // Error fetching image, ignore
             }
-
         }
     }
 

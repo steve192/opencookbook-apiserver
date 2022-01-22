@@ -32,4 +32,9 @@ public class OpencookbookConfiguration {
      */
     private Long jwtDuration;
 
+    /**
+     * Url of recipe scraper service
+     */
+    private String recipeScaperServiceUrl;
+
 }
