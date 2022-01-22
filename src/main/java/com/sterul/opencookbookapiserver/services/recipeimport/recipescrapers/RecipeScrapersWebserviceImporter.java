@@ -1,10 +1,10 @@
 package com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers;
 
 import java.io.IOException;
+import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.List;
 
-import com.google.gson.Gson;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.account.User;
@@ -27,8 +27,6 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
 
     @Autowired
     private IngredientUnitHelper unitHelper;
-
-    private Gson gson = new Gson();
 
     @Override
     public Recipe importRecipe(String url, User owner) throws RecipeImportFailedException {
@@ -60,11 +58,20 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
 
             Float amount;
             try {
-                // TODO: Parse factions
                 amount = Float.parseFloat(parts[textStartIndex]);
                 textStartIndex++;
             } catch (NumberFormatException e) {
-                amount = 0F;
+                // Amount could be represented as a "vulgar fraction". Split this unicode symbol
+                // into 3 parts: counter, dash, divider
+                var normalizedAmount = Normalizer.normalize(parts[textStartIndex], Normalizer.Form.NFKD);
+                if (normalizedAmount.contains("\u2044")) {
+                    // 2044 = unicode dash
+                    var fractionParts = normalizedAmount.split("\u2044");
+                    amount = (float) Integer.parseInt(fractionParts[0]) / Integer.parseInt(fractionParts[1]);
+                    textStartIndex++;
+                } else {
+                    amount = 0F;
+                }
             }
 
             var unit = parts[textStartIndex];
