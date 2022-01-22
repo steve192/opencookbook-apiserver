@@ -19,8 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
 
     @Autowired
@@ -31,6 +33,7 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
 
     @Override
     public Recipe importRecipe(String url, User owner) throws RecipeImportFailedException {
+        log.info("Importing recipe " + url);
         ScrapedRecipe scrapedRecipe;
         try {
             var responseString = recipeScraperServiceProxy.scrapeRecipe(url);
@@ -40,6 +43,7 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
         } catch (JsonSyntaxException e) {
             throw new RecipeImportFailedException("Error parsing response from scrape service", e);
         }
+        log.info("Parsing response");
 
         Recipe importRecipe = Recipe.builder()
                 .owner(owner)
@@ -51,6 +55,7 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
         extractImage(owner, scrapedRecipe, importRecipe);
         extractIngredients(scrapedRecipe, importRecipe);
 
+        log.info("Recipe imported");
         return importRecipe;
     }
 
@@ -99,6 +104,7 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
     }
 
     private void extractImage(User owner, ScrapedRecipe scrapedRecipe, Recipe importRecipe) {
+        log.info("Fetching image if present " + scrapedRecipe.image);
         if (scrapedRecipe.image != null) {
 
             try {
@@ -106,7 +112,9 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
                 importRecipe.getImages().add(image);
             } catch (UnsupportedOperationException | IllegalFiletypeException | IOException e) {
                 // Ignore image errros
+                log.error("Error importing recipe image from " + scrapedRecipe.image);
             }
+            log.info("Image fetched:" + importRecipe.getImages().size());
         }
     }
 
