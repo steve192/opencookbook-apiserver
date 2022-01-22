@@ -15,10 +15,14 @@ public class RecipeImportService {
     @Autowired
     private RecipeImporterFactory importerFactory;
 
-    public Recipe importRecipe(String importUrl, User owner) throws ImportNotSupportedException, RecipeImportFailedException {
-        var importer = importerFactory.getRecipeImporter(importUrl);
+    @Autowired
+    private RecipeService recipeService;
 
-        return importer.importRecipe(importUrl, owner);
+    public Recipe importRecipe(String importUrl, User owner)
+            throws ImportNotSupportedException, RecipeImportFailedException {
+        var importer = importerFactory.getRecipeImporter(importUrl);
+        var importedRecipe = importer.importRecipe(importUrl, owner);
+        return recipeService.createNewRecipe(importedRecipe);
     }
-    
+
 }
