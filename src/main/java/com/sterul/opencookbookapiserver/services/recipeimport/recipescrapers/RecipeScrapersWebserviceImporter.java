@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.google.gson.Gson;
+import com.sterul.opencookbookapiserver.entities.Ingredient;
+import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
@@ -51,8 +53,36 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
             }
         }
 
-        scrapedRecipe.ingredients.stream().forEach((ingredient) -> {
-        });
+        var needs = scrapedRecipe.ingredients.stream().map((ingredient) -> {
+            var parts = ingredient.split(" ");
+            var textStartIndex = 0;
+
+            Float amount;
+            try {
+                // TODO: Parse factions
+                amount = Float.parseFloat(parts[textStartIndex]);
+                textStartIndex++;
+            } catch (NumberFormatException e) {
+                amount = 0F;
+            }
+
+            var unit = parts[textStartIndex];
+            // TODO: Check if this is really a unit, for now assume it's not
+            unit = "";
+            // textStartIndex++;
+
+            var ingredientText = String.join(" ", Arrays.copyOfRange(parts, textStartIndex, parts.length));
+
+            return IngredientNeed.builder()
+                    .amount(amount)
+                    .unit(unit)
+                    .ingredient(Ingredient.builder()
+                            .name(ingredientText)
+                            .build())
+                    .build();
+        }).toList();
+
+        importRecipe.setNeededIngredients(needs);
 
         return importRecipe;
     }
