@@ -22,7 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class RecipeScrapersWebserviceImporterTest {
+class RecipeScrapersWebserviceImporterTest {
 
     private static final String testRecipeUrl = "https://testing.com/recipe";
 
@@ -59,7 +59,7 @@ public class RecipeScrapersWebserviceImporterTest {
     }
 
     @Test
-    public void testPreparationStepsImported() throws RecipeImportFailedException {
+    void testPreparationStepsImported() throws RecipeImportFailedException {
         var recipe = cut.importRecipe(testRecipeUrl, null);
 
         assertEquals(Arrays.asList("Den Ofen auf 160°C vorheizen.",
@@ -72,13 +72,13 @@ public class RecipeScrapersWebserviceImporterTest {
     }
 
     @Test
-    public void testServingsImported() throws RecipeImportFailedException {
+    void testServingsImported() throws RecipeImportFailedException {
         var recipe = cut.importRecipe(testRecipeUrl, userMock);
         assertEquals(1, recipe.getServings());
     }
 
     @Test
-    public void testIngredientsReported() throws RecipeImportFailedException {
+    void testIngredientsImported() throws RecipeImportFailedException {
         var recipe = cut.importRecipe(testRecipeUrl, userMock);
 
         assertIngredientPresent(recipe, 250, "g", "Butter (davon 50 g für Guss)", 0);
@@ -98,19 +98,19 @@ public class RecipeScrapersWebserviceImporterTest {
     }
 
     @Test
-    public void testTitleImported() throws RecipeImportFailedException {
+    void testTitleImported() throws RecipeImportFailedException {
         var recipe = cut.importRecipe(testRecipeUrl, userMock);
         assertEquals("Der schönste Tod", recipe.getTitle());
     }
 
     @Test
-    public void testRecipeGroupNotSet() throws RecipeImportFailedException {
+    void testRecipeGroupNotSet() throws RecipeImportFailedException {
         var recipe = cut.importRecipe(testRecipeUrl, userMock);
         assertEquals(0, recipe.getRecipeGroups().size());
     }
 
     @Test
-    public void testOwnerSet() throws RecipeImportFailedException {
+    void testOwnerSet() throws RecipeImportFailedException {
         var recipe = cut.importRecipe(testRecipeUrl, userMock);
         assertEquals(userMock, recipe.getOwner());
     }

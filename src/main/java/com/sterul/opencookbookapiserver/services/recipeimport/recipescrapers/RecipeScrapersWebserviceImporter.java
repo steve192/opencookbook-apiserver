@@ -52,7 +52,7 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
     }
 
     private void extractIngredients(ScrapedRecipe scrapedRecipe, Recipe importRecipe) {
-        var needs = scrapedRecipe.ingredients.stream().map((ingredient) -> {
+        var needs = scrapedRecipe.ingredients.stream().map(ingredient -> {
             var parts = ingredient.split(" ");
             var textStartIndex = 0;
 
@@ -109,9 +109,7 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
 
     private List<String> extractPraparationSteps(ScrapedRecipe scrapedRecipe) {
         var prepsteps = Arrays.asList(scrapedRecipe.instructions.replace("\r", "").split("\\n"));
-        return prepsteps.stream().filter((step) -> {
-            return step.length() > 0;
-        }).toList();
+        return prepsteps.stream().filter(step -> step.length() > 0).toList();
     }
 
     @Data
