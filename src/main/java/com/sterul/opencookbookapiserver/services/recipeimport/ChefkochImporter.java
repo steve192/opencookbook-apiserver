@@ -9,20 +9,15 @@ import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
-import com.sterul.opencookbookapiserver.services.RecipeService;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import lombok.Data;
 
 @Component
 public class ChefkochImporter extends AbstractRecipeImporter {
-
-    @Autowired
-    private RecipeService recipeService;
 
     @Override
     public Recipe importRecipe(String url, User owner) throws RecipeImportFailedException {
@@ -52,7 +47,6 @@ public class ChefkochImporter extends AbstractRecipeImporter {
 
         importRecipe.setRecipeGroups(new ArrayList<>());
         importRecipe.setOwner(owner);
-        recipeService.createNewRecipe(importRecipe);
 
         return importRecipe;
     }
