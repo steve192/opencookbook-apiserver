@@ -1,4 +1,4 @@
-FROM openjdk:16.0.2-jdk-slim
+FROM openjdk:17.0.2-jdk-slim
 ARG JAR_FILE=target/*.jar
 CMD mkdir /opencookbook
 WORKDIR /opencookbook
