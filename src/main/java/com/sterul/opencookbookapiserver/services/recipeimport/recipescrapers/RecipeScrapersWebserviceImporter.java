@@ -12,6 +12,7 @@ import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
 import com.sterul.opencookbookapiserver.services.recipeimport.AbstractRecipeImporter;
 import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImportFailedException;
+import com.sterul.opencookbookapiserver.util.IngredientUnitHelper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,9 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
 
     @Autowired
     private RecipeScraperServiceProxy recipeScraperServiceProxy;
+
+    @Autowired
+    private IngredientUnitHelper unitHelper;
 
     private Gson gson = new Gson();
 
@@ -43,16 +47,13 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
                 .servings(Integer.parseInt(scrapedRecipe.yields.split(" ")[0]))
                 .build();
 
-        if (scrapedRecipe.image != null) {
+        extractImage(owner, scrapedRecipe, importRecipe);
+        extractIngredients(scrapedRecipe, importRecipe);
 
-            try {
-                var image = fetchImage(scrapedRecipe.image, owner);
-                importRecipe.getImages().add(image);
-            } catch (UnsupportedOperationException | IllegalFiletypeException | IOException e) {
-                // Ignore image errros
-            }
-        }
+        return importRecipe;
+    }
 
+    private void extractIngredients(ScrapedRecipe scrapedRecipe, Recipe importRecipe) {
         var needs = scrapedRecipe.ingredients.stream().map((ingredient) -> {
             var parts = ingredient.split(" ");
             var textStartIndex = 0;
@@ -67,9 +68,11 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
             }
 
             var unit = parts[textStartIndex];
-            // TODO: Check if this is really a unit, for now assume it's not
-            unit = "";
-            // textStartIndex++;
+            if (unitHelper.isUnit(unit)) {
+                textStartIndex++;
+            } else {
+                unit = "";
+            }
 
             var ingredientText = String.join(" ", Arrays.copyOfRange(parts, textStartIndex, parts.length));
 
@@ -83,8 +86,18 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
         }).toList();
 
         importRecipe.setNeededIngredients(needs);
+    }
 
-        return importRecipe;
+    private void extractImage(User owner, ScrapedRecipe scrapedRecipe, Recipe importRecipe) {
+        if (scrapedRecipe.image != null) {
+
+            try {
+                var image = fetchImage(scrapedRecipe.image, owner);
+                importRecipe.getImages().add(image);
+            } catch (UnsupportedOperationException | IllegalFiletypeException | IOException e) {
+                // Ignore image errros
+            }
+        }
     }
 
     private List<String> extractPraparationSteps(ScrapedRecipe scrapedRecipe) {

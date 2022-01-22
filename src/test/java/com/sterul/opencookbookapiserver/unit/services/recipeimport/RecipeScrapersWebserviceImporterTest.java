@@ -93,8 +93,8 @@ public class RecipeScrapersWebserviceImporterTest {
 
     private void assertIngredientPresent(Recipe recipe, float amount, String unit, String ingredientName, int index) {
         assertEquals(amount, recipe.getNeededIngredients().get(index).getAmount());
-        assertEquals(unit, recipe.getNeededIngredients().get(0).getUnit());
-        assertEquals(ingredientName, recipe.getNeededIngredients().get(0).getIngredient().getName());
+        assertEquals(unit, recipe.getNeededIngredients().get(index).getUnit());
+        assertEquals(ingredientName, recipe.getNeededIngredients().get(index).getIngredient().getName());
     }
 
     @Test
