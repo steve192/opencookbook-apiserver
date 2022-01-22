@@ -5,6 +5,7 @@ import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.List;
 
+import com.google.gson.JsonSyntaxException;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.account.User;
@@ -35,7 +36,9 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
             var responseString = recipeScraperServiceProxy.scrapeRecipe(url);
             scrapedRecipe = gson.fromJson(responseString, ScrapedRecipe.class);
         } catch (IOException e) {
-            throw new RecipeImportFailedException("Error from recipe scrape service", e);
+            throw new RecipeImportFailedException("Error in communication with scrape service", e);
+        } catch (JsonSyntaxException e) {
+            throw new RecipeImportFailedException("Error parsing response from scrape service", e);
         }
 
         Recipe importRecipe = Recipe.builder()
@@ -125,11 +128,17 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
         private String author;
         private String instructions;
         private List<String> ingredients;
-        private List<String> nutrients;
+        private Nutrients nutrients;
         private String ratings;
         private String cuisine;
         private String host;
 
+    }
+
+    @Data
+    private class Nutrients {
+        private String calories;
+        private String servingSize;
     }
 
 }
