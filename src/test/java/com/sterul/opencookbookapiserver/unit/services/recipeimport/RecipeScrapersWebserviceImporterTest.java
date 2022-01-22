@@ -33,7 +33,17 @@ class RecipeScrapersWebserviceImporterTest {
                 "cook_time": "",
                 "cuisine": "",
                 "host": "chefkoch.de",
-                "ingredients": ["250 g Butter (davon 50 g f\u00fcr Guss)", "300 g Schokolade , bittere (davon 100 g f\u00fcr Guss)", "100 g Schokolade nach Wahl, gehackt", "200 g Zucker", "1 Pck. Vanillezucker", "4 Ei(er)", "1 Prise(n) Salz", "\u00bd Flasche Rumaroma oder 3 EL Rum", "100 g Mehl (oder 60 g Mehl und 40 g gemahlene Haseln\u00fcsse)"],
+                "ingredients": [
+                    "250 g Butter (davon 50 g f\u00fcr Guss)",
+                    "300 g Schokolade , bittere (davon 100 g f\u00fcr Guss)",
+                    "100 g Schokolade nach Wahl, gehackt",
+                    "200 g Zucker", "1 Pck. Vanillezucker",
+                    "4 Ei(er)",
+                    "1 Prise(n) Salz",
+                    "\u00bd Flasche Rumaroma oder 3 EL Rum",
+                    "100 g Mehl (oder 60 g Mehl und 40 g gemahlene Haseln\u00fcsse)",
+                    "Salz nach Wunsch"
+                ],
                 "instructions": "Den Ofen auf 160\u00b0C vorheizen.\r\n\r\n200 g Butter und 200 g Bitterschokoladest\u00fcckchen vorsichtig miteinander schmelzen, die Schokolade darf nicht zu hei\u00df werden. Abk\u00fchlen lassen.\r\n\r\nDie Eier mit Zucker, Vanillezucker und Salz sch\u00f6n schaumig r\u00fchren. Die geschmolzene, h\u00f6chstens noch lauwarme  Schokolade und das Rumaroma unterr\u00fchren. Die gehackten Schokost\u00fcckchen und das Mehl unterr\u00fchren.\r\n\r\nEine Form (rund ca. 26 cm oder eckig ca. 25 x 25 cm) fetten und den Teig einf\u00fcllen. Ca. 35 Minuten backen. Der Kuchen ist genau richtig, wenn er in der Mitte gerade eine nicht mehr ganz fl\u00fcssige Konsistenz angenommen hat. Dann fast ausk\u00fchlen lassen.\r\n\r\nDie verbliebenen 100 g Bitterschokolade und 50 g Butter schmelzen und den Kuchen damit \u00fcberziehen.\r\n\r\nRuhig einen Tag ziehen lassen! K\u00fchl aufbewahren, aber zimmerwarm servieren!",
                 "language": "de",
                 "prep_time": "",
@@ -42,7 +52,7 @@ class RecipeScrapersWebserviceImporterTest {
                 "total_time": 140,
                 "yields": "1 serving(s)"
             }
-            """;
+                    """;
 
     @MockBean
     private RecipeScraperServiceProxy recipeScraperServiceProxy;
@@ -89,6 +99,7 @@ class RecipeScrapersWebserviceImporterTest {
         assertIngredientPresent(recipe, 4, "", "Ei(er)", 5);
         assertIngredientPresent(recipe, 1, "Prise(n)", "Salz", 6);
         assertIngredientPresent(recipe, 0.5F, "Flasche", "Rumaroma oder 3 EL Rum", 7);
+        assertIngredientPresent(recipe, 0, "", "Salz nach Wunsch", 9);
     }
 
     private void assertIngredientPresent(Recipe recipe, float amount, String unit, String ingredientName, int index) {
