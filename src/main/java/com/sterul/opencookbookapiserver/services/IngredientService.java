@@ -16,13 +16,13 @@ public class IngredientService {
     private IngredientRepository ingredientRepository;
 
     public Ingredient createOrGetIngredient(Ingredient ingredient) {
+        // Make sure a new ingredient is created
+        ingredient.setId(null);
+
         var existingIngredient = ingredientRepository.findByName(ingredient.getName());
         if (existingIngredient != null) {
             return existingIngredient;
         }
-
-        // Make sure a new ingredient is created
-        ingredient.setId(null);
         return ingredientRepository.save(ingredient);
     }
 
