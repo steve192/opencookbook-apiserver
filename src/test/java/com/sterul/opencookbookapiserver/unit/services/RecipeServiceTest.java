@@ -1,5 +1,6 @@
 package com.sterul.opencookbookapiserver.unit.services;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -19,6 +20,8 @@ import com.sterul.opencookbookapiserver.services.RecipeService;
 import com.sterul.opencookbookapiserver.services.WeekplanService;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -53,6 +56,9 @@ class RecipeServiceTest {
     private IngredientNeed mockIngredientNeed;
     @Mock
     private WeekplanDay mockWeekplanDay;
+
+    @Captor
+    private ArgumentCaptor<Recipe> recipeCaptor;
 
     @Test
     void recipeCreated() {
@@ -97,6 +103,16 @@ class RecipeServiceTest {
         cut.deleteRecipe(1L);
 
         verify(weekplanService, times(1)).updateWeekplanDay(mockWeekplanDay);
+    }
+
+    @Test
+    void servingsCannotBeNegative() {
+        mockRecipe.setServings(-10);
+        cut.createNewRecipe(mockRecipe);
+
+        verify(recipeRepository).save(recipeCaptor.capture());
+
+        assertTrue(recipeCaptor.getValue().getServings() >= 0);
     }
 
 }
