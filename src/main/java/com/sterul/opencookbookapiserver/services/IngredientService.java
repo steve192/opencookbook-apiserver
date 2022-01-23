@@ -7,7 +7,9 @@ import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class IngredientService {
 
     @Autowired
