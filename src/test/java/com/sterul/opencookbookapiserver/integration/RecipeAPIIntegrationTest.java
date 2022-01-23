@@ -1,7 +1,10 @@
 package com.sterul.opencookbookapiserver.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,12 +17,14 @@ import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
+import com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers.RecipeScraperServiceProxy;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,19 +36,20 @@ import org.springframework.transaction.annotation.Transactional;
 class RecipeAPIIntegrationTest {
 
     @Autowired
-    RecipeController cut;
+    private RecipeController cut;
 
     @Autowired
-    IngredientsController ingredientsController;
+    private IngredientsController ingredientsController;
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
-    User testUser;
+    private User testUser;
 
     @BeforeEach
-    void setup() {
+    void setupContext() {
         testUser = new User();
+        testUser.setUserId(1L);
         testUser.setEmailAddress("test@test.com");
         userRepository.save(testUser);
 
@@ -87,6 +93,19 @@ class RecipeAPIIntegrationTest {
         assertListsEqual(newRecipeResponse.getRecipeGroups(), newRecipe.getRecipeGroups());
         assertListsEqual(newRecipeResponse.getImages(), newRecipe.getImages());
 
+    }
+
+    @MockBean
+    private RecipeScraperServiceProxy recipeScraperServiceProxy;
+
+    @Test
+    void availableHostsPassedByRecipeScrapers() throws IOException {
+        var testhost = "testhost.com";
+        when(recipeScraperServiceProxy.getSupportedHosts()).thenReturn("[\"" + testhost + "\"]");
+
+        var response = cut.getAvilableImportHosts();
+
+        assertTrue(response.contains(testhost));
     }
 
     private void assertListsEqual(List list1, List list2) {

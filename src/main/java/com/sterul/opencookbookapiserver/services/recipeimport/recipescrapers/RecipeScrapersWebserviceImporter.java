@@ -2,6 +2,7 @@ package com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers;
 
 import java.io.IOException;
 import java.text.Normalizer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -147,6 +148,17 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
     private class Nutrients {
         private String calories;
         private String servingSize;
+    }
+
+    @Override
+    public List<String> getSupportedHostnames() throws IOException {
+        try {
+            return gson.fromJson(recipeScraperServiceProxy.getSupportedHosts(), ArrayList.class);
+        } catch (JsonSyntaxException e) {
+            throw new IOException("Error parsing response from recipe scrapers service", e);
+        } catch (IOException e) {
+            throw new IOException("Error in communication with recipe scrapers service", e);
+        }
     }
 
 }
