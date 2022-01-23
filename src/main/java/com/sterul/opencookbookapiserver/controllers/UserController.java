@@ -14,6 +14,7 @@ import com.sterul.opencookbookapiserver.services.RefreshTokenService;
 import com.sterul.opencookbookapiserver.services.UserDetailsServiceImpl;
 import com.sterul.opencookbookapiserver.services.UserService;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
+import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
 import com.sterul.opencookbookapiserver.util.JwtTokenUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +51,7 @@ public class UserController extends BaseController {
 	private RefreshTokenService refreshTokenService;
 
 	@PostMapping("/signup")
-	public User signup(@RequestBody UserCreationRequest userCreationRequest) throws Exception {
+	public User signup(@RequestBody UserCreationRequest userCreationRequest) throws UserAlreadyExistsException {
 		return userService.createUser(userCreationRequest.getEmailAddress(), userCreationRequest.getPassword());
 	}
 

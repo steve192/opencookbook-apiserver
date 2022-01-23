@@ -31,7 +31,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private UserDetailsService userDetailsService;
 
     @Autowired
-    private CustomAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private UnauthorizedEntryPoint unauthorizedEntryPoint;
 
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
@@ -39,15 +39,20 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    private static final String[] AUTH_WHITELIST = { "/api/v1/users/signup", "/api/v1/users/login",
-            "/api/v1/users/refreshToken", "/swagger-ui/*",
-            "/v3/api-docs/*", "/api-docs*", "/api-docs/*", "/api-docs/*/*", "/h2-console/*" };
+    private static final String[] AUTH_WHITELIST = {
+            "/api/v1/users/signup",
+            "/api/v1/users/login",
+            "/api/v1/users/refreshToken",
+            "/swagger-ui/*",
+            "/v3/api-docs/*",
+            "/api-docs*",
+            "/api-docs/*",
+            "/api-docs/*/*",
+            "/h2-console/*" };
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        // configure AuthenticationManager so that it knows from where to load
-        // user for matching credentials
-        // Use BCryptPasswordEncoder
+        // Configure service to check if credentials are valid
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
     }
 
@@ -59,23 +64,32 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        List<String> permittedCorsMethods = Collections.unmodifiableList(Arrays.asList(HttpMethod.GET.name(),
-                HttpMethod.HEAD.name(), HttpMethod.POST.name(), HttpMethod.PUT.name(), HttpMethod.DELETE.name()));
+
+        List<String> permittedCorsMethods = Collections.unmodifiableList(Arrays.asList(
+                HttpMethod.GET.name(),
+                HttpMethod.HEAD.name(),
+                HttpMethod.POST.name(),
+                HttpMethod.PUT.name(),
+                HttpMethod.DELETE.name()));
 
         var corsConfiguration = new CorsConfiguration().applyPermitDefaultValues();
         corsConfiguration.setAllowedMethods(permittedCorsMethods);
 
         http.cors().configurationSource(request -> corsConfiguration)
-                .and().headers().frameOptions().sameOrigin() // TODO: Check if this is a security risk (currently used
-                                                             // for h2 console)
-                .and().csrf().disable().authorizeRequests()
-                .antMatchers(AUTH_WHITELIST).permitAll().anyRequest().authenticated().and()
-                // make sure we use stateless session; session won't be used to
-                // store user's state.
-                .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                // Allow frames needed for h2 console
+                .and().headers().frameOptions().sameOrigin()
 
-        // Add a filter to validate the tokens with every request
+                // Disable csrf protection
+                .and().csrf().disable()
+
+                // Permit whitelist and authenticated request
+                .authorizeRequests().antMatchers(AUTH_WHITELIST).permitAll().anyRequest().authenticated().and()
+                // Handler for when user is not authenticated
+                .exceptionHandling().authenticationEntryPoint(unauthorizedEntryPoint)
+                // Disable sessions
+                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        // Add a filter to check the sent token and authenticate
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
     }
