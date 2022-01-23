@@ -9,12 +9,14 @@ import java.util.Arrays;
 
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
+import com.sterul.opencookbookapiserver.entities.WeekplanDay;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 import com.sterul.opencookbookapiserver.services.IngredientService;
 import com.sterul.opencookbookapiserver.services.RecipeGroupService;
 import com.sterul.opencookbookapiserver.services.RecipeService;
+import com.sterul.opencookbookapiserver.services.WeekplanService;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -36,6 +38,8 @@ class RecipeServiceTest {
     private RecipeGroupService recipeGroupService;
     @MockBean
     private IngredientService ingredientService;
+    @MockBean
+    private WeekplanService weekplanService;
 
     @Mock
     private Recipe mockRecipe;
@@ -47,6 +51,8 @@ class RecipeServiceTest {
     private Ingredient mockIngredientWithoutId;
     @Mock
     private IngredientNeed mockIngredientNeed;
+    @Mock
+    private WeekplanDay mockWeekplanDay;
 
     @Test
     void recipeCreated() {
@@ -75,6 +81,22 @@ class RecipeServiceTest {
         cut.createNewRecipe(mockRecipe);
 
         verify(ingredientService, times(1)).createOrGetIngredient(mockIngredientWithoutId);
+    }
+
+    @Test
+    void recipeDeleted() {
+        cut.deleteRecipe(1L);
+
+        verify(recipeRepository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    void recipeDeletionTriggersWeekplanChange() {
+        when(weekplanService.getWeekplanDaysByRecipe(1L)).thenReturn(Arrays.asList(mockWeekplanDay));
+
+        cut.deleteRecipe(1L);
+
+        verify(weekplanService, times(1)).updateWeekplanDay(mockWeekplanDay);
     }
 
 }
