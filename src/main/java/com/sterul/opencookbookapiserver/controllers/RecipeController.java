@@ -84,6 +84,11 @@ public class RecipeController extends BaseController {
         return recipeImportService.importRecipe(importUrl, owner);
     }
 
+    @GetMapping("/import/available-hosts")
+    public List<String> getAvilableImportHosts() {
+        return recipeImportService.getAvailableImportHosts();
+    }
+
     private RecipeResponse entityToResponse(Recipe recipe) {
         return RecipeResponse.builder()
                 .id(recipe.getId())

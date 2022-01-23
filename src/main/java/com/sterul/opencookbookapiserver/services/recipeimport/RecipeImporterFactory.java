@@ -1,5 +1,9 @@
 package com.sterul.opencookbookapiserver.services.recipeimport;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers.RecipeScrapersWebserviceImporter;
 
@@ -34,5 +38,15 @@ public class RecipeImporterFactory {
             default:
                 throw new ImportNotSupportedException();
         }
+    }
+
+    public List<String> getAllImporter() {
+        var hostlist = new LinkedList<String>();
+        var importerList = Arrays.asList(chefkochImporter, recipeScrapersWebserviceImporter);
+        for (var importer : importerList) {
+            hostlist.addAll(importer.getSupportedHostnames());
+        }
+
+        return hostlist;
     }
 }

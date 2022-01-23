@@ -1,5 +1,7 @@
 package com.sterul.opencookbookapiserver.services;
 
+import java.util.List;
+
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.services.recipeimport.ImportNotSupportedException;
@@ -23,6 +25,10 @@ public class RecipeImportService {
         var importer = importerFactory.getRecipeImporter(importUrl);
         var importedRecipe = importer.importRecipe(importUrl, owner);
         return recipeService.createNewRecipe(importedRecipe);
+    }
+
+    public List<String> getAvailableImportHosts() {
+        return importerFactory.getAllImporter();
     }
 
 }

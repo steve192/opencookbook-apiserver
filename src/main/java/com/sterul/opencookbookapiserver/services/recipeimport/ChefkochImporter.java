@@ -3,6 +3,7 @@ package com.sterul.opencookbookapiserver.services.recipeimport;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
@@ -145,6 +146,11 @@ public class ChefkochImporter extends AbstractRecipeImporter {
         private class RecipeImage {
             String id;
         }
+    }
+
+    @Override
+    public List<String> getSupportedHostnames() {
+        return Arrays.asList("chefkoch.de");
     }
 
 }
