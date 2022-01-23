@@ -9,6 +9,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -31,6 +32,7 @@ public class RecipeScraperServiceProxy {
         return EntityUtils.toString(response.getEntity(), "UTF-8");
     }
 
+    @Cacheable("recipe_scrapers_supported_hosts")
     public String getSupportedHosts() throws IOException {
         var response = client.execute(new HttpGet(
                 opencookbookConfiguration.getRecipeScaperServiceUrl() + "/api/v1/scrape-recipe/supported-hosts"));
