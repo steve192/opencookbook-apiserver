@@ -1,4 +1,4 @@
-package com.sterul.opencookbookapiserver.unit.services.recipeimport;
+package com.sterul.opencookbookapiserver.unit.services;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -18,7 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class IngredientServiceTest {
+class IngredientServiceTest {
 
     @Autowired
     private IngredientService cut;
