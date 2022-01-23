@@ -5,7 +5,6 @@ import java.util.List;
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
-import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
@@ -17,17 +16,17 @@ import org.springframework.stereotype.Service;
 public class RecipeService {
 
     @Autowired
-    IngredientRepository ingredientRepository;
+    private IngredientService ingredientService;
 
     @Autowired
-    RecipeRepository recipeRepository;
+    private RecipeRepository recipeRepository;
 
     @Autowired
     @Lazy
-    RecipeGroupService recipeGroupService;
+    private RecipeGroupService recipeGroupService;
 
     @Autowired
-    WeekplanService weekplanService;
+    private WeekplanService weekplanService;
 
     public Recipe createNewRecipe(Recipe newRecipe) {
         createMissingIngredients(newRecipe);
@@ -41,7 +40,7 @@ public class RecipeService {
             var ingredient = ingredientNeed.getIngredient();
             if (ingredient.getId() == null) {
                 // Convenience api which creates ingredients
-                ingredientNeed.setIngredient(ingredientRepository.save(ingredient));
+                ingredientNeed.setIngredient(ingredientService.createOrGetIngredient(ingredient));
             }
         }
     }

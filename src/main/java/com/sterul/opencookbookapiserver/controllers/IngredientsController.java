@@ -5,8 +5,10 @@ import java.util.List;
 import com.sterul.opencookbookapiserver.controllers.requests.IngredientRequest;
 import com.sterul.opencookbookapiserver.controllers.responses.IngredientResponse;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
-import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
+import com.sterul.opencookbookapiserver.services.IngredientService;
+import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,26 +20,23 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/ingredients")
 public class IngredientsController {
 
-    private IngredientRepository repository;
+    @Autowired
+    private IngredientService ingredientService;
 
     @GetMapping("")
     public List<IngredientResponse> all() {
-        return repository.findAll().stream().map(this::entityToResponse).toList();
+        return ingredientService.getAllIngredients().stream().map(this::entityToResponse).toList();
     }
 
     @GetMapping("/{id}")
-    public List<IngredientResponse> all(@PathVariable Long id) {
-        return repository.findAll().stream().map(this::entityToResponse).toList();
+    public IngredientResponse single(@PathVariable Long id) throws ElementNotFound {
+        return entityToResponse(ingredientService.getIngredient(id));
     }
 
     @PostMapping("")
     public IngredientResponse create(@RequestBody IngredientRequest newIngredient) {
         return entityToResponse(
-                repository.save(requestToEntity(newIngredient)));
-    }
-
-    public IngredientsController(IngredientRepository repository) {
-        this.repository = repository;
+                ingredientService.createOrGetIngredient(requestToEntity(newIngredient)));
     }
 
     private Ingredient requestToEntity(IngredientRequest ingredientRequest) {
