@@ -13,9 +13,14 @@ public class IngredientService {
     @Autowired
     private IngredientRepository ingredientRepository;
 
-    public Ingredient createIngredient(Ingredient ingredient) {
+    public Ingredient createOrGetIngredient(Ingredient ingredient) {
         // Make sure a new ingredient is created
         ingredient.setId(null);
+
+        var existingIngredient = ingredientRepository.findByName(ingredient.getName());
+        if (existingIngredient != null) {
+            return existingIngredient;
+        }
         return ingredientRepository.save(ingredient);
     }
 
@@ -29,6 +34,10 @@ public class IngredientService {
 
     public List<Ingredient> getAllIngredients() {
         return ingredientRepository.findAll();
+    }
+
+    public Ingredient findIngredientByName(String name) {
+        return ingredientRepository.findByName(name);
     }
 
 }

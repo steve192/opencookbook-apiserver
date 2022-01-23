@@ -36,7 +36,7 @@ public class IngredientsController {
     @PostMapping("")
     public IngredientResponse create(@RequestBody IngredientRequest newIngredient) {
         return entityToResponse(
-                ingredientService.createIngredient(requestToEntity(newIngredient)));
+                ingredientService.createOrGetIngredient(requestToEntity(newIngredient)));
     }
 
     private Ingredient requestToEntity(IngredientRequest ingredientRequest) {
