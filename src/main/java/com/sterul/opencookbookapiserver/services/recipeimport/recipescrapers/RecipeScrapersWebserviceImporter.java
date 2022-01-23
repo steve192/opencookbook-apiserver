@@ -51,6 +51,8 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
                 .title(scrapedRecipe.title)
                 .preparationSteps(extractPraparationSteps(scrapedRecipe))
                 .servings(Integer.parseInt(scrapedRecipe.yields.split(" ")[0]))
+                .preparationTime(Long.valueOf(scrapedRecipe.prep_time))
+                .totalTime(Long.valueOf(scrapedRecipe.total_time))
                 .build();
 
         extractImage(owner, scrapedRecipe, importRecipe);
