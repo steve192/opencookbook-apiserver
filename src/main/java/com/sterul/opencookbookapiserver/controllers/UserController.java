@@ -31,8 +31,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/v1/users")
+@Tag(name = "Users", description = "Authentication and management of own user")
 public class UserController extends BaseController {
 
 	@Autowired
@@ -50,11 +54,13 @@ public class UserController extends BaseController {
 	@Autowired
 	private RefreshTokenService refreshTokenService;
 
+	@Operation(summary = "Creates a new user")
 	@PostMapping("/signup")
 	public User signup(@RequestBody UserCreationRequest userCreationRequest) throws UserAlreadyExistsException {
 		return userService.createUser(userCreationRequest.getEmailAddress(), userCreationRequest.getPassword());
 	}
 
+	@Operation(summary = "Logs a user in", description = "Logs in and generates tokens for authentication")
 	@PostMapping("/login")
 	public ResponseEntity<UserLoginResponse> login(@RequestBody UserLoginRequest authenticationRequest)
 			throws UnauthorizedException {
@@ -73,6 +79,7 @@ public class UserController extends BaseController {
 		return ResponseEntity.ok(response);
 	}
 
+	@Operation(summary = "Get information about authenticated user account")
 	@GetMapping("/self")
 	public UserInfoResponse getOwnUserInfo() {
 		var response = new UserInfoResponse();
@@ -80,11 +87,13 @@ public class UserController extends BaseController {
 		return response;
 	}
 
+	@Operation(summary = "Delete authenticated user account")
 	@DeleteMapping("/self")
 	public void deleteOwnUser() {
 		userService.deleteUser(getLoggedInUser());
 	}
 
+	@Operation(summary = "Generate a JWT token from a refresh token", description = "The JWT token is used to authenticate against all apis using the \"Authentication: Bearer < token >\" header field")
 	@PostMapping("/refreshToken")
 	public RefreshTokenResponse renewToken(@RequestBody RefreshTokenRequest refreshTokenRequest)
 			throws NotAuthorizedException {

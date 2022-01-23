@@ -24,8 +24,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/v1/recipes")
+@Tag(name = "Recipes", description = "Creating, chaning, deleting, importing recipes")
 public class RecipeController extends BaseController {
 
     @Autowired
@@ -34,12 +38,14 @@ public class RecipeController extends BaseController {
     @Autowired
     private RecipeService recipeService;
 
+    @Operation(summary = "Search or get recipes")
     @GetMapping("")
     public List<Recipe> searchRecipe(@RequestParam(required = false) String searchString) {
         var user = getLoggedInUser();
         return recipeService.getRecipesByOwner(user);
     }
 
+    @Operation(summary = "Create a new recipe", description = "Not existing ingredients and recipe groups will be created when no id is supplied.")
     @PostMapping("")
     public RecipeResponse newRecipe(@RequestBody RecipeRequest recipeRequest) {
         var newRecipe = requestToEntity(recipeRequest);
@@ -50,6 +56,7 @@ public class RecipeController extends BaseController {
         return entityToResponse(recipeService.createNewRecipe(newRecipe));
     }
 
+    @Operation(summary = "Get a single recipe")
     @GetMapping("/{id}")
     public RecipeResponse single(@PathVariable Long id) throws NotAuthorizedException, ElementNotFound {
         if (!recipeService.hasAccessPermissionToRecipe(id, getLoggedInUser())) {
@@ -58,6 +65,7 @@ public class RecipeController extends BaseController {
         return entityToResponse(recipeService.getRecipeById(id));
     }
 
+    @Operation(summary = "Update an existing recipe")
     @PutMapping("/{id}")
     public RecipeResponse updateRecipe(@PathVariable Long id, @RequestBody RecipeRequest recipeUpdate)
             throws NoSuchElementException, NotAuthorizedException, ElementNotFound {
@@ -69,6 +77,7 @@ public class RecipeController extends BaseController {
 
     }
 
+    @Operation(summary = "Delete a recipe", description = "Deleted recipes will automatically deleted from weekplan days. Also linked images will be automatically deleted")
     @DeleteMapping("/{id}")
     public void deleteRecipe(@PathVariable Long id) throws NotAuthorizedException, ElementNotFound {
         if (!recipeService.hasAccessPermissionToRecipe(id, getLoggedInUser())) {
@@ -77,6 +86,7 @@ public class RecipeController extends BaseController {
         recipeService.deleteRecipe(id);
     }
 
+    @Operation(summary = "Import a recipe from a recipe website")
     @GetMapping("/import")
     public Recipe importRecipe(@RequestParam String importUrl)
             throws ImportNotSupportedException, RecipeImportFailedException {
@@ -84,6 +94,7 @@ public class RecipeController extends BaseController {
         return recipeImportService.importRecipe(importUrl, owner);
     }
 
+    @Operation(summary = "Get a list of supported websites", description = "Additional websites are supported by a generic import. Quality can vary")
     @GetMapping("/import/available-hosts")
     public List<String> getAvilableImportHosts() {
         return recipeImportService.getAvailableImportHosts();

@@ -16,23 +16,30 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/v1/ingredients")
+@Tag(name = "Ingredients", description = "Ingredients used in recipes")
 public class IngredientsController {
 
     @Autowired
     private IngredientService ingredientService;
 
+    @Operation(summary = "Get all ingredients")
     @GetMapping("")
     public List<IngredientResponse> all() {
         return ingredientService.getAllIngredients().stream().map(this::entityToResponse).toList();
     }
 
+    @Operation(summary = "Get a single ingredient")
     @GetMapping("/{id}")
     public IngredientResponse single(@PathVariable Long id) throws ElementNotFound {
         return entityToResponse(ingredientService.getIngredient(id));
     }
 
+    @Operation(summary = "Create an ingredient", description = "If an ingredient with the same name exists, the existing ingredient will be returned")
     @PostMapping("")
     public IngredientResponse create(@RequestBody IngredientRequest newIngredient) {
         return entityToResponse(

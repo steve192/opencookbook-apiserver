@@ -22,13 +22,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/v1/recipes-images")
+@Tag(name = "Recipe images", description = "Managing recipe images")
 public class RecipeImagesController extends BaseController {
 
     @Autowired
     RecipeImageService recipeImageService;
 
+    @Operation(summary = "Fetch single recipe image")
     @GetMapping(value = "/{uuid}", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> getRecipeImage(@PathVariable String uuid, HttpServletResponse response)
             throws ElementNotFound, NotAuthorizedException {
@@ -50,13 +55,15 @@ public class RecipeImagesController extends BaseController {
                 .body(imageData);
     }
 
-    @PostMapping("")
+    @Operation(summary = "Upload a new image", description = "Upload an image as multipart file. The images uuid can later on be assigned to a recipe. If they are not assigned they will be deleted after a while")
+    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public RecipeImage uploadRecipeImage(@RequestParam("image") MultipartFile multipartFile)
             throws IOException, IllegalFiletypeException {
         return recipeImageService.saveNewImage(multipartFile.getInputStream(), multipartFile.getSize(),
                 getLoggedInUser());
     }
 
+    @Operation(summary = "Delete an image")
     @DeleteMapping("/{uuid}")
     public void deleteImage(@PathVariable String uuid) throws ElementNotFound, NotAuthorizedException {
         if (!recipeImageService.hasAccessPermissionToRecipeImage(uuid, getLoggedInUser())) {

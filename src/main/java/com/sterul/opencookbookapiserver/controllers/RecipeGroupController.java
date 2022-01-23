@@ -19,13 +19,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/v1/recipe-groups")
+@Tag(name = "Recipe groups", description = "Recipe groups")
 public class RecipeGroupController extends BaseController {
 
     @Autowired
     private RecipeGroupService recipeGroupService;
 
+    @Operation(summary = "Get all recipe groups")
     @GetMapping("")
     public List<RecipeGroupResponse> getAll() {
         return recipeGroupService.getRecipeGroupsByOwner(getLoggedInUser()).stream()
@@ -33,6 +38,7 @@ public class RecipeGroupController extends BaseController {
                 .toList();
     }
 
+    @Operation(summary = "Create a recipe group")
     @PostMapping("")
     public RecipeGroupResponse create(@RequestBody RecipeGroupRequest recipeGroup) {
         var recipeGroupEntity = requestToEntity(recipeGroup);
@@ -41,6 +47,7 @@ public class RecipeGroupController extends BaseController {
         return entityToResponse(recipeGroupService.createRecipeGroup(recipeGroupEntity));
     }
 
+    @Operation(summary = "Change a recipe group")
     @PutMapping("/{id}")
     public RecipeGroupResponse change(@PathVariable Long id, @RequestBody RecipeGroupRequest updatedRecipeGroup)
             throws NotAuthorizedException, ElementNotFound {
@@ -54,6 +61,7 @@ public class RecipeGroupController extends BaseController {
         return entityToResponse(recipeGroupService.updateRecipeGroup(groupEntity));
     }
 
+    @Operation(summary = "Delete a recipe group", description = "Assigned recipes will not be deleted, but the recipe group will be removed from them")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) throws NotAuthorizedException, ElementNotFound {
         if (!recipeGroupService.hasAccessPermissionToRecipeGroup(id, getLoggedInUser())) {
