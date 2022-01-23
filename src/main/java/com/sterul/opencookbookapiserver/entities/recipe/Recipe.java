@@ -7,6 +7,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
@@ -57,5 +58,15 @@ public class Recipe {
     @ManyToMany
     @Builder.Default
     private List<RecipeGroup> recipeGroups = new ArrayList<>();
+
+    private Long preparationTime;
+    private Long totalTime;
+
+    @Enumerated
+    private RecipeType recipeType;
+
+    public enum RecipeType {
+        VEGAN, VEGETARIAN, MEAT;
+    }
 
 }
