@@ -25,7 +25,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class RecipeServiceTest {
+class RecipeServiceTest {
 
     @Autowired
     private RecipeService cut;
