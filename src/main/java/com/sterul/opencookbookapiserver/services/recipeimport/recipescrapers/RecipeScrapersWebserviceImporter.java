@@ -151,17 +151,14 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
     }
 
     @Override
-    public List<String> getSupportedHostnames() {
+    public List<String> getSupportedHostnames() throws IOException {
         try {
             return gson.fromJson(recipeScraperServiceProxy.getSupportedHosts(), ArrayList.class);
         } catch (JsonSyntaxException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new IOException("Error parsing response from recipe scrapers service", e);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new IOException("Error in communication with recipe scrapers service", e);
         }
-        return new ArrayList<>();
     }
 
 }

@@ -1,5 +1,6 @@
 package com.sterul.opencookbookapiserver.services.recipeimport;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,7 +11,10 @@ import com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers.Rec
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
+@Slf4j
 public class RecipeImporterFactory {
 
     @Autowired
@@ -44,7 +48,11 @@ public class RecipeImporterFactory {
         var hostlist = new LinkedList<String>();
         var importerList = Arrays.asList(chefkochImporter, recipeScrapersWebserviceImporter);
         for (var importer : importerList) {
-            hostlist.addAll(importer.getSupportedHostnames());
+            try {
+                hostlist.addAll(importer.getSupportedHostnames());
+            } catch (IOException e) {
+                log.error("Error getting supported hosts from importer", e);
+            }
         }
 
         return hostlist;
