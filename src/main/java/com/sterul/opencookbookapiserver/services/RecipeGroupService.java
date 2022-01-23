@@ -31,8 +31,11 @@ public class RecipeGroupService {
     }
 
     public void deleteRecipeGroup(Long recipeGroupId) {
-        var recipeGroup = recipeGroupRepository.getOne(recipeGroupId);
-        var recipesToUnassignGroup = recipeService.getRecipesByRecipeGroup(recipeGroup);
+        var recipeGroupOptional = recipeGroupRepository.findById(recipeGroupId);
+        if (recipeGroupOptional.isEmpty()) {
+            throw new Error("Receipe group " + recipeGroupId + " not existing. Cannot delete");
+        }
+        var recipesToUnassignGroup = recipeService.getRecipesByRecipeGroup(recipeGroupOptional.get());
 
         // TODO: Replace clean with specific group if multi groups are implemented
         recipesToUnassignGroup.forEach(recipe -> {
