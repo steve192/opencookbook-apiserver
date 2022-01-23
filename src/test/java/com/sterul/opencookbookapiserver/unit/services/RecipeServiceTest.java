@@ -7,9 +7,12 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 
+import com.sterul.opencookbookapiserver.entities.Ingredient;
+import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
+import com.sterul.opencookbookapiserver.services.IngredientService;
 import com.sterul.opencookbookapiserver.services.RecipeGroupService;
 import com.sterul.opencookbookapiserver.services.RecipeService;
 
@@ -31,6 +34,8 @@ public class RecipeServiceTest {
     private RecipeRepository recipeRepository;
     @MockBean
     private RecipeGroupService recipeGroupService;
+    @MockBean
+    private IngredientService ingredientService;
 
     @Mock
     private Recipe mockRecipe;
@@ -38,6 +43,10 @@ public class RecipeServiceTest {
     private RecipeGroup mockRecipeGroupWithoutId;
     @Mock
     private RecipeGroup mockRecipeGroupWithId;
+    @Mock
+    private Ingredient mockIngredientWithoutId;
+    @Mock
+    private IngredientNeed mockIngredientNeed;
 
     @Test
     void recipeCreated() {
@@ -55,6 +64,17 @@ public class RecipeServiceTest {
         cut.createNewRecipe(mockRecipe);
 
         verify(recipeGroupService, times(1)).createRecipeGroup(mockRecipeGroupWithoutId);
+    }
+
+    @Test
+    void ingredientCreatedIfNotExistent() {
+        when(mockIngredientWithoutId.getId()).thenReturn(null);
+        when(mockIngredientNeed.getIngredient()).thenReturn(mockIngredientWithoutId);
+        when(mockRecipe.getNeededIngredients()).thenReturn(Arrays.asList(mockIngredientNeed));
+
+        cut.createNewRecipe(mockRecipe);
+
+        verify(ingredientService, times(1)).createOrGetIngredient(mockIngredientWithoutId);
     }
 
 }
