@@ -20,5 +20,6 @@ public class User {
     @JsonIgnore
     private String passwordHash;
 
-
+    private boolean activated;
+    private String activationCode;
 }

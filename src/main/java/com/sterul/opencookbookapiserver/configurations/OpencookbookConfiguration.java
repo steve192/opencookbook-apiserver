@@ -37,4 +37,34 @@ public class OpencookbookConfiguration {
      */
     private String recipeScaperServiceUrl;
 
+    /**
+     *  SMTP Host
+     */
+    private String smtpHost="";
+
+    /**
+     * SMTP Port
+     */
+    private Integer smtpPort=465;
+
+    /**
+     * SMTP Username
+     */
+    private String smtpUsername="";
+
+    /**
+     * SMTP Password
+     */
+    private String smtpPassword="";
+
+    /**
+     * SMTP Protocol (SMTP/SSMTP)
+     */
+    private String smtpProtocol="smtp";
+
+    /**
+     * Use start tls? (true/false)
+     */
+    private String smtpStartTLS="false";
+
 }

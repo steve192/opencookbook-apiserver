@@ -2,7 +2,9 @@ package com.sterul.opencookbookapiserver.services;
 
 import java.io.IOException;
 
+import com.sterul.opencookbookapiserver.entities.account.ActivationLink;
 import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.repositories.ActivationLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
 
@@ -37,6 +39,9 @@ public class UserService {
     @Autowired
     private RefreshTokenService refreshTokenService;
 
+    @Autowired
+    private ActivationLinkRepository activationLinkRepository;
+
     public User getUserByEmail(String username) {
         return userRepository.findByEmailAddress(username);
     }
@@ -49,11 +54,36 @@ public class UserService {
         var createdUser = new com.sterul.opencookbookapiserver.entities.account.User();
         createdUser.setEmailAddress(emailAddress);
         createdUser.setPasswordHash(passwordEncoder.encode(unencryptedPassword));
-        return userRepository.save(createdUser);
+        createdUser.setActivated(false);
+        createdUser = userRepository.save(createdUser);
+
+        createActivationLink(createdUser);
+
+        return createdUser;
     }
 
     public boolean userExists(String emailAddress) {
         return userRepository.existsByEmailAddress(emailAddress);
+    }
+
+    public void deleteAllActivationLinks(User user) {
+        activationLinkRepository.deleteByUser(user);
+    }
+
+    public ActivationLink createActivationLink(User user) {
+        deleteAllActivationLinks(user);
+
+        var activationLink = new ActivationLink();
+        activationLink.setUser(user);
+
+        return activationLinkRepository.save(activationLink);
+    }
+
+    public void activateUser(String activationId) {
+        var activationLink = activationLinkRepository.getById(activationId);
+        var user = activationLink.getUser();
+        user.setActivated(true);
+        userRepository.save(user);
     }
 
     public void deleteUser(User user) {
