@@ -20,6 +20,7 @@ import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsExc
 import com.sterul.opencookbookapiserver.util.JwtTokenUtil;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,9 +33,12 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import javax.mail.MessagingException;
+
 @RestController
 @RequestMapping("/api/v1/users")
 @Tag(name = "Users", description = "Authentication and management of own user")
+@Slf4j
 public class UserController extends BaseController {
 
 	@Autowired
@@ -60,7 +64,11 @@ public class UserController extends BaseController {
 	public User signup(@RequestBody UserCreationRequest userCreationRequest) throws UserAlreadyExistsException {
 		var createdUser = userService.createUser(userCreationRequest.getEmailAddress(), userCreationRequest.getPassword());
 		var activationLink = userService.createActivationLink(createdUser);
-		emailService.sendActivationMail(activationLink);
+		try {
+			emailService.sendActivationMail(activationLink);
+		} catch (MessagingException e) {
+			log.error("Error sending activation mail");
+		}
 		return createdUser;
 	}
 
