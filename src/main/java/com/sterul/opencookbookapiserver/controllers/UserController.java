@@ -74,6 +74,7 @@ public class UserController extends BaseController {
 		return ResponseEntity.ok(response);
 	}
 
+	@Operation( summary = "Activates a user, using an activation id")
 	@GetMapping("/activate")
 	public void activateUser(@RequestParam String activationId) {
 		userService.activateUser(activationId);
