@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserService {
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -41,6 +41,9 @@ public class UserService {
 
     @Autowired
     private ActivationLinkRepository activationLinkRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     public User getUserByEmail(String username) {
         return userRepository.findByEmailAddress(username);
@@ -83,6 +86,7 @@ public class UserService {
         var activationLink = activationLinkRepository.getById(activationId);
         var user = activationLink.getUser();
         user.setActivated(true);
+        activationLinkRepository.delete(activationLink);
         userRepository.save(user);
     }
 
