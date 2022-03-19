@@ -6,6 +6,7 @@ import com.sterul.opencookbookapiserver.entities.account.ActivationLink;
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.repositories.ActivationLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
+import com.sterul.opencookbookapiserver.services.exceptions.InvalidActivationLinkException;
 import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,8 +61,6 @@ public class UserService {
         createdUser.setActivated(false);
         createdUser = userRepository.save(createdUser);
 
-        createActivationLink(createdUser);
-
         return createdUser;
     }
 
@@ -82,11 +81,14 @@ public class UserService {
         return activationLinkRepository.save(activationLink);
     }
 
-    public void activateUser(String activationId) {
-        var activationLink = activationLinkRepository.getById(activationId);
-        var user = activationLink.getUser();
+    public void activateUser(String activationId) throws InvalidActivationLinkException {
+        var activationLink = activationLinkRepository.findById(activationId);
+        if (activationLink.isEmpty()) {
+            throw new InvalidActivationLinkException();
+        }
+        var user = activationLink.get().getUser();
         user.setActivated(true);
-        activationLinkRepository.delete(activationLink);
+        activationLinkRepository.delete(activationLink.get());
         userRepository.save(user);
     }
 

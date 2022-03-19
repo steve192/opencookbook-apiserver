@@ -12,6 +12,13 @@ import lombok.Setter;
 @Setter
 public class OpencookbookConfiguration {
 
+
+
+    /**
+     * URL where this instance is reachable (e.g. https://cookpal.io)
+     */
+    private String instanceURL = "";
+
     /**
      * Upload directory for images and co
      */
@@ -58,13 +65,18 @@ public class OpencookbookConfiguration {
     private String smtpPassword="";
 
     /**
-     * SMTP Protocol (SMTP/SSMTP)
+     * SMTP Protocol (SMTP/SMTPS)
      */
-    private String smtpProtocol="smtp";
+    private String smtpProtocol="smtps";
 
     /**
      * Use start tls? (true/false)
      */
     private String smtpStartTLS="false";
+
+    /**
+     * Email address from which mails are sent from
+     */
+    private String mailFrom;
 
 }

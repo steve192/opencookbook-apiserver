@@ -10,13 +10,16 @@ import com.sterul.opencookbookapiserver.controllers.responses.UserInfoResponse;
 import com.sterul.opencookbookapiserver.controllers.responses.UserLoginResponse;
 import com.sterul.opencookbookapiserver.entities.RefreshToken;
 import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.services.EmailService;
 import com.sterul.opencookbookapiserver.services.RefreshTokenService;
 import com.sterul.opencookbookapiserver.services.UserDetailsServiceImpl;
 import com.sterul.opencookbookapiserver.services.UserService;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
+import com.sterul.opencookbookapiserver.services.exceptions.InvalidActivationLinkException;
 import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
 import com.sterul.opencookbookapiserver.util.JwtTokenUtil;
 
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -49,10 +52,16 @@ public class UserController extends BaseController {
 	@Autowired
 	private RefreshTokenService refreshTokenService;
 
+	@Autowired
+	private EmailService emailService;
+
 	@Operation(summary = "Creates a new user")
 	@PostMapping("/signup")
 	public User signup(@RequestBody UserCreationRequest userCreationRequest) throws UserAlreadyExistsException {
-		return userService.createUser(userCreationRequest.getEmailAddress(), userCreationRequest.getPassword());
+		var createdUser = userService.createUser(userCreationRequest.getEmailAddress(), userCreationRequest.getPassword());
+		var activationLink = userService.createActivationLink(createdUser);
+		emailService.sendActivationMail(activationLink);
+		return createdUser;
 	}
 
 	@Operation(summary = "Logs a user in", description = "Logs in and generates tokens for authentication")
@@ -76,7 +85,7 @@ public class UserController extends BaseController {
 
 	@Operation( summary = "Activates a user, using an activation id")
 	@GetMapping("/activate")
-	public void activateUser(@RequestParam String activationId) {
+	public void activateUser(@RequestParam String activationId) throws InvalidActivationLinkException {
 		userService.activateUser(activationId);
 	}
 
