@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
-import java.io.IOException;
 import java.util.Properties;
 
 @Configuration
@@ -21,7 +20,7 @@ public class EmailConfiguration {
 
         mailSender.setUsername(opencookbookConfiguration.getSmtpUsername());
         mailSender.setPassword(opencookbookConfiguration.getSmtpPassword());
-
+        
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", opencookbookConfiguration.getSmtpProtocol());
         props.put("mail.smtp.auth", "true");
