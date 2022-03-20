@@ -28,7 +28,7 @@ public class EmailService {
         var message = javaMailSender.createMimeMessage();
         var messageHelper = new MimeMessageHelper(message, true);
 
-        var template = velocityEngine.getTemplate("./mailtemplates/activation.vm");
+        var template = velocityEngine.getTemplate("mailtemplates/activation.vm");
         var context = new VelocityContext();
         context.put("activationLink", opencookbookConfiguration.getInstanceURL() + "/api/v1/users/activate?activationId=" + activationLink.getId());
         var stringWriter = new StringWriter();
