@@ -106,16 +106,9 @@ public class UserController extends BaseController {
     @Operation(summary = "Resends an activation link to the users email address. Ignores requests for when users are already active or users do not exist")
     @PostMapping("/resendActivationLink")
     public ResponseEntity<String> resendActivationLink(@RequestBody ResendActivationLinkRequest request) {
-        var user = userService.getUserByEmail(request.getEmailAddress());
-        if (user.isActivated()) {
-            return ResponseEntity.ok("");
-        }
-        userService.deleteAllActivationLinks(user);
-        var activationLink = userService.createActivationLink(user);
         try {
-            emailService.sendActivationMail(activationLink);
+            userService.resendActivationLink(request.getEmailAddress());
         } catch (MessagingException e) {
-            log.error("Error sending activation mail");
             return ResponseEntity.internalServerError().build();
         }
         return ResponseEntity.ok("");
