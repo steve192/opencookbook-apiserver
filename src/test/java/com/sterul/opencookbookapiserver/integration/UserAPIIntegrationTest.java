@@ -4,9 +4,11 @@ import com.sterul.opencookbookapiserver.controllers.UserController;
 import com.sterul.opencookbookapiserver.controllers.exceptions.UnauthorizedException;
 import com.sterul.opencookbookapiserver.controllers.requests.UserCreationRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.UserLoginRequest;
+import com.sterul.opencookbookapiserver.entities.RefreshToken;
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.EmailService;
+import com.sterul.opencookbookapiserver.services.RefreshTokenService;
 import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
@@ -34,16 +37,37 @@ class UserAPIIntegrationTest {
     UserRepository userRepository;
     @MockBean
     EmailService emailService;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
+    @MockBean
+    RefreshTokenService refreshTokenService;
+
     @Autowired
     UserController cut;
     User testUser;
+
+    RefreshToken testRefreshToken;
 
     @BeforeEach
     void setup() {
         testUser = new User();
         testUser.setEmailAddress("test@test.com");
-        when(userRepository.findByEmailAddress(testUser.getEmailAddress())).thenReturn(testUser);
+        testUser.setPasswordHash(passwordEncoder.encode(testPassword));
 
+        testRefreshToken = new RefreshToken();
+        testRefreshToken.setToken("test123");
+        testRefreshToken.setOwner(testUser);
+        when(refreshTokenService.createRefreshTokenForUser(testUser)).thenReturn(testRefreshToken);
+    }
+
+    void whenTestUserExists(boolean active) {
+        testUser.setActivated(active);
+        when(userRepository.findByEmailAddress(testUser.getEmailAddress())).thenReturn(testUser);
+    }
+
+    void whenAuthentificated() {
         // Mock currently logged in user
         Authentication authentication = Mockito.mock(Authentication.class);
         Mockito.when(authentication.getName()).thenReturn("test@test.com");
@@ -55,6 +79,8 @@ class UserAPIIntegrationTest {
 
     @Test
     void testUserInfo() {
+        whenTestUserExists(true);
+        whenAuthentificated();
         assertEquals(cut.getOwnUserInfo().getEmail(), testUser.getEmailAddress());
     }
 
@@ -68,6 +94,7 @@ class UserAPIIntegrationTest {
     @Test
     @Transactional
     void nonActivatedUserCannotLogin() throws UserAlreadyExistsException, UnauthorizedException {
+        whenTestUserExists(false);
         var response = cut.login(UserLoginRequest.builder()
                 .emailAddress(testUser.getEmailAddress())
                 .password(testPassword)
@@ -75,7 +102,19 @@ class UserAPIIntegrationTest {
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         assertTrue(response.getBody().toString().contains("NOT_ACTIVE"));
+    }
 
+    @Test
+    void activeUserCanLogin() throws UnauthorizedException {
+        whenTestUserExists(true);
+
+        var response = cut.login(UserLoginRequest.builder()
+                .emailAddress(testUser.getEmailAddress())
+                .password(testPassword)
+                .build());
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getBody().toString().contains(testRefreshToken.getToken()));
     }
 
 }
