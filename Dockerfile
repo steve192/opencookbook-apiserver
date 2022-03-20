@@ -16,5 +16,6 @@ ENTRYPOINT ["java",
     "--opencookbook.smtpPassword=${SMTP_PASSWORD}",
     "--opencookbook.smtpProtocol=${SMTP_PROTOCOL}",
     "--opencookbook.smtpStartTLS=${SMTP_STARTTLS}",
-    "--opencookbook.mailFrom=${MAIL_FROM}"
+    "--opencookbook.mailFrom=${MAIL_FROM}",
+    "--opencookbook.instanceURL=${INSTANCE_URL}"
     ]
