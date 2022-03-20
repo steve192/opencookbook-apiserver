@@ -1,12 +1,11 @@
 package com.sterul.opencookbookapiserver.entities.account;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import lombok.Data;
 
 @Entity
 @Data
@@ -21,5 +20,4 @@ public class User {
     private String passwordHash;
 
     private boolean activated;
-    private String activationCode;
 }
