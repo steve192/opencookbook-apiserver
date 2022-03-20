@@ -1,21 +1,22 @@
 package com.sterul.opencookbookapiserver.services;
 
-import java.io.IOException;
-
 import com.sterul.opencookbookapiserver.entities.account.ActivationLink;
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.repositories.ActivationLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.exceptions.InvalidActivationLinkException;
 import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import lombok.extern.slf4j.Slf4j;
+import javax.mail.MessagingException;
+import java.io.IOException;
 
 @Service
+@Transactional
 @Slf4j
 public class UserService {
 
@@ -51,7 +52,7 @@ public class UserService {
     }
 
     public com.sterul.opencookbookapiserver.entities.account.User createUser(String emailAddress,
-            String unencryptedPassword) throws UserAlreadyExistsException {
+                                                                             String unencryptedPassword) throws UserAlreadyExistsException {
         if (userExists(emailAddress)) {
             throw new UserAlreadyExistsException("User already exists");
         }
@@ -94,13 +95,13 @@ public class UserService {
 
     public void deleteUser(User user) {
         var recipes = recipeService.getRecipesByOwner(user);
-        recipes.stream().forEach(recipe -> recipeService.deleteRecipe(recipe.getId()));
+        recipes.forEach(recipe -> recipeService.deleteRecipe(recipe.getId()));
 
         var recipeGroups = recipeGroupService.getRecipeGroupsByOwner(user);
-        recipeGroups.stream().forEach(group -> recipeGroupService.deleteRecipeGroup(group.getId()));
+        recipeGroups.forEach(group -> recipeGroupService.deleteRecipeGroup(group.getId()));
 
         var images = recipeImageService.getImagesByUser(user);
-        images.stream().forEach(image -> {
+        images.forEach(image -> {
             try {
                 recipeImageService.deleteImage(image.getUuid());
             } catch (IOException e) {
@@ -109,10 +110,21 @@ public class UserService {
         });
 
         var weekplanDays = weekplanService.getWeekplanDaysByOwner(user);
-        weekplanDays.stream().forEach(day -> weekplanService.deleteWeekplanDay(day.getId()));
+        weekplanDays.forEach(day -> weekplanService.deleteWeekplanDay(day.getId()));
 
         refreshTokenService.deleteAllRefreshTokenForUser(user);
 
         userRepository.delete(user);
+    }
+
+    public void resendActivationLink(String emailAddress) throws MessagingException {
+        var user = getUserByEmail(emailAddress);
+
+        if (user.isActivated()) {
+            return;
+        }
+        deleteAllActivationLinks(user);
+        var activationLink = createActivationLink(user);
+        emailService.sendActivationMail(activationLink);
     }
 }

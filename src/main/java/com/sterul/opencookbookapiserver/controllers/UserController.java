@@ -4,9 +4,9 @@ import com.sterul.opencookbookapiserver.controllers.exceptions.NotAuthorizedExce
 import com.sterul.opencookbookapiserver.controllers.exceptions.UnauthorizedException;
 import com.sterul.opencookbookapiserver.controllers.exceptions.UserNotActiveException;
 import com.sterul.opencookbookapiserver.controllers.requests.RefreshTokenRequest;
+import com.sterul.opencookbookapiserver.controllers.requests.ResendActivationLinkRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.UserCreationRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.UserLoginRequest;
-import com.sterul.opencookbookapiserver.controllers.responses.LoginErrorResponse;
 import com.sterul.opencookbookapiserver.controllers.responses.RefreshTokenResponse;
 import com.sterul.opencookbookapiserver.controllers.responses.UserInfoResponse;
 import com.sterul.opencookbookapiserver.controllers.responses.UserLoginResponse;
@@ -74,13 +74,15 @@ public class UserController extends BaseController {
 
     @Operation(summary = "Logs a user in", description = "Logs in and generates tokens for authentication")
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody UserLoginRequest authenticationRequest)
+    public ResponseEntity<UserLoginResponse> login(@RequestBody UserLoginRequest authenticationRequest)
             throws UnauthorizedException {
 
         try {
             login(authenticationRequest.getEmailAddress(), authenticationRequest.getPassword());
         } catch (UserNotActiveException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(LoginErrorResponse.builder().error("NOT_ACTIVE").build());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(UserLoginResponse.builder()
+                            .userActive(false).build());
         }
 
         final UserDetails userDetails = userDetailsService
@@ -88,10 +90,12 @@ public class UserController extends BaseController {
 
         final String token = jwtTokenUtil.generateToken(userDetails);
 
-        var response = new UserLoginResponse();
-        response.setToken(token);
-        response.setRefreshToken(refreshTokenService
-                .createRefreshTokenForUser(userService.getUserByEmail(userDetails.getUsername())).getToken());
+        var response = UserLoginResponse.builder()
+                .token(token)
+                .userActive(true)
+                .refreshToken(refreshTokenService.createRefreshTokenForUser(
+                        userService.getUserByEmail(userDetails.getUsername())).getToken())
+                .build();
 
         return ResponseEntity.ok(response);
     }
@@ -100,6 +104,20 @@ public class UserController extends BaseController {
     @GetMapping("/activate")
     public void activateUser(@RequestParam String activationId) throws InvalidActivationLinkException {
         userService.activateUser(activationId);
+    }
+
+    @Operation(summary = "Resends an activation link to the users email address. Ignores requests for when users are already active or users do not exist")
+    @PostMapping("/resendActivationLink")
+    public ResponseEntity<String> resendActivationLink(@RequestBody ResendActivationLinkRequest request) {
+        if (!userService.userExists(request.getEmailAddress())) {
+            return ResponseEntity.ok().build();
+        }
+        try {
+            userService.resendActivationLink(request.getEmailAddress());
+        } catch (MessagingException e) {
+            return ResponseEntity.internalServerError().build();
+        }
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "Get information about authenticated user account")
