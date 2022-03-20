@@ -4,6 +4,7 @@ import com.sterul.opencookbookapiserver.controllers.exceptions.NotAuthorizedExce
 import com.sterul.opencookbookapiserver.controllers.exceptions.UnauthorizedException;
 import com.sterul.opencookbookapiserver.controllers.exceptions.UserNotActiveException;
 import com.sterul.opencookbookapiserver.controllers.requests.RefreshTokenRequest;
+import com.sterul.opencookbookapiserver.controllers.requests.ResendActivationLinkRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.UserCreationRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.UserLoginRequest;
 import com.sterul.opencookbookapiserver.controllers.responses.LoginErrorResponse;
@@ -100,6 +101,24 @@ public class UserController extends BaseController {
     @GetMapping("/activate")
     public void activateUser(@RequestParam String activationId) throws InvalidActivationLinkException {
         userService.activateUser(activationId);
+    }
+
+    @Operation(summary = "Resends an activation link to the users email address. Ignores requests for when users are already active or users do not exist")
+    @PostMapping("/resendActivationLink")
+    public ResponseEntity<String> resendActivationLink(@RequestBody ResendActivationLinkRequest request) {
+        var user = userService.getUserByEmail(request.getEmailAddress());
+        if (user.isActivated()) {
+            return ResponseEntity.ok("");
+        }
+        userService.deleteAllActivationLinks(user);
+        var activationLink = userService.createActivationLink(user);
+        try {
+            emailService.sendActivationMail(activationLink);
+        } catch (MessagingException e) {
+            log.error("Error sending activation mail");
+            return ResponseEntity.internalServerError().build();
+        }
+        return ResponseEntity.ok("");
     }
 
     @Operation(summary = "Get information about authenticated user account")
