@@ -25,8 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
@@ -93,7 +92,7 @@ class UserAPIIntegrationTest {
 
     @Test
     @Transactional
-    void nonActivatedUserCannotLogin() throws UserAlreadyExistsException, UnauthorizedException {
+    void nonActivatedUserCannotLogin() throws UnauthorizedException {
         whenTestUserExists(false);
         var response = cut.login(UserLoginRequest.builder()
                 .emailAddress(testUser.getEmailAddress())
@@ -101,7 +100,7 @@ class UserAPIIntegrationTest {
                 .build());
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        assertTrue(response.getBody().toString().contains("NOT_ACTIVE"));
+        assertFalse(response.getBody().isUserActive());
     }
 
     @Test

@@ -7,7 +7,6 @@ import com.sterul.opencookbookapiserver.controllers.requests.RefreshTokenRequest
 import com.sterul.opencookbookapiserver.controllers.requests.ResendActivationLinkRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.UserCreationRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.UserLoginRequest;
-import com.sterul.opencookbookapiserver.controllers.responses.LoginErrorResponse;
 import com.sterul.opencookbookapiserver.controllers.responses.RefreshTokenResponse;
 import com.sterul.opencookbookapiserver.controllers.responses.UserInfoResponse;
 import com.sterul.opencookbookapiserver.controllers.responses.UserLoginResponse;
@@ -75,13 +74,15 @@ public class UserController extends BaseController {
 
     @Operation(summary = "Logs a user in", description = "Logs in and generates tokens for authentication")
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody UserLoginRequest authenticationRequest)
+    public ResponseEntity<UserLoginResponse> login(@RequestBody UserLoginRequest authenticationRequest)
             throws UnauthorizedException {
 
         try {
             login(authenticationRequest.getEmailAddress(), authenticationRequest.getPassword());
         } catch (UserNotActiveException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(LoginErrorResponse.builder().error("NOT_ACTIVE").build());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(UserLoginResponse.builder()
+                            .userActive(false).build());
         }
 
         final UserDetails userDetails = userDetailsService
@@ -89,10 +90,12 @@ public class UserController extends BaseController {
 
         final String token = jwtTokenUtil.generateToken(userDetails);
 
-        var response = new UserLoginResponse();
-        response.setToken(token);
-        response.setRefreshToken(refreshTokenService
-                .createRefreshTokenForUser(userService.getUserByEmail(userDetails.getUsername())).getToken());
+        var response = UserLoginResponse.builder()
+                .token(token)
+                .userActive(true)
+                .refreshToken(refreshTokenService.createRefreshTokenForUser(
+                        userService.getUserByEmail(userDetails.getUsername())).getToken())
+                .build();
 
         return ResponseEntity.ok(response);
     }
