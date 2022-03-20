@@ -119,6 +119,7 @@ public class UserService {
 
     public void resendActivationLink(String emailAddress) throws MessagingException {
         var user = getUserByEmail(emailAddress);
+
         if (user.isActivated()) {
             return;
         }

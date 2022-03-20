@@ -106,12 +106,15 @@ public class UserController extends BaseController {
     @Operation(summary = "Resends an activation link to the users email address. Ignores requests for when users are already active or users do not exist")
     @PostMapping("/resendActivationLink")
     public ResponseEntity<String> resendActivationLink(@RequestBody ResendActivationLinkRequest request) {
+        if (!userService.userExists(request.getEmailAddress())) {
+            return ResponseEntity.ok().build();
+        }
         try {
             userService.resendActivationLink(request.getEmailAddress());
         } catch (MessagingException e) {
             return ResponseEntity.internalServerError().build();
         }
-        return ResponseEntity.ok("");
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "Get information about authenticated user account")
