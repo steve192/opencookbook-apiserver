@@ -3,6 +3,7 @@ package com.sterul.opencookbookapiserver.entities.account;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -19,5 +20,6 @@ public class User {
     @JsonIgnore
     private String passwordHash;
 
+    @Column(columnDefinition = "boolean default false")
     private boolean activated;
 }
