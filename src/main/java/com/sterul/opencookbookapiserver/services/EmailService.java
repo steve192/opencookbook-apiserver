@@ -30,7 +30,7 @@ public class EmailService {
 
         var template = velocityEngine.getTemplate("mailtemplates/activation.vm");
         var context = new VelocityContext();
-        context.put("activationLink", opencookbookConfiguration.getInstanceURL() + "/api/v1/users/activate?activationId=" + activationLink.getId());
+        context.put("activationLink", opencookbookConfiguration.getInstanceURL() + "/activateAccount?activationId=" + activationLink.getId());
         var stringWriter = new StringWriter();
 
         template.merge(context, stringWriter);
