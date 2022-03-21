@@ -1,8 +1,10 @@
 package com.sterul.opencookbookapiserver.services;
 
 import com.sterul.opencookbookapiserver.entities.account.ActivationLink;
+import com.sterul.opencookbookapiserver.entities.account.PasswordResetLink;
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.repositories.ActivationLinkRepository;
+import com.sterul.opencookbookapiserver.repositories.PasswordResetLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.exceptions.InvalidActivationLinkException;
 import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
@@ -43,6 +45,9 @@ public class UserService {
 
     @Autowired
     private ActivationLinkRepository activationLinkRepository;
+
+    @Autowired
+    private PasswordResetLinkRepository passwordResetLinkRepository;
 
     @Autowired
     private EmailService emailService;
@@ -126,5 +131,19 @@ public class UserService {
         deleteAllActivationLinks(user);
         var activationLink = createActivationLink(user);
         emailService.sendActivationMail(activationLink);
+    }
+
+    public void requestPasswordReset(String emailAddress) {
+        var user = getUserByEmail(emailAddress);
+
+        var link = createPasswordResetLink(user);
+        emailService.sendPasswordResetMail(link);
+    }
+
+    public PasswordResetLink createPasswordResetLink(User user) {
+        passwordResetLinkRepository.deleteByUser(user);
+        var passwordResetLink = new PasswordResetLink();
+        passwordResetLink.setUser(user);
+        return passwordResetLinkRepository.save(passwordResetLink);
     }
 }

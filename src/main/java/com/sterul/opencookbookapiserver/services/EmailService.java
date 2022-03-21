@@ -2,6 +2,7 @@ package com.sterul.opencookbookapiserver.services;
 
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.entities.account.ActivationLink;
+import com.sterul.opencookbookapiserver.entities.account.PasswordResetLink;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -42,4 +43,7 @@ public class EmailService {
         javaMailSender.send(message);
     }
 
+    public void sendPasswordResetMail(PasswordResetLink link) {
+        
+    }
 }
