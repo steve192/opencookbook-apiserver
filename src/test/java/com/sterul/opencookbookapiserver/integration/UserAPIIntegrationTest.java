@@ -2,10 +2,12 @@ package com.sterul.opencookbookapiserver.integration;
 
 import com.sterul.opencookbookapiserver.controllers.UserController;
 import com.sterul.opencookbookapiserver.controllers.exceptions.UnauthorizedException;
+import com.sterul.opencookbookapiserver.controllers.requests.PasswordResetRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.UserCreationRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.UserLoginRequest;
 import com.sterul.opencookbookapiserver.entities.RefreshToken;
 import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.repositories.PasswordResetLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.EmailService;
 import com.sterul.opencookbookapiserver.services.RefreshTokenService;
@@ -43,6 +45,9 @@ class UserAPIIntegrationTest {
     @MockBean
     RefreshTokenService refreshTokenService;
 
+    @MockBean
+    PasswordResetLinkRepository passwordResetLinkRepository;
+
     @Autowired
     UserController cut;
     User testUser;
@@ -59,6 +64,8 @@ class UserAPIIntegrationTest {
         testRefreshToken.setToken("test123");
         testRefreshToken.setOwner(testUser);
         when(refreshTokenService.createRefreshTokenForUser(testUser)).thenReturn(testRefreshToken);
+        when(userRepository.findByEmailAddress(testUser.getEmailAddress())).thenReturn(testUser);
+        when(userRepository.existsByEmailAddress(testUser.getEmailAddress())).thenReturn(true);
     }
 
     void whenTestUserExists(boolean active) {
@@ -101,6 +108,25 @@ class UserAPIIntegrationTest {
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         assertFalse(response.getBody().isUserActive());
+    }
+
+    @Test
+    void passwordRequestForNonExtantUserIsSuccessful() {
+        var response = cut.requestPasswordReset(
+                PasswordResetRequest.builder()
+                        .emailAddress("nonexistant@example.com")
+                        .build());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    void passwordResetRequestSendsMail() throws MessagingException {
+        whenTestUserExists(true);
+        cut.requestPasswordReset(PasswordResetRequest.builder()
+                .emailAddress(testUser.getEmailAddress())
+                .build());
+
+        verify(emailService, times(1)).sendPasswordResetMail(any());
     }
 
     @Test
