@@ -25,25 +25,51 @@ public class EmailService {
         this.velocityEngine = velocityEngine;
     }
 
-    public void sendActivationMail(ActivationLink activationLink) throws MessagingException {
+    private void sendGeneralMail(String mailTitle, String mailText, String receiver) throws MessagingException {
         var message = javaMailSender.createMimeMessage();
         var messageHelper = new MimeMessageHelper(message, true);
 
-        var template = velocityEngine.getTemplate("mailtemplates/activation.vm");
+        var template = velocityEngine.getTemplate("mailtemplates/generalMail.vm");
         var context = new VelocityContext();
-        context.put("activationLink", opencookbookConfiguration.getInstanceURL() + "/activateAccount?activationId=" + activationLink.getId());
+        context.put("mailText", mailText);
         var stringWriter = new StringWriter();
 
         template.merge(context, stringWriter);
 
         messageHelper.setText(stringWriter.toString(), true);
         messageHelper.setFrom(opencookbookConfiguration.getMailFrom());
-        messageHelper.setTo(activationLink.getUser().getEmailAddress());
-        messageHelper.setSubject("CookPal - Activate your account");
+        messageHelper.setTo(receiver);
+        messageHelper.setSubject(mailTitle);
         javaMailSender.send(message);
     }
 
-    public void sendPasswordResetMail(PasswordResetLink link) {
-        
+    public void sendActivationMail(ActivationLink activationLink) throws MessagingException {
+        var template = velocityEngine.getTemplate("mailtemplates/activationMailText.vm");
+        var context = new VelocityContext();
+        context.put("activationLink", opencookbookConfiguration.getInstanceURL() + "/activateAccount?activationId=" + activationLink.getId());
+        var stringWriter = new StringWriter();
+
+        template.merge(context, stringWriter);
+
+        sendGeneralMail(
+                "CookPal - Activate your account",
+                stringWriter.toString(),
+                activationLink.getUser().getEmailAddress()
+        );
+    }
+
+    public void sendPasswordResetMail(PasswordResetLink link) throws MessagingException {
+        var template = velocityEngine.getTemplate("mailtemplates/passwordResetMailText.vm");
+        var context = new VelocityContext();
+        context.put("link", opencookbookConfiguration.getInstanceURL() + "/resetPassword?id=" + link.getId());
+        var stringWriter = new StringWriter();
+
+        template.merge(context, stringWriter);
+
+        sendGeneralMail(
+                "CookPal - Activate your account",
+                stringWriter.toString(),
+                link.getUser().getEmailAddress()
+        );
     }
 }

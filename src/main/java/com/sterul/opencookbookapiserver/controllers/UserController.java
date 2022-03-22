@@ -102,7 +102,11 @@ public class UserController extends BaseController {
     @PostMapping("/requestPasswordReset")
     public ResponseEntity<String> requestPasswordReset(@RequestBody PasswordResetRequest passwordResetRequest) {
         if (userService.userExists(passwordResetRequest.getEmailAddress())) {
-            userService.requestPasswordReset(passwordResetRequest.getEmailAddress());
+            try {
+                userService.requestPasswordReset(passwordResetRequest.getEmailAddress());
+            } catch (MessagingException e) {
+                ResponseEntity.internalServerError().build();
+            }
         }
         return ResponseEntity.ok().build();
     }

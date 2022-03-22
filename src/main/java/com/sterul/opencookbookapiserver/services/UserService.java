@@ -135,7 +135,7 @@ public class UserService {
         emailService.sendActivationMail(activationLink);
     }
 
-    public void requestPasswordReset(String emailAddress) {
+    public void requestPasswordReset(String emailAddress) throws MessagingException {
         var user = getUserByEmail(emailAddress);
 
         var link = createPasswordResetLink(user);
