@@ -2,10 +2,12 @@ package com.sterul.opencookbookapiserver.integration;
 
 import com.sterul.opencookbookapiserver.controllers.UserController;
 import com.sterul.opencookbookapiserver.controllers.exceptions.UnauthorizedException;
+import com.sterul.opencookbookapiserver.controllers.requests.PasswordResetExecutionRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.PasswordResetRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.UserCreationRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.UserLoginRequest;
 import com.sterul.opencookbookapiserver.entities.RefreshToken;
+import com.sterul.opencookbookapiserver.entities.account.PasswordResetLink;
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.repositories.PasswordResetLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
@@ -50,9 +52,12 @@ class UserAPIIntegrationTest {
 
     @Autowired
     UserController cut;
+
     User testUser;
 
     RefreshToken testRefreshToken;
+
+    PasswordResetLink passwordResetLink;
 
     @BeforeEach
     void setup() {
@@ -66,6 +71,11 @@ class UserAPIIntegrationTest {
         when(refreshTokenService.createRefreshTokenForUser(testUser)).thenReturn(testRefreshToken);
         when(userRepository.findByEmailAddress(testUser.getEmailAddress())).thenReturn(testUser);
         when(userRepository.existsByEmailAddress(testUser.getEmailAddress())).thenReturn(true);
+
+        passwordResetLink = new PasswordResetLink();
+        passwordResetLink.setUser(testUser);
+        passwordResetLink.setId("test");
+        passwordResetLinkRepository.save(passwordResetLink);
     }
 
     void whenTestUserExists(boolean active) {
@@ -117,6 +127,26 @@ class UserAPIIntegrationTest {
                         .emailAddress("nonexistant@example.com")
                         .build());
         assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    void errorWhenPasswordResetLinkDoesNotExists() {
+        var response = cut.resetPassword(PasswordResetExecutionRequest.builder()
+                .passwordResetId("not existant")
+                .newPassword("does not matter")
+                .build());
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    void passwordIsReset() {
+        cut.resetPassword(PasswordResetExecutionRequest.builder()
+                .passwordResetId(passwordResetLink.getId())
+                .newPassword("12345")
+                .build());
+
+        testUser.setPasswordHash(passwordEncoder.encode("12345"));
+        verify(userRepository, times(1)).save(testUser);
     }
 
     @Test
