@@ -15,6 +15,7 @@ import com.sterul.opencookbookapiserver.services.UserDetailsServiceImpl;
 import com.sterul.opencookbookapiserver.services.UserService;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.exceptions.InvalidActivationLinkException;
+import com.sterul.opencookbookapiserver.services.exceptions.PasswordResetLinkNotExistingException;
 import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
 import com.sterul.opencookbookapiserver.util.JwtTokenUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -102,6 +103,17 @@ public class UserController extends BaseController {
     public ResponseEntity<String> requestPasswordReset(@RequestBody PasswordResetRequest passwordResetRequest) {
         if (userService.userExists(passwordResetRequest.getEmailAddress())) {
             userService.requestPasswordReset(passwordResetRequest.getEmailAddress());
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "Executes a password reset")
+    @PostMapping("/resetPassword")
+    public ResponseEntity<String> resetPassword(@RequestBody PasswordResetExecutionRequest request) {
+        try {
+            userService.resetPassword(request.getNewPassword(), request.getPasswordResetId());
+        } catch (PasswordResetLinkNotExistingException e) {
+            return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok().build();
     }
