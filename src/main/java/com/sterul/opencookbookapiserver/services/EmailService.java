@@ -67,7 +67,7 @@ public class EmailService {
         template.merge(context, stringWriter);
 
         sendGeneralMail(
-                "CookPal - Activate your account",
+                "CookPal - Reset password",
                 stringWriter.toString(),
                 link.getUser().getEmailAddress()
         );
