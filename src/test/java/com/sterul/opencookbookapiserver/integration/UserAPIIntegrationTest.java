@@ -2,10 +2,14 @@ package com.sterul.opencookbookapiserver.integration;
 
 import com.sterul.opencookbookapiserver.controllers.UserController;
 import com.sterul.opencookbookapiserver.controllers.exceptions.UnauthorizedException;
+import com.sterul.opencookbookapiserver.controllers.requests.PasswordResetExecutionRequest;
+import com.sterul.opencookbookapiserver.controllers.requests.PasswordResetRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.UserCreationRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.UserLoginRequest;
 import com.sterul.opencookbookapiserver.entities.RefreshToken;
+import com.sterul.opencookbookapiserver.entities.account.PasswordResetLink;
 import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.repositories.PasswordResetLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.EmailService;
 import com.sterul.opencookbookapiserver.services.RefreshTokenService;
@@ -24,6 +28,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
+import java.util.Calendar;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -43,11 +49,17 @@ class UserAPIIntegrationTest {
     @MockBean
     RefreshTokenService refreshTokenService;
 
+    @MockBean
+    PasswordResetLinkRepository passwordResetLinkRepository;
+
     @Autowired
     UserController cut;
+
     User testUser;
 
     RefreshToken testRefreshToken;
+
+    PasswordResetLink passwordResetLink;
 
     @BeforeEach
     void setup() {
@@ -59,6 +71,16 @@ class UserAPIIntegrationTest {
         testRefreshToken.setToken("test123");
         testRefreshToken.setOwner(testUser);
         when(refreshTokenService.createRefreshTokenForUser(testUser)).thenReturn(testRefreshToken);
+        when(userRepository.findByEmailAddress(testUser.getEmailAddress())).thenReturn(testUser);
+        when(userRepository.existsByEmailAddress(testUser.getEmailAddress())).thenReturn(true);
+
+        var future = Calendar.getInstance();
+        future.add(Calendar.HOUR, 1);
+        passwordResetLink = new PasswordResetLink();
+        passwordResetLink.setUser(testUser);
+        passwordResetLink.setId("test");
+        passwordResetLink.setValidUntil(future.getTime());
+        when(passwordResetLinkRepository.findById(passwordResetLink.getId())).thenReturn(Optional.of(passwordResetLink));
     }
 
     void whenTestUserExists(boolean active) {
@@ -101,6 +123,48 @@ class UserAPIIntegrationTest {
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         assertFalse(response.getBody().isUserActive());
+    }
+
+    @Test
+    void passwordRequestForNonExtantUserIsSuccessful() {
+        var response = cut.requestPasswordReset(
+                PasswordResetRequest.builder()
+                        .emailAddress("nonexistant@example.com")
+                        .build());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    void errorWhenPasswordResetLinkDoesNotExists() {
+        var response = cut.resetPassword(PasswordResetExecutionRequest.builder()
+                .passwordResetId("not existant")
+                .newPassword("does not matter")
+                .build());
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    void passwordIsReset() {
+        final var newPassword = "12345";
+        final var newPasswordHash = passwordEncoder.encode(newPassword);
+
+        cut.resetPassword(PasswordResetExecutionRequest.builder()
+                .passwordResetId(passwordResetLink.getId())
+                .newPassword(newPassword)
+                .build());
+
+        testUser.setPasswordHash(passwordEncoder.encode(newPassword));
+        verify(userRepository, times(1)).save(any());
+    }
+
+    @Test
+    void passwordResetRequestSendsMail() throws MessagingException {
+        whenTestUserExists(true);
+        cut.requestPasswordReset(PasswordResetRequest.builder()
+                .emailAddress(testUser.getEmailAddress())
+                .build());
+
+        verify(emailService, times(1)).sendPasswordResetMail(any());
     }
 
     @Test

@@ -1,10 +1,13 @@
 package com.sterul.opencookbookapiserver.services;
 
 import com.sterul.opencookbookapiserver.entities.account.ActivationLink;
+import com.sterul.opencookbookapiserver.entities.account.PasswordResetLink;
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.repositories.ActivationLinkRepository;
+import com.sterul.opencookbookapiserver.repositories.PasswordResetLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.exceptions.InvalidActivationLinkException;
+import com.sterul.opencookbookapiserver.services.exceptions.PasswordResetLinkNotExistingException;
 import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
 import java.io.IOException;
+import java.util.Date;
 
 @Service
 @Transactional
@@ -43,6 +47,9 @@ public class UserService {
 
     @Autowired
     private ActivationLinkRepository activationLinkRepository;
+
+    @Autowired
+    private PasswordResetLinkRepository passwordResetLinkRepository;
 
     @Autowired
     private EmailService emailService;
@@ -126,5 +133,35 @@ public class UserService {
         deleteAllActivationLinks(user);
         var activationLink = createActivationLink(user);
         emailService.sendActivationMail(activationLink);
+    }
+
+    public void requestPasswordReset(String emailAddress) throws MessagingException {
+        var user = getUserByEmail(emailAddress);
+
+        var link = createPasswordResetLink(user);
+        emailService.sendPasswordResetMail(link);
+    }
+
+    public PasswordResetLink createPasswordResetLink(User user) {
+        passwordResetLinkRepository.deleteByUser(user);
+        var passwordResetLink = new PasswordResetLink();
+        passwordResetLink.setUser(user);
+        return passwordResetLinkRepository.save(passwordResetLink);
+    }
+
+    public void resetPassword(String newPassword, String passwordResetId) throws PasswordResetLinkNotExistingException {
+        var link = passwordResetLinkRepository.findById(passwordResetId);
+        if (link.isEmpty()) {
+            throw new PasswordResetLinkNotExistingException();
+        }
+
+        if (link.get().getValidUntil().before(new Date())) {
+            throw new PasswordResetLinkNotExistingException();
+        }
+
+        var user = link.get().getUser();
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        passwordResetLinkRepository.delete(link.get());
     }
 }

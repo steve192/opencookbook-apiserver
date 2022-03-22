@@ -3,10 +3,7 @@ package com.sterul.opencookbookapiserver.controllers;
 import com.sterul.opencookbookapiserver.controllers.exceptions.NotAuthorizedException;
 import com.sterul.opencookbookapiserver.controllers.exceptions.UnauthorizedException;
 import com.sterul.opencookbookapiserver.controllers.exceptions.UserNotActiveException;
-import com.sterul.opencookbookapiserver.controllers.requests.RefreshTokenRequest;
-import com.sterul.opencookbookapiserver.controllers.requests.ResendActivationLinkRequest;
-import com.sterul.opencookbookapiserver.controllers.requests.UserCreationRequest;
-import com.sterul.opencookbookapiserver.controllers.requests.UserLoginRequest;
+import com.sterul.opencookbookapiserver.controllers.requests.*;
 import com.sterul.opencookbookapiserver.controllers.responses.RefreshTokenResponse;
 import com.sterul.opencookbookapiserver.controllers.responses.UserInfoResponse;
 import com.sterul.opencookbookapiserver.controllers.responses.UserLoginResponse;
@@ -18,6 +15,7 @@ import com.sterul.opencookbookapiserver.services.UserDetailsServiceImpl;
 import com.sterul.opencookbookapiserver.services.UserService;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.exceptions.InvalidActivationLinkException;
+import com.sterul.opencookbookapiserver.services.exceptions.PasswordResetLinkNotExistingException;
 import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
 import com.sterul.opencookbookapiserver.util.JwtTokenUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -98,6 +96,30 @@ public class UserController extends BaseController {
                 .build();
 
         return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "Request a password reset for the given user. Does always answer with 200 ok, no matter if the user exists or not")
+    @PostMapping("/requestPasswordReset")
+    public ResponseEntity<String> requestPasswordReset(@RequestBody PasswordResetRequest passwordResetRequest) {
+        if (userService.userExists(passwordResetRequest.getEmailAddress())) {
+            try {
+                userService.requestPasswordReset(passwordResetRequest.getEmailAddress());
+            } catch (MessagingException e) {
+                ResponseEntity.internalServerError().build();
+            }
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "Executes a password reset")
+    @PostMapping("/resetPassword")
+    public ResponseEntity<String> resetPassword(@RequestBody PasswordResetExecutionRequest request) {
+        try {
+            userService.resetPassword(request.getNewPassword(), request.getPasswordResetId());
+        } catch (PasswordResetLinkNotExistingException e) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "Activates a user, using an activation id")
