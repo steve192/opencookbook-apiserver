@@ -28,6 +28,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
+import java.util.Calendar;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -72,10 +74,13 @@ class UserAPIIntegrationTest {
         when(userRepository.findByEmailAddress(testUser.getEmailAddress())).thenReturn(testUser);
         when(userRepository.existsByEmailAddress(testUser.getEmailAddress())).thenReturn(true);
 
+        var future = Calendar.getInstance();
+        future.add(Calendar.HOUR, 1);
         passwordResetLink = new PasswordResetLink();
         passwordResetLink.setUser(testUser);
         passwordResetLink.setId("test");
-        passwordResetLinkRepository.save(passwordResetLink);
+        passwordResetLink.setValidUntil(future.getTime());
+        when(passwordResetLinkRepository.findById(passwordResetLink.getId())).thenReturn(Optional.of(passwordResetLink));
     }
 
     void whenTestUserExists(boolean active) {
@@ -140,13 +145,16 @@ class UserAPIIntegrationTest {
 
     @Test
     void passwordIsReset() {
+        final var newPassword = "12345";
+        final var newPasswordHash = passwordEncoder.encode(newPassword);
+
         cut.resetPassword(PasswordResetExecutionRequest.builder()
                 .passwordResetId(passwordResetLink.getId())
-                .newPassword("12345")
+                .newPassword(newPassword)
                 .build());
 
-        testUser.setPasswordHash(passwordEncoder.encode("12345"));
-        verify(userRepository, times(1)).save(testUser);
+        testUser.setPasswordHash(passwordEncoder.encode(newPassword));
+        verify(userRepository, times(1)).save(any());
     }
 
     @Test
