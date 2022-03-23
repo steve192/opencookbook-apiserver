@@ -1,11 +1,6 @@
 package com.sterul.opencookbookapiserver.configurations.security;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import com.sterul.opencookbookapiserver.configurations.security.requestfilters.JwtRequestFilter;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,25 +17,21 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private UserDetailsService userDetailsService;
-
-    @Autowired
-    private UnauthorizedEntryPoint unauthorizedEntryPoint;
-
-    @Autowired
-    private JwtRequestFilter jwtRequestFilter;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
     private static final String[] AUTH_WHITELIST = {
             "/api/v1/users/signup",
+            "/api/v1/users/activate",
+            "/api/v1/users/resendActivationLink",
+            "/api/v1/users/requestPasswordReset",
+            "/api/v1/users/resetPassword",
             "/api/v1/users/login",
             "/api/v1/users/refreshToken",
             "/swagger-ui/*",
@@ -48,7 +39,15 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
             "/api-docs*",
             "/api-docs/*",
             "/api-docs/*/*",
-            "/h2-console/*" };
+            "/h2-console/*"};
+    @Autowired
+    private UserDetailsService userDetailsService;
+    @Autowired
+    private UnauthorizedEntryPoint unauthorizedEntryPoint;
+    @Autowired
+    private JwtRequestFilter jwtRequestFilter;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {

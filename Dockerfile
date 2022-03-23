@@ -1,10 +1,11 @@
-FROM openjdk:16.0.2-jdk-slim
+FROM adoptopenjdk/openjdk16:alpine-slim
 ARG JAR_FILE=target/*.jar
 CMD mkdir /opencookbook
 WORKDIR /opencookbook
+COPY scripts/startApplication.sh .
+RUN chmod +x startApplication.sh
+
 COPY ${JAR_FILE} app.jar
 EXPOSE 8080
 
-
-
-ENTRYPOINT ["java","-jar","app.jar"]
+ENTRYPOINT ["/opencookbook/startApplication.sh"]
