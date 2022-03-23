@@ -167,6 +167,7 @@ public class UserService {
         }
 
         if (link.get().getValidUntil().before(new Date())) {
+            passwordResetLinkRepository.delete(link.get());
             throw new PasswordResetLinkNotExistingException();
         }
 
