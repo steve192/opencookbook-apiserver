@@ -122,6 +122,18 @@ public class UserController extends BaseController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "Sets a new password")
+    @PostMapping("/changePassword")
+    public ResponseEntity<String> changePassword(@RequestBody PasswordChangeRequest request) {
+        var loggedInUser = this.getLoggedInUser();
+        if (!userService.isPasswordCorrect(loggedInUser.getEmailAddress(), request.getOldPassword())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        userService.changePassword(loggedInUser, request.getNewPassword());
+        return ResponseEntity.ok().build();
+    }
+
     @Operation(summary = "Activates a user, using an activation id")
     @GetMapping("/activate")
     public void activateUser(@RequestParam String activationId) throws InvalidActivationLinkException {
