@@ -124,6 +124,17 @@ public class UserService {
         userRepository.delete(user);
     }
 
+    public boolean isPasswordCorrect(String emailAddress, String password) {
+        var readUser = getUserByEmail(emailAddress);
+        return passwordEncoder.matches(password, readUser.getPasswordHash());
+    }
+
+    public void changePassword(User user, String newPassword) {
+        var readUser = getUserByEmail(user.getEmailAddress());
+        readUser.setPasswordHash(passwordEncoder.encode(newPassword));
+        userRepository.save(readUser);
+    }
+
     public void resendActivationLink(String emailAddress) throws MessagingException {
         var user = getUserByEmail(emailAddress);
 
@@ -160,8 +171,7 @@ public class UserService {
         }
 
         var user = link.get().getUser();
-        user.setPasswordHash(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
+        changePassword(user, newPassword);
         passwordResetLinkRepository.delete(link.get());
     }
 }

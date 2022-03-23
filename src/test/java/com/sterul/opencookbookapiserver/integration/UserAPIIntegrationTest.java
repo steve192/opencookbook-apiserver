@@ -2,10 +2,7 @@ package com.sterul.opencookbookapiserver.integration;
 
 import com.sterul.opencookbookapiserver.controllers.UserController;
 import com.sterul.opencookbookapiserver.controllers.exceptions.UnauthorizedException;
-import com.sterul.opencookbookapiserver.controllers.requests.PasswordResetExecutionRequest;
-import com.sterul.opencookbookapiserver.controllers.requests.PasswordResetRequest;
-import com.sterul.opencookbookapiserver.controllers.requests.UserCreationRequest;
-import com.sterul.opencookbookapiserver.controllers.requests.UserLoginRequest;
+import com.sterul.opencookbookapiserver.controllers.requests.*;
 import com.sterul.opencookbookapiserver.entities.RefreshToken;
 import com.sterul.opencookbookapiserver.entities.account.PasswordResetLink;
 import com.sterul.opencookbookapiserver.entities.account.User;
@@ -40,6 +37,7 @@ class UserAPIIntegrationTest {
     final String testPassword = "12345";
     @MockBean
     UserRepository userRepository;
+
     @MockBean
     EmailService emailService;
 
@@ -81,6 +79,33 @@ class UserAPIIntegrationTest {
         passwordResetLink.setId("test");
         passwordResetLink.setValidUntil(future.getTime());
         when(passwordResetLinkRepository.findById(passwordResetLink.getId())).thenReturn(Optional.of(passwordResetLink));
+    }
+
+    @Test
+    void passwordChangeWithCorrectPasswordIsSuccessfull() {
+        whenTestUserExists(true);
+        whenAuthentificated();
+
+        var response = cut.changePassword(PasswordChangeRequest.builder()
+                .oldPassword(testPassword)
+                .newPassword("blablabla")
+                .build());
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+
+    @Test
+    void passwordChangeWithWrongPasswordFails() {
+        whenTestUserExists(true);
+        whenAuthentificated();
+
+        var response = cut.changePassword(PasswordChangeRequest.builder()
+                .oldPassword(testPassword + "wrong")
+                .newPassword("blablabla")
+                .build());
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
 
     void whenTestUserExists(boolean active) {
