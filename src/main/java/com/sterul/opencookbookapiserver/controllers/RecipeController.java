@@ -109,6 +109,9 @@ public class RecipeController extends BaseController {
                 .preparationSteps(recipe.getPreparationSteps())
                 .recipeGroups(recipe.getRecipeGroups())
                 .servings(recipe.getServings())
+                .preparationTime(recipe.getPreparationTime())
+                .totalTime(recipe.getTotalTime())
+                .recipeType(recipe.getRecipeType())
                 .build();
     }
 
@@ -121,6 +124,9 @@ public class RecipeController extends BaseController {
                 .preparationSteps(recipe.getPreparationSteps())
                 .recipeGroups(recipe.getRecipeGroups())
                 .servings(recipe.getServings())
+                .preparationTime(recipe.getPreparationTime())
+                .totalTime(recipe.getTotalTime())
+                .recipeType(recipe.getRecipeType())
                 .build();
     }
 

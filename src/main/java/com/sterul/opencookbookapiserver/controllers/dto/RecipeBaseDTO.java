@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
+import com.sterul.opencookbookapiserver.entities.recipe.Recipe.RecipeType;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 
 import lombok.AllArgsConstructor;
@@ -32,4 +33,9 @@ public abstract class RecipeBaseDTO {
 
     @Builder.Default
     private List<RecipeGroup> recipeGroups = new ArrayList<>();
+
+    private Long preparationTime;
+    private Long totalTime;
+
+    private RecipeType recipeType;
 }

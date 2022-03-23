@@ -35,6 +35,7 @@ import static org.mockito.Mockito.*;
 class UserAPIIntegrationTest {
 
     final String testPassword = "12345";
+    
     @MockBean
     UserRepository userRepository;
 
