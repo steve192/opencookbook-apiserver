@@ -77,7 +77,7 @@ public class UserService {
     }
 
     public void deleteAllActivationLinks(User user) {
-        activationLinkRepository.deleteByUser(user);
+        activationLinkRepository.deleteAllByUser(user);
     }
 
     public ActivationLink createActivationLink(User user) {
@@ -120,6 +120,8 @@ public class UserService {
         weekplanDays.forEach(day -> weekplanService.deleteWeekplanDay(day.getId()));
 
         refreshTokenService.deleteAllRefreshTokenForUser(user);
+        activationLinkRepository.deleteAllByUser(user);
+        passwordResetLinkRepository.deleteAllByUser(user);
 
         userRepository.delete(user);
     }
@@ -154,7 +156,7 @@ public class UserService {
     }
 
     public PasswordResetLink createPasswordResetLink(User user) {
-        passwordResetLinkRepository.deleteByUser(user);
+        passwordResetLinkRepository.deleteAllByUser(user);
         var passwordResetLink = new PasswordResetLink();
         passwordResetLink.setUser(user);
         return passwordResetLinkRepository.save(passwordResetLink);
