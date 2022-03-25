@@ -1,14 +1,5 @@
 package com.sterul.opencookbookapiserver.integration;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import com.sterul.opencookbookapiserver.controllers.IngredientsController;
 import com.sterul.opencookbookapiserver.controllers.RecipeController;
 import com.sterul.opencookbookapiserver.controllers.requests.IngredientRequest;
@@ -17,8 +8,9 @@ import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
+import com.sterul.opencookbookapiserver.services.recipeimport.ImportNotSupportedException;
+import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImportFailedException;
 import com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers.RecipeScraperServiceProxy;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -30,6 +22,14 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -45,6 +45,8 @@ class RecipeAPIIntegrationTest {
     private UserRepository userRepository;
 
     private User testUser;
+    @MockBean
+    private RecipeScraperServiceProxy recipeScraperServiceProxy;
 
     @BeforeEach
     void setupContext() {
@@ -74,7 +76,7 @@ class RecipeAPIIntegrationTest {
         var newRecipe = RecipeRequest.builder()
                 .title("test")
                 .servings(5)
-                .preparationSteps(Arrays.asList(new String[] { "Step1", "Step2" }))
+                .preparationSteps(Arrays.asList("Step1", "Step2"))
                 .neededIngredients(Arrays.asList(
                         IngredientNeed.builder()
                                 .amount(4F)
@@ -95,8 +97,28 @@ class RecipeAPIIntegrationTest {
 
     }
 
-    @MockBean
-    private RecipeScraperServiceProxy recipeScraperServiceProxy;
+    private void whenImportWebsiteNotSupported() {
+        try {
+            Mockito.when(recipeScraperServiceProxy.scrapeRecipe(Mockito.any())).thenThrow(new ImportNotSupportedException());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ImportNotSupportedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void errorWhenRecipeWebsiteImportNotSupported() {
+        whenImportWebsiteNotSupported();
+        try {
+            var response = cut.importRecipe("https://doesnotmatter.com/");
+        } catch (ImportNotSupportedException e) {
+            return;
+        } catch (RecipeImportFailedException e) {
+            fail();
+        }
+        fail();
+    }
 
     @Test
     void availableHostsPassedByRecipeScrapers() throws IOException {

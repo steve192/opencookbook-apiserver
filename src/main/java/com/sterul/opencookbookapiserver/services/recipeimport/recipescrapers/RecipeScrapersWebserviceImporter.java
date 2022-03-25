@@ -32,7 +32,7 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
     private IngredientUnitHelper unitHelper;
 
     @Override
-    public Recipe importRecipe(String url, User owner) throws RecipeImportFailedException {
+    public Recipe importRecipe(String url, User owner) throws RecipeImportFailedException, ImportNotSupportedException {
         log.info("Importing recipe " + url);
         ScrapedRecipe scrapedRecipe;
         try {
@@ -42,8 +42,6 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
             throw new RecipeImportFailedException("Error in communication with scrape service", e);
         } catch (JsonSyntaxException e) {
             throw new RecipeImportFailedException("Error parsing response from scrape service", e);
-        } catch (ImportNotSupportedException e) {
-            throw new RecipeImportFailedException("Import not supported", e);
         }
         log.info("Parsing response");
 

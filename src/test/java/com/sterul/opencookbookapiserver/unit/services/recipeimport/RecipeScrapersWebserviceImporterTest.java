@@ -83,7 +83,7 @@ class RecipeScrapersWebserviceImporterTest {
     }
 
     @Test
-    void testPreparationStepsImported() throws RecipeImportFailedException {
+    void testPreparationStepsImported() throws RecipeImportFailedException, ImportNotSupportedException {
         var recipe = cut.importRecipe(testRecipeUrl, null);
 
         assertEquals(Arrays.asList("Den Ofen auf 160°C vorheizen.",
@@ -96,13 +96,13 @@ class RecipeScrapersWebserviceImporterTest {
     }
 
     @Test
-    void testServingsImported() throws RecipeImportFailedException {
+    void testServingsImported() throws RecipeImportFailedException, ImportNotSupportedException {
         var recipe = cut.importRecipe(testRecipeUrl, userMock);
         assertEquals(1, recipe.getServings());
     }
 
     @Test
-    void testIngredientsImported() throws RecipeImportFailedException {
+    void testIngredientsImported() throws RecipeImportFailedException, ImportNotSupportedException {
         var recipe = cut.importRecipe(testRecipeUrl, userMock);
 
         assertIngredientPresent(recipe, 250, "g", "Butter (davon 50 g für Guss)", 0);
@@ -123,26 +123,26 @@ class RecipeScrapersWebserviceImporterTest {
     }
 
     @Test
-    void testTitleImported() throws RecipeImportFailedException {
+    void testTitleImported() throws RecipeImportFailedException, ImportNotSupportedException {
         var recipe = cut.importRecipe(testRecipeUrl, userMock);
         assertEquals("Der schönste Tod", recipe.getTitle());
     }
 
     @Test
-    void testTimesImported() throws RecipeImportFailedException {
+    void testTimesImported() throws RecipeImportFailedException, ImportNotSupportedException {
         var recipe = cut.importRecipe(testRecipeUrl, userMock);
         assertEquals(140, recipe.getTotalTime());
         assertEquals(123, recipe.getPreparationTime());
     }
 
     @Test
-    void testRecipeGroupNotSet() throws RecipeImportFailedException {
+    void testRecipeGroupNotSet() throws RecipeImportFailedException, ImportNotSupportedException {
         var recipe = cut.importRecipe(testRecipeUrl, userMock);
         assertEquals(0, recipe.getRecipeGroups().size());
     }
 
     @Test
-    void testOwnerSet() throws RecipeImportFailedException {
+    void testOwnerSet() throws RecipeImportFailedException, ImportNotSupportedException {
         var recipe = cut.importRecipe(testRecipeUrl, userMock);
         assertEquals(userMock, recipe.getOwner());
     }
