@@ -1,14 +1,14 @@
 package com.sterul.opencookbookapiserver.services.recipeimport;
 
-import java.io.IOException;
-import java.util.List;
-
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 
+import java.io.IOException;
+import java.util.List;
+
 public interface IRecipeImporter {
 
-    public Recipe importRecipe(String url, User owner) throws RecipeImportFailedException;
+    Recipe importRecipe(String url, User owner) throws RecipeImportFailedException, ImportNotSupportedException;
 
-    public List<String> getSupportedHostnames() throws IOException;
+    List<String> getSupportedHostnames() throws IOException;
 }

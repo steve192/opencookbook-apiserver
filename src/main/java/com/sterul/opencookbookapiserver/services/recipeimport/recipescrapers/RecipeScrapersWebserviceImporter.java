@@ -1,11 +1,5 @@
 package com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers;
 
-import java.io.IOException;
-import java.text.Normalizer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import com.google.gson.JsonSyntaxException;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
@@ -13,14 +7,19 @@ import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
 import com.sterul.opencookbookapiserver.services.recipeimport.AbstractRecipeImporter;
+import com.sterul.opencookbookapiserver.services.recipeimport.ImportNotSupportedException;
 import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImportFailedException;
 import com.sterul.opencookbookapiserver.util.IngredientUnitHelper;
-
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.text.Normalizer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 @Slf4j
@@ -33,7 +32,7 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
     private IngredientUnitHelper unitHelper;
 
     @Override
-    public Recipe importRecipe(String url, User owner) throws RecipeImportFailedException {
+    public Recipe importRecipe(String url, User owner) throws RecipeImportFailedException, ImportNotSupportedException {
         log.info("Importing recipe " + url);
         ScrapedRecipe scrapedRecipe;
         try {
@@ -126,6 +125,17 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
         return prepsteps.stream().filter(step -> step.length() > 0).toList();
     }
 
+    @Override
+    public List<String> getSupportedHostnames() throws IOException {
+        try {
+            return gson.fromJson(recipeScraperServiceProxy.getSupportedHosts(), ArrayList.class);
+        } catch (JsonSyntaxException e) {
+            throw new IOException("Error parsing response from recipe scrapers service", e);
+        } catch (IOException e) {
+            throw new IOException("Error in communication with recipe scrapers service", e);
+        }
+    }
+
     @Data
     private class ScrapedRecipe {
         private String language;
@@ -150,17 +160,6 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
     private class Nutrients {
         private String calories;
         private String servingSize;
-    }
-
-    @Override
-    public List<String> getSupportedHostnames() throws IOException {
-        try {
-            return gson.fromJson(recipeScraperServiceProxy.getSupportedHosts(), ArrayList.class);
-        } catch (JsonSyntaxException e) {
-            throw new IOException("Error parsing response from recipe scrapers service", e);
-        } catch (IOException e) {
-            throw new IOException("Error in communication with recipe scrapers service", e);
-        }
     }
 
 }
