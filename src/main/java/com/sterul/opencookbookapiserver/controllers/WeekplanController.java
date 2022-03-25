@@ -1,29 +1,24 @@
 package com.sterul.opencookbookapiserver.controllers;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.NoSuchElementException;
-
 import com.sterul.opencookbookapiserver.controllers.exceptions.NotAuthorizedException;
 import com.sterul.opencookbookapiserver.controllers.requests.WeekplanDayPut;
 import com.sterul.opencookbookapiserver.controllers.responses.WeekplanDayResponse;
 import com.sterul.opencookbookapiserver.entities.WeekplanDay;
+import com.sterul.opencookbookapiserver.entities.WeekplanDayRecipe;
 import com.sterul.opencookbookapiserver.services.RecipeService;
 import com.sterul.opencookbookapiserver.services.WeekplanService;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Controller
 @RequestMapping("/api/v1/weekplan")
@@ -38,7 +33,7 @@ public class WeekplanController extends BaseController {
     @Operation(summary = "Fetch weekplan days in timerange")
     @GetMapping("/{from}/to/{to}")
     public List<WeekplanDayResponse> getBetweenDates(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date from,
-            @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date to) {
+                                                     @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date to) {
         return weekplanService.getWeekplanDaysBetweenTime(from, to, getLoggedInUser()).stream()
                 .map(this::entityToResponse).toList();
     }
@@ -46,7 +41,7 @@ public class WeekplanController extends BaseController {
     @Operation(summary = "Fetch single weekplan day")
     @PutMapping("/{date}")
     public WeekplanDayResponse createAndUpdate(@PathVariable @DateTimeFormat(pattern = "yyy-MM-dd") Date date,
-            @RequestBody WeekplanDayPut weekplanDayPut) throws NotAuthorizedException, ElementNotFound {
+                                               @RequestBody WeekplanDayPut weekplanDayPut) throws NotAuthorizedException, ElementNotFound {
 
         WeekplanDay weekplanDayEntity;
         try {
@@ -91,7 +86,10 @@ public class WeekplanController extends BaseController {
                 throw new NotAuthorizedException();
             }
             var recipe = recipeService.getRecipeById(recipeId);
-            newWeekplanDay.getRecipes().add(recipe);
+            newWeekplanDay.getRecipes().add(WeekplanDayRecipe.builder()
+                    .isSimpleRecipe(false);
+                    .recipe(recipe)
+                    .build());
         }
     }
 

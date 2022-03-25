@@ -1,15 +1,14 @@
 package com.sterul.opencookbookapiserver.services;
 
-import java.util.Date;
-import java.util.List;
-import java.util.NoSuchElementException;
-
 import com.sterul.opencookbookapiserver.entities.WeekplanDay;
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.repositories.WeekplanDayRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class WeekplanService {
@@ -38,7 +37,7 @@ public class WeekplanService {
     }
 
     public List<WeekplanDay> getWeekplanDaysByRecipe(Long id) {
-        return weekplanDayRepository.findAllByRecipes_Id(id);
+        return weekplanDayRepository.findAllByRecipes_Recipe_Id(id);
     }
 
     public List<WeekplanDay> getWeekplanDaysByOwner(User user) {
