@@ -82,7 +82,7 @@ CREATE TABLE "USER" (
   user_id BIGINT NOT NULL,
    email_address VARCHAR(255),
    password_hash VARCHAR(255),
-   activated BOOLEAN DEFAULT FALSE,
+   activated BOOLEAN,
    CONSTRAINT pk_user PRIMARY KEY (user_id)
 );
 
