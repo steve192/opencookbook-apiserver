@@ -63,17 +63,23 @@ public class WeekplanController extends BaseController {
 
     private WeekplanDayResponse entityToResponse(WeekplanDay weekplanDayEntity) {
         var response = new WeekplanDayResponse();
-//        response.setDay(weekplanDayEntity.getDay());
-//        response.setRecipes(new ArrayList<>());
-//        for (var recipe : weekplanDayEntity.getRecipes()) {
-//            var minimalRecipe = response.new MinimalRecipe();
-//            minimalRecipe.setId(recipe.getId());
-//            minimalRecipe.setTitle(recipe.getTitle());
-//            if (!recipe.getImages().isEmpty()) {
-//                minimalRecipe.setTitleImageUuid(recipe.getImages().get(0).getUuid());
-//            }
-//            response.getRecipes().add(minimalRecipe);
-//        }
+        response.setDay(weekplanDayEntity.getDay());
+        for (var recipe : weekplanDayEntity.getRecipes()) {
+            if (recipe.isSimpleRecipe()) {
+                var simpleRecipe = new WeekplanDayResponse.SimpleRecipe();
+                simpleRecipe.setId(recipe.getId());
+                simpleRecipe.setTitle(recipe.getSimpleRecipeText());
+                response.getRecipes().add(simpleRecipe);
+            } else {
+                var normalRecipe = new WeekplanDayResponse.NormalRecipe();
+                normalRecipe.setId(recipe.getRecipe().getId());
+                normalRecipe.setTitle(recipe.getRecipe().getTitle());
+                if (!recipe.getRecipe().getImages().isEmpty()) {
+                    normalRecipe.setTitleImageUuid(recipe.getRecipe().getImages().get(0).getUuid());
+                }
+                response.getRecipes().add(normalRecipe);
+            }
+        }
         return response;
     }
 
