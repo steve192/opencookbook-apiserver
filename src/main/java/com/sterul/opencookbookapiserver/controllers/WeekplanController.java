@@ -96,6 +96,7 @@ public class WeekplanController extends BaseController {
             switch (recipe.getType()) {
                 case NORMAL_RECIPE -> {
                     var recipeId = ((WeekplanDayPut.NormalRecipe) recipe).getId();
+
                     if (!recipeService.hasAccessPermissionToRecipe(recipeId, getLoggedInUser())) {
                         throw new NotAuthorizedException();
                     }
@@ -110,7 +111,8 @@ public class WeekplanController extends BaseController {
 
                     newWeekplanDay.getRecipes().add(WeekplanDayRecipe.builder()
                             .isSimpleRecipe(true)
-                            .id(simpleRecipe.getId())
+                            // JPA wants an null id if entries needs to be created
+                            .id(simpleRecipe.getId().equals("") ? null : simpleRecipe.getId())
                             .simpleRecipeText(simpleRecipe.getTitle())
                             .build());
                 }
