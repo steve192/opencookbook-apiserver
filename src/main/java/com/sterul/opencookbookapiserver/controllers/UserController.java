@@ -29,6 +29,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
@@ -59,6 +60,7 @@ public class UserController extends BaseController {
 
     @Operation(summary = "Creates a new user")
     @PostMapping("/signup")
+    @Transactional
     public User signup(@RequestBody UserCreationRequest userCreationRequest) throws UserAlreadyExistsException {
         var createdUser = userService.createUser(userCreationRequest.getEmailAddress(), userCreationRequest.getPassword());
         var activationLink = userService.createActivationLink(createdUser);

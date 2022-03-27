@@ -21,4 +21,5 @@ public class ActivationLink {
 
     @OneToOne
     private User user;
+
 }
