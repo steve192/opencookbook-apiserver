@@ -12,14 +12,13 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
-import java.io.Serializable;
 
 @Entity
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WeekplanDayRecipe implements Serializable {
+public class WeekplanDayRecipe {
 
     @Id
     @GeneratedValue(generator = "UUID")
