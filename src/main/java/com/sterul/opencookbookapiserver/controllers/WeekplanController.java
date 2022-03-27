@@ -38,7 +38,7 @@ public class WeekplanController extends BaseController {
                 .map(this::entityToResponse).toList();
     }
 
-    @Operation(summary = "Fetch single weekplan day")
+    @Operation(summary = "Change a single weekplan day")
     @PutMapping("/{date}")
     public WeekplanDayResponse createAndUpdate(@PathVariable @DateTimeFormat(pattern = "yyy-MM-dd") Date date,
                                                @RequestBody WeekplanDayPut weekplanDayPut) throws NotAuthorizedException, ElementNotFound {
@@ -63,17 +63,17 @@ public class WeekplanController extends BaseController {
 
     private WeekplanDayResponse entityToResponse(WeekplanDay weekplanDayEntity) {
         var response = new WeekplanDayResponse();
-        response.setDay(weekplanDayEntity.getDay());
-        response.setRecipes(new ArrayList<>());
-        for (var recipe : weekplanDayEntity.getRecipes()) {
-            var minimalRecipe = response.new MinimalRecipe();
-            minimalRecipe.setId(recipe.getId());
-            minimalRecipe.setTitle(recipe.getTitle());
-            if (!recipe.getImages().isEmpty()) {
-                minimalRecipe.setTitleImageUuid(recipe.getImages().get(0).getUuid());
-            }
-            response.getRecipes().add(minimalRecipe);
-        }
+//        response.setDay(weekplanDayEntity.getDay());
+//        response.setRecipes(new ArrayList<>());
+//        for (var recipe : weekplanDayEntity.getRecipes()) {
+//            var minimalRecipe = response.new MinimalRecipe();
+//            minimalRecipe.setId(recipe.getId());
+//            minimalRecipe.setTitle(recipe.getTitle());
+//            if (!recipe.getImages().isEmpty()) {
+//                minimalRecipe.setTitleImageUuid(recipe.getImages().get(0).getUuid());
+//            }
+//            response.getRecipes().add(minimalRecipe);
+//        }
         return response;
     }
 
@@ -81,16 +81,31 @@ public class WeekplanController extends BaseController {
             throws NotAuthorizedException, ElementNotFound {
 
         newWeekplanDay.getRecipes().clear();
-        for (Long recipeId : weekplanDayPut.getRecipeIds()) {
-            if (!recipeService.hasAccessPermissionToRecipe(recipeId, getLoggedInUser())) {
-                throw new NotAuthorizedException();
+
+        for (var recipe : weekplanDayPut.getRecipes()) {
+            switch (recipe.getType()) {
+                case NORMAL_RECIPE -> {
+                    var recipeId = ((WeekplanDayPut.NormalRecipe) recipe).getId();
+                    if (!recipeService.hasAccessPermissionToRecipe(recipeId, getLoggedInUser())) {
+                        throw new NotAuthorizedException();
+                    }
+                    var recipeEntity = recipeService.getRecipeById(recipeId);
+                    newWeekplanDay.getRecipes().add(WeekplanDayRecipe.builder()
+                            .isSimpleRecipe(false)
+                            .recipe(recipeEntity)
+                            .build());
+                }
+                case SIMPLE_RECIPE -> {
+                    var simpleRecipe = (WeekplanDayPut.SimpleRecipe) recipe;
+
+                    newWeekplanDay.getRecipes().add(WeekplanDayRecipe.builder()
+                            .isSimpleRecipe(true)
+                            .id(simpleRecipe.getId())
+                            .simpleRecipeText(simpleRecipe.getTitle())
+                            .build());
+                }
             }
-            var recipe = recipeService.getRecipeById(recipeId);
-            newWeekplanDay.getRecipes().add(WeekplanDayRecipe.builder()
-                    .isSimpleRecipe(false);
-                    .recipe(recipe)
-                    .build());
         }
     }
-
 }
+

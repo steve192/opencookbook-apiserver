@@ -22,7 +22,7 @@ public class WeekplanDay {
     @JsonIgnore
     private User owner;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WeekplanDayRecipe> recipes;
 
 }
