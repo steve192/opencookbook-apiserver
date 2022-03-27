@@ -65,7 +65,7 @@ public class RecipeService {
             var iterator = weekplanDay.getRecipes().iterator();
             while (iterator.hasNext()) {
                 var recipe = iterator.next();
-                if (recipe.getRecipe().getId().equals(id)) {
+                if (recipe.getRecipe() != null && recipe.getRecipe().getId().equals(id)) {
                     iterator.remove();
                 }
             }
