@@ -71,6 +71,10 @@ public class WeekplanController extends BaseController {
                 simpleRecipe.setTitle(recipe.getSimpleRecipeText());
                 response.getRecipes().add(simpleRecipe);
             } else {
+                if (recipe.getRecipe() == null) {
+                    // Something is wrong with the data, ignore this entry
+                    continue;
+                }
                 var normalRecipe = new WeekplanDayResponse.NormalRecipe();
                 normalRecipe.setId(recipe.getRecipe().getId());
                 normalRecipe.setTitle(recipe.getRecipe().getTitle());
