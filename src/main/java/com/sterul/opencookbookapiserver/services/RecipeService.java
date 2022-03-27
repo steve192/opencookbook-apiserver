@@ -1,16 +1,15 @@
 package com.sterul.opencookbookapiserver.services;
 
-import java.util.List;
-
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class RecipeService {
@@ -66,7 +65,7 @@ public class RecipeService {
             var iterator = weekplanDay.getRecipes().iterator();
             while (iterator.hasNext()) {
                 var recipe = iterator.next();
-                if (recipe.getId().equals(id)) {
+                if (recipe.getRecipe() != null && recipe.getRecipe().getId().equals(id)) {
                     iterator.remove();
                 }
             }
