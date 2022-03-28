@@ -28,18 +28,18 @@ public class RecipeService {
     private WeekplanService weekplanService;
 
     public Recipe createNewRecipe(Recipe newRecipe) {
-        createMissingIngredients(newRecipe);
+        createMissingIngredients(newRecipe, newRecipe.getOwner());
         createMissingRecipeGroup(newRecipe);
 
         return recipeRepository.save(newRecipe);
     }
 
-    private void createMissingIngredients(Recipe recipe) {
+    private void createMissingIngredients(Recipe recipe, User user) {
         for (var ingredientNeed : recipe.getNeededIngredients()) {
             var ingredient = ingredientNeed.getIngredient();
             if (ingredient.getId() == null) {
                 // Convenience api which creates ingredients
-                ingredientNeed.setIngredient(ingredientService.createOrGetIngredient(ingredient));
+                ingredientNeed.setIngredient(ingredientService.createOrGetIngredient(ingredient, user));
             }
         }
     }
@@ -91,7 +91,7 @@ public class RecipeService {
             recipeUpdate.setId(existingRecipe.getId());
             recipeUpdate.setOwner(existingRecipe.getOwner());
 
-            createMissingIngredients(recipeUpdate);
+            createMissingIngredients(recipeUpdate, existingRecipe.getOwner());
             createMissingRecipeGroup(recipeUpdate);
 
             return recipeRepository.save(recipeUpdate);

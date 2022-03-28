@@ -21,7 +21,7 @@ public class Ingredient {
     private String name;
 
     @ManyToOne
-    private User creator;
+    private User owner;
 
     private boolean isPublicIngredient;
 
