@@ -10,5 +10,7 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
 
     Ingredient findByNameAndIsPublicIngredientAndOwner(String name, boolean isPublicIngredient, User owner);
 
+    void deleteAllByOwner(User owner);
+
 
 }

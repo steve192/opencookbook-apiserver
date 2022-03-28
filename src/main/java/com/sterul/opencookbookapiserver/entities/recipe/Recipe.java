@@ -31,7 +31,7 @@ public class Recipe {
     @javax.persistence.Embedded
     private ChangeInformationEmbeddable changeInformationEmbeddable;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<IngredientNeed> neededIngredients = new ArrayList<>();
 

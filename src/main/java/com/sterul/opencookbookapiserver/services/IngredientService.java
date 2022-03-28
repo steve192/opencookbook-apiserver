@@ -64,4 +64,7 @@ public class IngredientService {
         return ingredientRepository.findAll();
     }
 
+    public void deleteAllIngredientsOfUser(User user) {
+        ingredientRepository.deleteAllByOwner(user);
+    }
 }
