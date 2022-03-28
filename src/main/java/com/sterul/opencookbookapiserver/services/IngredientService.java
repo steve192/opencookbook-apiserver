@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 public class IngredientService {
@@ -58,6 +59,16 @@ public class IngredientService {
             throw new ElementNotFound();
         }
         return optional.get();
+    }
+
+    public List<Ingredient> getUserPermittedIngredients(User user) {
+        var publicIngredients = ingredientRepository.findAllByIsPublicIngredient(true);
+
+        var ownIngredients = ingredientRepository.findAllByIsPublicIngredientAndOwner(
+                false,
+                user);
+
+        return Stream.concat(publicIngredients.stream(), ownIngredients.stream()).toList();
     }
 
     public List<Ingredient> getAllIngredients() {

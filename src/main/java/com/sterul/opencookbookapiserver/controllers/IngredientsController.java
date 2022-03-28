@@ -20,10 +20,10 @@ public class IngredientsController extends BaseController {
     @Autowired
     private IngredientService ingredientService;
 
-    @Operation(summary = "Get all ingredients")
+    @Operation(summary = "Get all ingredients accessible by logged in user")
     @GetMapping("")
     public List<IngredientResponse> all() {
-        return ingredientService.getAllIngredients().stream().map(this::entityToResponse).toList();
+        return ingredientService.getUserPermittedIngredients(getLoggedInUser()).stream().map(this::entityToResponse).toList();
     }
 
     @Operation(summary = "Get a single ingredient")
