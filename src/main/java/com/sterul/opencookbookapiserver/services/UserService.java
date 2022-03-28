@@ -28,6 +28,9 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
+    private IngredientService ingredientService;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -115,6 +118,8 @@ public class UserService {
                 log.error("Error deleting image " + image.getUuid(), e);
             }
         });
+
+        ingredientService.deleteAllIngredientsOfUser(user);
 
         var weekplanDays = weekplanService.getWeekplanDaysByOwner(user);
         weekplanDays.forEach(day -> weekplanService.deleteWeekplanDay(day.getId()));

@@ -1,12 +1,10 @@
 package com.sterul.opencookbookapiserver.entities.account;
 
+import com.sterul.opencookbookapiserver.entities.ChangeInformationEmbeddable;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 @Entity
 @Data
@@ -21,5 +19,9 @@ public class ActivationLink {
 
     @OneToOne
     private User user;
+
+
+    @Embedded
+    private ChangeInformationEmbeddable changeInformationEmbeddable;
 
 }

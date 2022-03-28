@@ -1,13 +1,12 @@
 package com.sterul.opencookbookapiserver.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-
+import com.sterul.opencookbookapiserver.entities.account.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
 
 @Entity
 @Data
@@ -20,5 +19,13 @@ public class Ingredient {
     private Long id;
 
     private String name;
+
+    @ManyToOne
+    private User owner;
+
+    private boolean isPublicIngredient;
+
+    @Embedded
+    private ChangeInformationEmbeddable changeInformationEmbeddable;
 
 }

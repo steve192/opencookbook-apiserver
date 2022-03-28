@@ -1,13 +1,5 @@
 package com.sterul.opencookbookapiserver.unit.services;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.WeekplanDay;
@@ -18,7 +10,6 @@ import com.sterul.opencookbookapiserver.services.IngredientService;
 import com.sterul.opencookbookapiserver.services.RecipeGroupService;
 import com.sterul.opencookbookapiserver.services.RecipeService;
 import com.sterul.opencookbookapiserver.services.WeekplanService;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -27,6 +18,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.util.Arrays;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -86,7 +83,7 @@ class RecipeServiceTest {
 
         cut.createNewRecipe(mockRecipe);
 
-        verify(ingredientService, times(1)).createOrGetIngredient(mockIngredientWithoutId);
+        verify(ingredientService, times(1)).createOrGetIngredient(eq(mockIngredientWithoutId), any());
     }
 
     @Test

@@ -35,4 +35,6 @@ public class WeekplanDayRecipe {
     private boolean isSimpleRecipe;
 
     private String simpleRecipeText;
+
+    
 }
