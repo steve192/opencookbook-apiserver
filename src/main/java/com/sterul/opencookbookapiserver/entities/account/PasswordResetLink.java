@@ -1,5 +1,6 @@
 package com.sterul.opencookbookapiserver.entities.account;
 
+import com.sterul.opencookbookapiserver.entities.ChangeInformationEmbeddable;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -20,6 +21,10 @@ public class PasswordResetLink {
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date validUntil;
+
+
+    @Embedded
+    private ChangeInformationEmbeddable changeInformationEmbeddable;
 
     @OneToOne
     private User user;

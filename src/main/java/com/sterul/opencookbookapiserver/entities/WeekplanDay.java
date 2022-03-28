@@ -25,4 +25,8 @@ public class WeekplanDay {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WeekplanDayRecipe> recipes;
 
+
+    @Embedded
+    private ChangeInformationEmbeddable changeInformationEmbeddable;
+
 }

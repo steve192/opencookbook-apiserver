@@ -1,6 +1,7 @@
 package com.sterul.opencookbookapiserver.entities.recipe;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sterul.opencookbookapiserver.entities.ChangeInformationEmbeddable;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.entities.account.User;
@@ -25,6 +26,10 @@ public class Recipe {
     private Long id;
 
     private String title;
+
+
+    @javax.persistence.Embedded
+    private ChangeInformationEmbeddable changeInformationEmbeddable;
 
     @OneToMany(cascade = CascadeType.ALL)
     @Builder.Default

@@ -1,17 +1,14 @@
 package com.sterul.opencookbookapiserver.entities.recipe;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sterul.opencookbookapiserver.entities.ChangeInformationEmbeddable;
 import com.sterul.opencookbookapiserver.entities.account.User;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
 
 @Entity
 @Data
@@ -24,6 +21,10 @@ public class RecipeGroup {
     private Long id;
 
     private String title;
+
+
+    @Embedded
+    private ChangeInformationEmbeddable changeInformationEmbeddable;
 
     @ManyToOne
     @JsonIgnore
