@@ -78,11 +78,8 @@ public class OpencookbookConfiguration {
     private String mailFrom = "";
 
     /**
-     * The terms of service of this instance
+     * The location where the terms of service file is located
      */
-    private String termsOfService = "To be short: This application collects all the information you enter into it " +
-            "(like your account email address, recipes, ingredients etc.). It does not collect any further information in the background. " +
-            "The only use of collected information are to provide you with a login and to serve you " +
-            "your entered data in form of recipes, weekplans etc.";
+    private String termsOfServiceFileLocation = "";
 
 }
