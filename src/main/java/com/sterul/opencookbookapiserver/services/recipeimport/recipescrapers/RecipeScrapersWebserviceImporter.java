@@ -45,13 +45,33 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
         }
         log.info("Parsing response");
 
+        Long prepTime;
+        try {
+            prepTime = Long.valueOf(scrapedRecipe.prep_time);
+        } catch (NumberFormatException e) {
+            prepTime = 0L;
+        }
+
+        Long totalTime;
+        try {
+            totalTime = Long.valueOf(scrapedRecipe.total_time);
+        } catch (NumberFormatException e) {
+            totalTime = 0L;
+        }
+
+        Integer servings;
+        try {
+            servings = Integer.parseInt(scrapedRecipe.yields.split(" ")[0]);
+        } catch (NumberFormatException e) {
+            servings = 0;
+        }
         Recipe importRecipe = Recipe.builder()
                 .owner(owner)
                 .title(scrapedRecipe.title)
                 .preparationSteps(extractPraparationSteps(scrapedRecipe))
-                .servings(Integer.parseInt(scrapedRecipe.yields.split(" ")[0]))
-                .preparationTime(Long.valueOf(scrapedRecipe.prep_time))
-                .totalTime(Long.valueOf(scrapedRecipe.total_time))
+                .servings(servings)
+                .preparationTime(prepTime)
+                .totalTime(totalTime)
                 .build();
 
         extractImage(owner, scrapedRecipe, importRecipe);
