@@ -18,7 +18,7 @@ public class InstanceInfoController extends BaseController {
     @Autowired
     private OpencookbookConfiguration opencookbookConfiguration;
 
-    @GetMapping("/info")
+    @GetMapping("/")
     public InstanceInfoResponse getInstanceInfo() {
         return InstanceInfoResponse.builder()
                 .termsOfService(opencookbookConfiguration.getTermsOfService())

@@ -39,7 +39,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
             "/api-docs*",
             "/api-docs/*",
             "/api-docs/*/*",
-            "/api/v1/instance/*",
+            "/api/v1/instance*",
             "/h2-console/*"};
     @Autowired
     private UserDetailsService userDetailsService;
