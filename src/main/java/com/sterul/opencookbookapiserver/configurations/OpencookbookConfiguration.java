@@ -77,4 +77,9 @@ public class OpencookbookConfiguration {
      */
     private String mailFrom = "";
 
+    /**
+     * The location where the terms of service file is located
+     */
+    private String termsOfServiceFileLocation = "";
+
 }

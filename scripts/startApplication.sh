@@ -12,4 +12,5 @@ java \
   --opencookbook.smtpProtocol="${SMTP_PROTOCOL}" \
   --opencookbook.smtpStartTLS="${SMTP_STARTTLS}" \
   --opencookbook.mailFrom="${MAIL_FROM}" \
-  --opencookbook.instanceURL="${INSTANCE_URL}"
+  --opencookbook.instanceURL="${INSTANCE_URL}" \
+  --opencookbook.termsOfServiceFileLocation="${TERMS_OF_SERVICE_FILE_LOCATION}"
