@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,12 +25,12 @@ import java.util.List;
 public class RecipeImageService {
 
     private final Path uploadPath;
+    private final OpencookbookConfiguration opencookbookConfiguration;
     @Autowired
     private RecipeImageRepository recipeImageRepository;
-    @Autowired
-    private OpencookbookConfiguration opencookbookConfiguration;
 
-    RecipeImageService() {
+    RecipeImageService(OpencookbookConfiguration opencookbookConfiguration) {
+        this.opencookbookConfiguration = opencookbookConfiguration;
         uploadPath = Paths.get(opencookbookConfiguration.getUploadDir());
         if (!Files.exists(uploadPath)) {
             try {
@@ -47,7 +48,9 @@ public class RecipeImageService {
                     opencookbookConfiguration.getMaxImageSize());
         }
 
-        if (!isImage(inputStream)) {
+        var bufferedImage = ImageIO.read(inputStream);
+
+        if (bufferedImage == null) {
             log.warn("Uploaded image is not an image, aborting");
             throw new IllegalFiletypeException();
         }
@@ -56,13 +59,12 @@ public class RecipeImageService {
         recipeImage.setOwner(owner);
         recipeImage = recipeImageRepository.save(recipeImage);
 
-
-        saveAndConvertImage(inputStream, recipeImage.getUuid());
+        saveAndConvertImage(bufferedImage, recipeImage.getUuid());
 
         return recipeImage;
     }
 
-    private void saveAndConvertImage(InputStream inputStream, String uuid) {
+    private void saveAndConvertImage(BufferedImage bufferedImage, String uuid) throws IOException, IllegalFiletypeException {
 
         var imageFile = uploadPath.resolve(uuid).toFile();
 
@@ -70,24 +72,17 @@ public class RecipeImageService {
             imageFile.createNewFile();
         } catch (IOException e) {
             log.error("Error creating file while saving an uploaded image");
+            throw (e);
         }
 
         try (var outputStream = new FileOutputStream(imageFile)) {
-            var image = ImageIO.read(inputStream);
-            ImageIO.write(image, "jpg", outputStream);
+            ImageIO.write(bufferedImage, "jpg", outputStream);
         } catch (IOException e) {
-            log.error("IO Error when converting/saving image", e);
+            log.error("IO Error when converting image", e);
+            throw new IllegalFiletypeException();
         }
     }
 
-    private boolean isImage(InputStream inputStream) {
-        try {
-            var image = ImageIO.read(inputStream);
-            return image != null;
-        } catch (IOException e) {
-            return false;
-        }
-    }
 
     public boolean hasAccessPermissionToRecipeImage(String imageUUID, User user) throws ElementNotFound {
         var image = recipeImageRepository.findById(imageUUID);
