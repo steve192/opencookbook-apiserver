@@ -60,15 +60,26 @@ public class RecipeImageService {
         recipeImage.setOwner(owner);
         recipeImage = recipeImageRepository.save(recipeImage);
 
-        bufferedImage = removeAlphaChannel(bufferedImage);
+        bufferedImage = scaleImage(bufferedImage);
         saveAndConvertImage(bufferedImage, recipeImage.getUuid());
 
         return recipeImage;
     }
 
-    private BufferedImage removeAlphaChannel(BufferedImage bufferedImage) {
-        var newImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
-        newImage.createGraphics().drawImage(bufferedImage, 0, 0, Color.BLACK, null);
+    private BufferedImage scaleImage(BufferedImage bufferedImage) {
+        final int targetWidth = 1024;
+
+        var oldWidth = bufferedImage.getWidth();
+        var oldHeight = bufferedImage.getHeight();
+
+        var scalingFactor = (float) targetWidth / (float) oldWidth;
+        var newHeight = (int) Math.floor(oldHeight * scalingFactor);
+        var newWidth = (int) Math.floor(oldWidth * scalingFactor);
+
+
+        var newImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+        var graphic = newImage.createGraphics();
+        graphic.drawImage(bufferedImage, 0, 0, newWidth, newHeight, Color.BLACK, null);
         return newImage;
     }
 
