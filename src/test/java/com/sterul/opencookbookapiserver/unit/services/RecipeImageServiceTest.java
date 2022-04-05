@@ -74,6 +74,19 @@ class RecipeImageServiceTest {
         fail();
     }
 
+    @Test
+    @Transactional
+    void thumbnailIsGeneratedAndSmaller() throws IOException, IllegalFiletypeException {
+        var image = cut.saveNewImage(new FileInputStream(pngFile), 100, testUser);
+        assertFileWasWritten(image);
+        assertThumbnailFileIsSmaller(image);
+    }
+
+    private void assertThumbnailFileIsSmaller(RecipeImage image) throws IOException {
+        assertTrue(cut.getImage(image.getUuid()).length
+                > cut.getThumbnailImage(image.getUuid()).length);
+    }
+
     void assertFileWasWritten(RecipeImage recipeImage) throws IOException {
         assertTrue(cut.getImage(recipeImage.getUuid()).length > 0);
     }
