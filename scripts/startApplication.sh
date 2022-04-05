@@ -1,7 +1,7 @@
 #!/bin/sh
 
 java \
-  -XX:MaxRAM=150m \
+  -XX:MaxRAM=300m \
   -Xss512k \
   -XX:+UseSerialGC \
   -jar app.jar \
