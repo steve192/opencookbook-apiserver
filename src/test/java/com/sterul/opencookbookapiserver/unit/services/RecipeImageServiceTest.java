@@ -63,7 +63,7 @@ class RecipeImageServiceTest {
     @Test
     @Transactional
     void invalidFileCannotBeUploaded() throws FileNotFoundException {
-        var file = new FileInputStream(pngFile);
+        var file = new FileInputStream(invalidFile);
         try {
             cut.saveNewImage(file, 100, testUser);
         } catch (IllegalFiletypeException e) {

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -59,21 +60,21 @@ public class RecipeImageService {
         recipeImage.setOwner(owner);
         recipeImage = recipeImageRepository.save(recipeImage);
 
+        bufferedImage = removeAlphaChannel(bufferedImage);
         saveAndConvertImage(bufferedImage, recipeImage.getUuid());
 
         return recipeImage;
     }
 
+    private BufferedImage removeAlphaChannel(BufferedImage bufferedImage) {
+        var newImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+        newImage.createGraphics().drawImage(bufferedImage, 0, 0, Color.BLACK, null);
+        return newImage;
+    }
+
     private void saveAndConvertImage(BufferedImage bufferedImage, String uuid) throws IOException, IllegalFiletypeException {
 
         var imageFile = uploadPath.resolve(uuid).toFile();
-
-        try {
-            imageFile.createNewFile();
-        } catch (IOException e) {
-            log.error("Error creating file while saving an uploaded image");
-            throw (e);
-        }
 
         try (var outputStream = new FileOutputStream(imageFile)) {
             ImageIO.write(bufferedImage, "jpg", outputStream);
