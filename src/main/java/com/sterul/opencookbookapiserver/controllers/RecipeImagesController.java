@@ -46,8 +46,8 @@ public class RecipeImagesController extends BaseController {
                 .body(imageData);
     }
 
-    @Operation(summary = "Fetch single recipe image")
-    @GetMapping(value = "/{uuid}", produces = MediaType.IMAGE_JPEG_VALUE)
+    @Operation(summary = "Fetch single recipe image thumbnail")
+    @GetMapping(value = "/thumbnail/{uuid}", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> getRecipeThumbnailImage(@PathVariable String uuid, HttpServletResponse response)
             throws ElementNotFound, NotAuthorizedException {
 
