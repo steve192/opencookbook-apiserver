@@ -51,6 +51,18 @@ public class RecipeImageService {
         }
     }
 
+    public void generateThumbnail(String uuid) throws IOException {
+        var originalImageFile = imageUploadPath.resolve(uuid).toFile();
+        var bufferedImage = ImageIO.read(originalImageFile);
+        var thumbnailImage = scaleImage(bufferedImage, 256);
+        try {
+            saveAndConvertImage(thumbnailImage, uuid, thumbnailUploadPath);
+        } catch (IllegalFiletypeException e) {
+            // Filetype is not expected to be illegal
+            log.error("Illegal filetype while generating thumbnail");
+        }
+    }
+
     public RecipeImage saveNewImage(InputStream inputStream, long expectedSize, User owner)
             throws IOException, IllegalFiletypeException {
         if (expectedSize > opencookbookConfiguration.getMaxImageSize()) {
@@ -70,10 +82,9 @@ public class RecipeImageService {
         recipeImage = recipeImageRepository.save(recipeImage);
 
         var mainImage = scaleImage(bufferedImage, 1024);
-        var thumbnailImage = scaleImage(bufferedImage, 256);
-        
         saveAndConvertImage(mainImage, recipeImage.getUuid(), imageUploadPath);
-        saveAndConvertImage(thumbnailImage, recipeImage.getUuid(), thumbnailUploadPath);
+
+        generateThumbnail(recipeImage.getUuid());
 
         return recipeImage;
     }
@@ -122,6 +133,9 @@ public class RecipeImageService {
 
     public byte[] getThumbnailImage(String uuid) throws IOException {
         var path = thumbnailUploadPath.resolve(uuid);
+        if (!Files.exists(path)) {
+            generateThumbnail(uuid);
+        }
         return Files.readAllBytes(path);
     }
 
