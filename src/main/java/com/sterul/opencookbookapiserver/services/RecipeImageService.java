@@ -71,6 +71,7 @@ public class RecipeImageService {
 
         var mainImage = scaleImage(bufferedImage, 1024);
         var thumbnailImage = scaleImage(bufferedImage, 256);
+        
         saveAndConvertImage(mainImage, recipeImage.getUuid(), imageUploadPath);
         saveAndConvertImage(thumbnailImage, recipeImage.getUuid(), thumbnailUploadPath);
 
