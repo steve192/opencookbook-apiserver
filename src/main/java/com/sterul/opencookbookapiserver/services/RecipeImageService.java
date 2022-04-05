@@ -25,19 +25,28 @@ import java.util.List;
 @Slf4j
 public class RecipeImageService {
 
-    private final Path uploadPath;
+    private final Path imageUploadPath;
+    private final Path thumbnailUploadPath;
     private final OpencookbookConfiguration opencookbookConfiguration;
     @Autowired
     private RecipeImageRepository recipeImageRepository;
 
     RecipeImageService(OpencookbookConfiguration opencookbookConfiguration) {
         this.opencookbookConfiguration = opencookbookConfiguration;
-        uploadPath = Paths.get(opencookbookConfiguration.getUploadDir());
-        if (!Files.exists(uploadPath)) {
+        imageUploadPath = Paths.get(opencookbookConfiguration.getUploadDir());
+        if (!Files.exists(imageUploadPath)) {
             try {
-                Files.createDirectories(uploadPath);
+                Files.createDirectories(imageUploadPath);
             } catch (IOException e) {
                 log.error("Error creating file upload directory. There will be errors when images are uploaded");
+            }
+        }
+        thumbnailUploadPath = Paths.get(opencookbookConfiguration.getThumbnailDir());
+        if (!Files.exists(thumbnailUploadPath)) {
+            try {
+                Files.createDirectories(thumbnailUploadPath);
+            } catch (IOException e) {
+                log.error("Error creating file thumbnail directory. There will be errors when images are uploaded");
             }
         }
     }
@@ -60,14 +69,15 @@ public class RecipeImageService {
         recipeImage.setOwner(owner);
         recipeImage = recipeImageRepository.save(recipeImage);
 
-        bufferedImage = scaleImage(bufferedImage);
-        saveAndConvertImage(bufferedImage, recipeImage.getUuid());
+        var mainImage = scaleImage(bufferedImage, 1024);
+        var thumbnailImage = scaleImage(bufferedImage, 256);
+        saveAndConvertImage(mainImage, recipeImage.getUuid(), imageUploadPath);
+        saveAndConvertImage(thumbnailImage, recipeImage.getUuid(), thumbnailUploadPath);
 
         return recipeImage;
     }
 
-    private BufferedImage scaleImage(BufferedImage bufferedImage) {
-        final int targetWidth = 1024;
+    private BufferedImage scaleImage(BufferedImage bufferedImage, int targetWidth) {
 
         var oldWidth = bufferedImage.getWidth();
         var oldHeight = bufferedImage.getHeight();
@@ -83,7 +93,7 @@ public class RecipeImageService {
         return newImage;
     }
 
-    private void saveAndConvertImage(BufferedImage bufferedImage, String uuid) throws IOException, IllegalFiletypeException {
+    private void saveAndConvertImage(BufferedImage bufferedImage, String uuid, Path uploadPath) throws IllegalFiletypeException {
 
         var imageFile = uploadPath.resolve(uuid).toFile();
 
@@ -105,13 +115,19 @@ public class RecipeImageService {
     }
 
     public byte[] getImage(String uuid) throws IOException {
-        var path = Paths.get(opencookbookConfiguration.getUploadDir()).resolve(uuid);
+        var path = imageUploadPath.resolve(uuid);
+        return Files.readAllBytes(path);
+    }
+
+    public byte[] getThumbnailImage(String uuid) throws IOException {
+        var path = thumbnailUploadPath.resolve(uuid);
         return Files.readAllBytes(path);
     }
 
     public void deleteImage(String uuid) throws IOException {
         recipeImageRepository.deleteById(uuid);
-        Files.delete(uploadPath.resolve(uuid));
+        Files.delete(imageUploadPath.resolve(uuid));
+        Files.delete(thumbnailUploadPath.resolve(uuid));
     }
 
     public List<RecipeImage> getImagesByUser(User user) {

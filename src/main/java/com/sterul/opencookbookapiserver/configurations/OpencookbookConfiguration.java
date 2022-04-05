@@ -21,6 +21,11 @@ public class OpencookbookConfiguration {
      * Upload directory for images and co
      */
     private String uploadDir = "";
+    
+    /**
+     * Directory for image thumbnails
+     */
+    private String thumbnailDir = "";
 
     /**
      * Maximum image size for image uploads in bytes
