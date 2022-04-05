@@ -1,46 +1,58 @@
 package com.sterul.opencookbookapiserver.services;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.List;
-
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.repositories.RecipeImageRepository;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+
 @Service
+@Slf4j
 public class RecipeImageService {
 
+    private final Path uploadPath;
+    private final OpencookbookConfiguration opencookbookConfiguration;
     @Autowired
-    RecipeImageRepository recipeImageRepository;
+    private RecipeImageRepository recipeImageRepository;
 
-    @Autowired
-    OpencookbookConfiguration opencookbookConfiguration;
+    RecipeImageService(OpencookbookConfiguration opencookbookConfiguration) {
+        this.opencookbookConfiguration = opencookbookConfiguration;
+        uploadPath = Paths.get(opencookbookConfiguration.getUploadDir());
+        if (!Files.exists(uploadPath)) {
+            try {
+                Files.createDirectories(uploadPath);
+            } catch (IOException e) {
+                log.error("Error creating file upload directory. There will be errors when images are uploaded");
+            }
+        }
+    }
 
     public RecipeImage saveNewImage(InputStream inputStream, long expectedSize, User owner)
             throws IOException, IllegalFiletypeException {
-        Path uploadPath = Paths.get(opencookbookConfiguration.getUploadDir());
-
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
-        }
-
         if (expectedSize > opencookbookConfiguration.getMaxImageSize()) {
             throw new FileSizeLimitExceededException("Image too big", expectedSize,
                     opencookbookConfiguration.getMaxImageSize());
         }
 
-        if (!isImage(inputStream)) {
+        var bufferedImage = ImageIO.read(inputStream);
+
+        if (bufferedImage == null) {
+            log.warn("Uploaded image is not an image, aborting");
             throw new IllegalFiletypeException();
         }
 
@@ -48,30 +60,34 @@ public class RecipeImageService {
         recipeImage.setOwner(owner);
         recipeImage = recipeImageRepository.save(recipeImage);
 
-        Path filePath = uploadPath.resolve(recipeImage.getUuid());
-        Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+        bufferedImage = removeAlphaChannel(bufferedImage);
+        saveAndConvertImage(bufferedImage, recipeImage.getUuid());
 
         return recipeImage;
     }
 
-    private boolean isImage(InputStream inputStream) {
-        // TODO: Implement correctly
-        return true;
-
-        // var isImage = false;
-        // var imageReaders = ImageIO.getImageReaders(inputStream);
-        // while (imageReaders.hasNext()) {
-        // var imageReader = imageReaders.next();
-        // System.out.println("Potential image reader: " + imageReader.toString());
-        // isImage = true;
-        // }
-
-        // return isImage;
+    private BufferedImage removeAlphaChannel(BufferedImage bufferedImage) {
+        var newImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+        newImage.createGraphics().drawImage(bufferedImage, 0, 0, Color.BLACK, null);
+        return newImage;
     }
+
+    private void saveAndConvertImage(BufferedImage bufferedImage, String uuid) throws IOException, IllegalFiletypeException {
+
+        var imageFile = uploadPath.resolve(uuid).toFile();
+
+        try (var outputStream = new FileOutputStream(imageFile)) {
+            ImageIO.write(bufferedImage, "jpg", outputStream);
+        } catch (IOException e) {
+            log.error("IO Error when converting image", e);
+            throw new IllegalFiletypeException();
+        }
+    }
+
 
     public boolean hasAccessPermissionToRecipeImage(String imageUUID, User user) throws ElementNotFound {
         var image = recipeImageRepository.findById(imageUUID);
-        if (!image.isPresent()) {
+        if (image.isEmpty()) {
             throw new ElementNotFound();
         }
         return image.get().getOwner().getUserId().equals(user.getUserId());
@@ -84,8 +100,6 @@ public class RecipeImageService {
 
     public void deleteImage(String uuid) throws IOException {
         recipeImageRepository.deleteById(uuid);
-        Path uploadPath = Paths.get(opencookbookConfiguration.getUploadDir());
-
         Files.delete(uploadPath.resolve(uuid));
     }
 
