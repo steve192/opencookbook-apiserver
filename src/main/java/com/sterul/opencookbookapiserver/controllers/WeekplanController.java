@@ -112,7 +112,7 @@ public class WeekplanController extends BaseController {
                     newWeekplanDay.getRecipes().add(WeekplanDayRecipe.builder()
                             .isSimpleRecipe(true)
                             // JPA wants an null id if entries needs to be created
-                            .id(simpleRecipe.getId().equals("") ? null : simpleRecipe.getId())
+                            .id("".equals(simpleRecipe.getId()) ? null : simpleRecipe.getId())
                             .simpleRecipeText(simpleRecipe.getTitle())
                             .build());
                 }
