@@ -13,4 +13,5 @@ java \
   --opencookbook.smtpStartTLS="${SMTP_STARTTLS}" \
   --opencookbook.mailFrom="${MAIL_FROM}" \
   --opencookbook.instanceURL="${INSTANCE_URL}" \
-  --opencookbook.termsOfServiceFileLocation="${TERMS_OF_SERVICE_FILE_LOCATION}"
+  --opencookbook.termsOfServiceFileLocation="${TERMS_OF_SERVICE_FILE_LOCATION}" \
+  --spring.datasource.password=${DB_PASSWORD}
