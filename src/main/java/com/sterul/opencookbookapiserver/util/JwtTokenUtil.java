@@ -1,28 +1,23 @@
 package com.sterul.opencookbookapiserver.util;
 
+import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
+import io.jsonwebtoken.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 
-import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-
 @Component
 public class JwtTokenUtil {
 
+    private final String jwtSigningKey = UUID.randomUUID().toString();
     @Autowired
     OpencookbookConfiguration opencookbookConfiguration;
-
-    private String jwtSigningKey = UUID.randomUUID().toString();
 
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
@@ -63,8 +58,12 @@ public class JwtTokenUtil {
                 .compact();
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = getUsernameFromToken(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+
+    public boolean isTokenValid(String jwtToken) {
+        try {
+            return !isTokenExpired(jwtToken);
+        } catch (UnsupportedJwtException | MalformedJwtException | SignatureException | ExpiredJwtException | IllegalArgumentException e) {
+            return false;
+        }
     }
 }
