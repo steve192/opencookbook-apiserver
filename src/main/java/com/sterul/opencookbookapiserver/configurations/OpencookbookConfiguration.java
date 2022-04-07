@@ -21,7 +21,7 @@ public class OpencookbookConfiguration {
      * Upload directory for images and co
      */
     private String uploadDir = "";
-    
+
     /**
      * Directory for image thumbnails
      */
@@ -86,5 +86,14 @@ public class OpencookbookConfiguration {
      * The location where the terms of service file is located
      */
     private String termsOfServiceFileLocation = "";
+
+    /**
+     * The width thumbnails are scaled down to (height is calculated by preserving width/height ratio)
+     */
+    private int imageScaleWidth = 1200;
+    /**
+     * The width images are scaled down to (height is calculated by preserving width/height ratio)
+     */
+    private int imageThumbnailScaleWidth = 512;
 
 }

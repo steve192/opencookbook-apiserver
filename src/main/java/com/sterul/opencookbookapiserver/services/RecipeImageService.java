@@ -54,7 +54,7 @@ public class RecipeImageService {
     public void generateThumbnail(String uuid) throws IOException {
         var originalImageFile = imageUploadPath.resolve(uuid).toFile();
         var bufferedImage = ImageIO.read(originalImageFile);
-        var thumbnailImage = scaleImage(bufferedImage, 256);
+        var thumbnailImage = scaleImage(bufferedImage, opencookbookConfiguration.getImageThumbnailScaleWidth());
         try {
             saveAndConvertImage(thumbnailImage, uuid, thumbnailUploadPath);
         } catch (IllegalFiletypeException e) {
@@ -81,7 +81,7 @@ public class RecipeImageService {
         recipeImage.setOwner(owner);
         recipeImage = recipeImageRepository.save(recipeImage);
 
-        var mainImage = scaleImage(bufferedImage, 1024);
+        var mainImage = scaleImage(bufferedImage, opencookbookConfiguration.getImageScaleWidth());
         saveAndConvertImage(mainImage, recipeImage.getUuid(), imageUploadPath);
 
         generateThumbnail(recipeImage.getUuid());
