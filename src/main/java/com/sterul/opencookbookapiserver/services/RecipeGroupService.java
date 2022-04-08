@@ -26,6 +26,7 @@ public class RecipeGroupService {
     public RecipeGroup updateRecipeGroup(RecipeGroup recipeGroupUpdate) {
         return recipeGroupRepository.findById(recipeGroupUpdate.getId()).map(existingRecipeGroup -> {
             recipeGroupUpdate.setId(existingRecipeGroup.getId());
+            recipeGroupUpdate.setOwner(existingRecipeGroup.getOwner());
             return recipeGroupRepository.save(recipeGroupUpdate);
         }).orElseThrow();
     }
