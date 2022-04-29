@@ -2,6 +2,8 @@ package com.sterul.opencookbookapiserver.unit.services.recipeimport;
 
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
+import com.sterul.opencookbookapiserver.services.IngredientService;
+import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.recipeimport.ImportNotSupportedException;
 import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImportFailedException;
 import com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers.RecipeScraperServiceProxy;
@@ -18,6 +20,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -71,6 +74,9 @@ class RecipeScrapersWebserviceImporterTest {
     @MockBean
     private RecipeScraperServiceProxy recipeScraperServiceProxy;
 
+    @MockBean
+    private IngredientService ingredientService;
+
     @Autowired
     private RecipeScrapersWebserviceImporter cut;
 
@@ -78,8 +84,9 @@ class RecipeScrapersWebserviceImporterTest {
     private User userMock;
 
     @BeforeEach
-    public void setup() throws IOException, ImportNotSupportedException {
+    public void setup() throws IOException, ImportNotSupportedException, ElementNotFound {
         when(recipeScraperServiceProxy.scrapeRecipe(testRecipeUrl)).thenReturn(testRecipeJson);
+        when(ingredientService.findUserIngredientBySimilarName(any(), any())).thenThrow(new ElementNotFound());
     }
 
     @Test

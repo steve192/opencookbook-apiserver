@@ -6,6 +6,8 @@ import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
+import com.sterul.opencookbookapiserver.services.IngredientService;
+import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.recipeimport.AbstractRecipeImporter;
 import com.sterul.opencookbookapiserver.services.recipeimport.ImportNotSupportedException;
 import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImportFailedException;
@@ -14,6 +16,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.text.Normalizer;
@@ -23,6 +26,7 @@ import java.util.List;
 
 @Component
 @Slf4j
+@Transactional
 public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
 
     @Autowired
@@ -30,6 +34,9 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
 
     @Autowired
     private IngredientUnitHelper unitHelper;
+
+    @Autowired
+    private IngredientService ingredientService;
 
     @Override
     public Recipe importRecipe(String url, User owner) throws RecipeImportFailedException, ImportNotSupportedException {
@@ -75,13 +82,13 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
                 .build();
 
         extractImage(owner, scrapedRecipe, importRecipe);
-        extractIngredients(scrapedRecipe, importRecipe);
+        extractIngredients(scrapedRecipe, importRecipe, owner);
 
         log.info("Recipe imported");
         return importRecipe;
     }
 
-    private void extractIngredients(ScrapedRecipe scrapedRecipe, Recipe importRecipe) {
+    private void extractIngredients(ScrapedRecipe scrapedRecipe, Recipe importRecipe, User owner) {
         var needs = scrapedRecipe.ingredients.stream().map(ingredient -> {
             var parts = ingredient.split(" ");
             var textStartIndex = 0;
@@ -113,12 +120,18 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
 
             var ingredientText = String.join(" ", Arrays.copyOfRange(parts, textStartIndex, parts.length));
 
+            Ingredient newIngredient;
+            try {
+                newIngredient = ingredientService.findUserIngredientBySimilarName(ingredientText, owner);
+            } catch (ElementNotFound e) {
+                newIngredient = Ingredient.builder()
+                        .name(ingredientText)
+                        .build();
+            }
             return IngredientNeed.builder()
                     .amount(amount)
                     .unit(unit)
-                    .ingredient(Ingredient.builder()
-                            .name(ingredientText)
-                            .build())
+                    .ingredient(newIngredient)
                     .build();
         }).toList();
 
