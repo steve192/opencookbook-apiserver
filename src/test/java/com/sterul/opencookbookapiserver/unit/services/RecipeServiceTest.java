@@ -3,6 +3,7 @@ package com.sterul.opencookbookapiserver.unit.services;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.WeekplanDay;
+import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
@@ -19,8 +20,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -54,8 +59,12 @@ class RecipeServiceTest {
     @Mock
     private WeekplanDay mockWeekplanDay;
 
+    @Mock
+    private User testUser;
+
     @Captor
     private ArgumentCaptor<Recipe> recipeCaptor;
+    private List<Recipe> testRecipeList = new ArrayList<>();
 
     @Test
     void recipeCreated() {
@@ -111,5 +120,28 @@ class RecipeServiceTest {
 
         assertTrue(recipeCaptor.getValue().getServings() >= 0);
     }
+
+    @Test
+    void recipesAreFuzzySearched() {
+        var excpectedRecipe = whenRecipeExists("Poké-Bowl mit Räucherlachs und Gemüse", Arrays.asList(Recipe.RecipeType.MEAT));
+        whenRecipeExists("Gebackene Laugen-Käse-Knödel", Arrays.asList(Recipe.RecipeType.MEAT));
+        whenRecipeExists("Räucherlachs Aprikosen-Curry Sauce", Arrays.asList(Recipe.RecipeType.MEAT));
+
+        var results = cut.searchUserRecipes(testUser, "Gemüs", Arrays.asList(Recipe.RecipeType.MEAT));
+        assertEquals(excpectedRecipe, results.get(0));
+    }
+
+    private Recipe whenRecipeExists(String testRecipe, List<Recipe.RecipeType> types) {
+        var recipe = Recipe.builder()
+                .title(testRecipe)
+                .id(new Random().nextLong())
+                .build();
+        testRecipeList.add(recipe);
+        when(recipeRepository.findByOwnerAndRecipeTypeIn(testUser, types))
+                .thenReturn(testRecipeList);
+
+        return recipe;
+    }
+
 
 }

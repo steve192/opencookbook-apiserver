@@ -114,7 +114,7 @@ public class RecipeService {
     }
 
     public List<Recipe> searchUserRecipes(User user, String searchString, List<Recipe.RecipeType> categories) {
-        if ((searchString == null || searchString.equals("")) && categories == null || categories.isEmpty()) {
+        if ((searchString == null || searchString.equals("")) && (categories == null || categories.isEmpty())) {
             return getRecipesByOwner(user);
         }
         if (searchString == null || searchString.equals("")) {
@@ -125,7 +125,12 @@ public class RecipeService {
     }
 
     private List<Recipe> searchByStringAndType(User user, String searchString, List<Recipe.RecipeType> categories) {
-        var allRecipes = recipeRepository.findByOwnerAndRecipeTypeIn(user, categories);
+        List<Recipe> allRecipes;
+        if (categories == null || categories.isEmpty()) {
+            allRecipes = recipeRepository.findByOwner(user);
+        } else {
+            allRecipes = recipeRepository.findByOwnerAndRecipeTypeIn(user, categories);
+        }
 
         var documents = allRecipes.stream().map(recipe ->
                 new Document.Builder(recipe.getId().toString())
