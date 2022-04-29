@@ -1,14 +1,14 @@
 package com.sterul.opencookbookapiserver.services;
 
-import java.util.List;
-
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.repositories.RecipeGroupRepository;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class RecipeGroupService {
@@ -34,7 +34,7 @@ public class RecipeGroupService {
     public void deleteRecipeGroup(Long recipeGroupId) {
         var recipeGroupOptional = recipeGroupRepository.findById(recipeGroupId);
         if (recipeGroupOptional.isEmpty()) {
-            throw new Error("Receipe group " + recipeGroupId + " not existing. Cannot delete");
+            throw new NoSuchElementException("Receipe group " + recipeGroupId + " not existing. Cannot delete");
         }
         var recipesToUnassignGroup = recipeService.getRecipesByRecipeGroup(recipeGroupOptional.get());
 
