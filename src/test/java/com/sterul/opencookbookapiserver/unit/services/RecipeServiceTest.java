@@ -131,6 +131,17 @@ class RecipeServiceTest {
         assertEquals(excpectedRecipe, results.get(0));
     }
 
+    @Test
+    void fuzzySearchFindsNoResults() {
+        whenRecipeExists("Poké-Bowl mit Räucherlachs und Gemüse", Arrays.asList(Recipe.RecipeType.MEAT));
+        whenRecipeExists("Gebackene Laugen-Käse-Knödel", Arrays.asList(Recipe.RecipeType.MEAT));
+        whenRecipeExists("Räucherlachs Aprikosen-Curry Sauce", Arrays.asList(Recipe.RecipeType.MEAT));
+
+        var results = cut.searchUserRecipes(testUser, "Tomats", Arrays.asList(Recipe.RecipeType.MEAT));
+        assertTrue(results.isEmpty());
+    }
+
+
     private Recipe whenRecipeExists(String testRecipe, List<Recipe.RecipeType> types) {
         var recipe = Recipe.builder()
                 .title(testRecipe)
