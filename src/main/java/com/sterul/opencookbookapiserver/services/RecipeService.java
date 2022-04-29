@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.intuit.fuzzymatcher.domain.ElementType.NAME;
 
@@ -115,13 +114,17 @@ public class RecipeService {
     }
 
     public List<Recipe> searchUserRecipes(User user, String searchString, List<Recipe.RecipeType> categories) {
-        if ((searchString == null || searchString.equals("")) && categories == null || categories.size() == 0) {
+        if ((searchString == null || searchString.equals("")) && categories == null || categories.isEmpty()) {
             return getRecipesByOwner(user);
         }
         if (searchString == null || searchString.equals("")) {
             return recipeRepository.findByOwnerAndRecipeTypeIn(user, categories);
         }
 
+        return searchByStringAndType(user, searchString, categories);
+    }
+
+    private List<Recipe> searchByStringAndType(User user, String searchString, List<Recipe.RecipeType> categories) {
         var allRecipes = recipeRepository.findByOwnerAndRecipeTypeIn(user, categories);
 
         var documents = allRecipes.stream().map(recipe ->
@@ -130,7 +133,7 @@ public class RecipeService {
                                 .setValue(recipe.getTitle())
                                 .setType(NAME)
                                 .createElement())
-                        .createDocument()).collect(Collectors.toList());
+                        .createDocument()).toList();
 
         MatchService matchService = new MatchService();
 
@@ -157,6 +160,6 @@ public class RecipeService {
                                         recipe.getId().equals(Long.valueOf(result.getMatchedWith().getKey())))
                                 .findFirst()
                                 .get())
-                .collect(Collectors.toList());
+                .toList();
     }
 }

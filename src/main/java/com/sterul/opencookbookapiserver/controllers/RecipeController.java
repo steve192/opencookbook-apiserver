@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/recipes")
@@ -35,7 +34,7 @@ public class RecipeController extends BaseController {
         var user = getLoggedInUser();
         return recipeService.searchUserRecipes(user, searchString, categories).stream()
                 .map(this::entityToResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Operation(summary = "Create a new recipe", description = "Not existing ingredients and recipe groups will be created when no id is supplied.")
