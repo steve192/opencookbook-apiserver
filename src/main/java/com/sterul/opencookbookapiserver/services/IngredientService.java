@@ -51,6 +51,10 @@ public class IngredientService {
         }
         var matchesForNamedIngredient = matches.get(NEW_INDREGIENT_KEY);
 
+        if (matchesForNamedIngredient == null) {
+            throw new ElementNotFound();
+        }
+
         var bestMatchedIngredientId = Float.parseFloat(matchesForNamedIngredient.get(0).getMatchedWith().getKey());
 
         var bestMatchedIngredient = ingredients.stream()
