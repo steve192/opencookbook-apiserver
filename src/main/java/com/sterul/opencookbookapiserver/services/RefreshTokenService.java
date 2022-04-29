@@ -1,19 +1,19 @@
 package com.sterul.opencookbookapiserver.services;
 
-import java.time.Instant;
-import java.util.UUID;
-
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.entities.RefreshToken;
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.repositories.RefreshTokenRepository;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.util.UUID;
+
 @Service
+@Transactional
 public class RefreshTokenService {
 
     @Autowired
@@ -23,6 +23,9 @@ public class RefreshTokenService {
     private OpencookbookConfiguration opencookbookConfiguration;
 
     public RefreshToken createRefreshTokenForUser(User user) {
+        //Delete all old tokens
+        refreshTokenRepository.deleteAllByValidUntilBeforeAndOwner(Instant.now(), user);
+
         var refreshToken = new RefreshToken();
         refreshToken.setOwner(user);
         refreshToken.setToken(UUID.randomUUID().toString());
