@@ -1,8 +1,5 @@
 package com.sterul.opencookbookapiserver.controllers;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-
 import com.sterul.opencookbookapiserver.controllers.exceptions.NotAuthorizedException;
 import com.sterul.opencookbookapiserver.controllers.requests.RecipeRequest;
 import com.sterul.opencookbookapiserver.controllers.responses.RecipeResponse;
@@ -12,20 +9,13 @@ import com.sterul.opencookbookapiserver.services.RecipeService;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.recipeimport.ImportNotSupportedException;
 import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImportFailedException;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/v1/recipes")
@@ -40,9 +30,11 @@ public class RecipeController extends BaseController {
 
     @Operation(summary = "Search or get recipes")
     @GetMapping("")
-    public List<Recipe> searchRecipe(@RequestParam(required = false) String searchString) {
+    public List<RecipeResponse> searchRecipe(@RequestParam(required = false) String searchString, @RequestParam(required = false) List<Recipe.RecipeType> categories) {
         var user = getLoggedInUser();
-        return recipeService.getRecipesByOwner(user);
+        return recipeService.searchUserRecipes(user, searchString, categories).stream()
+                .map(this::entityToResponse)
+                .toList();
     }
 
     @Operation(summary = "Create a new recipe", description = "Not existing ingredients and recipe groups will be created when no id is supplied.")
@@ -88,10 +80,10 @@ public class RecipeController extends BaseController {
 
     @Operation(summary = "Import a recipe from a recipe website")
     @GetMapping("/import")
-    public Recipe importRecipe(@RequestParam String importUrl)
+    public RecipeResponse importRecipe(@RequestParam String importUrl)
             throws ImportNotSupportedException, RecipeImportFailedException {
         var owner = getLoggedInUser();
-        return recipeImportService.importRecipe(importUrl, owner);
+        return entityToResponse(recipeImportService.importRecipe(importUrl, owner));
     }
 
     @Operation(summary = "Get a list of supported websites", description = "Additional websites are supported by a generic import. Quality can vary")
