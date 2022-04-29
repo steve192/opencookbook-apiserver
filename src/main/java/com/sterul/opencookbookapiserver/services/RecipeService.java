@@ -1,5 +1,8 @@
 package com.sterul.opencookbookapiserver.services;
 
+import com.intuit.fuzzymatcher.component.MatchService;
+import com.intuit.fuzzymatcher.domain.Document;
+import com.intuit.fuzzymatcher.domain.Element;
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
@@ -9,11 +12,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.intuit.fuzzymatcher.domain.ElementType.NAME;
 
 @Service
 public class RecipeService {
 
+    public static final String SEARCH_DOCUMENT = "searchDocument";
     @Autowired
     private IngredientService ingredientService;
 
@@ -106,4 +114,49 @@ public class RecipeService {
         return recipe.get();
     }
 
+    public List<Recipe> searchUserRecipes(User user, String searchString, List<Recipe.RecipeType> categories) {
+        if ((searchString == null || searchString.equals("")) && categories == null || categories.size() == 0) {
+            return getRecipesByOwner(user);
+        }
+        if (searchString == null || searchString.equals("")) {
+            return recipeRepository.findByOwnerAndRecipeTypeIn(user, categories);
+        }
+
+        var allRecipes = recipeRepository.findByOwnerAndRecipeTypeIn(user, categories);
+
+        var documents = allRecipes.stream().map(recipe ->
+                new Document.Builder(recipe.getId().toString())
+                        .addElement(new Element.Builder<String>()
+                                .setValue(recipe.getTitle())
+                                .setType(NAME)
+                                .createElement())
+                        .createDocument()).collect(Collectors.toList());
+
+        MatchService matchService = new MatchService();
+
+        var newDocument = new Document.Builder(SEARCH_DOCUMENT)
+                .addElement(new Element.Builder<String>()
+                        .setValue(searchString)
+                        .setType(NAME)
+                        .setThreshold(0.01)
+                        .createElement())
+                .setThreshold(0.01)
+                .createDocument();
+
+        var matches = matchService.applyMatchByDocId(newDocument, documents);
+
+        if (matches.size() == 0 || matches.get(SEARCH_DOCUMENT) == null) {
+            // None found
+            return Arrays.asList();
+        }
+
+        var results = matches.get(SEARCH_DOCUMENT);
+        return results.stream().map(result ->
+                        allRecipes.stream()
+                                .filter(recipe ->
+                                        recipe.getId().equals(Long.valueOf(result.getMatchedWith().getKey())))
+                                .findFirst()
+                                .get())
+                .collect(Collectors.toList());
+    }
 }
