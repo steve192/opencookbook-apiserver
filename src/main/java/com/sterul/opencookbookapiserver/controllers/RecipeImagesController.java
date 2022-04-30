@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import java.io.IOException;
 
 @RestController
@@ -26,7 +28,7 @@ public class RecipeImagesController extends BaseController {
 
     @Operation(summary = "Fetch single recipe image")
     @GetMapping(value = "/{uuid}", produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity<byte[]> getRecipeImage(@PathVariable String uuid, HttpServletResponse response)
+    public ResponseEntity<byte[]> getRecipeImage(@Valid @NotBlank @PathVariable String uuid, HttpServletResponse response)
             throws ElementNotFound, NotAuthorizedException {
 
         if (!recipeImageService.hasAccessPermissionToRecipeImage(uuid, getLoggedInUser())) {
@@ -48,7 +50,7 @@ public class RecipeImagesController extends BaseController {
 
     @Operation(summary = "Fetch single recipe image thumbnail")
     @GetMapping(value = "/thumbnail/{uuid}", produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity<byte[]> getRecipeThumbnailImage(@PathVariable String uuid, HttpServletResponse response)
+    public ResponseEntity<byte[]> getRecipeThumbnailImage(@Valid @NotBlank @PathVariable String uuid, HttpServletResponse response)
             throws ElementNotFound, NotAuthorizedException {
 
         if (!recipeImageService.hasAccessPermissionToRecipeImage(uuid, getLoggedInUser())) {
@@ -70,7 +72,7 @@ public class RecipeImagesController extends BaseController {
 
     @Operation(summary = "Upload a new image", description = "Upload an image as multipart file. The images uuid can later on be assigned to a recipe. If they are not assigned they will be deleted after a while")
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public RecipeImage uploadRecipeImage(@RequestParam("image") MultipartFile multipartFile)
+    public RecipeImage uploadRecipeImage(@Valid @RequestParam("image") MultipartFile multipartFile)
             throws IOException, IllegalFiletypeException {
         return recipeImageService.saveNewImage(multipartFile.getInputStream(), multipartFile.getSize(),
                 getLoggedInUser());
@@ -78,7 +80,7 @@ public class RecipeImagesController extends BaseController {
 
     @Operation(summary = "Delete an image")
     @DeleteMapping("/{uuid}")
-    public void deleteImage(@PathVariable String uuid) throws ElementNotFound, NotAuthorizedException {
+    public void deleteImage(@Valid @NotBlank @PathVariable String uuid) throws ElementNotFound, NotAuthorizedException {
         if (!recipeImageService.hasAccessPermissionToRecipeImage(uuid, getLoggedInUser())) {
             throw new NotAuthorizedException();
         }
