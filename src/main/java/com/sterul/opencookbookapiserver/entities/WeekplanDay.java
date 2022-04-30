@@ -10,7 +10,7 @@ import java.util.List;
 
 @Entity
 @Data
-public class WeekplanDay {
+public class WeekplanDay extends AuditableEntity {
     @Id
     @GeneratedValue
     private Long id;
@@ -24,9 +24,4 @@ public class WeekplanDay {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WeekplanDayRecipe> recipes;
-
-
-    @Embedded
-    private ChangeInformationEmbeddable changeInformationEmbeddable;
-
 }

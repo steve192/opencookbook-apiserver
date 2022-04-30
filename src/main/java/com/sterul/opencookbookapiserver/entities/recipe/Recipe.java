@@ -1,7 +1,7 @@
 package com.sterul.opencookbookapiserver.entities.recipe;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sterul.opencookbookapiserver.entities.ChangeInformationEmbeddable;
+import com.sterul.opencookbookapiserver.entities.AuditableEntity;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.entities.account.User;
@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.relational.core.mapping.Embedded;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -20,16 +19,13 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Recipe {
+public class Recipe extends AuditableEntity {
     @Id
     @GeneratedValue
     private Long id;
 
     private String title;
 
-
-    @javax.persistence.Embedded
-    private ChangeInformationEmbeddable changeInformationEmbeddable;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
@@ -58,7 +54,7 @@ public class Recipe {
     private Long totalTime;
 
     @Enumerated
-    @Embedded.Nullable
+    @org.springframework.data.relational.core.mapping.Embedded.Nullable
     private RecipeType recipeType;
 
     public enum RecipeType {

@@ -5,11 +5,14 @@ import com.sterul.opencookbookapiserver.entities.account.User;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Entity
 @Data
-public class RecipeImage {
+public class RecipeImage extends AuditableEntity {
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -22,10 +25,5 @@ public class RecipeImage {
     @JsonIgnore
     @ManyToOne
     private User owner;
-
-
-    @Embedded
-    private ChangeInformationEmbeddable changeInformationEmbeddable;
-
 
 }
