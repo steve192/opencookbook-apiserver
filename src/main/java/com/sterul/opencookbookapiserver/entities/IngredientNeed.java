@@ -5,14 +5,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Entity
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class IngredientNeed {
+public class IngredientNeed extends AuditableEntity {
 
     @Id
     @GeneratedValue
@@ -23,9 +26,4 @@ public class IngredientNeed {
 
     private Float amount;
     private String unit;
-
-
-    @Embedded
-    private ChangeInformationEmbeddable changeInformationEmbeddable;
-
 }

@@ -6,14 +6,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 @Entity
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Ingredient {
+public class Ingredient extends AuditableEntity {
     @Id
     @GeneratedValue
     private Long id;
@@ -24,8 +27,4 @@ public class Ingredient {
     private User owner;
 
     private boolean isPublicIngredient;
-
-    @Embedded
-    private ChangeInformationEmbeddable changeInformationEmbeddable;
-
 }

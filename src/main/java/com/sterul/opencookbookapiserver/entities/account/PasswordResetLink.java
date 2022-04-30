@@ -1,6 +1,6 @@
 package com.sterul.opencookbookapiserver.entities.account;
 
-import com.sterul.opencookbookapiserver.entities.ChangeInformationEmbeddable;
+import com.sterul.opencookbookapiserver.entities.AuditableEntity;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -10,7 +10,7 @@ import java.util.Date;
 
 @Entity
 @Data
-public class PasswordResetLink {
+public class PasswordResetLink extends AuditableEntity {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
@@ -21,10 +21,6 @@ public class PasswordResetLink {
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date validUntil;
-
-
-    @Embedded
-    private ChangeInformationEmbeddable changeInformationEmbeddable;
 
     @OneToOne
     private User user;

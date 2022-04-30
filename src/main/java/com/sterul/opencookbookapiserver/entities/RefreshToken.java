@@ -3,7 +3,6 @@ package com.sterul.opencookbookapiserver.entities;
 import com.sterul.opencookbookapiserver.entities.account.User;
 import lombok.Data;
 
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -12,7 +11,7 @@ import java.time.Instant;
 
 @Entity
 @Data
-public class RefreshToken {
+public class RefreshToken extends AuditableEntity {
 
     @Id
     @NotNull
@@ -23,8 +22,4 @@ public class RefreshToken {
 
     @ManyToOne
     private User owner;
-
-
-    @Embedded
-    private ChangeInformationEmbeddable changeInformationEmbeddable;
 }
