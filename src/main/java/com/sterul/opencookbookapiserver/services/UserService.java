@@ -137,6 +137,11 @@ public class UserService {
         passwordResetLinkRepository.deleteAllByUser(user);
 
         userRepository.delete(user);
+        try {
+            emailService.sendAccountDeletedMail(user);
+        } catch (MessagingException e) {
+            log.error("Error sending account deletion mail to {}, ignoring", user);
+        }
     }
 
     public boolean isPasswordCorrect(String emailAddress, String password) {
