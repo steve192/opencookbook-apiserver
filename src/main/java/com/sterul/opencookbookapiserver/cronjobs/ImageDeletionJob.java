@@ -26,7 +26,7 @@ public class ImageDeletionJob {
     @Autowired
     RecipeImageService recipeImageService;
 
-    @Scheduled(fixedDelay = 3600000)
+    @Scheduled(cron = "0 0/10 * * * ?")
     public void deleteUnlinkedImages() {
         var allRecipes = recipeRepository.findAll();
 
