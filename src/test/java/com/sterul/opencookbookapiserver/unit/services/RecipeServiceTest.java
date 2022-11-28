@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -76,6 +77,11 @@ class RecipeServiceTest {
     private List<Recipe> testRecipeList = new ArrayList<>();
 
     private String testRecipeImageUUID = "duniwqndiu2u912nd9";
+
+    @BeforeEach
+    void setup() {
+        when(mockRecipe.getOwner()).thenReturn(testUser);
+    }
 
     @Test
     void recipeCreated() {

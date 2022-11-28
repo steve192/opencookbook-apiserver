@@ -1,12 +1,13 @@
 package com.sterul.opencookbookapiserver.entities.account;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sterul.opencookbookapiserver.entities.AuditableEntity;
-import lombok.Data;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sterul.opencookbookapiserver.entities.AuditableEntity;
+
+import lombok.Data;
 
 @Entity
 @Data
@@ -21,4 +22,9 @@ public class User extends AuditableEntity {
     private String passwordHash;
 
     private boolean activated;
+
+    @Override
+    public String toString() {
+        return getUserId() + " " + getEmailAddress();
+    }
 }

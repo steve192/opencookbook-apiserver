@@ -43,6 +43,7 @@ public class RecipeService {
     private WeekplanService weekplanService;
 
     public Recipe createNewRecipe(Recipe newRecipe) {
+        log.info("Creating new recipe {} for user {}", newRecipe.getTitle(), newRecipe.getOwner());
         createMissingIngredients(newRecipe, newRecipe.getOwner());
         createMissingRecipeGroup(newRecipe);
 
@@ -75,6 +76,7 @@ public class RecipeService {
     }
 
     public void deleteRecipe(Long id) {
+        log.info("Deleting recipe {}", id);
         var weekplanDays = weekplanService.getWeekplanDaysByRecipe(id);
         for (var weekplanDay : weekplanDays) {
             var iterator = weekplanDay.getRecipes().iterator();
@@ -109,7 +111,9 @@ public class RecipeService {
     }
 
     public Recipe updateSingleRecipe(Recipe recipeUpdate) {
+        log.info("Updating recipe {} of user {}", recipeUpdate.getId());
         return recipeRepository.findById(recipeUpdate.getId()).map(existingRecipe -> {
+            log.info("Recipe exists and belongs to {}", existingRecipe.getOwner());
             recipeUpdate.setId(existingRecipe.getId());
             recipeUpdate.setOwner(existingRecipe.getOwner());
 

@@ -1,16 +1,20 @@
 package com.sterul.opencookbookapiserver.services;
 
+import java.util.List;
+import java.util.NoSuchElementException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.repositories.RecipeGroupRepository;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.NoSuchElementException;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class RecipeGroupService {
 
     @Autowired
@@ -20,10 +24,13 @@ public class RecipeGroupService {
     private RecipeService recipeService;
 
     public RecipeGroup createRecipeGroup(RecipeGroup recipeGroup) {
+        log.info("Creating recipe group {} for user {}", recipeGroup.getTitle(), recipeGroup.getOwner());
         return recipeGroupRepository.save(recipeGroup);
     }
 
     public RecipeGroup updateRecipeGroup(RecipeGroup recipeGroupUpdate) {
+        log.info("Updating recipe group {} for user {}", recipeGroupUpdate.getTitle(),
+                recipeGroupUpdate.getOwner());
         return recipeGroupRepository.findById(recipeGroupUpdate.getId()).map(existingRecipeGroup -> {
             recipeGroupUpdate.setId(existingRecipeGroup.getId());
             recipeGroupUpdate.setOwner(existingRecipeGroup.getOwner());
@@ -32,14 +39,17 @@ public class RecipeGroupService {
     }
 
     public void deleteRecipeGroup(Long recipeGroupId) {
+        log.info("Deleting recipe group {} for user {}", recipeGroupId);
         var recipeGroupOptional = recipeGroupRepository.findById(recipeGroupId);
         if (recipeGroupOptional.isEmpty()) {
+            log.warn("Recipe group does not exist");
             throw new NoSuchElementException("Receipe group " + recipeGroupId + " not existing. Cannot delete");
         }
         var recipesToUnassignGroup = recipeService.getRecipesByRecipeGroup(recipeGroupOptional.get());
 
         // TODO: Replace clean with specific group if multi groups are implemented
         recipesToUnassignGroup.forEach(recipe -> {
+            log.info("Deleting recipe group from recipe {}", recipe.getId());
             recipe.getRecipeGroups().clear();
             recipeService.updateSingleRecipe(recipe);
         });
