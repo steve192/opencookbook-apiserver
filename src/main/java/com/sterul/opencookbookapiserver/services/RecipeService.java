@@ -86,7 +86,7 @@ public class RecipeService {
             }
             weekplanService.updateWeekplanDay(weekplanDay);
         }
-        recipeRepository.getById(id).getImages().forEach((image) -> {
+        recipeRepository.getById(id).getImages().forEach(image -> {
             try {
                 recipeImageService.deleteImage(image.getUuid());
             } catch (IOException e) {
@@ -147,13 +147,12 @@ public class RecipeService {
             allRecipes = recipeRepository.findByOwnerAndRecipeTypeIn(user, categories);
         }
 
-        var documents = allRecipes.stream().map(recipe ->
-                new Document.Builder(recipe.getId().toString())
-                        .addElement(new Element.Builder<String>()
-                                .setValue(recipe.getTitle())
-                                .setType(NAME)
-                                .createElement())
-                        .createDocument()).toList();
+        var documents = allRecipes.stream().map(recipe -> new Document.Builder(recipe.getId().toString())
+                .addElement(new Element.Builder<String>()
+                        .setValue(recipe.getTitle())
+                        .setType(NAME)
+                        .createElement())
+                .createDocument()).toList();
 
         MatchService matchService = new MatchService();
 
@@ -174,12 +173,10 @@ public class RecipeService {
         }
 
         var results = matches.get(SEARCH_DOCUMENT);
-        return results.stream().map(result ->
-                        allRecipes.stream()
-                                .filter(recipe ->
-                                        recipe.getId().equals(Long.valueOf(result.getMatchedWith().getKey())))
-                                .findFirst()
-                                .get())
+        return results.stream().map(result -> allRecipes.stream()
+                .filter(recipe -> recipe.getId().equals(Long.valueOf(result.getMatchedWith().getKey())))
+                .findFirst()
+                .get())
                 .toList();
     }
 }
