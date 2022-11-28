@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.entities.account.ActivationLink;
 import com.sterul.opencookbookapiserver.entities.account.PasswordResetLink;
+import com.sterul.opencookbookapiserver.entities.account.User;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -77,5 +78,18 @@ public class EmailService {
                 "CookPal - Reset password",
                 stringWriter.toString(),
                 link.getUser().getEmailAddress());
+    }
+
+    public void sendAccountDeletedMail(User user) throws MessagingException {
+        var template = velocityEngine.getTemplate("mailtemplates/accountDeleted.vm");
+        var context = new VelocityContext();
+        var stringWriter = new StringWriter();
+
+        template.merge(context, stringWriter);
+
+        sendGeneralMail(
+                "CookPal - Your account was deleted",
+                stringWriter.toString(),
+                user.getEmailAddress());
     }
 }
