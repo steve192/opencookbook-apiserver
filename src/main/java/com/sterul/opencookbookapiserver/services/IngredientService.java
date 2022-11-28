@@ -1,5 +1,15 @@
 package com.sterul.opencookbookapiserver.services;
 
+import static com.intuit.fuzzymatcher.domain.ElementType.NAME;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.intuit.fuzzymatcher.component.MatchService;
 import com.intuit.fuzzymatcher.domain.Document;
 import com.intuit.fuzzymatcher.domain.Element;
@@ -7,18 +17,12 @@ import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static com.intuit.fuzzymatcher.domain.ElementType.NAME;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional
+@Slf4j
 public class IngredientService {
 
     public static final String NEW_INDREGIENT_KEY = "newIngredient";
@@ -28,14 +32,12 @@ public class IngredientService {
     public Ingredient findUserIngredientBySimilarName(String name, User user) throws ElementNotFound {
         var ingredients = getUserPermittedIngredients(user);
 
-        var documentList = ingredients.stream().map(ingredient ->
-                new Document.Builder(ingredient.getId().toString())
-                        .addElement(new Element.Builder<String>()
-                                .setValue(ingredient.getName())
-                                .setType(NAME)
-                                .createElement())
-                        .createDocument()
-        ).collect(Collectors.toList());
+        var documentList = ingredients.stream().map(ingredient -> new Document.Builder(ingredient.getId().toString())
+                .addElement(new Element.Builder<String>()
+                        .setValue(ingredient.getName())
+                        .setType(NAME)
+                        .createElement())
+                .createDocument()).collect(Collectors.toList());
 
         documentList.add(new Document.Builder(NEW_INDREGIENT_KEY)
                 .addElement(new Element.Builder<String>()
@@ -69,7 +71,6 @@ public class IngredientService {
 
     public Ingredient createOrGetIngredient(Ingredient ingredient, User user) {
 
-
         var publicIngredient = ingredientRepository.findByNameAndIsPublicIngredient(
                 ingredient.getName(),
                 true);
@@ -86,6 +87,7 @@ public class IngredientService {
         if (ownIngredient != null) {
             return ownIngredient;
         }
+        log.info("Ingredient {} created for user", ingredient.getName(), user.getUserId());
 
         // Make sure a new ingredient is created
         ingredient.setId(null);
@@ -127,6 +129,7 @@ public class IngredientService {
     }
 
     public void deleteAllIngredientsOfUser(User user) {
+        log.info("Deleting all ingredients of user {}", user.getUserId());
         ingredientRepository.deleteAllByOwner(user);
     }
 }

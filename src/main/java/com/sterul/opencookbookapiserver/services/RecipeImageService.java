@@ -1,17 +1,6 @@
 package com.sterul.opencookbookapiserver.services;
 
-import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
-import com.sterul.opencookbookapiserver.entities.RecipeImage;
-import com.sterul.opencookbookapiserver.entities.account.User;
-import com.sterul.opencookbookapiserver.repositories.RecipeImageRepository;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -20,6 +9,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+
+import javax.imageio.ImageIO;
+
+import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
+import com.sterul.opencookbookapiserver.entities.RecipeImage;
+import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.repositories.RecipeImageRepository;
+import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -52,6 +55,7 @@ public class RecipeImageService {
     }
 
     public void generateThumbnail(String uuid) throws IOException {
+        log.info("Generating thumbnail for {}", uuid);
         var originalImageFile = imageUploadPath.resolve(uuid).toFile();
         var bufferedImage = ImageIO.read(originalImageFile);
         var thumbnailImage = scaleImage(bufferedImage, opencookbookConfiguration.getImageThumbnailScaleWidth());
@@ -65,6 +69,7 @@ public class RecipeImageService {
 
     public RecipeImage saveNewImage(InputStream inputStream, long expectedSize, User owner)
             throws IOException, IllegalFiletypeException {
+        log.info("Saving new image for user {}", owner);
         if (expectedSize > opencookbookConfiguration.getMaxImageSize()) {
             throw new FileSizeLimitExceededException("Image too big", expectedSize,
                     opencookbookConfiguration.getMaxImageSize());
@@ -98,14 +103,14 @@ public class RecipeImageService {
         var newHeight = (int) Math.floor(oldHeight * scalingFactor);
         var newWidth = (int) Math.floor(oldWidth * scalingFactor);
 
-
         var newImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
         var graphic = newImage.createGraphics();
         graphic.drawImage(bufferedImage, 0, 0, newWidth, newHeight, Color.BLACK, null);
         return newImage;
     }
 
-    private void saveAndConvertImage(BufferedImage bufferedImage, String uuid, Path uploadPath) throws IllegalFiletypeException {
+    private void saveAndConvertImage(BufferedImage bufferedImage, String uuid, Path uploadPath)
+            throws IllegalFiletypeException {
 
         var imageFile = uploadPath.resolve(uuid).toFile();
 
@@ -116,7 +121,6 @@ public class RecipeImageService {
             throw new IllegalFiletypeException();
         }
     }
-
 
     public boolean hasAccessPermissionToRecipeImage(String imageUUID, User user) throws ElementNotFound {
         var image = recipeImageRepository.findById(imageUUID);
@@ -140,6 +144,7 @@ public class RecipeImageService {
     }
 
     public void deleteImage(String uuid) throws IOException {
+        log.info("Deleting image {}", uuid);
         recipeImageRepository.deleteById(uuid);
         Files.delete(imageUploadPath.resolve(uuid));
         Files.delete(thumbnailUploadPath.resolve(uuid));

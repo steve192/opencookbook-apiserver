@@ -1,16 +1,20 @@
 package com.sterul.opencookbookapiserver.services;
 
-import com.sterul.opencookbookapiserver.entities.WeekplanDay;
-import com.sterul.opencookbookapiserver.entities.account.User;
-import com.sterul.opencookbookapiserver.repositories.WeekplanDayRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.sterul.opencookbookapiserver.entities.WeekplanDay;
+import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.repositories.WeekplanDayRepository;
+
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class WeekplanService {
 
     @Autowired
@@ -29,10 +33,12 @@ public class WeekplanService {
     }
 
     public WeekplanDay createWeekplanDay(WeekplanDay weekplanDay) {
+        log.info("Creating weekplan day {} of user", weekplanDay.getDay(), weekplanDay.getOwner());
         return weekplanDayRepository.save(weekplanDay);
     }
 
     public WeekplanDay updateWeekplanDay(WeekplanDay weekplanDay) {
+        log.info("Updating weekplan day {} of user {}", weekplanDay.getDay(), weekplanDay.getOwner());
         return weekplanDayRepository.save(weekplanDay);
     }
 
@@ -45,6 +51,7 @@ public class WeekplanService {
     }
 
     public void deleteWeekplanDay(Long id) {
+        log.info("Deleting weekplan day {}", id);
         weekplanDayRepository.deleteById(id);
     }
 

@@ -1,31 +1,38 @@
 package com.sterul.opencookbookapiserver.services;
 
-import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
-import com.sterul.opencookbookapiserver.entities.account.ActivationLink;
-import com.sterul.opencookbookapiserver.entities.account.PasswordResetLink;
+import java.io.StringWriter;
+
+import javax.mail.MessagingException;
+
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import javax.mail.MessagingException;
-import java.io.StringWriter;
+import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
+import com.sterul.opencookbookapiserver.entities.account.ActivationLink;
+import com.sterul.opencookbookapiserver.entities.account.PasswordResetLink;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class EmailService {
 
     private final JavaMailSender javaMailSender;
     private final OpencookbookConfiguration opencookbookConfiguration;
     private final VelocityEngine velocityEngine;
 
-    public EmailService(JavaMailSender javaMailSender, OpencookbookConfiguration opencookbookConfiguration, VelocityEngine velocityEngine) {
+    public EmailService(JavaMailSender javaMailSender, OpencookbookConfiguration opencookbookConfiguration,
+            VelocityEngine velocityEngine) {
         this.javaMailSender = javaMailSender;
         this.opencookbookConfiguration = opencookbookConfiguration;
         this.velocityEngine = velocityEngine;
     }
 
     private void sendGeneralMail(String mailTitle, String mailText, String receiver) throws MessagingException {
+        log.info("Sending mail {} to {}", mailTitle, receiver);
         var message = javaMailSender.createMimeMessage();
         var messageHelper = new MimeMessageHelper(message, true);
 
@@ -46,7 +53,8 @@ public class EmailService {
     public void sendActivationMail(ActivationLink activationLink) throws MessagingException {
         var template = velocityEngine.getTemplate("mailtemplates/activationMailText.vm");
         var context = new VelocityContext();
-        context.put("activationLink", opencookbookConfiguration.getInstanceURL() + "/activateAccount?activationId=" + activationLink.getId());
+        context.put("activationLink",
+                opencookbookConfiguration.getInstanceURL() + "/activateAccount?activationId=" + activationLink.getId());
         var stringWriter = new StringWriter();
 
         template.merge(context, stringWriter);
@@ -54,8 +62,7 @@ public class EmailService {
         sendGeneralMail(
                 "CookPal - Activate your account",
                 stringWriter.toString(),
-                activationLink.getUser().getEmailAddress()
-        );
+                activationLink.getUser().getEmailAddress());
     }
 
     public void sendPasswordResetMail(PasswordResetLink link) throws MessagingException {
@@ -69,7 +76,6 @@ public class EmailService {
         sendGeneralMail(
                 "CookPal - Reset password",
                 stringWriter.toString(),
-                link.getUser().getEmailAddress()
-        );
+                link.getUser().getEmailAddress());
     }
 }
