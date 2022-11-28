@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.transaction.Transactional;
 
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
+@Transactional
 public class RecipeImageService {
 
     private final Path imageUploadPath;
@@ -147,7 +149,11 @@ public class RecipeImageService {
         log.info("Deleting image {}", uuid);
         recipeImageRepository.deleteById(uuid);
         Files.delete(imageUploadPath.resolve(uuid));
-        Files.delete(thumbnailUploadPath.resolve(uuid));
+        try {
+            Files.delete(thumbnailUploadPath.resolve(uuid));
+        } catch (IOException e) {
+            log.error("Error deleting thumnail {}, ignoring", uuid, e);
+        }
     }
 
     public List<RecipeImage> getImagesByUser(User user) {
