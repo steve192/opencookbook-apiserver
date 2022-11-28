@@ -1,5 +1,6 @@
 package com.sterul.opencookbookapiserver.cronjobs;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.transaction.Transactional;
@@ -15,8 +16,8 @@ import com.sterul.opencookbookapiserver.services.RecipeImageService;
 
 import lombok.extern.slf4j.Slf4j;
 
-@Configuration
 @EnableScheduling
+@Configuration
 @Slf4j
 public class ImageDeletionJob {
     @Autowired
@@ -28,7 +29,7 @@ public class ImageDeletionJob {
     @Autowired
     RecipeImageService recipeImageService;
 
-    @Scheduled(cron = "0 0/1 * * * ?")
+    @Scheduled(cron = "0 0/1 * * * *")
     @Transactional
     public void deleteUnlinkedImages() {
         log.info("Running image deletion job");
@@ -45,13 +46,13 @@ public class ImageDeletionJob {
             var imageUsed = allUsedImages.stream().filter((usedImage) -> usedImage.equals(image.getUuid())).findFirst()
                     .isPresent();
             if (!imageUsed) {
-                // try {
-                log.info("delete image in deletion job {}", image.getUuid());
-                // recipeImageService.deleteImage(image.getUuid());
-                // } catch (IOException e) {
-                // log.error("Error deleting image {} in scheduled deletion job",
-                // image.getUuid(), e);
-                // }
+                try {
+                    log.info("delete image in deletion job {}", image.getUuid());
+                    recipeImageService.deleteImage(image.getUuid());
+                } catch (IOException e) {
+                    log.error("Error deleting image {} in scheduled deletion job",
+                            image.getUuid(), e);
+                }
             }
         });
     }
