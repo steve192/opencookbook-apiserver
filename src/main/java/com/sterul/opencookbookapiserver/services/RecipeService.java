@@ -1,5 +1,15 @@
 package com.sterul.opencookbookapiserver.services;
 
+import static com.intuit.fuzzymatcher.domain.ElementType.NAME;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
+
 import com.intuit.fuzzymatcher.component.MatchService;
 import com.intuit.fuzzymatcher.domain.Document;
 import com.intuit.fuzzymatcher.domain.Element;
@@ -8,16 +18,11 @@ import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.List;
-
-import static com.intuit.fuzzymatcher.domain.ElementType.NAME;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class RecipeService {
 
     public static final String SEARCH_DOCUMENT = "searchDocument";
@@ -26,6 +31,9 @@ public class RecipeService {
 
     @Autowired
     private RecipeRepository recipeRepository;
+
+    @Autowired
+    private RecipeImageService recipeImageService;
 
     @Autowired
     @Lazy
@@ -78,6 +86,13 @@ public class RecipeService {
             }
             weekplanService.updateWeekplanDay(weekplanDay);
         }
+        recipeRepository.getById(id).getImages().forEach(image -> {
+            try {
+                recipeImageService.deleteImage(image.getUuid());
+            } catch (IOException e) {
+                log.error("Error deleting image {} while deleting recipe {}", image.getUuid(), id);
+            }
+        });
         recipeRepository.deleteById(id);
     }
 
@@ -132,13 +147,12 @@ public class RecipeService {
             allRecipes = recipeRepository.findByOwnerAndRecipeTypeIn(user, categories);
         }
 
-        var documents = allRecipes.stream().map(recipe ->
-                new Document.Builder(recipe.getId().toString())
-                        .addElement(new Element.Builder<String>()
-                                .setValue(recipe.getTitle())
-                                .setType(NAME)
-                                .createElement())
-                        .createDocument()).toList();
+        var documents = allRecipes.stream().map(recipe -> new Document.Builder(recipe.getId().toString())
+                .addElement(new Element.Builder<String>()
+                        .setValue(recipe.getTitle())
+                        .setType(NAME)
+                        .createElement())
+                .createDocument()).toList();
 
         MatchService matchService = new MatchService();
 
@@ -159,12 +173,10 @@ public class RecipeService {
         }
 
         var results = matches.get(SEARCH_DOCUMENT);
-        return results.stream().map(result ->
-                        allRecipes.stream()
-                                .filter(recipe ->
-                                        recipe.getId().equals(Long.valueOf(result.getMatchedWith().getKey())))
-                                .findFirst()
-                                .get())
+        return results.stream().map(result -> allRecipes.stream()
+                .filter(recipe -> recipe.getId().equals(Long.valueOf(result.getMatchedWith().getKey())))
+                .findFirst()
+                .get())
                 .toList();
     }
 }
