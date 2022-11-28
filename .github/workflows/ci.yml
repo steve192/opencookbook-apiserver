@@ -3,7 +3,12 @@
 
 name: ci
 
-on: [push]
+on: 
+  push:
+    branches:
+      - main
+  pull_request:
+      types: [opened, synchronize, reopened]
 
 env:
   # Use docker.io for Docker Hub if empty
