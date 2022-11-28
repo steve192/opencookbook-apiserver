@@ -2,6 +2,8 @@ package com.sterul.opencookbookapiserver.cronjobs;
 
 import java.util.ArrayList;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -26,8 +28,10 @@ public class ImageDeletionJob {
     @Autowired
     RecipeImageService recipeImageService;
 
-    @Scheduled(cron = "0 0/10 * * * ?")
+    @Scheduled(cron = "0 0/1 * * * ?")
+    @Transactional
     public void deleteUnlinkedImages() {
+        log.info("Running image deletion job");
         var allRecipes = recipeRepository.findAll();
 
         var allUsedImages = new ArrayList<String>();
