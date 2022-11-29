@@ -10,8 +10,8 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,7 +37,7 @@ public class ImageDeletionJobTest {
     @MockBean
     RecipeRepository recipeRepository;
 
-    @Mock
+    @MockBean
     RecipeImageRepository recipeImageRepository;
 
     @Mock
@@ -49,15 +49,15 @@ public class ImageDeletionJobTest {
     @Mock
     Recipe testRecipe;
 
-    @BeforeAll
+    @BeforeEach
     void setup() {
         when(oldRecipeImage.getCreatedOn()).thenReturn(Instant.now().minus(100, ChronoUnit.DAYS));
         when(oldRecipeImage.getUuid()).thenReturn("3284u398h2");
 
         when(newReipceImage.getCreatedOn()).thenReturn(Instant.now().minus(100, ChronoUnit.SECONDS));
-        when(newReipceImage.getUuid()).thenReturn("3284u398h2");
+        when(newReipceImage.getUuid()).thenReturn("3284u398nqw9ddh2");
 
-        when(recipeImageRepository.findAllBycreatedOnBefore(any())).thenReturn(List.of(oldRecipeImage));
+        when(recipeImageRepository.findAllByCreatedOnBefore(any())).thenReturn(List.of(oldRecipeImage));
         when(recipeImageRepository.findAll()).thenReturn(List.of(oldRecipeImage, newReipceImage));
     }
 

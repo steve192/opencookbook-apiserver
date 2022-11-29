@@ -12,6 +12,6 @@ public interface RecipeImageRepository extends JpaRepository<RecipeImage, String
 
     public List<RecipeImage> findAllByOwner(User user);
 
-    public List<RecipeImage> findAllBycreatedOnBefore(Instant createdOn);
+    public List<RecipeImage> findAllByCreatedOnBefore(Instant createdOn);
 
 }
