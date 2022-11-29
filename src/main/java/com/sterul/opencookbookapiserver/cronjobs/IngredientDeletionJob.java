@@ -29,7 +29,7 @@ public class IngredientDeletionJob {
     @Scheduled(cron = "0 0 0/24 * * *")
     @Transactional
     public void deleteUnlinkedIngredients() {
-        log.info("Starting ingredient cleanup job")
+        log.info("Starting ingredient cleanup job");
         var allOldIngredients = ingredientRepository.findAllByIsPublicIngredientAndCreatedOnBefore(false,
                 Instant.now().minus(1, ChronoUnit.DAYS));
 
@@ -39,8 +39,9 @@ public class IngredientDeletionJob {
             allOldIngredients.removeIf(ingredient -> ingredient.getId() == usedIngredient.getIngredient().getId());
         }));
 
-        allOldIngredients.forEach(oldIngredient -> log.info("Removing unused ingredient {} of user {}", oldIngredient, oldIngredient.getOwner()));
+        allOldIngredients.forEach(oldIngredient -> log.info("Removing unused ingredient {} of user {}", oldIngredient,
+                oldIngredient.getOwner()));
 
-        // ingredientRepository.deleteAll(allOldIngredients);
+        ingredientRepository.deleteAll(allOldIngredients);
     }
 }
