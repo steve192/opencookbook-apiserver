@@ -39,14 +39,11 @@ public class ImageDeletionJob {
 
         var allUsedImages = new ArrayList<String>();
 
-        allRecipes.forEach((recipe) -> recipe.getImages().forEach((image) -> {
-            allUsedImages.add(image.getUuid());
-        }));
+        allRecipes.forEach(recipe -> recipe.getImages().forEach(image -> allUsedImages.add(image.getUuid())));
 
         var allOldImages = recipeImageRepository.findAllBycreatedOnBefore(Instant.now().minus(1, ChronoUnit.DAYS));
-        allOldImages.forEach((image) -> {
-            var imageUsed = allUsedImages.stream().filter((usedImage) -> usedImage.equals(image.getUuid())).findFirst()
-                    .isPresent();
+        allOldImages.forEach(image -> {
+            var imageUsed = allUsedImages.stream().anyMatch(usedImage -> usedImage.equals(image.getUuid()));
             if (!imageUsed) {
                 try {
                     log.info("delete image in deletion job {}", image.getUuid());

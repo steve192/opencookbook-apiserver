@@ -35,9 +35,8 @@ public class IngredientDeletionJob {
 
         var allRecipes = recipeRepository.findAll();
 
-        allRecipes.forEach(recipe -> recipe.getNeededIngredients().forEach(usedIngredient -> {
-            allOldIngredients.removeIf(ingredient -> ingredient.getId() == usedIngredient.getIngredient().getId());
-        }));
+        allRecipes.forEach(recipe -> recipe.getNeededIngredients().forEach(usedIngredient -> allOldIngredients
+                .removeIf(ingredient -> ingredient.getId() == usedIngredient.getIngredient().getId())));
 
         allOldIngredients.forEach(oldIngredient -> log.info("Removing unused ingredient {} of user {}", oldIngredient,
                 oldIngredient.getOwner()));
