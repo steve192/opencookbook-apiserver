@@ -1,10 +1,12 @@
 package com.sterul.opencookbookapiserver.repositories;
 
-import com.sterul.opencookbookapiserver.entities.Ingredient;
-import com.sterul.opencookbookapiserver.entities.account.User;
+import java.time.Instant;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
+import com.sterul.opencookbookapiserver.entities.Ingredient;
+import com.sterul.opencookbookapiserver.entities.account.User;
 
 public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
 
@@ -18,5 +20,6 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
 
     void deleteAllByOwner(User owner);
 
+    List<Ingredient> findAllByIsPublicIngredientAndCreatedOnBefore(boolean isPublicIngredient, Instant createdOn);
 
 }

@@ -1,15 +1,16 @@
 package com.sterul.opencookbookapiserver.entities;
 
-import com.sterul.opencookbookapiserver.entities.account.User;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+
+import com.sterul.opencookbookapiserver.entities.account.User;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
@@ -27,4 +28,9 @@ public class Ingredient extends AuditableEntity {
     private User owner;
 
     private boolean isPublicIngredient;
+
+    @Override
+    public String toString() {
+        return id + " " + name;
+    }
 }
