@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -61,7 +62,7 @@ public class UserController extends BaseController {
     @Operation(summary = "Creates a new user")
     @PostMapping("/signup")
     @Transactional
-    public User signup(@RequestBody UserCreationRequest userCreationRequest) throws UserAlreadyExistsException {
+    public User signup(@Valid @RequestBody UserCreationRequest userCreationRequest) throws UserAlreadyExistsException {
         var createdUser = userService.createUser(userCreationRequest.getEmailAddress(), userCreationRequest.getPassword());
         var activationLink = userService.createActivationLink(createdUser);
         try {
@@ -74,7 +75,7 @@ public class UserController extends BaseController {
 
     @Operation(summary = "Logs a user in", description = "Logs in and generates tokens for authentication")
     @PostMapping("/login")
-    public ResponseEntity<UserLoginResponse> login(@RequestBody UserLoginRequest authenticationRequest)
+    public ResponseEntity<UserLoginResponse> login(@Valid @RequestBody UserLoginRequest authenticationRequest)
             throws UnauthorizedException {
 
         try {
@@ -102,7 +103,7 @@ public class UserController extends BaseController {
 
     @Operation(summary = "Request a password reset for the given user. Does always answer with 200 ok, no matter if the user exists or not")
     @PostMapping("/requestPasswordReset")
-    public ResponseEntity<String> requestPasswordReset(@RequestBody PasswordResetRequest passwordResetRequest) {
+    public ResponseEntity<String> requestPasswordReset(@Valid @RequestBody PasswordResetRequest passwordResetRequest) {
         if (userService.userExists(passwordResetRequest.getEmailAddress())) {
             try {
                 userService.requestPasswordReset(passwordResetRequest.getEmailAddress());
@@ -115,7 +116,7 @@ public class UserController extends BaseController {
 
     @Operation(summary = "Executes a password reset")
     @PostMapping("/resetPassword")
-    public ResponseEntity<String> resetPassword(@RequestBody PasswordResetExecutionRequest request) {
+    public ResponseEntity<String> resetPassword(@Valid @RequestBody PasswordResetExecutionRequest request) {
         try {
             userService.resetPassword(request.getNewPassword(), request.getPasswordResetId());
         } catch (PasswordResetLinkNotExistingException e) {
@@ -126,7 +127,7 @@ public class UserController extends BaseController {
 
     @Operation(summary = "Sets a new password")
     @PostMapping("/changePassword")
-    public ResponseEntity<String> changePassword(@RequestBody PasswordChangeRequest request) {
+    public ResponseEntity<String> changePassword(@Valid @RequestBody PasswordChangeRequest request) {
         var loggedInUser = this.getLoggedInUser();
         if (!userService.isPasswordCorrect(loggedInUser.getEmailAddress(), request.getOldPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -138,13 +139,13 @@ public class UserController extends BaseController {
 
     @Operation(summary = "Activates a user, using an activation id")
     @GetMapping("/activate")
-    public void activateUser(@RequestParam String activationId) throws InvalidActivationLinkException {
+    public void activateUser(@Valid @RequestParam String activationId) throws InvalidActivationLinkException {
         userService.activateUser(activationId);
     }
 
     @Operation(summary = "Resends an activation link to the users email address. Ignores requests for when users are already active or users do not exist")
     @PostMapping("/resendActivationLink")
-    public ResponseEntity<String> resendActivationLink(@RequestBody ResendActivationLinkRequest request) {
+    public ResponseEntity<String> resendActivationLink(@Valid @RequestBody ResendActivationLinkRequest request) {
         if (!userService.userExists(request.getEmailAddress())) {
             return ResponseEntity.ok().build();
         }
@@ -172,7 +173,7 @@ public class UserController extends BaseController {
 
     @Operation(summary = "Generate a JWT token from a refresh token", description = "The JWT token is used to authenticate against all apis using the \"Authentication: Bearer < token >\" header field")
     @PostMapping("/refreshToken")
-    public RefreshTokenResponse renewToken(@RequestBody RefreshTokenRequest refreshTokenRequest)
+    public RefreshTokenResponse renewToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest)
             throws NotAuthorizedException {
         if (!refreshTokenService.isTokenValid(refreshTokenRequest.getRefreshToken())) {
             throw new NotAuthorizedException();
