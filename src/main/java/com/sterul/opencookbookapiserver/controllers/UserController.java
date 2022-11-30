@@ -1,9 +1,32 @@
 package com.sterul.opencookbookapiserver.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.sterul.opencookbookapiserver.controllers.exceptions.NotAuthorizedException;
 import com.sterul.opencookbookapiserver.controllers.exceptions.UnauthorizedException;
 import com.sterul.opencookbookapiserver.controllers.exceptions.UserNotActiveException;
-import com.sterul.opencookbookapiserver.controllers.requests.*;
+import com.sterul.opencookbookapiserver.controllers.requests.PasswordChangeRequest;
+import com.sterul.opencookbookapiserver.controllers.requests.PasswordResetExecutionRequest;
+import com.sterul.opencookbookapiserver.controllers.requests.PasswordResetRequest;
+import com.sterul.opencookbookapiserver.controllers.requests.RefreshTokenRequest;
+import com.sterul.opencookbookapiserver.controllers.requests.ResendActivationLinkRequest;
+import com.sterul.opencookbookapiserver.controllers.requests.UserCreationRequest;
+import com.sterul.opencookbookapiserver.controllers.requests.UserLoginRequest;
 import com.sterul.opencookbookapiserver.controllers.responses.RefreshTokenResponse;
 import com.sterul.opencookbookapiserver.controllers.responses.UserInfoResponse;
 import com.sterul.opencookbookapiserver.controllers.responses.UserLoginResponse;
@@ -18,22 +41,12 @@ import com.sterul.opencookbookapiserver.services.exceptions.InvalidActivationLin
 import com.sterul.opencookbookapiserver.services.exceptions.PasswordResetLinkNotExistingException;
 import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
 import com.sterul.opencookbookapiserver.util.JwtTokenUtil;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.mail.MessagingException;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
-
-import javax.mail.MessagingException;
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -63,7 +76,8 @@ public class UserController extends BaseController {
     @PostMapping("/signup")
     @Transactional
     public User signup(@Valid @RequestBody UserCreationRequest userCreationRequest) throws UserAlreadyExistsException {
-        var createdUser = userService.createUser(userCreationRequest.getEmailAddress(), userCreationRequest.getPassword());
+        var createdUser = userService.createUser(userCreationRequest.getEmailAddress(),
+                userCreationRequest.getPassword());
         var activationLink = userService.createActivationLink(createdUser);
         try {
             emailService.sendActivationMail(activationLink);

@@ -1,18 +1,28 @@
 package com.sterul.opencookbookapiserver.entities.recipe;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sterul.opencookbookapiserver.entities.AuditableEntity;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.entities.account.User;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Data
@@ -25,7 +35,6 @@ public class Recipe extends AuditableEntity {
     private Long id;
 
     private String title;
-
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default

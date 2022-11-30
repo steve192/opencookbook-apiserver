@@ -3,8 +3,6 @@ package com.sterul.opencookbookapiserver.services;
 import java.io.IOException;
 import java.util.Date;
 
-import javax.mail.MessagingException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,6 +18,7 @@ import com.sterul.opencookbookapiserver.services.exceptions.InvalidActivationLin
 import com.sterul.opencookbookapiserver.services.exceptions.PasswordResetLinkNotExistingException;
 import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
 
+import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 
 @Service

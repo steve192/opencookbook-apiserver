@@ -2,8 +2,6 @@ package com.sterul.opencookbookapiserver.services;
 
 import java.io.StringWriter;
 
-import javax.mail.MessagingException;
-
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -15,6 +13,7 @@ import com.sterul.opencookbookapiserver.entities.account.ActivationLink;
 import com.sterul.opencookbookapiserver.entities.account.PasswordResetLink;
 import com.sterul.opencookbookapiserver.entities.account.User;
 
+import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 
 @Service

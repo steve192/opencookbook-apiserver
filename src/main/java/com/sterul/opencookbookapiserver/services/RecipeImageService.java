@@ -11,11 +11,11 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.transaction.Transactional;
 
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;

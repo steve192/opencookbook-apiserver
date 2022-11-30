@@ -3,10 +3,9 @@ package com.sterul.opencookbookapiserver.services;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
