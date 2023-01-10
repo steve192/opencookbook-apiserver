@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RecipeGroupRequest {
 
-    @NotNull
     private Long id;
 
     @NotNull
