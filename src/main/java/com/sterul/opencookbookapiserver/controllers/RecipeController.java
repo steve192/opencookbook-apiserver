@@ -3,6 +3,8 @@ package com.sterul.opencookbookapiserver.controllers;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,7 +54,7 @@ public class RecipeController extends BaseController {
 
     @Operation(summary = "Create a new recipe", description = "Not existing ingredients and recipe groups will be created when no id is supplied.")
     @PostMapping("")
-    public RecipeResponse newRecipe(@RequestBody RecipeRequest recipeRequest) {
+    public RecipeResponse newRecipe(@RequestBody @Valid RecipeRequest recipeRequest) {
         var newRecipe = requestToEntity(recipeRequest);
         newRecipe.setOwner(getLoggedInUser());
         if (newRecipe.getServings() <= 0) {
@@ -72,7 +74,7 @@ public class RecipeController extends BaseController {
 
     @Operation(summary = "Update an existing recipe")
     @PutMapping("/{id}")
-    public RecipeResponse updateRecipe(@PathVariable Long id, @RequestBody RecipeRequest recipeUpdate)
+    public RecipeResponse updateRecipe(@PathVariable Long id, @RequestBody @Valid RecipeRequest recipeUpdate)
             throws NoSuchElementException, NotAuthorizedException, ElementNotFound {
         if (!recipeService.hasAccessPermissionToRecipe(id, getLoggedInUser())) {
             throw new NotAuthorizedException();
