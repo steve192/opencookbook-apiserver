@@ -114,7 +114,7 @@ public class RecipeController extends BaseController {
                 .images(recipe.getImages())
                 .neededIngredients(recipe.getNeededIngredients())
                 .preparationSteps(recipe.getPreparationSteps())
-                .recipeGroups(recipe.getRecipeGroups().stream().map((recipeEntity) -> RecipeGroupResponse.builder()
+                .recipeGroups(recipe.getRecipeGroups().stream().map(recipeEntity -> RecipeGroupResponse.builder()
                         .title(recipeEntity.getTitle())
                         .id(recipeEntity.getId())
                         .build())
