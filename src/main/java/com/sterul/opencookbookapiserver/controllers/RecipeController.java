@@ -1,21 +1,33 @@
 package com.sterul.opencookbookapiserver.controllers;
 
+import java.util.List;
+import java.util.NoSuchElementException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.sterul.opencookbookapiserver.controllers.exceptions.NotAuthorizedException;
 import com.sterul.opencookbookapiserver.controllers.requests.RecipeRequest;
+import com.sterul.opencookbookapiserver.controllers.responses.RecipeGroupResponse;
 import com.sterul.opencookbookapiserver.controllers.responses.RecipeResponse;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
+import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.services.RecipeImportService;
 import com.sterul.opencookbookapiserver.services.RecipeService;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.recipeimport.ImportNotSupportedException;
 import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImportFailedException;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/v1/recipes")
@@ -30,7 +42,8 @@ public class RecipeController extends BaseController {
 
     @Operation(summary = "Search or get recipes")
     @GetMapping("")
-    public List<RecipeResponse> searchRecipe(@RequestParam(required = false) String searchString, @RequestParam(required = false) List<Recipe.RecipeType> categories) {
+    public List<RecipeResponse> searchRecipe(@RequestParam(required = false) String searchString,
+            @RequestParam(required = false) List<Recipe.RecipeType> categories) {
         var user = getLoggedInUser();
         return recipeService.searchUserRecipes(user, searchString, categories).stream()
                 .map(this::entityToResponse)
@@ -99,7 +112,11 @@ public class RecipeController extends BaseController {
                 .images(recipe.getImages())
                 .neededIngredients(recipe.getNeededIngredients())
                 .preparationSteps(recipe.getPreparationSteps())
-                .recipeGroups(recipe.getRecipeGroups())
+                .recipeGroups(recipe.getRecipeGroups().stream().map((recipeEntity) -> RecipeGroupResponse.builder()
+                        .title(recipeEntity.getTitle())
+                        .id(recipeEntity.getId())
+                        .build())
+                        .toList())
                 .servings(recipe.getServings())
                 .preparationTime(recipe.getPreparationTime())
                 .totalTime(recipe.getTotalTime())
@@ -114,7 +131,11 @@ public class RecipeController extends BaseController {
                 .images(recipe.getImages())
                 .neededIngredients(recipe.getNeededIngredients())
                 .preparationSteps(recipe.getPreparationSteps())
-                .recipeGroups(recipe.getRecipeGroups())
+                .recipeGroups(
+                        recipe.getRecipeGroups().stream().map(recipeGroup -> RecipeGroup.builder()
+                                .id(recipeGroup.getId())
+                                .title(recipeGroup.getTitle())
+                                .build()).toList())
                 .servings(recipe.getServings())
                 .preparationTime(recipe.getPreparationTime())
                 .totalTime(recipe.getTotalTime())
