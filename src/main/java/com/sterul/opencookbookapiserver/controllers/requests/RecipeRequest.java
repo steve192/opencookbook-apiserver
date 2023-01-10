@@ -3,6 +3,8 @@ package com.sterul.opencookbookapiserver.controllers.requests;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import com.sterul.opencookbookapiserver.controllers.dto.RecipeBaseDTO;
 
 import lombok.AllArgsConstructor;
@@ -18,5 +20,6 @@ import lombok.experimental.SuperBuilder;
 public class RecipeRequest extends RecipeBaseDTO {
 
     @Builder.Default
+    @Valid
     private List<RecipeGroupRequest> recipeGroups = new ArrayList<>();
 }
