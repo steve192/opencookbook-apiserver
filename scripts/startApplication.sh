@@ -14,4 +14,6 @@ java \
   --opencookbook.mailFrom="${MAIL_FROM}" \
   --opencookbook.instanceURL="${INSTANCE_URL}" \
   --opencookbook.termsOfServiceFileLocation="${TERMS_OF_SERVICE_FILE_LOCATION}" \
-  --spring.datasource.password=${DB_PASSWORD}
+  --spring.datasource.password="${DB_PASSWORD}" \
+  --spring.datasource.username="${DB_USERNAME}" \
+  --spring.datasource.uri="${DB_URI}"
