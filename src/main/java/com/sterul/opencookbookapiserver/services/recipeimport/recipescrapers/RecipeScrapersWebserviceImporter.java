@@ -69,8 +69,12 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
         Integer servings;
         try {
             servings = Integer.parseInt(scrapedRecipe.yields.split(" ")[0]);
+            if (servings == null || servings < 1) {
+                // Servings must atleast be 1
+                servings = 1;
+            }
         } catch (NumberFormatException e) {
-            servings = 0;
+            servings = 1;
         }
         Recipe importRecipe = Recipe.builder()
                 .owner(owner)
