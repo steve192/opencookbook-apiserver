@@ -14,7 +14,7 @@ import com.intuit.fuzzymatcher.component.MatchService;
 import com.intuit.fuzzymatcher.domain.Document;
 import com.intuit.fuzzymatcher.domain.Element;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
-import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
@@ -29,7 +29,7 @@ public class IngredientService {
     @Autowired
     private IngredientRepository ingredientRepository;
 
-    public Ingredient findUserIngredientBySimilarName(String name, User user) throws ElementNotFound {
+    public Ingredient findUserIngredientBySimilarName(String name, CookpalUser user) throws ElementNotFound {
         var ingredients = getUserPermittedIngredients(user);
 
         var documentList = ingredients.stream().map(ingredient -> new Document.Builder(ingredient.getId().toString())
@@ -69,7 +69,7 @@ public class IngredientService {
         return bestMatchedIngredient.get();
     }
 
-    public Ingredient createOrGetIngredient(Ingredient ingredient, User user) {
+    public Ingredient createOrGetIngredient(Ingredient ingredient, CookpalUser user) {
 
         var publicIngredient = ingredientRepository.findByNameAndIsPublicIngredient(
                 ingredient.getName(),
@@ -97,7 +97,7 @@ public class IngredientService {
         return ingredientRepository.save(ingredient);
     }
 
-    public boolean hasPermissionForIngredient(Long id, User user) throws ElementNotFound {
+    public boolean hasPermissionForIngredient(Long id, CookpalUser user) throws ElementNotFound {
         var ingredient = getIngredient(id);
         if (ingredient.isPublicIngredient()) {
             return true;
@@ -114,7 +114,7 @@ public class IngredientService {
         return optional.get();
     }
 
-    public List<Ingredient> getUserPermittedIngredients(User user) {
+    public List<Ingredient> getUserPermittedIngredients(CookpalUser user) {
 
         var ownIngredients = ingredientRepository.findAllByIsPublicIngredientAndOwner(
                 false,
@@ -128,7 +128,7 @@ public class IngredientService {
         return ingredientRepository.findAll();
     }
 
-    public void deleteAllIngredientsOfUser(User user) {
+    public void deleteAllIngredientsOfUser(CookpalUser user) {
         log.info("Deleting all ingredients of user {}", user.getUserId());
         ingredientRepository.deleteAllByOwner(user);
     }

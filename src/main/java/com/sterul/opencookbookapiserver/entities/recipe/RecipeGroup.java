@@ -2,7 +2,7 @@ package com.sterul.opencookbookapiserver.entities.recipe;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sterul.opencookbookapiserver.entities.AuditableEntity;
-import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,6 +28,6 @@ public class RecipeGroup extends AuditableEntity {
 
     @ManyToOne
     @JsonIgnore
-    private User owner;
+    private CookpalUser owner;
 
 }

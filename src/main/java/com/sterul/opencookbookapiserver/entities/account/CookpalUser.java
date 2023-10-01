@@ -11,7 +11,7 @@ import lombok.Data;
 
 @Entity
 @Data
-public class User extends AuditableEntity {
+public class CookpalUser extends AuditableEntity {
 
     @Id
     @GeneratedValue

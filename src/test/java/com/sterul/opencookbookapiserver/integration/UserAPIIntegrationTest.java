@@ -5,7 +5,7 @@ import com.sterul.opencookbookapiserver.controllers.exceptions.UnauthorizedExcep
 import com.sterul.opencookbookapiserver.controllers.requests.*;
 import com.sterul.opencookbookapiserver.entities.RefreshToken;
 import com.sterul.opencookbookapiserver.entities.account.PasswordResetLink;
-import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.repositories.PasswordResetLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.EmailService;
@@ -56,7 +56,7 @@ class UserAPIIntegrationTest {
     @Autowired
     UserController cut;
 
-    User testUser;
+    CookpalUser testUser;
 
     RefreshToken testRefreshToken;
 
@@ -64,7 +64,7 @@ class UserAPIIntegrationTest {
 
     @BeforeEach
     void setup() {
-        testUser = new User();
+        testUser = new CookpalUser();
         testUser.setEmailAddress("test@test.com");
         testUser.setPasswordHash(passwordEncoder.encode(testPassword));
 

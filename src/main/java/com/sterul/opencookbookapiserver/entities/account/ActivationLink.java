@@ -22,5 +22,5 @@ public class ActivationLink extends AuditableEntity {
     private String id;
 
     @OneToOne
-    private User user;
+    private CookpalUser user;
 }

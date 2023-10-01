@@ -2,7 +2,7 @@ package com.sterul.opencookbookapiserver.services;
 
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.entities.RefreshToken;
-import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.repositories.RefreshTokenRepository;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class RefreshTokenService {
     @Autowired
     private OpencookbookConfiguration opencookbookConfiguration;
 
-    public RefreshToken createRefreshTokenForUser(User user) {
+    public RefreshToken createRefreshTokenForUser(CookpalUser user) {
         //Delete all old tokens
         refreshTokenRepository.deleteAllByValidUntilBeforeAndOwner(Instant.now(), user);
 
@@ -59,7 +59,7 @@ public class RefreshTokenService {
     }
 
     @Transactional
-    public void deleteAllRefreshTokenForUser(User user) {
+    public void deleteAllRefreshTokenForUser(CookpalUser user) {
         refreshTokenRepository.deleteAllByOwner(user);
     }
 }

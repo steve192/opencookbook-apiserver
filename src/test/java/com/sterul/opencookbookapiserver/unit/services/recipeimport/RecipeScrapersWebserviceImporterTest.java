@@ -1,6 +1,6 @@
 package com.sterul.opencookbookapiserver.unit.services.recipeimport;
 
-import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.services.IngredientService;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
@@ -81,7 +81,7 @@ class RecipeScrapersWebserviceImporterTest {
     private RecipeScrapersWebserviceImporter cut;
 
     @Mock
-    private User userMock;
+    private CookpalUser userMock;
 
     @BeforeEach
     public void setup() throws IOException, ImportNotSupportedException, ElementNotFound {

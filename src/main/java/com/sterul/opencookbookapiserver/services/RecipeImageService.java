@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
-import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.repositories.RecipeImageRepository;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
@@ -70,7 +70,7 @@ public class RecipeImageService {
         }
     }
 
-    public RecipeImage saveNewImage(InputStream inputStream, long expectedSize, User owner)
+    public RecipeImage saveNewImage(InputStream inputStream, long expectedSize, CookpalUser owner)
             throws IOException, IllegalFiletypeException {
         log.info("Saving new image for user {}", owner);
         if (expectedSize > opencookbookConfiguration.getMaxImageSize()) {
@@ -125,7 +125,7 @@ public class RecipeImageService {
         }
     }
 
-    public boolean hasAccessPermissionToRecipeImage(String imageUUID, User user) throws ElementNotFound {
+    public boolean hasAccessPermissionToRecipeImage(String imageUUID, CookpalUser user) throws ElementNotFound {
         var image = recipeImageRepository.findById(imageUUID);
         if (image.isEmpty()) {
             throw new ElementNotFound();
@@ -157,7 +157,7 @@ public class RecipeImageService {
         }
     }
 
-    public List<RecipeImage> getImagesByUser(User user) {
+    public List<RecipeImage> getImagesByUser(CookpalUser user) {
         return recipeImageRepository.findAllByOwner(user);
     }
 

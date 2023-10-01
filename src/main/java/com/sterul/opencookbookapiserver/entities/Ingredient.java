@@ -1,6 +1,6 @@
 package com.sterul.opencookbookapiserver.entities;
 
-import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,7 +24,7 @@ public class Ingredient extends AuditableEntity {
     private String name;
 
     @ManyToOne
-    private User owner;
+    private CookpalUser owner;
 
     private boolean isPublicIngredient;
 

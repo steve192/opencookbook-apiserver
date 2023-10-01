@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import com.google.gson.Gson;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
-import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
 import com.sterul.opencookbookapiserver.services.RecipeImageService;
 
@@ -26,7 +26,7 @@ public abstract class AbstractRecipeImporter implements IRecipeImporter {
     @Autowired
     private RecipeImageService recipeImageService;
 
-    protected RecipeImage fetchImage(String url, User owner)
+    protected RecipeImage fetchImage(String url, CookpalUser owner)
             throws UnsupportedOperationException, IllegalFiletypeException, IOException {
         var request = new HttpGet(url);
         var response = client.execute(request);

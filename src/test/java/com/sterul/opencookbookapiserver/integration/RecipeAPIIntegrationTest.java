@@ -31,7 +31,7 @@ import com.sterul.opencookbookapiserver.controllers.requests.RecipeGroupRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.RecipeRequest;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
-import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.recipeimport.ImportNotSupportedException;
 import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImportFailedException;
@@ -50,7 +50,7 @@ class RecipeAPIIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
-    private User testUser;
+    private CookpalUser testUser;
     @MockBean
     private RecipeScraperServiceProxy recipeScraperServiceProxy;
 
@@ -58,7 +58,7 @@ class RecipeAPIIntegrationTest {
     void setupContext() {
         testUser = userRepository.findByEmailAddress("test@test.com");
         if (testUser == null) {
-            testUser = new User();
+            testUser = new CookpalUser();
             testUser.setUserId(1L);
             testUser.setEmailAddress("test@test.com");
             userRepository.save(testUser);

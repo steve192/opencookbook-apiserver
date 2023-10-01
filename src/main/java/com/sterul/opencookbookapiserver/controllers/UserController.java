@@ -31,7 +31,7 @@ import com.sterul.opencookbookapiserver.controllers.responses.RefreshTokenRespon
 import com.sterul.opencookbookapiserver.controllers.responses.UserInfoResponse;
 import com.sterul.opencookbookapiserver.controllers.responses.UserLoginResponse;
 import com.sterul.opencookbookapiserver.entities.RefreshToken;
-import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.services.EmailService;
 import com.sterul.opencookbookapiserver.services.RefreshTokenService;
 import com.sterul.opencookbookapiserver.services.UserDetailsServiceImpl;
@@ -75,7 +75,7 @@ public class UserController extends BaseController {
     @Operation(summary = "Creates a new user")
     @PostMapping("/signup")
     @Transactional
-    public User signup(@Valid @RequestBody UserCreationRequest userCreationRequest) throws UserAlreadyExistsException {
+    public CookpalUser signup(@Valid @RequestBody UserCreationRequest userCreationRequest) throws UserAlreadyExistsException {
         var createdUser = userService.createUser(userCreationRequest.getEmailAddress(), userCreationRequest.getPassword());
         var activationLink = userService.createActivationLink(createdUser);
         try {

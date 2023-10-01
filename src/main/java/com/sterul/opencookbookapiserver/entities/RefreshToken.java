@@ -2,7 +2,7 @@ package com.sterul.opencookbookapiserver.entities;
 
 import java.time.Instant;
 
-import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -22,5 +22,5 @@ public class RefreshToken extends AuditableEntity {
     private Instant validUntil;
 
     @ManyToOne
-    private User owner;
+    private CookpalUser owner;
 }

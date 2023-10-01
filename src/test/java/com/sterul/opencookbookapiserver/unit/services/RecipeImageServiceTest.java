@@ -1,7 +1,7 @@
 package com.sterul.opencookbookapiserver.unit.services;
 
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
-import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
 import com.sterul.opencookbookapiserver.services.RecipeImageService;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +36,7 @@ class RecipeImageServiceTest {
     private File invalidFile;
 
     @Mock
-    private User testUser;
+    private CookpalUser testUser;
 
     @BeforeEach
     void setup() throws IOException {

@@ -31,7 +31,7 @@ public class PasswordResetLink extends AuditableEntity {
     private Date validUntil;
 
     @OneToOne
-    private User user;
+    private CookpalUser user;
 
     @PrePersist
     private void prePersist() {

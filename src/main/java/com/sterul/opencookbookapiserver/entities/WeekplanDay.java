@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -27,7 +27,7 @@ public class WeekplanDay extends AuditableEntity {
 
     @ManyToOne
     @JsonIgnore
-    private User owner;
+    private CookpalUser owner;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WeekplanDayRecipe> recipes;

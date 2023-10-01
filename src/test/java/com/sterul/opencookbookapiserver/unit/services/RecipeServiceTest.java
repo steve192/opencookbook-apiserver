@@ -28,7 +28,7 @@ import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.entities.WeekplanDay;
-import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
@@ -70,7 +70,7 @@ class RecipeServiceTest {
     private WeekplanDay mockWeekplanDay;
 
     @Mock
-    private User testUser;
+    private CookpalUser testUser;
 
     @Captor
     private ArgumentCaptor<Recipe> recipeCaptor;

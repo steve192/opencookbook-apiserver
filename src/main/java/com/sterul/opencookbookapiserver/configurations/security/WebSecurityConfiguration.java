@@ -68,7 +68,7 @@ public class WebSecurityConfiguration {
 
             @Override
             public boolean matches(HttpServletRequest request) {
-                return AUTH_WHITELIST.contains(request.getServletPath());
+                return AUTH_WHITELIST.stream().anyMatch(whitelistedUrl -> new AntPathRequestMatcher(whitelistedUrl).matches(request));
             }
 
         };
