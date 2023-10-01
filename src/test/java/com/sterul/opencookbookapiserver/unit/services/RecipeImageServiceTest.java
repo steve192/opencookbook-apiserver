@@ -1,9 +1,13 @@
 package com.sterul.opencookbookapiserver.unit.services;
 
-import com.sterul.opencookbookapiserver.entities.RecipeImage;
-import com.sterul.opencookbookapiserver.entities.account.User;
-import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
-import com.sterul.opencookbookapiserver.services.RecipeImageService;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -13,13 +17,10 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import com.sterul.opencookbookapiserver.repositories.entities.account.User;
+import com.sterul.opencookbookapiserver.repositories.entities.RecipeImage;
+import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
+import com.sterul.opencookbookapiserver.services.RecipeImageService;
 
 @SpringBootTest
 @ActiveProfiles("test")

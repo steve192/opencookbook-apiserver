@@ -1,12 +1,22 @@
-package com.sterul.opencookbookapiserver.entities.account;
+package com.sterul.opencookbookapiserver.repositories.entities.account;
 
-import com.sterul.opencookbookapiserver.entities.AuditableEntity;
-import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
-
-import javax.persistence.*;
 import java.util.Calendar;
 import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.GenericGenerator;
+
+import com.sterul.opencookbookapiserver.repositories.entities.AuditableEntity;
+
+import lombok.Data;
 
 @Entity
 @Data
@@ -20,6 +30,7 @@ public class PasswordResetLink extends AuditableEntity {
     private String id;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "VALID_UNTIL")
     private Date validUntil;
 
     @OneToOne

@@ -1,11 +1,12 @@
 package com.sterul.opencookbookapiserver.repositories;
 
-import com.sterul.opencookbookapiserver.entities.account.User;
-import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
-import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
+import com.sterul.opencookbookapiserver.repositories.entities.account.User;
+import com.sterul.opencookbookapiserver.repositories.entities.recipe.Recipe;
+import com.sterul.opencookbookapiserver.repositories.entities.recipe.RecipeGroup;
 
 public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 

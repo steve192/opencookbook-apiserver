@@ -1,13 +1,15 @@
-package com.sterul.opencookbookapiserver.entities;
+package com.sterul.opencookbookapiserver.repositories.entities;
 
-import com.sterul.opencookbookapiserver.entities.account.User;
-import lombok.Data;
+import java.time.Instant;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
-import java.time.Instant;
+
+import com.sterul.opencookbookapiserver.repositories.entities.account.User;
+
+import lombok.Data;
 
 @Entity
 @Data

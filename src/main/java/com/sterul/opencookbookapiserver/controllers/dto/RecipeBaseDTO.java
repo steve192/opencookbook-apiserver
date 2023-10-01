@@ -3,9 +3,9 @@ package com.sterul.opencookbookapiserver.controllers.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sterul.opencookbookapiserver.entities.IngredientNeed;
-import com.sterul.opencookbookapiserver.entities.RecipeImage;
-import com.sterul.opencookbookapiserver.entities.recipe.Recipe.RecipeType;
+import com.sterul.opencookbookapiserver.repositories.entities.IngredientNeed;
+import com.sterul.opencookbookapiserver.repositories.entities.RecipeImage;
+import com.sterul.opencookbookapiserver.repositories.entities.recipe.Recipe.RecipeType;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

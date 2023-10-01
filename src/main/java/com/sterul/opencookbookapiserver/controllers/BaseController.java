@@ -1,11 +1,11 @@
 package com.sterul.opencookbookapiserver.controllers;
 
-import com.sterul.opencookbookapiserver.entities.account.User;
-import com.sterul.opencookbookapiserver.repositories.UserRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.sterul.opencookbookapiserver.repositories.UserRepository;
+import com.sterul.opencookbookapiserver.repositories.entities.account.User;
 
 @RestController
 public abstract class BaseController {

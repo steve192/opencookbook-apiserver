@@ -1,13 +1,12 @@
 package com.sterul.opencookbookapiserver.unit.services.recipeimport;
 
-import com.sterul.opencookbookapiserver.entities.account.User;
-import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
-import com.sterul.opencookbookapiserver.services.IngredientService;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
-import com.sterul.opencookbookapiserver.services.recipeimport.ImportNotSupportedException;
-import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImportFailedException;
-import com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers.RecipeScraperServiceProxy;
-import com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers.RecipeScrapersWebserviceImporter;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.util.Arrays;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -16,12 +15,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.io.IOException;
-import java.util.Arrays;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import com.sterul.opencookbookapiserver.repositories.entities.account.User;
+import com.sterul.opencookbookapiserver.repositories.entities.recipe.Recipe;
+import com.sterul.opencookbookapiserver.services.IngredientService;
+import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
+import com.sterul.opencookbookapiserver.services.recipeimport.ImportNotSupportedException;
+import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImportFailedException;
+import com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers.RecipeScraperServiceProxy;
+import com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers.RecipeScrapersWebserviceImporter;
 
 @SpringBootTest
 @ActiveProfiles("test")

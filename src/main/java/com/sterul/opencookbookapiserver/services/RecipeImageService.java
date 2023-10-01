@@ -18,9 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
-import com.sterul.opencookbookapiserver.entities.RecipeImage;
-import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.repositories.RecipeImageRepository;
+import com.sterul.opencookbookapiserver.repositories.entities.RecipeImage;
+import com.sterul.opencookbookapiserver.repositories.entities.account.User;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 import lombok.extern.slf4j.Slf4j;

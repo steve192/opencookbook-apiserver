@@ -1,18 +1,29 @@
-package com.sterul.opencookbookapiserver.entities.recipe;
+package com.sterul.opencookbookapiserver.repositoriespostgress.entities.recipe;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sterul.opencookbookapiserver.entities.AuditableEntity;
-import com.sterul.opencookbookapiserver.entities.IngredientNeed;
-import com.sterul.opencookbookapiserver.entities.RecipeImage;
-import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.repositoriespostgress.entities.AuditableEntity;
+import com.sterul.opencookbookapiserver.repositoriespostgress.entities.IngredientNeed;
+import com.sterul.opencookbookapiserver.repositoriespostgress.entities.RecipeImage;
+import com.sterul.opencookbookapiserver.repositoriespostgress.entities.account.CookpalUser;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Data
@@ -38,7 +49,7 @@ public class Recipe extends AuditableEntity {
 
     @ManyToOne
     @JsonIgnore
-    private User owner;
+    private CookpalUser owner;
 
     @OneToMany
     @Builder.Default

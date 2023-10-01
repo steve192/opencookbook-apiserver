@@ -1,10 +1,20 @@
 package com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers;
 
+import java.io.IOException;
+import java.text.Normalizer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.google.gson.JsonSyntaxException;
-import com.sterul.opencookbookapiserver.entities.Ingredient;
-import com.sterul.opencookbookapiserver.entities.IngredientNeed;
-import com.sterul.opencookbookapiserver.entities.account.User;
-import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
+import com.sterul.opencookbookapiserver.repositories.entities.Ingredient;
+import com.sterul.opencookbookapiserver.repositories.entities.IngredientNeed;
+import com.sterul.opencookbookapiserver.repositories.entities.account.User;
+import com.sterul.opencookbookapiserver.repositories.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
 import com.sterul.opencookbookapiserver.services.IngredientService;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
@@ -12,17 +22,9 @@ import com.sterul.opencookbookapiserver.services.recipeimport.AbstractRecipeImpo
 import com.sterul.opencookbookapiserver.services.recipeimport.ImportNotSupportedException;
 import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImportFailedException;
 import com.sterul.opencookbookapiserver.util.IngredientUnitHelper;
+
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.io.IOException;
-import java.text.Normalizer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 @Component
 @Slf4j

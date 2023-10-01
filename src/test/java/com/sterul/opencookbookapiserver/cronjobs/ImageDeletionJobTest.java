@@ -18,10 +18,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
-import com.sterul.opencookbookapiserver.entities.RecipeImage;
-import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.repositories.RecipeImageRepository;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
+import com.sterul.opencookbookapiserver.repositories.entities.RecipeImage;
+import com.sterul.opencookbookapiserver.repositories.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.services.RecipeImageService;
 
 @SpringBootTest

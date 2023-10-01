@@ -1,7 +1,8 @@
 package com.sterul.opencookbookapiserver.repositories;
 
-import com.sterul.opencookbookapiserver.entities.account.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.sterul.opencookbookapiserver.repositories.entities.account.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     

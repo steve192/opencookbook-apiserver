@@ -1,4 +1,4 @@
-package com.sterul.opencookbookapiserver.entities;
+package com.sterul.opencookbookapiserver.repositories.entities;
 
 import java.time.Instant;
 
@@ -16,10 +16,11 @@ import lombok.Data;
 @MappedSuperclass
 @Data
 public abstract class AuditableEntity {
-    @Column(updatable = false)
+    @Column(updatable = false, name= "CREATED_ON")
     @CreatedDate
     private Instant createdOn;
 
     @LastModifiedDate
+    @Column(name = "LAST_CHANGE")
     private Instant lastChange;
 }

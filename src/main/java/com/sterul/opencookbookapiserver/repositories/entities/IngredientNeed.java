@@ -1,4 +1,4 @@
-package com.sterul.opencookbookapiserver.entities;
+package com.sterul.opencookbookapiserver.repositories.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

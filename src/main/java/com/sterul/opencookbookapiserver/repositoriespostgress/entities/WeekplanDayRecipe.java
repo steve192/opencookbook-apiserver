@@ -1,17 +1,19 @@
-package com.sterul.opencookbookapiserver.entities;
-
-import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
-import org.springframework.lang.Nullable;
+package com.sterul.opencookbookapiserver.repositoriespostgress.entities;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+
+import org.hibernate.annotations.GenericGenerator;
+import org.springframework.lang.Nullable;
+
+import com.sterul.opencookbookapiserver.repositoriespostgress.entities.recipe.Recipe;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data

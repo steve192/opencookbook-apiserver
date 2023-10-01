@@ -10,12 +10,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sterul.opencookbookapiserver.entities.account.ActivationLink;
-import com.sterul.opencookbookapiserver.entities.account.PasswordResetLink;
-import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.repositories.ActivationLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.PasswordResetLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
+import com.sterul.opencookbookapiserver.repositories.entities.account.ActivationLink;
+import com.sterul.opencookbookapiserver.repositories.entities.account.PasswordResetLink;
+import com.sterul.opencookbookapiserver.repositories.entities.account.User;
 import com.sterul.opencookbookapiserver.services.exceptions.InvalidActivationLinkException;
 import com.sterul.opencookbookapiserver.services.exceptions.PasswordResetLinkNotExistingException;
 import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
@@ -64,13 +64,13 @@ public class UserService {
         return userRepository.findByEmailAddress(username);
     }
 
-    public com.sterul.opencookbookapiserver.entities.account.User createUser(String emailAddress,
+    public User createUser(String emailAddress,
             String unencryptedPassword) throws UserAlreadyExistsException {
         log.info("Creating user for {}", emailAddress);
         if (userExists(emailAddress)) {
             throw new UserAlreadyExistsException("User already exists");
         }
-        var createdUser = new com.sterul.opencookbookapiserver.entities.account.User();
+        var createdUser = new User();
         createdUser.setEmailAddress(emailAddress);
         createdUser.setPasswordHash(passwordEncoder.encode(unencryptedPassword));
         createdUser.setActivated(false);

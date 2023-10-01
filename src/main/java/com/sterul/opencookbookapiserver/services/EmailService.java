@@ -11,9 +11,9 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
-import com.sterul.opencookbookapiserver.entities.account.ActivationLink;
-import com.sterul.opencookbookapiserver.entities.account.PasswordResetLink;
-import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.repositories.entities.account.ActivationLink;
+import com.sterul.opencookbookapiserver.repositories.entities.account.PasswordResetLink;
+import com.sterul.opencookbookapiserver.repositories.entities.account.User;
 
 import lombok.extern.slf4j.Slf4j;
 

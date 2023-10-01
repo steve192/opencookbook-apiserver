@@ -20,8 +20,8 @@ import com.sterul.opencookbookapiserver.controllers.exceptions.NotAuthorizedExce
 import com.sterul.opencookbookapiserver.controllers.requests.RecipeRequest;
 import com.sterul.opencookbookapiserver.controllers.responses.RecipeGroupResponse;
 import com.sterul.opencookbookapiserver.controllers.responses.RecipeResponse;
-import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
-import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
+import com.sterul.opencookbookapiserver.repositories.entities.recipe.Recipe;
+import com.sterul.opencookbookapiserver.repositories.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.services.RecipeImportService;
 import com.sterul.opencookbookapiserver.services.RecipeService;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;

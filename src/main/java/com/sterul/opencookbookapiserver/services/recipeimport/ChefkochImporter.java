@@ -5,15 +5,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.sterul.opencookbookapiserver.entities.Ingredient;
-import com.sterul.opencookbookapiserver.entities.IngredientNeed;
-import com.sterul.opencookbookapiserver.entities.account.User;
-import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
-import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
-
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
 import org.springframework.stereotype.Component;
+
+import com.sterul.opencookbookapiserver.repositories.entities.Ingredient;
+import com.sterul.opencookbookapiserver.repositories.entities.IngredientNeed;
+import com.sterul.opencookbookapiserver.repositories.entities.account.User;
+import com.sterul.opencookbookapiserver.repositories.entities.recipe.Recipe;
+import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
 
 import lombok.Data;
 

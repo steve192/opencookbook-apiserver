@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.sterul.opencookbookapiserver.entities.RecipeImage;
-import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.repositories.entities.RecipeImage;
+import com.sterul.opencookbookapiserver.repositories.entities.account.User;
 
 public interface RecipeImageRepository extends JpaRepository<RecipeImage, String> {
 

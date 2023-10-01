@@ -8,9 +8,9 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.sterul.opencookbookapiserver.entities.account.User;
-import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.repositories.RecipeGroupRepository;
+import com.sterul.opencookbookapiserver.repositories.entities.account.User;
+import com.sterul.opencookbookapiserver.repositories.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 import lombok.extern.slf4j.Slf4j;

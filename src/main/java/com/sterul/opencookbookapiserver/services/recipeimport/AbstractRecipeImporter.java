@@ -2,16 +2,16 @@ package com.sterul.opencookbookapiserver.services.recipeimport;
 
 import java.io.IOException;
 
-import com.google.gson.Gson;
-import com.sterul.opencookbookapiserver.entities.RecipeImage;
-import com.sterul.opencookbookapiserver.entities.account.User;
-import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
-import com.sterul.opencookbookapiserver.services.RecipeImageService;
-
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.gson.Gson;
+import com.sterul.opencookbookapiserver.repositories.entities.RecipeImage;
+import com.sterul.opencookbookapiserver.repositories.entities.account.User;
+import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
+import com.sterul.opencookbookapiserver.services.RecipeImageService;
 
 public abstract class AbstractRecipeImporter implements IRecipeImporter {
 

@@ -1,17 +1,18 @@
-package com.sterul.opencookbookapiserver.entities.recipe;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sterul.opencookbookapiserver.entities.AuditableEntity;
-import com.sterul.opencookbookapiserver.entities.account.User;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+package com.sterul.opencookbookapiserver.repositories.entities.recipe;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sterul.opencookbookapiserver.repositories.entities.AuditableEntity;
+import com.sterul.opencookbookapiserver.repositories.entities.account.User;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data

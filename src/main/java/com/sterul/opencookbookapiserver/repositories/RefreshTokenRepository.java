@@ -1,10 +1,11 @@
 package com.sterul.opencookbookapiserver.repositories;
 
-import com.sterul.opencookbookapiserver.entities.RefreshToken;
-import com.sterul.opencookbookapiserver.entities.account.User;
+import java.time.Instant;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.time.Instant;
+import com.sterul.opencookbookapiserver.repositories.entities.RefreshToken;
+import com.sterul.opencookbookapiserver.repositories.entities.account.User;
 
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, String> {
 

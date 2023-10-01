@@ -1,16 +1,18 @@
 package com.sterul.opencookbookapiserver.integration;
 
-import com.sterul.opencookbookapiserver.controllers.UserController;
-import com.sterul.opencookbookapiserver.controllers.exceptions.UnauthorizedException;
-import com.sterul.opencookbookapiserver.controllers.requests.*;
-import com.sterul.opencookbookapiserver.entities.RefreshToken;
-import com.sterul.opencookbookapiserver.entities.account.PasswordResetLink;
-import com.sterul.opencookbookapiserver.entities.account.User;
-import com.sterul.opencookbookapiserver.repositories.PasswordResetLinkRepository;
-import com.sterul.opencookbookapiserver.repositories.UserRepository;
-import com.sterul.opencookbookapiserver.services.EmailService;
-import com.sterul.opencookbookapiserver.services.RefreshTokenService;
-import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Calendar;
+import java.util.Optional;
+
+import javax.mail.MessagingException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -25,12 +27,21 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.mail.MessagingException;
-import java.util.Calendar;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import com.sterul.opencookbookapiserver.controllers.UserController;
+import com.sterul.opencookbookapiserver.controllers.exceptions.UnauthorizedException;
+import com.sterul.opencookbookapiserver.controllers.requests.PasswordChangeRequest;
+import com.sterul.opencookbookapiserver.controllers.requests.PasswordResetExecutionRequest;
+import com.sterul.opencookbookapiserver.controllers.requests.PasswordResetRequest;
+import com.sterul.opencookbookapiserver.controllers.requests.UserCreationRequest;
+import com.sterul.opencookbookapiserver.controllers.requests.UserLoginRequest;
+import com.sterul.opencookbookapiserver.repositories.PasswordResetLinkRepository;
+import com.sterul.opencookbookapiserver.repositories.UserRepository;
+import com.sterul.opencookbookapiserver.repositories.entities.RefreshToken;
+import com.sterul.opencookbookapiserver.repositories.entities.account.PasswordResetLink;
+import com.sterul.opencookbookapiserver.repositories.entities.account.User;
+import com.sterul.opencookbookapiserver.services.EmailService;
+import com.sterul.opencookbookapiserver.services.RefreshTokenService;
+import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
 
 @SpringBootTest
 @ActiveProfiles("test")

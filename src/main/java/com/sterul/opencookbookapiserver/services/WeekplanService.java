@@ -9,9 +9,9 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.sterul.opencookbookapiserver.entities.WeekplanDay;
-import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.repositories.WeekplanDayRepository;
+import com.sterul.opencookbookapiserver.repositories.entities.WeekplanDay;
+import com.sterul.opencookbookapiserver.repositories.entities.account.User;
 
 import lombok.extern.slf4j.Slf4j;
 

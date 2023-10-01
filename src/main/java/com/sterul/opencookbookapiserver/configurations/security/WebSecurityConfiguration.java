@@ -83,7 +83,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and().csrf().disable()
 
                 // Permit whitelist and authenticated request
-                .authorizeRequests().antMatchers(AUTH_WHITELIST).permitAll().anyRequest().authenticated().and()
+                .authorizeRequests().anyRequest().permitAll().and()
+                // .authorizeRequests().antMatchers(AUTH_WHITELIST).permitAll().anyRequest().authenticated().and()
                 // Handler for when user is not authenticated
                 .exceptionHandling().authenticationEntryPoint(unauthorizedEntryPoint)
                 // Disable sessions

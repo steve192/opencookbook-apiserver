@@ -1,13 +1,15 @@
-package com.sterul.opencookbookapiserver.entities.account;
-
-import com.sterul.opencookbookapiserver.entities.AuditableEntity;
-import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
+package com.sterul.opencookbookapiserver.repositoriespostgress.entities.account;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+
+import org.hibernate.annotations.GenericGenerator;
+
+import com.sterul.opencookbookapiserver.repositoriespostgress.entities.AuditableEntity;
+
+import lombok.Data;
 
 @Entity
 @Data
@@ -21,5 +23,5 @@ public class ActivationLink extends AuditableEntity {
     private String id;
 
     @OneToOne
-    private User user;
+    private CookpalUser user;
 }

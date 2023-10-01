@@ -1,16 +1,17 @@
 package com.sterul.opencookbookapiserver.services;
 
-import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
-import com.sterul.opencookbookapiserver.entities.RefreshToken;
-import com.sterul.opencookbookapiserver.entities.account.User;
-import com.sterul.opencookbookapiserver.repositories.RefreshTokenRepository;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
+import java.time.Instant;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.util.UUID;
+import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
+import com.sterul.opencookbookapiserver.repositories.RefreshTokenRepository;
+import com.sterul.opencookbookapiserver.repositories.entities.RefreshToken;
+import com.sterul.opencookbookapiserver.repositories.entities.account.User;
+import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 @Service
 @Transactional

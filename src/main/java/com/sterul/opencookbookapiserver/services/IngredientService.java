@@ -13,9 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.intuit.fuzzymatcher.component.MatchService;
 import com.intuit.fuzzymatcher.domain.Document;
 import com.intuit.fuzzymatcher.domain.Element;
-import com.sterul.opencookbookapiserver.entities.Ingredient;
-import com.sterul.opencookbookapiserver.entities.account.User;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
+import com.sterul.opencookbookapiserver.repositories.entities.Ingredient;
+import com.sterul.opencookbookapiserver.repositories.entities.account.User;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 import lombok.extern.slf4j.Slf4j;

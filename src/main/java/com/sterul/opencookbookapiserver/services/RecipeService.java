@@ -15,10 +15,10 @@ import org.springframework.stereotype.Service;
 import com.intuit.fuzzymatcher.component.MatchService;
 import com.intuit.fuzzymatcher.domain.Document;
 import com.intuit.fuzzymatcher.domain.Element;
-import com.sterul.opencookbookapiserver.entities.account.User;
-import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
-import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
+import com.sterul.opencookbookapiserver.repositories.entities.account.User;
+import com.sterul.opencookbookapiserver.repositories.entities.recipe.Recipe;
+import com.sterul.opencookbookapiserver.repositories.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 import lombok.extern.slf4j.Slf4j;
