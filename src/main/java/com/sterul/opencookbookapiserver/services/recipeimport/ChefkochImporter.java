@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
-import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
 
@@ -21,7 +21,7 @@ import lombok.Data;
 public class ChefkochImporter extends AbstractRecipeImporter {
 
     @Override
-    public Recipe importRecipe(String url, User owner) throws RecipeImportFailedException {
+    public Recipe importRecipe(String url, CookpalUser owner) throws RecipeImportFailedException {
         var importRecipe = Recipe.builder().build();
         var recipeId = url.split("//")[1].split("/")[2];
 
@@ -75,7 +75,7 @@ public class ChefkochImporter extends AbstractRecipeImporter {
     }
 
     private void extractAndSaveImages(Recipe importedRecipe, String recipeId, ChefkochPublicRecipe publicRecipe,
-            User owner) throws IOException {
+            CookpalUser owner) throws IOException {
         importedRecipe.setImages(new ArrayList<>());
         for (var image : publicRecipe.recipeImages) {
             try {

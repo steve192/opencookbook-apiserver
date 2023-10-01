@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.sterul.opencookbookapiserver.entities.Ingredient;
-import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 
 public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
 
@@ -14,11 +14,11 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
 
     List<Ingredient> findAllByIsPublicIngredient(boolean isPublicIngredient);
 
-    Ingredient findByNameAndIsPublicIngredientAndOwner(String name, boolean isPublicIngredient, User owner);
+    Ingredient findByNameAndIsPublicIngredientAndOwner(String name, boolean isPublicIngredient, CookpalUser owner);
 
-    List<Ingredient> findAllByIsPublicIngredientAndOwner(boolean isPublicIngredient, User owner);
+    List<Ingredient> findAllByIsPublicIngredientAndOwner(boolean isPublicIngredient, CookpalUser owner);
 
-    void deleteAllByOwner(User owner);
+    void deleteAllByOwner(CookpalUser owner);
 
     List<Ingredient> findAllByIsPublicIngredientAndCreatedOnBefore(boolean isPublicIngredient, Instant createdOn);
 

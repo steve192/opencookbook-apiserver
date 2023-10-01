@@ -3,7 +3,7 @@ package com.sterul.opencookbookapiserver.controllers.requests;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import com.sterul.opencookbookapiserver.controllers.dto.RecipeBaseDTO;
 

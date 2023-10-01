@@ -3,12 +3,12 @@ package com.sterul.opencookbookapiserver.services;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.repositories.RecipeGroupRepository;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
@@ -60,7 +60,7 @@ public class RecipeGroupService {
         recipeGroupRepository.deleteById(recipeGroupId);
     }
 
-    public boolean hasAccessPermissionToRecipeGroup(Long recipeGroupId, User user) throws ElementNotFound {
+    public boolean hasAccessPermissionToRecipeGroup(Long recipeGroupId, CookpalUser user) throws ElementNotFound {
         var recipeGroup = recipeGroupRepository.findById(recipeGroupId);
         if (recipeGroup.isEmpty()) {
             throw new ElementNotFound();
@@ -68,7 +68,7 @@ public class RecipeGroupService {
         return recipeGroup.get().getOwner().getUserId().equals(user.getUserId());
     }
 
-    public List<RecipeGroup> getRecipeGroupsByOwner(User owner) {
+    public List<RecipeGroup> getRecipeGroupsByOwner(CookpalUser owner) {
         return recipeGroupRepository.findByOwner(owner);
     }
 }

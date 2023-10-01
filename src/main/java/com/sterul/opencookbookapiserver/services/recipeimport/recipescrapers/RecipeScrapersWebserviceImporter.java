@@ -3,7 +3,7 @@ package com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers;
 import com.google.gson.JsonSyntaxException;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
-import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
 import com.sterul.opencookbookapiserver.services.IngredientService;
@@ -39,7 +39,7 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
     private IngredientService ingredientService;
 
     @Override
-    public Recipe importRecipe(String url, User owner) throws RecipeImportFailedException, ImportNotSupportedException {
+    public Recipe importRecipe(String url, CookpalUser owner) throws RecipeImportFailedException, ImportNotSupportedException {
         log.info("Importing recipe " + url);
         ScrapedRecipe scrapedRecipe;
         try {
@@ -92,7 +92,7 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
         return importRecipe;
     }
 
-    private void extractIngredients(ScrapedRecipe scrapedRecipe, Recipe importRecipe, User owner) {
+    private void extractIngredients(ScrapedRecipe scrapedRecipe, Recipe importRecipe, CookpalUser owner) {
         var needs = scrapedRecipe.ingredients.stream().map(ingredient -> {
             var parts = ingredient.split(" ");
             var textStartIndex = 0;
@@ -142,7 +142,7 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
         importRecipe.setNeededIngredients(needs);
     }
 
-    private void extractImage(User owner, ScrapedRecipe scrapedRecipe, Recipe importRecipe) {
+    private void extractImage(CookpalUser owner, ScrapedRecipe scrapedRecipe, Recipe importRecipe) {
         log.info("Fetching image if present " + scrapedRecipe.image);
         if (scrapedRecipe.image != null) {
 

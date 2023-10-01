@@ -1,26 +1,5 @@
 package com.sterul.opencookbookapiserver.controllers;
 
-import com.sterul.opencookbookapiserver.controllers.exceptions.NotAuthorizedException;
-import com.sterul.opencookbookapiserver.controllers.exceptions.UnauthorizedException;
-import com.sterul.opencookbookapiserver.controllers.exceptions.UserNotActiveException;
-import com.sterul.opencookbookapiserver.controllers.requests.*;
-import com.sterul.opencookbookapiserver.controllers.responses.RefreshTokenResponse;
-import com.sterul.opencookbookapiserver.controllers.responses.UserInfoResponse;
-import com.sterul.opencookbookapiserver.controllers.responses.UserLoginResponse;
-import com.sterul.opencookbookapiserver.entities.RefreshToken;
-import com.sterul.opencookbookapiserver.entities.account.User;
-import com.sterul.opencookbookapiserver.services.EmailService;
-import com.sterul.opencookbookapiserver.services.RefreshTokenService;
-import com.sterul.opencookbookapiserver.services.UserDetailsServiceImpl;
-import com.sterul.opencookbookapiserver.services.UserService;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
-import com.sterul.opencookbookapiserver.services.exceptions.InvalidActivationLinkException;
-import com.sterul.opencookbookapiserver.services.exceptions.PasswordResetLinkNotExistingException;
-import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
-import com.sterul.opencookbookapiserver.util.JwtTokenUtil;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,10 +9,44 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.mail.MessagingException;
-import javax.validation.Valid;
+import com.sterul.opencookbookapiserver.controllers.exceptions.NotAuthorizedException;
+import com.sterul.opencookbookapiserver.controllers.exceptions.UnauthorizedException;
+import com.sterul.opencookbookapiserver.controllers.exceptions.UserNotActiveException;
+import com.sterul.opencookbookapiserver.controllers.requests.PasswordChangeRequest;
+import com.sterul.opencookbookapiserver.controllers.requests.PasswordResetExecutionRequest;
+import com.sterul.opencookbookapiserver.controllers.requests.PasswordResetRequest;
+import com.sterul.opencookbookapiserver.controllers.requests.RefreshTokenRequest;
+import com.sterul.opencookbookapiserver.controllers.requests.ResendActivationLinkRequest;
+import com.sterul.opencookbookapiserver.controllers.requests.UserCreationRequest;
+import com.sterul.opencookbookapiserver.controllers.requests.UserLoginRequest;
+import com.sterul.opencookbookapiserver.controllers.responses.RefreshTokenResponse;
+import com.sterul.opencookbookapiserver.controllers.responses.UserInfoResponse;
+import com.sterul.opencookbookapiserver.controllers.responses.UserLoginResponse;
+import com.sterul.opencookbookapiserver.entities.RefreshToken;
+import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
+import com.sterul.opencookbookapiserver.services.EmailService;
+import com.sterul.opencookbookapiserver.services.RefreshTokenService;
+import com.sterul.opencookbookapiserver.services.UserDetailsServiceImpl;
+import com.sterul.opencookbookapiserver.services.UserService;
+import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
+import com.sterul.opencookbookapiserver.services.exceptions.InvalidActivationLinkException;
+import com.sterul.opencookbookapiserver.services.exceptions.PasswordResetLinkNotExistingException;
+import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
+import com.sterul.opencookbookapiserver.util.JwtTokenUtil;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.mail.MessagingException;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -62,7 +75,7 @@ public class UserController extends BaseController {
     @Operation(summary = "Creates a new user")
     @PostMapping("/signup")
     @Transactional
-    public User signup(@Valid @RequestBody UserCreationRequest userCreationRequest) throws UserAlreadyExistsException {
+    public CookpalUser signup(@Valid @RequestBody UserCreationRequest userCreationRequest) throws UserAlreadyExistsException {
         var createdUser = userService.createUser(userCreationRequest.getEmailAddress(), userCreationRequest.getPassword());
         var activationLink = userService.createActivationLink(createdUser);
         try {

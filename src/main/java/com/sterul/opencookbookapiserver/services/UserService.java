@@ -3,7 +3,7 @@ package com.sterul.opencookbookapiserver.services;
 import java.io.IOException;
 import java.util.Date;
 
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sterul.opencookbookapiserver.entities.account.ActivationLink;
 import com.sterul.opencookbookapiserver.entities.account.PasswordResetLink;
-import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.repositories.ActivationLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.PasswordResetLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
@@ -60,17 +60,17 @@ public class UserService {
     @Autowired
     private EmailService emailService;
 
-    public User getUserByEmail(String username) {
+    public CookpalUser getUserByEmail(String username) {
         return userRepository.findByEmailAddress(username);
     }
 
-    public com.sterul.opencookbookapiserver.entities.account.User createUser(String emailAddress,
+    public com.sterul.opencookbookapiserver.entities.account.CookpalUser createUser(String emailAddress,
             String unencryptedPassword) throws UserAlreadyExistsException {
         log.info("Creating user for {}", emailAddress);
         if (userExists(emailAddress)) {
             throw new UserAlreadyExistsException("User already exists");
         }
-        var createdUser = new com.sterul.opencookbookapiserver.entities.account.User();
+        var createdUser = new com.sterul.opencookbookapiserver.entities.account.CookpalUser();
         createdUser.setEmailAddress(emailAddress);
         createdUser.setPasswordHash(passwordEncoder.encode(unencryptedPassword));
         createdUser.setActivated(false);
@@ -83,12 +83,12 @@ public class UserService {
         return userRepository.existsByEmailAddress(emailAddress);
     }
 
-    public void deleteAllActivationLinks(User user) {
+    public void deleteAllActivationLinks(CookpalUser user) {
         log.info("Deleting activation links for user {}", user);
         activationLinkRepository.deleteAllByUser(user);
     }
 
-    public ActivationLink createActivationLink(User user) {
+    public ActivationLink createActivationLink(CookpalUser user) {
         log.info("Creating activation link for user {}", user);
         deleteAllActivationLinks(user);
 
@@ -110,7 +110,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void deleteUser(User user) {
+    public void deleteUser(CookpalUser user) {
         log.info("Deleting user {}", user);
         var recipes = recipeService.getRecipesByOwner(user);
         recipes.forEach(recipe -> recipeService.deleteRecipe(recipe.getId()));
@@ -149,7 +149,7 @@ public class UserService {
         return passwordEncoder.matches(password, readUser.getPasswordHash());
     }
 
-    public void changePassword(User user, String newPassword) {
+    public void changePassword(CookpalUser user, String newPassword) {
         log.info("Changing password for user {}", user);
         var readUser = getUserByEmail(user.getEmailAddress());
         readUser.setPasswordHash(passwordEncoder.encode(newPassword));
@@ -176,7 +176,7 @@ public class UserService {
         emailService.sendPasswordResetMail(link);
     }
 
-    public PasswordResetLink createPasswordResetLink(User user) {
+    public PasswordResetLink createPasswordResetLink(CookpalUser user) {
         log.info("Creating password reset link for user {}", user);
         passwordResetLinkRepository.deleteAllByUser(user);
         var passwordResetLink = new PasswordResetLink();

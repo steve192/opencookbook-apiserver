@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import com.intuit.fuzzymatcher.component.MatchService;
 import com.intuit.fuzzymatcher.domain.Document;
 import com.intuit.fuzzymatcher.domain.Element;
-import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
@@ -53,7 +53,7 @@ public class RecipeService {
         return recipeRepository.save(newRecipe);
     }
 
-    private void createMissingIngredients(Recipe recipe, User user) {
+    private void createMissingIngredients(Recipe recipe, CookpalUser user) {
         for (var ingredientNeed : recipe.getNeededIngredients()) {
             var ingredient = ingredientNeed.getIngredient();
             if (ingredient.getId() == null) {
@@ -74,7 +74,7 @@ public class RecipeService {
         }
     }
 
-    public List<Recipe> getRecipesByOwner(User owner) {
+    public List<Recipe> getRecipesByOwner(CookpalUser owner) {
         return recipeRepository.findByOwner(owner);
     }
 
@@ -101,7 +101,7 @@ public class RecipeService {
         recipeRepository.deleteById(id);
     }
 
-    public boolean hasAccessPermissionToRecipe(Long recipeId, User user) throws ElementNotFound {
+    public boolean hasAccessPermissionToRecipe(Long recipeId, CookpalUser user) throws ElementNotFound {
         var recipe = recipeRepository.findById(recipeId);
         if (!recipe.isPresent()) {
             throw new ElementNotFound();
@@ -135,7 +135,7 @@ public class RecipeService {
         return recipe.get();
     }
 
-    public List<Recipe> searchUserRecipes(User user, String searchString, List<Recipe.RecipeType> categories) {
+    public List<Recipe> searchUserRecipes(CookpalUser user, String searchString, List<Recipe.RecipeType> categories) {
         if ((searchString == null || searchString.equals("")) && (categories == null || categories.isEmpty())) {
             return getRecipesByOwner(user);
         }
@@ -146,7 +146,7 @@ public class RecipeService {
         return searchByStringAndType(user, searchString, categories);
     }
 
-    private List<Recipe> searchByStringAndType(User user, String searchString, List<Recipe.RecipeType> categories) {
+    private List<Recipe> searchByStringAndType(CookpalUser user, String searchString, List<Recipe.RecipeType> categories) {
         List<Recipe> allRecipes;
         if (categories == null || categories.isEmpty()) {
             allRecipes = recipeRepository.findByOwner(user);

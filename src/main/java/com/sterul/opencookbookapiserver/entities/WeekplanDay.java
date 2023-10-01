@@ -1,12 +1,19 @@
 package com.sterul.opencookbookapiserver.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sterul.opencookbookapiserver.entities.account.User;
-import lombok.Data;
-
-import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.TemporalType;
+import lombok.Data;
 
 @Entity
 @Data
@@ -15,12 +22,12 @@ public class WeekplanDay extends AuditableEntity {
     @GeneratedValue
     private Long id;
 
-    @javax.persistence.Temporal(TemporalType.DATE)
+    @jakarta.persistence.Temporal(TemporalType.DATE)
     private Date day;
 
     @ManyToOne
     @JsonIgnore
-    private User owner;
+    private CookpalUser owner;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WeekplanDayRecipe> recipes;

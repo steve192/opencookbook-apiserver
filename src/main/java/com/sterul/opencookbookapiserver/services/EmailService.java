@@ -2,7 +2,7 @@ package com.sterul.opencookbookapiserver.services;
 
 import java.io.StringWriter;
 
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.entities.account.ActivationLink;
 import com.sterul.opencookbookapiserver.entities.account.PasswordResetLink;
-import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -80,7 +80,7 @@ public class EmailService {
                 link.getUser().getEmailAddress());
     }
 
-    public void sendAccountDeletedMail(User user) throws MessagingException {
+    public void sendAccountDeletedMail(CookpalUser user) throws MessagingException {
         var template = velocityEngine.getTemplate("mailtemplates/accountDeleted.vm");
         var context = new VelocityContext();
         var stringWriter = new StringWriter();

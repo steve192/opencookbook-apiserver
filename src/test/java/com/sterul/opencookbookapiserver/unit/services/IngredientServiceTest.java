@@ -1,7 +1,7 @@
 package com.sterul.opencookbookapiserver.unit.services;
 
 import com.sterul.opencookbookapiserver.entities.Ingredient;
-import com.sterul.opencookbookapiserver.entities.account.User;
+import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.services.IngredientService;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
 @ActiveProfiles("test")
 class IngredientServiceTest {
 
-    private final User testUser = new User();
+    private final CookpalUser testUser = new CookpalUser();
     @Autowired
     private IngredientService cut;
     @MockBean

@@ -1,21 +1,33 @@
 package com.sterul.opencookbookapiserver.util;
 
-import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
-import io.jsonwebtoken.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
-
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 
+import javax.crypto.SecretKey;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
+
+import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.Keys;
+
 @Component
 public class JwtTokenUtil {
 
-    private final String jwtSigningKey = UUID.randomUUID().toString();
+    private final  SecretKey jwtSigningKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
     @Autowired
     OpencookbookConfiguration opencookbookConfiguration;
 
@@ -54,15 +66,15 @@ public class JwtTokenUtil {
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + opencookbookConfiguration.getJwtDuration() * 1000))
-                .signWith(SignatureAlgorithm.HS512, jwtSigningKey)
+                .signWith(jwtSigningKey)
                 .compact();
     }
-
 
     public boolean isTokenValid(String jwtToken) {
         try {
             return !isTokenExpired(jwtToken);
-        } catch (UnsupportedJwtException | MalformedJwtException | SignatureException | ExpiredJwtException | IllegalArgumentException e) {
+        } catch (UnsupportedJwtException | MalformedJwtException | SignatureException | ExpiredJwtException
+                | IllegalArgumentException e) {
             return false;
         }
     }
