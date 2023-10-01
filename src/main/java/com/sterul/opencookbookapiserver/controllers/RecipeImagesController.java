@@ -71,7 +71,7 @@ public class RecipeImagesController extends BaseController {
         try {
             imageData = recipeImageService.getThumbnailImage(uuid);
         } catch (IOException e) {
-            log.warn("Exception while loading image {}", uuid);
+            log.warn("Exception while loading image {} {}", uuid, e);
             throw new ElementNotFound();
         }
 
