@@ -49,6 +49,7 @@ public class RecipeImagesController extends BaseController {
         try {
             imageData = recipeImageService.getImage(uuid);
         } catch (IOException e) {
+            log.warn("Exception while loading image {} {}", uuid, e);
             throw new ElementNotFound();
         }
 
@@ -71,7 +72,7 @@ public class RecipeImagesController extends BaseController {
         try {
             imageData = recipeImageService.getThumbnailImage(uuid);
         } catch (IOException e) {
-            log.warn("Exception while loading image {} {}", uuid, e);
+            log.warn("Exception while loading thumbnail image {} {}", uuid, e);
             throw new ElementNotFound();
         }
 
@@ -99,6 +100,7 @@ public class RecipeImagesController extends BaseController {
         try {
             recipeImageService.deleteImage(uuid);
         } catch (IOException e) {
+            log.warn("Exception while deleting image {} {}", uuid, e);
             throw new ElementNotFound();
         }
     }
