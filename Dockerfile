@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk19:alpine-slim
+FROM eclipse-temurin:19-jre-alpine
 ARG JAR_FILE=target/*.jar
 CMD mkdir /opencookbook
 WORKDIR /opencookbook
