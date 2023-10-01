@@ -1,28 +1,23 @@
 package com.sterul.opencookbookapiserver.configurations.security;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.web.cors.CorsConfiguration;
 
 import com.sterul.opencookbookapiserver.configurations.security.requestfilters.JwtRequestFilter;
 
@@ -44,10 +39,13 @@ public class WebSecurityConfiguration {
             "/swagger-ui/*",
             "/v3/api-docs/*",
             "/api-docs*",
+            "/api-docs",
             "/api-docs/*",
             "/api-docs/*/*",
             "/api/v1/instance*",
-            "/h2-console/*");
+            "/h2-console/*",
+            "/error"
+            );
     @Autowired
     private UserDetailsService userDetailsService;
     @Autowired
@@ -87,8 +85,8 @@ public class WebSecurityConfiguration {
         // Permit whitelist and authenticated request
         http.authorizeHttpRequests(
                 authorize -> {
-                    authorize.requestMatchers(allowedPathRequestMatcher()).permitAll();
-                    authorize.anyRequest().authenticated();
+                    authorize.requestMatchers(allowedPathRequestMatcher()).permitAll()
+                    .anyRequest().authenticated();
                 });
 
         http.exceptionHandling(configurer -> configurer
