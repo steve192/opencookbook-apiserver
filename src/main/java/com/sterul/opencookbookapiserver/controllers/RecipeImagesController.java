@@ -25,10 +25,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/v1/recipes-images")
 @Tag(name = "Recipe images", description = "Managing recipe images")
+@Slf4j
 public class RecipeImagesController extends BaseController {
 
     @Autowired
@@ -69,6 +71,7 @@ public class RecipeImagesController extends BaseController {
         try {
             imageData = recipeImageService.getThumbnailImage(uuid);
         } catch (IOException e) {
+            log.warn("Exception while loading image {}", uuid);
             throw new ElementNotFound();
         }
 
