@@ -11,7 +11,8 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.transaction.Transactional;
+
+import jakarta.transaction.Transactional;
 
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk16:alpine-slim
+FROM adoptopenjdk/openjdk19:alpine-slim
 ARG JAR_FILE=target/*.jar
 CMD mkdir /opencookbook
 WORKDIR /opencookbook

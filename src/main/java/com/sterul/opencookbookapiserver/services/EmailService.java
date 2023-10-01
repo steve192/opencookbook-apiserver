@@ -2,7 +2,7 @@ package com.sterul.opencookbookapiserver.services;
 
 import java.io.StringWriter;
 
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;

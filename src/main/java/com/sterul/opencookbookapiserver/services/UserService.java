@@ -3,7 +3,7 @@ package com.sterul.opencookbookapiserver.services;
 import java.io.IOException;
 import java.util.Date;
 
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
