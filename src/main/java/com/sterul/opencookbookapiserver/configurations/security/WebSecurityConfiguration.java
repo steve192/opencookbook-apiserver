@@ -44,8 +44,7 @@ public class WebSecurityConfiguration {
             "/api-docs/*/*",
             "/api/v1/instance*",
             "/h2-console/*",
-            "/error"
-            );
+            "/error");
     @Autowired
     private UserDetailsService userDetailsService;
     @Autowired
@@ -62,15 +61,10 @@ public class WebSecurityConfiguration {
     }
 
     private RequestMatcher allowedPathRequestMatcher() {
-        return new RequestMatcher() {
+        return (HttpServletRequest request) -> AUTH_WHITELIST.stream()
+                .anyMatch(whitelistedUrl -> new AntPathRequestMatcher(whitelistedUrl).matches(request));
 
-            @Override
-            public boolean matches(HttpServletRequest request) {
-                return AUTH_WHITELIST.stream().anyMatch(whitelistedUrl -> new AntPathRequestMatcher(whitelistedUrl).matches(request));
-            }
-
-        };
-    }
+    };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -84,10 +78,8 @@ public class WebSecurityConfiguration {
 
         // Permit whitelist and authenticated request
         http.authorizeHttpRequests(
-                authorize -> {
-                    authorize.requestMatchers(allowedPathRequestMatcher()).permitAll()
-                    .anyRequest().authenticated();
-                });
+                authorize -> authorize.requestMatchers(allowedPathRequestMatcher()).permitAll()
+                        .anyRequest().authenticated());
 
         http.exceptionHandling(configurer -> configurer
                 .authenticationEntryPoint(unauthorizedEntryPoint));
