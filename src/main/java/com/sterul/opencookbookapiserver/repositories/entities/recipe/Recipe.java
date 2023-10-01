@@ -50,7 +50,6 @@ public class Recipe extends AuditableEntity {
 
     @ManyToOne
     @JsonIgnore
-    @JoinColumn(name = "OWNER_USER_ID")
     private User owner;
 
     @OneToMany
