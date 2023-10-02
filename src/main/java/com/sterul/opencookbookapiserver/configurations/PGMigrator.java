@@ -101,6 +101,7 @@ public class PGMigrator {
         recipeRepository.findAll().forEach(recipe -> {
             var pgRecipe = new com.sterul.opencookbookapiserver.repositoriespostgress.entities.recipe.Recipe();
             BeanUtils.copyProperties(recipe, pgRecipe);
+            pgRecipe.setPreparationSteps(recipe.getPreparationSteps().stream().toList());
 
             pgRecipe.setImages(recipe.getImages().stream().map(image -> {
                 var pgImage = new RecipeImage();
