@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
@@ -27,8 +26,7 @@ public class PersistencePostgressAutoconfig {
         return DataSourceBuilder.create().build();
     }
 
-    
- @Bean
+    @Bean
     public LocalContainerEntityManagerFactoryBean postgressEntityManager() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(postgressDataSource());
@@ -39,14 +37,21 @@ public class PersistencePostgressAutoconfig {
         em.setJpaVendorAdapter(vendorAdapter);
         HashMap<String, Object> properties = new HashMap<>();
         properties.put("hibernate.hbm2ddl.auto",
-       "create-only");
-        properties.put("hibernate.dialect",
-        "org.hibernate.dialect.PostgreSQLDialect");
+                "create-only");
+        properties.put("hibernate.id.new_generator_mappings",
+                true);
+        // properties.put("hibernate.physical_naming_strategy",
+        // "org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy");
+        properties.put("hibernate.physical_naming_strategy",
+                "org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy");
+        properties.put("hibernate.implicit_naming_strategy",
+                "org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy");
+        properties.put("hibernate.archive.scanner",
+                "org.hibernate.boot.archive.scan.internal.DisabledScanner");
         em.setJpaPropertyMap(properties);
 
         return em;
     }
-
 
     @Bean
     public PlatformTransactionManager postgressTransactionManager() {

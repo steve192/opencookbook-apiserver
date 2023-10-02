@@ -34,7 +34,10 @@ import com.sterul.opencookbookapiserver.repositoriespostgress.entities.RecipeIma
 import com.sterul.opencookbookapiserver.repositoriespostgress.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.repositoriespostgress.entities.recipe.Recipe.RecipeType;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Configuration
+@Slf4j
 public class PGMigrator {
     @Autowired
     UserRepository userRepository;
@@ -158,6 +161,8 @@ public class PGMigrator {
 
             pgActivationLinkRepository.save(pgAl);
         });
+
+        log.info("Migration done");
     }
 
     private CookpalUser cu(User user) {
