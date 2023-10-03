@@ -1,11 +1,13 @@
 package com.sterul.opencookbookapiserver.configurations.security;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -18,6 +20,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
 
 import com.sterul.opencookbookapiserver.configurations.security.requestfilters.JwtRequestFilter;
 
@@ -70,7 +73,7 @@ public class WebSecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         // Cors and csrf not needed in an api server
-        http.cors(configurer -> configurer.disable());
+        http.cors(configurer -> configurer.configurationSource(c -> allowAllCorsConfig()));
         http.csrf(conf -> conf.disable());
 
         // Allow frames needed for h2 console
@@ -93,7 +96,21 @@ public class WebSecurityConfiguration {
         return http.build();
     }
 
-    @Bean
+    private CorsConfiguration allowAllCorsConfig() {
+        List<String> permittedCorsMethods = Collections.unmodifiableList(Arrays.asList(
+                HttpMethod.GET.name(),
+                HttpMethod.HEAD.name(),
+                HttpMethod.POST.name(),
+                HttpMethod.PUT.name(),
+                HttpMethod.DELETE.name()));
+
+        var corsConfiguration = new CorsConfiguration().applyPermitDefaultValues();
+        corsConfiguration.setAllowedMethods(permittedCorsMethods);
+        return corsConfiguration;
+        
+}
+
+@Bean
     public AuthenticationManager authenticationManager(HttpSecurity http)
             throws Exception {
         return http.getSharedObject(AuthenticationManagerBuilder.class)
