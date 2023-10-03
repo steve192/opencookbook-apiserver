@@ -5,8 +5,11 @@ name: ci
 
 on: 
   push:
-    branches:
-      - main
+    branches: [main]
+    # Publish semver tags as releases.
+    tags: ["v*.*.*"]
+  release:
+    types: [published]
   pull_request:
       types: [opened, synchronize, reopened]
 
@@ -28,6 +31,17 @@ jobs:
           java-version: "19"
           distribution: "adopt"
           cache: maven
+      - name: Setup tools
+        run:  sudo apt update && sudo apt install xmlstarlet 
+      - name: update version  
+        run: |
+          REF_TYPE="${{github.ref_type}}"
+          if [[ "$REF_TYPE" == "tag" ]]; then
+            TAG=${{  github.ref_name }}
+            TAG=${TAG#v}
+            echo $TAG
+            xmlstarlet edit -L -N w=http://maven.apache.org/POM/4.0.0  --update "//w:project/w:version" --value "${TAG}" pom.xml 
+          fi
       - name: maven-verify
         run: mvn verify --file pom.xml
       - uses: actions/upload-artifact@master
@@ -115,7 +129,7 @@ jobs:
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
           context: .
-          push: ${{ github.event_name != 'pull_request' && github.ref_protected == true }}
+          push: ${{ github.event_name != 'pull_request' && ( github.ref_protected == true || github.ref_type == 'tag' ) }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
