@@ -1,7 +1,5 @@
 {
-  "branches": [
-    "main"
-  ],
+  "branches": ["main"],
   "plugins": [
     [
       "@semantic-release/commit-analyzer",
@@ -9,9 +7,9 @@
         "preset": "angular",
         "releaseRules": [
           {
-            "type": "build",
+            "type": "chore",
             "scope": "deps",
-            "release": "minor"
+            "release": "patch"
           }
         ]
       }
