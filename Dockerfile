@@ -15,4 +15,6 @@ RUN chmod +x startApplication.sh
 COPY ${JAR_FILE} app.jar
 EXPOSE 8080
 
+ENV SPRING_PROFILES_ACTIVE=production
+
 ENTRYPOINT ["/opencookbook/startApplication.sh"]

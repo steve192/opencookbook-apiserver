@@ -8,6 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,11 +21,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RecipeGroup extends AuditableEntity {
     @Id
-    @GeneratedValue
+    @SequenceGenerator(name = "recipe_group_seq", sequenceName = "recipe_group_seq", allocationSize = 1)
+    @GeneratedValue(generator = "recipe_group_seq")
     private Long id;
 
     private String title;
-
 
     @ManyToOne
     @JsonIgnore

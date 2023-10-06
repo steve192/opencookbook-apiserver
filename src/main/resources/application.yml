@@ -1,0 +1,52 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/cookpal
+    username: cookpal
+    password: changeme
+  flyway:
+    baseline-on-migrate: true
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+      enabled: true
+  jpa:
+    show-sql: true # spring.jpa.show-sql=true kommentiert aus
+springdoc:
+    api-docs:
+        enabled: true
+        path: /api-docs/swagger-config
+    swagger-ui:
+        path: /api-docs
+        display-request-duration: true
+        display-query-params-without-oauth2: true
+        disable-swagger-default-url: true
+        supported-submit-methods:
+opencookbook:
+  jwtSecret: default-jwt-secret
+  uploadDir: recipe-images
+  thumbnailDir: recipe-images/thumbnails
+  # 10MB
+  maxImageSize: 10485760 
+  # 10 minutes
+  jwtDuration: 600 
+  # 1 year
+  refreshTokenDuration: 31536000 
+  recipeScaperServiceUrl: http://recipe-scrapers:9090
+server:
+    # This is okay if we trust the direct caller of this service
+    # This will be our own reverse proxy server
+  forward-headers-strategy: framework
+  error:
+    # Disable trace in rest api
+    include-stacktrace: never
+
+---
+# Profile used for local development
+spring:
+    config:
+        activate:
+            on-profile: default
+
+    jpa.hibernate.ddl-auto: create
+

@@ -19,6 +19,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,11 +32,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Recipe extends AuditableEntity {
     @Id
-    @GeneratedValue
+    @SequenceGenerator(name = "recipe_seq", sequenceName = "recipe_seq", allocationSize = 1)
+    @GeneratedValue(generator = "recipe_seq")
     private Long id;
 
     private String title;
-
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default

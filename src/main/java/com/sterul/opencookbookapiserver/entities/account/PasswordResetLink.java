@@ -21,10 +21,7 @@ import lombok.Data;
 public class PasswordResetLink extends AuditableEntity {
     @Id
     @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private String id;
 
     @Temporal(TemporalType.TIMESTAMP)
