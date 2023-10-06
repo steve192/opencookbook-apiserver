@@ -3,12 +3,11 @@ package com.sterul.opencookbookapiserver.entities.account;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UuidGenerator;
 
 import com.sterul.opencookbookapiserver.entities.AuditableEntity;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
@@ -20,8 +19,7 @@ import lombok.Data;
 @Data
 public class PasswordResetLink extends AuditableEntity {
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @UuidGenerator
     private String id;
 
     @Temporal(TemporalType.TIMESTAMP)

@@ -1,9 +1,13 @@
-package com.sterul.opencookbookapiserver.unit.services;
+package com.sterul.opencookbookapiserver.integration;
 
-import com.sterul.opencookbookapiserver.entities.RecipeImage;
-import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
-import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
-import com.sterul.opencookbookapiserver.services.RecipeImageService;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -13,17 +17,14 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import com.sterul.opencookbookapiserver.entities.RecipeImage;
+import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
+import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
+import com.sterul.opencookbookapiserver.services.RecipeImageService;
 
 @SpringBootTest
-@ActiveProfiles("test")
-class RecipeImageServiceTest {
+@ActiveProfiles("integration-test")
+class RecipeImageServiceTest extends IntegrationTest{
 
     @Autowired
     private RecipeImageService cut;
@@ -43,7 +44,6 @@ class RecipeImageServiceTest {
         jpgFile = resourceLoader.getResource("classpath:testimages/jpg_image").getFile();
         pngFile = resourceLoader.getResource("classpath:testimages/png_image").getFile();
         invalidFile = resourceLoader.getResource("classpath:testimages/invalid").getFile();
-
     }
 
     @Test

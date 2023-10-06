@@ -39,7 +39,7 @@ import com.sterul.opencookbookapiserver.services.RecipeService;
 import com.sterul.opencookbookapiserver.services.WeekplanService;
 
 @SpringBootTest
-@ActiveProfiles("test")
+@ActiveProfiles("unit-test")
 class RecipeServiceTest {
 
     @Autowired
