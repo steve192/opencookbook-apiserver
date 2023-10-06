@@ -3,16 +3,15 @@ package com.sterul.opencookbookapiserver.services;
 import java.io.IOException;
 import java.util.Date;
 
-import jakarta.mail.MessagingException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.entities.account.ActivationLink;
-import com.sterul.opencookbookapiserver.entities.account.PasswordResetLink;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
+import com.sterul.opencookbookapiserver.entities.account.PasswordResetLink;
 import com.sterul.opencookbookapiserver.repositories.ActivationLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.PasswordResetLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
@@ -20,6 +19,7 @@ import com.sterul.opencookbookapiserver.services.exceptions.InvalidActivationLin
 import com.sterul.opencookbookapiserver.services.exceptions.PasswordResetLinkNotExistingException;
 import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
 
+import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -60,20 +60,27 @@ public class UserService {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private OpencookbookConfiguration opencookbookConfiguration;
+
     public CookpalUser getUserByEmail(String username) {
         return userRepository.findByEmailAddress(username);
     }
 
-    public com.sterul.opencookbookapiserver.entities.account.CookpalUser createUser(String emailAddress,
+    public CookpalUser createUser(String emailAddress,
             String unencryptedPassword) throws UserAlreadyExistsException {
         log.info("Creating user for {}", emailAddress);
         if (userExists(emailAddress)) {
             throw new UserAlreadyExistsException("User already exists");
         }
-        var createdUser = new com.sterul.opencookbookapiserver.entities.account.CookpalUser();
+        var createdUser = new CookpalUser();
         createdUser.setEmailAddress(emailAddress);
         createdUser.setPasswordHash(passwordEncoder.encode(unencryptedPassword));
         createdUser.setActivated(false);
+
+        if (opencookbookConfiguration.isAutoActivateUsers()) {
+            createdUser.setActivated(true);
+        }
         createdUser = userRepository.save(createdUser);
 
         return createdUser;

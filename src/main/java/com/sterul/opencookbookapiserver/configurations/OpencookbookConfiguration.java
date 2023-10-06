@@ -1,9 +1,10 @@
 package com.sterul.opencookbookapiserver.configurations;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @Configuration
 @ConfigurationProperties(prefix = "opencookbook")
@@ -95,5 +96,10 @@ public class OpencookbookConfiguration {
      * The width images are scaled down to (height is calculated by preserving width/height ratio)
      */
     private int imageThumbnailScaleWidth = 512;
+
+    /**
+     * Automatically activate new users without email confirmation
+     */
+    private boolean autoActivateUsers;
 
 }

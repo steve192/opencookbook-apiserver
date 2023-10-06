@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,6 +28,10 @@ public class Ingredient extends AuditableEntity {
     private CookpalUser owner;
 
     private boolean isPublicIngredient;
+
+    // Mapping is done by column ingredient from ingredient energy
+    @OneToOne(mappedBy = "ingredient")
+    private IngredientNutritionalInfo ingredientNutritionalInfo;
 
     @Override
     public String toString() {
