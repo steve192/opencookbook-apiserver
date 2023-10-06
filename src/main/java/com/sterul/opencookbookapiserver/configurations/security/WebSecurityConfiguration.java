@@ -47,7 +47,8 @@ public class WebSecurityConfiguration {
             "/api-docs/*/*",
             "/api/v1/instance*",
             "/h2-console/*",
-            "/error");
+            "/error",
+            "/actuator/health");
     @Autowired
     private UserDetailsService userDetailsService;
     @Autowired
