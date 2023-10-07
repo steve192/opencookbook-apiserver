@@ -5,11 +5,11 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
-import com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers.RecipeScrapersWebserviceImporter;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
+import com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers.RecipeScrapersWebserviceImporter;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,7 +32,9 @@ public class RecipeImporterFactory {
         var domainParts = domain.split("\\.");
         var domainWithoutTLDAndSubdomains = domainParts[domainParts.length - 2];
 
-        if (opencookbookConfiguration.getRecipeScaperServiceUrl().length() > 0) {
+
+        var scraperUrl = opencookbookConfiguration.getRecipeScaperServiceUrl();
+        if (scraperUrl != null && scraperUrl.length() > 0) {
             return recipeScrapersWebserviceImporter;
         }
 

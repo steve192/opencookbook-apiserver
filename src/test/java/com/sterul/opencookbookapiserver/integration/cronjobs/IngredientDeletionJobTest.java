@@ -1,4 +1,4 @@
-package com.sterul.opencookbookapiserver.cronjobs;
+package com.sterul.opencookbookapiserver.integration.cronjobs;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -20,15 +20,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.sterul.opencookbookapiserver.cronjobs.IngredientDeletionJob;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
+import com.sterul.opencookbookapiserver.integration.IntegrationTest;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class IngredientDeletionJobTest {
+class IngredientDeletionJobTest extends IntegrationTest {
     @Autowired
     IngredientDeletionJob cut;
 

@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +18,8 @@ import lombok.NoArgsConstructor;
 public class IngredientNeed extends AuditableEntity {
 
     @Id
-    @GeneratedValue
+    @SequenceGenerator(name = "ingredient_need_seq", sequenceName = "ingredient_need_seq", allocationSize = 1)
+    @GeneratedValue(generator = "ingredient_need_seq")
     private Long id;
 
     @ManyToOne

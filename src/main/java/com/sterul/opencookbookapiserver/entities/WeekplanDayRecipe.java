@@ -1,12 +1,11 @@
 package com.sterul.opencookbookapiserver.entities;
 
-import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UuidGenerator;
 import org.springframework.lang.Nullable;
 
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
@@ -22,11 +21,7 @@ import lombok.NoArgsConstructor;
 public class WeekplanDayRecipe {
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
+    @UuidGenerator
     private String id;
 
     @Nullable
@@ -37,5 +32,4 @@ public class WeekplanDayRecipe {
 
     private String simpleRecipeText;
 
-    
 }

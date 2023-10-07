@@ -6,7 +6,7 @@ import com.sterul.opencookbookapiserver.entities.AuditableEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.SequenceGenerator;
 import lombok.Data;
 
 @Entity
@@ -14,7 +14,8 @@ import lombok.Data;
 public class CookpalUser extends AuditableEntity {
 
     @Id
-    @GeneratedValue
+    @SequenceGenerator(name = "cookpal_user_seq", sequenceName = "cookpal_user_seq", allocationSize = 1)
+    @GeneratedValue(generator = "cookpal_user_seq")
     private Long userId;
     private String emailAddress;
 

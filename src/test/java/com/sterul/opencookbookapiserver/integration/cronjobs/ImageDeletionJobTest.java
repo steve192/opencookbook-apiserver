@@ -1,4 +1,4 @@
-package com.sterul.opencookbookapiserver.cronjobs;
+package com.sterul.opencookbookapiserver.integration.cronjobs;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -18,15 +18,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.sterul.opencookbookapiserver.cronjobs.ImageDeletionJob;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
+import com.sterul.opencookbookapiserver.integration.IntegrationTest;
 import com.sterul.opencookbookapiserver.repositories.RecipeImageRepository;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 import com.sterul.opencookbookapiserver.services.RecipeImageService;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class ImageDeletionJobTest {
+class ImageDeletionJobTest extends IntegrationTest {
 
     @Autowired
     ImageDeletionJob cut;
@@ -71,7 +73,7 @@ public class ImageDeletionJobTest {
     }
 
     @Test
-    public void unlinkedOldImagesAreDeleted() throws IOException {
+    void unlinkedOldImagesAreDeleted() throws IOException {
         whenRecipeWithImagesExists(List.of(newReipceImage));
 
         cut.deleteUnlinkedImages();
@@ -80,7 +82,7 @@ public class ImageDeletionJobTest {
     }
 
     @Test
-    public void noImagesAreDeletedWhenAllAreLinked() throws IOException {
+    void noImagesAreDeletedWhenAllAreLinked() throws IOException {
         whenRecipeWithImagesExists(List.of(newReipceImage, oldRecipeImage));
 
         cut.deleteUnlinkedImages();

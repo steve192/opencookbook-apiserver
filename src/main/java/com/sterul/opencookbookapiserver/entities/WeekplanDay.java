@@ -12,6 +12,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.TemporalType;
 import lombok.Data;
 
@@ -19,7 +20,8 @@ import lombok.Data;
 @Data
 public class WeekplanDay extends AuditableEntity {
     @Id
-    @GeneratedValue
+    @SequenceGenerator(name = "weekplan_day_seq", sequenceName = "weekplan_day_seq", allocationSize = 1)
+    @GeneratedValue(generator = "weekplan_day_seq")
     private Long id;
 
     @jakarta.persistence.Temporal(TemporalType.DATE)

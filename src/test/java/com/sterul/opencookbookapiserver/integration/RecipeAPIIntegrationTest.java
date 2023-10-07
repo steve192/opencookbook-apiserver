@@ -23,6 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.sterul.opencookbookapiserver.controllers.IngredientsController;
 import com.sterul.opencookbookapiserver.controllers.RecipeController;
@@ -38,8 +39,9 @@ import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImportFailed
 import com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers.RecipeScraperServiceProxy;
 
 @SpringBootTest
-@ActiveProfiles("test")
-class RecipeAPIIntegrationTest {
+@ActiveProfiles("integration-test")
+@Testcontainers
+class RecipeAPIIntegrationTest extends IntegrationTest {
 
     @Autowired
     private RecipeController cut;
