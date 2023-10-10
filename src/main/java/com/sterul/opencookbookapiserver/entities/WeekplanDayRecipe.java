@@ -7,7 +7,7 @@ import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,7 +25,7 @@ public class WeekplanDayRecipe {
     private String id;
 
     @Nullable
-    @OneToOne
+    @ManyToOne
     private Recipe recipe;
 
     private boolean isSimpleRecipe;

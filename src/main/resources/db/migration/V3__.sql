@@ -3,42 +3,33 @@
 -- and may require manual changes to the script to ensure changes are applied in the correct order.
 -- Please report an issue for any failure with the reproduction steps. 
  BEGIN; 
-
 ALTER TABLE public.weekplan_day
     ALTER COLUMN created_on TYPE timestamp(6) with time zone ;
 
 ALTER TABLE public.weekplan_day
     ALTER COLUMN last_change TYPE timestamp(6) with time zone ;
 
-ALTER TABLE IF EXISTS public.weekplan_day_recipe
-    ADD CONSTRAINT weekplan_day_recipe_recipe_id_key UNIQUE (recipe_id);
-
 ALTER TABLE public.activation_link
     ALTER COLUMN created_on TYPE timestamp(6) with time zone ;
 
 ALTER TABLE public.activation_link
     ALTER COLUMN last_change TYPE timestamp(6) with time zone ;
-
 ALTER TABLE IF EXISTS public.activation_link
     ADD CONSTRAINT activation_link_user_user_id_key UNIQUE (user_user_id);
-
 ALTER TABLE public.ingredient_need
     ALTER COLUMN created_on TYPE timestamp(6) with time zone ;
 
 ALTER TABLE public.ingredient_need
     ALTER COLUMN last_change TYPE timestamp(6) with time zone ;
-
 ALTER TABLE public.recipe_image
     ALTER COLUMN created_on TYPE timestamp(6) with time zone ;
 
 ALTER TABLE public.recipe_image
     ALTER COLUMN last_change TYPE timestamp(6) with time zone ;
-
 ALTER TABLE IF EXISTS public.recipe_images DROP CONSTRAINT IF EXISTS uk_612bgo9wf3fals5tin0cx1jo3;
 
 ALTER TABLE IF EXISTS public.recipe_images
     ADD CONSTRAINT recipe_images_images_uuid_key UNIQUE (images_uuid);
-
 ALTER TABLE IF EXISTS public.recipe_needed_ingredients DROP CONSTRAINT IF EXISTS uk_ejfxae253m05jemfo5jmpdbda;
 
 ALTER TABLE IF EXISTS public.recipe_needed_ingredients
@@ -77,6 +68,7 @@ ALTER TABLE public.recipe
 
 ALTER TABLE IF EXISTS public.recipe
     ADD CONSTRAINT recipe_recipe_type_check CHECK (recipe_type >= 0 AND recipe_type <= 2);
+    
 ALTER TABLE public.recipe_group
     ALTER COLUMN created_on TYPE timestamp(6) with time zone ;
 
