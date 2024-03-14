@@ -63,9 +63,11 @@ class BringExportAPITest extends IntegrationTest {
 
                 var result2 = cut.getExportData(result.getBody().exportId());
                 assertEquals(HttpStatus.OK, result2.getStatusCode());
-                assertEquals(10, result2.getBody().baseAmount());
-                assertEquals("10 Pcs Apple", result2.getBody().ingredients().get(0));
-                assertEquals("500 g Banana", result2.getBody().ingredients().get(1));
+
+                var expectedResult = """
+                                <div itemType='http://schema.org/Recipe'><span itemProp='yield'>10</span><h1 itemProp='name'>Cookpal Import</h1><img itemprop="image" src="favicon.ico"/><ul><li itemProp='ingredients'>10 Pcs Apple</li><li itemProp='ingredients'>500 g Banana</li></ul></div>""";
+
+                assertEquals(expectedResult, result2.getBody());
         }
 
         @Test

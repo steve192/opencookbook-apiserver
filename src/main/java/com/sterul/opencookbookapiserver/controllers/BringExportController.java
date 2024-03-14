@@ -33,10 +33,22 @@ public class BringExportController extends BaseController {
 
     @Operation(summary = "Get the bring export data for a given export id")
     @GetMapping
-    public ResponseEntity<BringExportData> getExportData(@RequestParam String exportId) {
+    public ResponseEntity<String> getExportData(@RequestParam String exportId) {
         try {
             var export = bringExportService.getBringExport(exportId);
-            return ResponseEntity.ok(new BringExportData(export.getBaseAmount(), export.getIngredients()));
+            var stringBuilder = new StringBuilder();
+            stringBuilder.append("<div itemType='http://schema.org/Recipe'>");
+            stringBuilder.append("<span itemProp='yield'>" + export.getBaseAmount() + "</span>");
+            stringBuilder.append("<h1 itemProp='name'>Cookpal Import</h1>");
+            stringBuilder.append("<img itemprop=\"image\" src=\"favicon.ico\"/>");
+            stringBuilder.append("<ul>");
+            export.getIngredients().forEach(ingredient -> {
+                stringBuilder.append("<li itemProp='ingredients'>" + ingredient + "</li>");
+            });
+            stringBuilder.append("</ul>");
+            stringBuilder.append("</div>");
+
+            return ResponseEntity.ok(stringBuilder.toString());
 
         } catch (ElementNotFound e) {
             return ResponseEntity.notFound().build();
