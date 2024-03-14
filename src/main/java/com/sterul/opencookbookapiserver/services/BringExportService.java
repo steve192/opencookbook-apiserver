@@ -40,9 +40,13 @@ public class BringExportService {
 
         var bringExport = BringExport.builder().baseAmount(recipe.getServings()).owner(user)
                 .ingredients(recipe.getNeededIngredients().stream()
-                        .map(ingredient -> ingredient.getAmount().toString().replace(".0", "") + " "
-                                + ingredient.getUnit() + " "
-                                + ingredient.getIngredient().getName())
+                        .map(ingredient -> {
+                            var amount = ingredient.getAmount() == null ? ""
+                                    : ingredient.getAmount().toString().replace(".0", "");
+                            var unit = ingredient.getUnit() == null ? "" : ingredient.getUnit();
+                            return amount + " "
+                                    + unit + " " + ingredient.getIngredient().getName();
+                        })
                         .toList())
                 .build();
 
