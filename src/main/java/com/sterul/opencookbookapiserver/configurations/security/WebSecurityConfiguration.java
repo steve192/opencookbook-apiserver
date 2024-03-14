@@ -46,6 +46,7 @@ public class WebSecurityConfiguration {
             "/api-docs/*",
             "/api-docs/*/*",
             "/api/v1/instance*",
+            "/api/v1/bringexport*",
             "/h2-console/*",
             "/error",
             "/actuator/health");
