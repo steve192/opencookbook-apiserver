@@ -38,9 +38,10 @@ public class BringExportService {
     public BringExport createBringExport(Long recipeId, CookpalUser user) throws ElementNotFound {
         var recipe = recipeService.getRecipeById(recipeId);
 
-        var bringExport = BringExport.builder().baseAmount(recipe.getServings())
+        var bringExport = BringExport.builder().baseAmount(recipe.getServings()).owner(user)
                 .ingredients(recipe.getNeededIngredients().stream()
-                        .map(ingredient -> ingredient.getAmount().toString().replace(".0", "") + " " + ingredient.getUnit() + " "
+                        .map(ingredient -> ingredient.getAmount().toString().replace(".0", "") + " "
+                                + ingredient.getUnit() + " "
                                 + ingredient.getIngredient().getName())
                         .toList())
                 .build();
@@ -49,7 +50,7 @@ public class BringExportService {
     }
 
     public BringExport getBringExport(String bringExportId) throws ElementNotFound {
-        var export = bringExportRepository.findById(bringExportId).orElseThrow(() -> new ElementNotFound());
+        var export = bringExportRepository.findById(bringExportId).orElseThrow(ElementNotFound::new);
         if (export.getCreatedOn().plusSeconds(300).isBefore(Instant.now())) {
             // Not valid anymore
             throw new ElementNotFound();

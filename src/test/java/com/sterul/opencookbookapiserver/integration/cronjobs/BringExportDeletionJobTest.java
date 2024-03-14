@@ -26,7 +26,7 @@ import com.sterul.opencookbookapiserver.repositories.BringExportRepository;
 @SpringBootTest
 @ActiveProfiles("test")
 @Testcontainers
-public class BringExportDeletionJobTest extends IntegrationTest {
+class BringExportDeletionJobTest extends IntegrationTest {
 
     @MockBean
     BringExportRepository bringExportRepository;
