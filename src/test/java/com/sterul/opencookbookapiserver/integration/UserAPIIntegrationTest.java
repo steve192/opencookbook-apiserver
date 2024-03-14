@@ -1,5 +1,6 @@
 package com.sterul.opencookbookapiserver.integration;
 
+import static com.sterul.opencookbookapiserver.integration.TestUtils.whenAuthenticated;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -13,14 +14,10 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
@@ -98,8 +95,7 @@ class UserAPIIntegrationTest extends IntegrationTest{
 
     @Test
     void passwordChangeWithCorrectPasswordIsSuccessfull() {
-        whenTestUserExists(true);
-        whenAuthentificated();
+        whenAuthenticated(userRepository);
 
         var response = cut.changePassword(PasswordChangeRequest.builder()
                 .oldPassword(testPassword)
@@ -111,8 +107,7 @@ class UserAPIIntegrationTest extends IntegrationTest{
 
     @Test
     void passwordChangeWithWrongPasswordFails() {
-        whenTestUserExists(true);
-        whenAuthentificated();
+        whenAuthenticated(userRepository);
 
         var response = cut.changePassword(PasswordChangeRequest.builder()
                 .oldPassword(testPassword + "wrong")
@@ -127,20 +122,10 @@ class UserAPIIntegrationTest extends IntegrationTest{
         when(userRepository.findByEmailAddress(testUser.getEmailAddress())).thenReturn(testUser);
     }
 
-    void whenAuthentificated() {
-        // Mock currently logged in user
-        Authentication authentication = Mockito.mock(Authentication.class);
-        Mockito.when(authentication.getName()).thenReturn("test@test.com");
-
-        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
-        SecurityContextHolder.setContext(securityContext);
-    }
 
     @Test
     void testUserInfo() {
-        whenTestUserExists(true);
-        whenAuthentificated();
+        whenAuthenticated(userRepository);
         assertEquals(cut.getOwnUserInfo().getEmail(), testUser.getEmailAddress());
     }
 

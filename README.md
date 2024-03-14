@@ -10,3 +10,8 @@ It is a java application based on spring boot. It is used to manage user account
 For the entrypoint of this whole project visit https://github.com/steve192/opencookbook
 
 
+## Running locally
+- Start a postgres db with
+```
+docker run -it --rm -p 5432:5432 -e POSTGRES_USER=cookpal -e POSTGRES_DB=cookpal -e POSTGRES_PASSWORD=changeme postgres:16-alpine
+```

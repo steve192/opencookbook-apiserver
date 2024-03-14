@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.sterul.opencookbookapiserver.cronjobs.IngredientDeletionJob;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
@@ -30,6 +31,7 @@ import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@Testcontainers
 class IngredientDeletionJobTest extends IntegrationTest {
     @Autowired
     IngredientDeletionJob cut;

@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.sterul.opencookbookapiserver.cronjobs.ImageDeletionJob;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
@@ -28,6 +29,7 @@ import com.sterul.opencookbookapiserver.services.RecipeImageService;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@Testcontainers
 class ImageDeletionJobTest extends IntegrationTest {
 
     @Autowired
