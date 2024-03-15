@@ -31,93 +31,93 @@ import jakarta.servlet.http.HttpServletRequest;
 @EnableMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfiguration {
 
-    private static final List<String> AUTH_WHITELIST = Arrays.asList(
-            "/api/v1/users/signup",
-            "/api/v1/users/activate",
-            "/api/v1/users/resendActivationLink",
-            "/api/v1/users/requestPasswordReset",
-            "/api/v1/users/resetPassword",
-            "/api/v1/users/login",
-            "/api/v1/users/refreshToken",
-            "/swagger-ui/*",
-            "/v3/api-docs/*",
-            "/api-docs*",
-            "/api-docs",
-            "/api-docs/*",
-            "/api-docs/*/*",
-            "/api/v1/instance*",
-            "/api/v1/bringexport*",
-            "/h2-console/*",
-            "/error",
-            "/actuator/health");
-    @Autowired
-    private UserDetailsService userDetailsService;
-    @Autowired
-    private UnauthorizedEntryPoint unauthorizedEntryPoint;
-    @Autowired
-    private JwtRequestFilter jwtRequestFilter;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+        private static final List<String> AUTH_WHITELIST = Arrays.asList(
+                        "/api/v1/users/signup",
+                        "/api/v1/users/activate",
+                        "/api/v1/users/resendActivationLink",
+                        "/api/v1/users/requestPasswordReset",
+                        "/api/v1/users/resetPassword",
+                        "/api/v1/users/login",
+                        "/api/v1/users/refreshToken",
+                        "/swagger-ui/*",
+                        "/v3/api-docs/*",
+                        "/api-docs*",
+                        "/api-docs",
+                        "/api-docs/*",
+                        "/api-docs/*/*",
+                        "/api/v1/instance*",
+                        "/api/v1/bringexport*",
+                        "/h2-console/*",
+                        "/error",
+                        "/actuator/health");
+        @Autowired
+        private UserDetailsService userDetailsService;
+        @Autowired
+        private UnauthorizedEntryPoint unauthorizedEntryPoint;
+        @Autowired
+        private JwtRequestFilter jwtRequestFilter;
+        @Autowired
+        private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        // Configure service to check if credentials are valid
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
-    }
+        @Autowired
+        public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+                // Configure service to check if credentials are valid
+                auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
+        }
 
-    private RequestMatcher allowedPathRequestMatcher() {
-        return (HttpServletRequest request) -> AUTH_WHITELIST.stream()
-                .anyMatch(whitelistedUrl -> new AntPathRequestMatcher(whitelistedUrl).matches(request));
+        private RequestMatcher allowedPathRequestMatcher() {
+                return (HttpServletRequest request) -> AUTH_WHITELIST.stream()
+                                .anyMatch(whitelistedUrl -> new AntPathRequestMatcher(whitelistedUrl).matches(request));
 
-    };
+        };
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        @Bean
+        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        // Cors and csrf not needed in an api server
-        http.cors(configurer -> configurer.configurationSource(c -> allowAllCorsConfig()));
-        http.csrf(conf -> conf.disable());
+                // Cors and csrf not needed in an api server
+                http.cors(configurer -> configurer.configurationSource(c -> allowAllCorsConfig()));
+                http.csrf(conf -> conf.disable());
 
-        // Allow frames needed for h2 console
-        http.headers(config -> config.frameOptions(options -> options.sameOrigin()));
+                // Allow frames needed for h2 console
+                http.headers(config -> config.frameOptions(options -> options.sameOrigin()));
 
-        // Permit whitelist and authenticated request
-        http.authorizeHttpRequests(
-                authorize -> authorize.requestMatchers(allowedPathRequestMatcher()).permitAll()
-                        .anyRequest().authenticated());
+                // Permit whitelist and authenticated request
+                http.authorizeHttpRequests(
+                                authorize -> authorize.requestMatchers(allowedPathRequestMatcher()).permitAll()
+                                                .anyRequest().authenticated());
 
-        http.exceptionHandling(configurer -> configurer
-                .authenticationEntryPoint(unauthorizedEntryPoint));
+                http.exceptionHandling(configurer -> configurer
+                                .authenticationEntryPoint(unauthorizedEntryPoint));
 
-        // Disable sessions since auth/session token is passed in every request
-        http.sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                // Disable sessions since auth/session token is passed in every request
+                http.sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        // Add a filter to check the sent token and authenticate
-        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+                // Add a filter to check the sent token and authenticate
+                http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
-        return http.build();
-    }
+                return http.build();
+        }
 
-    private CorsConfiguration allowAllCorsConfig() {
-        List<String> permittedCorsMethods = Collections.unmodifiableList(Arrays.asList(
-                HttpMethod.GET.name(),
-                HttpMethod.HEAD.name(),
-                HttpMethod.POST.name(),
-                HttpMethod.PUT.name(),
-                HttpMethod.DELETE.name()));
+        private CorsConfiguration allowAllCorsConfig() {
+                List<String> permittedCorsMethods = Collections.unmodifiableList(Arrays.asList(
+                                HttpMethod.GET.name(),
+                                HttpMethod.HEAD.name(),
+                                HttpMethod.POST.name(),
+                                HttpMethod.PUT.name(),
+                                HttpMethod.DELETE.name()));
 
-        var corsConfiguration = new CorsConfiguration().applyPermitDefaultValues();
-        corsConfiguration.setAllowedMethods(permittedCorsMethods);
-        return corsConfiguration;
-        
-}
+                var corsConfiguration = new CorsConfiguration().applyPermitDefaultValues();
+                corsConfiguration.setAllowedMethods(permittedCorsMethods);
+                return corsConfiguration;
 
-@Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http)
-            throws Exception {
-        return http.getSharedObject(AuthenticationManagerBuilder.class)
-                .userDetailsService(userDetailsService)
-                .passwordEncoder(passwordEncoder).and().build();
-    }
+        }
+
+        @Bean
+        public AuthenticationManager authenticationManager(HttpSecurity http)
+                        throws Exception {
+                return http.getSharedObject(AuthenticationManagerBuilder.class)
+                                .userDetailsService(userDetailsService)
+                                .passwordEncoder(passwordEncoder).and().build();
+        }
 
 }

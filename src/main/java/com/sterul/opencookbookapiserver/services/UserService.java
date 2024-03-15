@@ -2,8 +2,7 @@ package com.sterul.opencookbookapiserver.services;
 
 import java.io.IOException;
 import java.util.Date;
-
-import jakarta.mail.MessagingException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,8 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sterul.opencookbookapiserver.entities.account.ActivationLink;
-import com.sterul.opencookbookapiserver.entities.account.PasswordResetLink;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
+import com.sterul.opencookbookapiserver.entities.account.PasswordResetLink;
 import com.sterul.opencookbookapiserver.repositories.ActivationLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.PasswordResetLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
@@ -20,6 +19,7 @@ import com.sterul.opencookbookapiserver.services.exceptions.InvalidActivationLin
 import com.sterul.opencookbookapiserver.services.exceptions.PasswordResetLinkNotExistingException;
 import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
 
+import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -73,7 +73,7 @@ public class UserService {
         var createdUser = new com.sterul.opencookbookapiserver.entities.account.CookpalUser();
         createdUser.setEmailAddress(emailAddress);
         createdUser.setPasswordHash(passwordEncoder.encode(unencryptedPassword));
-        createdUser.setActivated(false);
+        createdUser.setActivated(true);
         createdUser = userRepository.save(createdUser);
 
         return createdUser;
@@ -200,5 +200,9 @@ public class UserService {
         var user = link.get().getUser();
         changePassword(user, newPassword);
         passwordResetLinkRepository.delete(link.get());
+    }
+
+    public List<CookpalUser> getAllUsers() {
+        return userRepository.findAll();
     }
 }
