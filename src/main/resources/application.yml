@@ -11,7 +11,7 @@ spring:
       max-request-size: 5MB
       enabled: true
   jpa:
-    show-sql: true # spring.jpa.show-sql=true kommentiert aus
+    show-sql: false
 springdoc:
     api-docs:
         enabled: true
@@ -47,6 +47,11 @@ spring:
     config:
         activate:
             on-profile: default
+
+    # Use when you want to db to be created without flyway (e.g. when you create new entities)
+    # flyway:
+    #   enabled: false
+    # jpa.hibernate.ddl-auto: create-drop
 
     jpa.hibernate.ddl-auto: create
 

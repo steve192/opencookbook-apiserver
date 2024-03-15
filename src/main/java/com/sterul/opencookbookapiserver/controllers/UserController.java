@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -75,8 +76,10 @@ public class UserController extends BaseController {
     @Operation(summary = "Creates a new user")
     @PostMapping("/signup")
     @Transactional
-    public CookpalUser signup(@Valid @RequestBody UserCreationRequest userCreationRequest) throws UserAlreadyExistsException {
-        var createdUser = userService.createUser(userCreationRequest.getEmailAddress(), userCreationRequest.getPassword());
+    public CookpalUser signup(@Valid @RequestBody UserCreationRequest userCreationRequest)
+            throws UserAlreadyExistsException {
+        var createdUser = userService.createUser(userCreationRequest.getEmailAddress(),
+                userCreationRequest.getPassword());
         var activationLink = userService.createActivationLink(createdUser);
         try {
             emailService.sendActivationMail(activationLink);
@@ -173,8 +176,11 @@ public class UserController extends BaseController {
     @Operation(summary = "Get information about authenticated user account")
     @GetMapping("/self")
     public UserInfoResponse getOwnUserInfo() {
+        var user = getLoggedInUser();
         var response = new UserInfoResponse();
-        response.setEmail(getLoggedInUser().getEmailAddress());
+        response.setEmail(user.getEmailAddress());
+        response.setRoles(SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                .map(authority -> authority.getAuthority()).toList());
         return response;
     }
 

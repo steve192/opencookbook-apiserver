@@ -44,7 +44,7 @@ class BringExportAPITest extends IntegrationTest {
         @Transactional
         void testBringExportCreation() throws ElementNotFound {
                 var testRecipe = Recipe.builder().servings(10)
-                                .owner(new CookpalUser(1l, "test@test.com", "dskid", true))
+                                .owner(new CookpalUser(1l, "test@test.com", "dskid", true, null))
                                 .neededIngredients(Arrays.asList(
                                                 IngredientNeed.builder().amount(10f).unit("Pcs")
                                                                 .ingredient(Ingredient.builder().name("Apple").build())
@@ -73,7 +73,7 @@ class BringExportAPITest extends IntegrationTest {
         @Test
         void cannotGenerateExportForOtherUser() throws ElementNotFound {
                 var testRecipe = Recipe.builder()
-                                .owner(new CookpalUser(123l, "tester_other@test.invalid", "dpsadjopsad", true))
+                                .owner(new CookpalUser(123l, "tester_other@test.invalid", "dpsadjopsad", true, null))
                                 .servings(10)
                                 .neededIngredients(Arrays.asList(
                                                 IngredientNeed.builder().amount(10f).unit("Pcs")
