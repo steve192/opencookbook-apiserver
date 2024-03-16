@@ -36,3 +36,4 @@ build/
 ### Application
 recipe-images/
 database/
+src/main/resources/ingredientsources

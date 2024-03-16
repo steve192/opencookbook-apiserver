@@ -15,6 +15,7 @@ import com.sterul.opencookbookapiserver.entities.account.PasswordResetLink;
 import com.sterul.opencookbookapiserver.repositories.ActivationLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.PasswordResetLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
+import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.exceptions.InvalidActivationLinkException;
 import com.sterul.opencookbookapiserver.services.exceptions.PasswordResetLinkNotExistingException;
 import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
@@ -96,6 +97,12 @@ public class UserService {
         activationLink.setUser(user);
 
         return activationLinkRepository.save(activationLink);
+    }
+
+    public void activateUserById(Long userId) throws ElementNotFound {
+        var user = userRepository.findById(userId).orElseThrow(ElementNotFound::new);
+        user.setActivated(true);
+        userRepository.save(user);
     }
 
     public void activateUser(String activationId) throws InvalidActivationLinkException {
@@ -204,5 +211,9 @@ public class UserService {
 
     public List<CookpalUser> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    public CookpalUser getUserById(Long id) throws ElementNotFound {
+        return userRepository.findById(id).orElseThrow(ElementNotFound::new);
     }
 }
