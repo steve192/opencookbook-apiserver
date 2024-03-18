@@ -58,7 +58,7 @@ export const LoginScreen: React.FC = () => {
   };
 
   return (
-    <StyledContainer component="main" maxWidth="xs">
+    <StyledContainer maxWidth="xs">
       <Typography component="h1" variant="h5">
         Sign in
       </Typography>

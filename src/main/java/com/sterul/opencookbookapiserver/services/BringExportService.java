@@ -1,6 +1,7 @@
 package com.sterul.opencookbookapiserver.services;
 
 import java.time.Instant;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,6 +65,10 @@ public class BringExportService {
 
     record BringExportIngredient(String name) {
 
+    }
+
+    public List<BringExport> getAllExports() {
+       return bringExportRepository.findAll();
     }
 
 }

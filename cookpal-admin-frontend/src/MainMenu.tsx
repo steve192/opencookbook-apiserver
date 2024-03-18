@@ -6,6 +6,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import LocalDiningIcon from '@mui/icons-material/LocalDining';
 import LocalPizzaIcon from '@mui/icons-material/LocalPizza';
 import MenuIcon from '@mui/icons-material/Menu';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
 
 export const MainMenu = () => {
   const drawWidth = 220;
@@ -29,23 +30,29 @@ export const MainMenu = () => {
                   Cookpal Admin Panel
       </Typography>
       <List sx={{backgroundColor: '#09212E'}}>
-        <ListItemButton sx={{color: 'white'}}>
+        <ListItemButton onClick={() => navigate('/admin/users')} sx={{color: 'white'}}>
           <ListItemIcon sx={{color: 'white'}}>
             {<PersonIcon />}
           </ListItemIcon>
-          <Link to="/users"><ListItemText primary={'Users'} /> </Link>
+          <ListItemText primary={'Users'} />
         </ListItemButton>
-        <ListItemButton onClick={() => navigate('/recipes')} sx={{color: 'white'}}>
+        <ListItemButton onClick={() => navigate('/admin/recipes')} sx={{color: 'white'}}>
           <ListItemIcon sx={{color: 'white'}}>
             {<LocalDiningIcon />}
           </ListItemIcon>
           <ListItemText primary={'Recipes'} />
         </ListItemButton>
-        <ListItemButton sx={{color: 'white'}}>
+        <ListItemButton onClick={() => navigate('/admin/ingredients')} sx={{color: 'white'}}>
           <ListItemIcon sx={{color: 'white'}}>
             {<LocalPizzaIcon />}
           </ListItemIcon>
           <ListItemText primary={'Ingredients'} />
+        </ListItemButton>
+        <ListItemButton onClick={() => navigate('/admin/bringexports')} sx={{color: 'white'}}>
+          <ListItemIcon sx={{color: 'white'}}>
+            {<FileUploadIcon />}
+          </ListItemIcon>
+          <ListItemText primary={'Bring Exports'} />
         </ListItemButton>
       </List>
       <Divider />

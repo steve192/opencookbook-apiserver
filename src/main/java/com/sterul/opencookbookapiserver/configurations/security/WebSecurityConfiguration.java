@@ -49,7 +49,9 @@ public class WebSecurityConfiguration {
                         "/api/v1/bringexport*",
                         "/h2-console/*",
                         "/error",
-                        "/actuator/health");
+                        "/actuator/health",
+                        "/admin",
+                        "/admin/**");
         @Autowired
         private UserDetailsService userDetailsService;
         @Autowired

@@ -6,12 +6,13 @@ import {LoginScreen} from './LoginScreen';
 import {MainMenu} from './MainMenu';
 import {RecipesScreen} from './RecipesScreen';
 import {UsersScreen} from './UsersScreen';
+import { BringExportScreen } from './BringExportScreen';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
 
   const router = createBrowserRouter([{
-    path: '/',
+    path: '/admin/',
     element: <MainMenu/>,
     children: [
       {
@@ -21,6 +22,13 @@ function App() {
       {
         path: 'recipes',
         element: <RecipesScreen/>,
+      },
+      {
+        path: 'ingredients',
+      },
+      {
+        path: 'bringexports',
+        element: <BringExportScreen/>
       },
     ],
   }]);

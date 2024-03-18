@@ -1,4 +1,3 @@
-import {Recipe, RecipeGroup, UserInfo} from './dao/RestAPI';
 
 export default class AppPersistence {
   private static authToken: string;
@@ -23,8 +22,7 @@ export default class AppPersistence {
 
 
   static async getBackendURL(): Promise<string> {
-    return 'https://beta.cookpal.io';
-    // Relative urls
+    // return 'https://beta.cookpal.io';
     return '';
   }
 

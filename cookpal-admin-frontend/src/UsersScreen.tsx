@@ -1,4 +1,4 @@
-import {DataGrid, GridColDef, GridValueGetterParams} from '@mui/x-data-grid';
+import {DataGrid} from '@mui/x-data-grid';
 import {useEffect, useState} from 'react';
 import RestAPI, {User} from './RestAPI';
 

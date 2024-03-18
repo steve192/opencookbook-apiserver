@@ -29,7 +29,7 @@ export interface Recipe {
   preparationSteps: string[];
   images: string[];
   servings: number;
-  recipeGroups: string; // TODO
+  recipeGroups: string;
   preparationTime: number | null;
   totalTime: number | null;
   recipeType: string | null;
@@ -53,6 +53,13 @@ export interface Ingredient {
   publicIngredient: boolean;
 }
 
+export interface BringExport {
+  id: string;
+  owner: User;
+  baseAmount: number;
+  ingredients: string[];
+}
+
 class RestAPI {
   static async getAllRecipes(): Promise<Recipe[]> {
     const response = await this.get('/admin/recipes');
@@ -60,6 +67,10 @@ class RestAPI {
   }
   static async getAllUsers(): Promise<User[]> {
     const response = await this.get('/admin/users');
+    return response?.data;
+  }
+  static async getAllBringExports(): Promise<BringExport[]> {
+    const response = await this.get('/admin/bringexports');
     return response?.data;
   }
   static async getUserInfo(): Promise<UserInfo> {
@@ -142,6 +153,7 @@ class RestAPI {
 
   static async getAuthHeader(): Promise<AxiosRequestHeaders> {
     const token = await AppPersistence.getAuthToken();
+    // @ts-ignore
     return {'Authorization': 'Bearer ' + token};
   }
 
