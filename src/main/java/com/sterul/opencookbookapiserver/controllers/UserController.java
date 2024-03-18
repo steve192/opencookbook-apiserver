@@ -40,6 +40,7 @@ import com.sterul.opencookbookapiserver.services.UserService;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.exceptions.InvalidActivationLinkException;
 import com.sterul.opencookbookapiserver.services.exceptions.PasswordResetLinkNotExistingException;
+import com.sterul.opencookbookapiserver.services.exceptions.SignupDisabledException;
 import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
 import com.sterul.opencookbookapiserver.util.JwtTokenUtil;
 
@@ -77,7 +78,7 @@ public class UserController extends BaseController {
     @PostMapping("/signup")
     @Transactional
     public CookpalUser signup(@Valid @RequestBody UserCreationRequest userCreationRequest)
-            throws UserAlreadyExistsException {
+            throws UserAlreadyExistsException, SignupDisabledException {
         var createdUser = userService.createUser(userCreationRequest.getEmailAddress(),
                 userCreationRequest.getPassword());
         var activationLink = userService.createActivationLink(createdUser);

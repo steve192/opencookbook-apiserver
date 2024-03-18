@@ -53,5 +53,7 @@ spring:
     #   enabled: false
     # jpa.hibernate.ddl-auto: create-drop
 
-    jpa.hibernate.ddl-auto: create
+    jpa.hibernate.ddl-auto: update
+opencookbook:
+  activate-users-after-signup: true
 

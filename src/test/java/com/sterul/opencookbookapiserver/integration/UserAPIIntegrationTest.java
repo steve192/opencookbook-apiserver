@@ -36,6 +36,7 @@ import com.sterul.opencookbookapiserver.repositories.PasswordResetLinkRepository
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.EmailService;
 import com.sterul.opencookbookapiserver.services.RefreshTokenService;
+import com.sterul.opencookbookapiserver.services.exceptions.SignupDisabledException;
 import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
 
 import jakarta.mail.MessagingException;
@@ -131,7 +132,7 @@ class UserAPIIntegrationTest extends IntegrationTest{
 
     @Test
     @Transactional
-    void registrationEmailSent() throws UserAlreadyExistsException, MessagingException {
+    void registrationEmailSent() throws UserAlreadyExistsException, MessagingException, SignupDisabledException {
         cut.signup(UserCreationRequest.builder().emailAddress("testi@cookpal.io").password("12345").build());
         verify(emailService, times(1)).sendActivationMail(any());
     }
