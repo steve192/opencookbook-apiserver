@@ -33,6 +33,7 @@ import com.sterul.opencookbookapiserver.controllers.responses.UserInfoResponse;
 import com.sterul.opencookbookapiserver.controllers.responses.UserLoginResponse;
 import com.sterul.opencookbookapiserver.entities.RefreshToken;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
+import com.sterul.opencookbookapiserver.entities.account.Role;
 import com.sterul.opencookbookapiserver.services.EmailService;
 import com.sterul.opencookbookapiserver.services.RefreshTokenService;
 import com.sterul.opencookbookapiserver.services.UserDetailsServiceImpl;
@@ -207,8 +208,13 @@ public class UserController extends BaseController {
 
     @Operation(summary = "Delete authenticated user account")
     @DeleteMapping("/self")
-    public void deleteOwnUser() {
-        userService.deleteUser(getLoggedInUser());
+    public ResponseEntity deleteOwnUser() {
+        var user = getLoggedInUser();
+        if (Role.DEMO.equals(user.getRoles())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        userService.deleteUser(user);
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "Generate a JWT token from a refresh token", description = "The JWT token is used to authenticate against all apis using the \"Authentication: Bearer < token >\" header field")
