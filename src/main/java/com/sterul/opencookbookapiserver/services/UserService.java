@@ -101,6 +101,7 @@ public class UserService {
     public ActivationLink createActivationLink(CookpalUser user) {
         log.info("Creating activation link for user {}", user);
         deleteAllActivationLinks(user);
+        activationLinkRepository.flush();
 
         var activationLink = new ActivationLink();
         activationLink.setUser(user);
@@ -179,7 +180,6 @@ public class UserService {
         if (user.isActivated()) {
             return;
         }
-        deleteAllActivationLinks(user);
         var activationLink = createActivationLink(user);
         emailService.sendActivationMail(activationLink);
     }
