@@ -98,6 +98,11 @@ public class UserController extends BaseController {
         try {
             login(authenticationRequest.getEmailAddress(), authenticationRequest.getPassword());
         } catch (UserNotActiveException e) {
+            try {
+                userService.resendActivationLink(authenticationRequest.getEmailAddress());
+            } catch (MessagingException e1) {
+                log.error("Error re-sending activation link for user", e1);
+            }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserLoginResponse.builder()
                             .userActive(false).build());

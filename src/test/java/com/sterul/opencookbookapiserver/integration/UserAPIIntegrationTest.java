@@ -32,6 +32,7 @@ import com.sterul.opencookbookapiserver.controllers.requests.UserLoginRequest;
 import com.sterul.opencookbookapiserver.entities.RefreshToken;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.account.PasswordResetLink;
+import com.sterul.opencookbookapiserver.repositories.ActivationLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.PasswordResetLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.EmailService;
@@ -61,6 +62,9 @@ class UserAPIIntegrationTest extends IntegrationTest{
 
     @MockBean
     PasswordResetLinkRepository passwordResetLinkRepository;
+
+    @MockBean
+    ActivationLinkRepository activationLinkRepository;
 
     @Autowired
     UserController cut;
@@ -139,12 +143,18 @@ class UserAPIIntegrationTest extends IntegrationTest{
 
     @Test
     @Transactional
-    void nonActivatedUserCannotLogin() throws UnauthorizedException {
+    void nonActivatedUserCannotLogin() throws UnauthorizedException, MessagingException {
         whenTestUserExists(false);
+
         var response = cut.login(UserLoginRequest.builder()
                 .emailAddress(testUser.getEmailAddress())
                 .password(testPassword)
                 .build());
+
+        verify(activationLinkRepository, times(1)).deleteAllByUser(any());
+        verify(activationLinkRepository, times(1)).save(any());
+
+        
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         assertFalse(response.getBody().isUserActive());
@@ -193,7 +203,7 @@ class UserAPIIntegrationTest extends IntegrationTest{
     }
 
     @Test
-    void activeUserCanLogin() throws UnauthorizedException {
+    void activeUserCanLogin() throws UnauthorizedException, MessagingException {
         whenTestUserExists(true);
 
         var response = cut.login(UserLoginRequest.builder()
