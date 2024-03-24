@@ -156,8 +156,23 @@ public class UserController extends BaseController {
 
     @Operation(summary = "Activates a user, using an activation id")
     @GetMapping("/activate")
-    public void activateUser(@Valid @RequestParam String activationId) throws InvalidActivationLinkException {
-        userService.activateUser(activationId);
+    public ResponseEntity<UserLoginResponse> activateUser(@Valid @RequestParam String activationId)
+            throws InvalidActivationLinkException {
+        var user = userService.activateUser(activationId);
+
+        final UserDetails userDetails = userDetailsService
+                .loadUserByUsername(user.getEmailAddress());
+
+        final String token = jwtTokenUtil.generateToken(userDetails);
+
+        var response = UserLoginResponse.builder()
+                .token(token)
+                .userActive(true)
+                .refreshToken(refreshTokenService.createRefreshTokenForUser(
+                        user).getToken())
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Resends an activation link to the users email address. Ignores requests for when users are already active or users do not exist")

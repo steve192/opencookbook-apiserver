@@ -114,7 +114,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void activateUser(String activationId) throws InvalidActivationLinkException {
+    public CookpalUser activateUser(String activationId) throws InvalidActivationLinkException {
         var activationLink = activationLinkRepository.findById(activationId);
         if (activationLink.isEmpty()) {
             throw new InvalidActivationLinkException();
@@ -123,7 +123,7 @@ public class UserService {
         var user = activationLink.get().getUser();
         user.setActivated(true);
         activationLinkRepository.delete(activationLink.get());
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 
     public void deleteUser(CookpalUser user) {
