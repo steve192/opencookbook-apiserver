@@ -61,6 +61,14 @@ export interface BringExport {
 }
 
 class RestAPI {
+  static async activateUser(userId: string) {
+    const response = await this.post('/admin/users/' + userId + '/activate', {});
+    return response?.data;
+  }
+  static async deleteUser(userId: string) {
+    const response = await this.delete('/admin/users/' + userId );
+    return response?.data;
+  }
   static async getAllRecipes(): Promise<Recipe[]> {
     const response = await this.get('/admin/recipes');
     return response?.data;

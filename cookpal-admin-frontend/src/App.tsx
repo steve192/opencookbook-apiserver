@@ -6,7 +6,9 @@ import {LoginScreen} from './LoginScreen';
 import {MainMenu} from './MainMenu';
 import {RecipesScreen} from './RecipesScreen';
 import {UsersScreen} from './UsersScreen';
-import { BringExportScreen } from './BringExportScreen';
+import {BringExportScreen} from './BringExportScreen';
+import {ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -28,7 +30,7 @@ function App() {
       },
       {
         path: 'bringexports',
-        element: <BringExportScreen/>
+        element: <BringExportScreen/>,
       },
     ],
   }]);
@@ -38,6 +40,18 @@ function App() {
     setLoggedIn: setLoggedIn,
   }}>
     {loggedIn ? <RouterProvider router={router}/> : <LoginScreen/>}
+    <ToastContainer
+      position="top-right"
+      autoClose={5000}
+      hideProgressBar={false}
+      newestOnTop={false}
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      theme="dark"
+    />
   </AppContext.Provider>
   );
 }
