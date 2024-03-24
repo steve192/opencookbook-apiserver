@@ -1,9 +1,10 @@
 import {DataGrid} from '@mui/x-data-grid';
 import {useEffect, useState} from 'react';
 import RestAPI, {User} from './RestAPI';
-import {IconButton, Toolbar, Tooltip, Typography} from '@mui/material';
+import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, MenuItem, Select, TextField, Toolbar, Tooltip, Typography} from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import {alpha} from '@mui/material/styles';
 import {toast} from 'react-toastify';
 
@@ -12,6 +13,7 @@ export const UsersScreen = () => {
   const [users, setUsers] = useState<User[]>();
 
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [roleSelectionOpen, setRoleSelectionOpen]= useState(false);
 
 
   const deleteSelectedItems = async () => {
@@ -41,12 +43,62 @@ export const UsersScreen = () => {
   useEffect(() => {
     RestAPI.getAllUsers().then((users) => setUsers(users));
   }, []);
+
+  const roleSelectionDialog =
+    <Dialog
+      open={roleSelectionOpen}
+      onClose={() => setRoleSelectionOpen(false)}
+      PaperProps={{
+        component: 'form',
+        onSubmit: async (event: React.FormEvent<HTMLFormElement>) => {
+          event.preventDefault();
+          const formData = new FormData(event.currentTarget);
+          const formJson = Object.fromEntries((formData as any).entries());
+          let role = formJson.roleToAssign;
+          if (role === 'NONE') {
+            role = null;
+          }
+
+          for (const userId of selectedItems) {
+            try {
+              await RestAPI.setUserRoles(userId, [role]);
+              toast('Set roles of user ' + userId, {});
+            } catch (e) {
+              toast.error('Error setting roles of user ' + userId, {});
+            }
+          }
+          RestAPI.getAllUsers().then((users) => setUsers(users));
+          setRoleSelectionOpen(false);
+        },
+      }}
+    >
+      <DialogTitle>Assign roles</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Select the role you want to assign to the selected users
+        </DialogContentText>
+        <Select
+          id="roleToAssign"
+          name="roleToAssign"
+        >
+          <MenuItem value="NONE">None</MenuItem>
+          <MenuItem value="ADMIN">Admin</MenuItem>
+          <MenuItem value="DEMO">Demo User (Cannot be deleted)</MenuItem>
+        </Select>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => setRoleSelectionOpen(false)}>Cancel</Button>
+        <Button type="submit">Set roles</Button>
+      </DialogActions>
+    </Dialog>;
+
   return (
     <>
       <TableToolbar
         selectedItems={selectedItems}
         onDeletePressed={deleteSelectedItems}
-        onActivatePressed={activateSelectedUsers} />
+        onActivatePressed={activateSelectedUsers}
+        onRoleSelectionPressed={() => setRoleSelectionOpen(true)} />
       <DataGrid
         rows={users ?? []}
         columns={[
@@ -67,11 +119,12 @@ export const UsersScreen = () => {
         onRowSelectionModelChange={(selectionModel) => setSelectedItems(selectionModel as string[])}
         checkboxSelection
       />
+      {roleSelectionDialog}
     </>);
 };
 
 
-function TableToolbar(props: {selectedItems: string[], onDeletePressed: () => void, onActivatePressed: () => void}) {
+function TableToolbar(props: {selectedItems: string[], onDeletePressed: () => void, onActivatePressed: () => void, onRoleSelectionPressed: () => void}) {
   const numSelected = props.selectedItems.length;
 
   return (
@@ -116,8 +169,14 @@ function TableToolbar(props: {selectedItems: string[], onDeletePressed: () => vo
               <CheckCircleIcon />
             </IconButton>
           </Tooltip>
+          <Tooltip title="Set role">
+            <IconButton onClick={props.onRoleSelectionPressed}>
+              <ManageAccountsIcon />
+            </IconButton>
+          </Tooltip>
         </>
       ) }
     </Toolbar>
   );
 }
+

@@ -61,6 +61,10 @@ export interface BringExport {
 }
 
 class RestAPI {
+  static async setUserRoles(userId: string, roles: string[]) {
+    const response = await this.post('/admin/users/' + userId + '/roles', roles);
+    return response?.data;
+  }
   static async activateUser(userId: string) {
     const response = await this.post('/admin/users/' + userId + '/activate', {});
     return response?.data;
