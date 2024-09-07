@@ -1,10 +1,8 @@
 package com.sterul.opencookbookapiserver.util;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.Function;
 
 import javax.crypto.SecretKey;
@@ -19,15 +17,14 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
-import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 
 @Component
 public class JwtTokenUtil {
 
-    private final  SecretKey jwtSigningKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    private final SecretKey jwtSigningKey = Jwts.SIG.HS512.key().build();
+
     @Autowired
     OpencookbookConfiguration opencookbookConfiguration;
 
@@ -45,7 +42,7 @@ public class JwtTokenUtil {
     }
 
     private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parser().setSigningKey(jwtSigningKey).parseClaimsJws(token).getBody();
+        return Jwts.parser().verifyWith(jwtSigningKey).build().parseSignedClaims(token).getPayload();
     }
 
     private Boolean isTokenExpired(String token) {
@@ -62,10 +59,10 @@ public class JwtTokenUtil {
     private String doGenerateToken(Map<String, Object> claims, String subject) {
 
         return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(subject)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + opencookbookConfiguration.getJwtDuration() * 1000))
+                .claims().add(claims).and()
+                .subject(subject)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + opencookbookConfiguration.getJwtDuration() * 1000))
                 .signWith(jwtSigningKey)
                 .compact();
     }
