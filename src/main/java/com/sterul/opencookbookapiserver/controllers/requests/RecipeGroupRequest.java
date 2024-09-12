@@ -1,8 +1,5 @@
 package com.sterul.opencookbookapiserver.controllers.requests;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,8 +13,10 @@ public class RecipeGroupRequest {
 
     private Long id;
 
-    @NotNull
-    @NotEmpty
+    // Temporarily disabled. When a recipe has a recipe group, it does not have a title
+    // TODO: Different class for recipe group creation / update and recipe creation / update
+    // @NotNull
+    // @NotEmpty
     private String title;
 
 }
