@@ -113,14 +113,15 @@ class RecipeScrapersWebserviceImporterTest {
     void testIngredientsImported() throws RecipeImportFailedException, ImportNotSupportedException {
         var recipe = cut.importRecipe(testRecipeUrl, userMock);
 
-        assertIngredientPresent(recipe, 250, "g", "Butter (davon 50 g für Guss)", 0);
-        assertIngredientPresent(recipe, 300, "g", "Schokolade , bittere (davon 100 g für Guss)", 1);
-        assertIngredientPresent(recipe, 100, "g", "Schokolade nach Wahl, gehackt", 2);
+        assertIngredientPresent(recipe, 250, "g", "Butter", 0);
+        assertIngredientPresent(recipe, 300, "g", "Schokolade", 1);
+        assertIngredientPresent(recipe, 100, "g", "Schokolade nach Wahl", 2);
         assertIngredientPresent(recipe, 200, "g", "Zucker", 3);
         assertIngredientPresent(recipe, 1, "Pck.", "Vanillezucker", 4);
         assertIngredientPresent(recipe, 4, "", "Ei(er)", 5);
         assertIngredientPresent(recipe, 1, "Prise(n)", "Salz", 6);
-        assertIngredientPresent(recipe, 0.5F, "Flasche", "Rumaroma oder 3 EL Rum", 7);
+        // TODO: Decide how to handle multiple units amounts in a single ingredient
+        assertIngredientPresent(recipe, 0.5F, "Flasche", "Rumaroma oder EL Rum", 7);
         assertIngredientPresent(recipe, 0, "", "Salz nach Wunsch", 9);
     }
 

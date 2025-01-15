@@ -74,13 +74,12 @@ private static float vulgarFractionToFloat(String vulgarFraction) {
     }
 }
 
-// Extracts the unit from a string dynamically without a predefined list of units
 public static String extractUnit(String text) {
-    var pattern = Pattern.compile("(?=(?:\\d\\.*\\d*\\s*)+|(?:\\p{No})+|(?:\\d*\\/\\d*)+)(?:\\d\\.*\\d*\\s*)*(?:\\p{No})*(?:\\d*\\/\\d*)*\\s*(\\w*)");
+    var pattern = Pattern.compile("(?=(?:\\d\\.*\\d*\\s*)+|(?:\\p{No})+|(?:\\d*\\/\\d*)+)(?:\\d\\.*\\d*\\s*)*(?:\\p{No})*(?:\\d*\\/\\d*)*\\s*([\\w.()]*)");
     var matcher = pattern.matcher(text);
 
     if (matcher.find()) {
-        var unit = matcher.group().trim();
+        var unit = matcher.group(1).trim();
         if (IngredientUnitHelper.isKnownUnit(unit)) {
             return unit;
         } else {
@@ -117,7 +116,7 @@ public static void main(String[] args) {
     }
 }
 
-private static final String additionalInfoPattern = "\\s(\\(.*\\))";
+private static final String additionalInfoPattern = "\\s(\\(.*\\))|\\,(.*)";
 
 public static String extractName(String ingredient) {
     // examples
@@ -127,7 +126,6 @@ public static String extractName(String ingredient) {
     // specifier ingredient
     // specifier ingredient (details)
     // Ingredient(s)
-    // TODO Auto-generated method stub
     var unit = extractUnit(ingredient);
     var text = ingredient.replace(unit, "");
     // Remove amount
