@@ -1,5 +1,15 @@
 package com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers;
 
+import java.io.IOException;
+import java.text.Normalizer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.google.gson.JsonSyntaxException;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
@@ -12,17 +22,9 @@ import com.sterul.opencookbookapiserver.services.recipeimport.AbstractRecipeImpo
 import com.sterul.opencookbookapiserver.services.recipeimport.ImportNotSupportedException;
 import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImportFailedException;
 import com.sterul.opencookbookapiserver.util.IngredientUnitHelper;
+
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.io.IOException;
-import java.text.Normalizer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 @Component
 @Slf4j
@@ -83,6 +85,7 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
                 .servings(servings)
                 .preparationTime(prepTime)
                 .totalTime(totalTime)
+                .recipeSource(url)
                 .build();
 
         extractImage(owner, scrapedRecipe, importRecipe);
@@ -94,42 +97,17 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
 
     private void extractIngredients(ScrapedRecipe scrapedRecipe, Recipe importRecipe, CookpalUser owner) {
         var needs = scrapedRecipe.ingredients.stream().map(ingredient -> {
-            var parts = ingredient.split(" ");
-            var textStartIndex = 0;
-
-            Float amount;
-            try {
-                amount = Float.parseFloat(parts[textStartIndex]);
-                textStartIndex++;
-            } catch (NumberFormatException e) {
-                // Amount could be represented as a "vulgar fraction". Split this unicode symbol
-                // into 3 parts: counter, dash, divider
-                var normalizedAmount = Normalizer.normalize(parts[textStartIndex], Normalizer.Form.NFKD);
-                if (normalizedAmount.contains("\u2044")) {
-                    // 2044 = unicode dash
-                    var fractionParts = normalizedAmount.split("\u2044");
-                    amount = (float) Integer.parseInt(fractionParts[0]) / Integer.parseInt(fractionParts[1]);
-                    textStartIndex++;
-                } else {
-                    amount = 0F;
-                }
-            }
-
-            var unit = parts[textStartIndex];
-            if (unitHelper.isUnit(unit)) {
-                textStartIndex++;
-            } else {
-                unit = "";
-            }
-
-            var ingredientText = String.join(" ", Arrays.copyOfRange(parts, textStartIndex, parts.length));
+            var unit = IngredientExtractor.extractUnit(ingredient);
+            var amount = IngredientExtractor.extractAmount(ingredient);
+            var name = IngredientExtractor.extractName(ingredient);
+            var additionalInfo = IngredientExtractor.extractAdditionalInfo(ingredient);
 
             Ingredient newIngredient;
             try {
-                newIngredient = ingredientService.findUserIngredientBySimilarName(ingredientText, owner);
+                newIngredient = ingredientService.findUserIngredientBySimilarName(name, owner);
             } catch (ElementNotFound e) {
                 newIngredient = Ingredient.builder()
-                        .name(ingredientText)
+                        .name(name)
                         .build();
             }
             return IngredientNeed.builder()
