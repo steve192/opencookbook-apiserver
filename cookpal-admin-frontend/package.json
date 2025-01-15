@@ -36,6 +36,6 @@
     "eslint-config-google": "^0.14.0",
     "eslint-plugin-react": "^7.28.0",
     "typescript": "^5.2.2",
-    "vite": "^5.4.3"
+    "vite": "^5.4.11"
   }
 }
