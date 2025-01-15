@@ -64,6 +64,8 @@ public class Recipe extends AuditableEntity {
     private Long preparationTime;
     private Long totalTime;
 
+    private String recipeSource;
+
     @Enumerated
     @org.springframework.data.relational.core.mapping.Embedded.Nullable
     private RecipeType recipeType;

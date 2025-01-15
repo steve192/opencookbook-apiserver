@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class IngredientUnitHelper {
-    private List<String> units = Arrays.asList(
+    private static List<String> units = Arrays.asList(
             "Becher",
             "Beet/e",
             "Beutel",
@@ -131,6 +131,10 @@ public class IngredientUnitHelper {
             "Zweig/e");
 
     public boolean isUnit(String string) {
+        return units.contains(string);
+    }
+
+    public static boolean isKnownUnit(String string) {
         return units.contains(string);
     }
 
