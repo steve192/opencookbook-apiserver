@@ -36,6 +36,7 @@ public class IngredientService {
                 .addElement(new Element.Builder<String>()
                         .setValue(ingredient.getName())
                         .setType(NAME)
+                        .setThreshold(0.4F)
                         .createElement())
                 .createDocument()).collect(Collectors.toList());
 
@@ -43,6 +44,7 @@ public class IngredientService {
                 .addElement(new Element.Builder<String>()
                         .setValue(name)
                         .setType(NAME)
+                        .setThreshold(0.4F)
                         .createElement())
                 .createDocument());
 
@@ -58,6 +60,8 @@ public class IngredientService {
         }
 
         var bestMatchedIngredientId = Float.parseFloat(matchesForNamedIngredient.get(0).getMatchedWith().getKey());
+        log.info("Trying to match new ingredient {} with existing. Found {}, score {}", name, bestMatchedIngredientId,
+                matchesForNamedIngredient.get(0).getScore());
 
         var bestMatchedIngredient = ingredients.stream()
                 .filter(ingredient -> ingredient.getId() == bestMatchedIngredientId)

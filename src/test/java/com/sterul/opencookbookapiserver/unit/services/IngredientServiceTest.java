@@ -59,18 +59,31 @@ class IngredientServiceTest {
 
     @Test
     void ingredientIsFuzzyFound() {
+        assertFuzzySeachMatchesIngredient("Apfel", "Äpfel", true);
         assertFuzzySeachMatchesIngredient("Bratwürste", "Bratwürstchen", true);
         assertFuzzySeachMatchesIngredient("Lauchzwiebel(n)", "Lauchzwiebel", true);
         assertFuzzySeachMatchesIngredient("Salz und Pfeffer", "Salz & Pfeffer", true);
         assertFuzzySeachMatchesIngredient("Salz", "Salz*", true);
+        // assertFuzzySeachMatchesIngredient("Feta", "Fetakäse", true);
+        // assertFuzzySeachMatchesIngredient("Feta", "Feta-Käse", true);
+        assertFuzzySeachMatchesIngredient("Frühlingszwiebel", "Frühlingszwiebel(n)", true);
+        assertFuzzySeachMatchesIngredient("Hähnchenbrust", "Hähnchenbrustfilet", true);
+        assertFuzzySeachMatchesIngredient("Hähnchenbrustfilet(s)", "Hähnchenbrustfilet", true);
+        assertFuzzySeachMatchesIngredient("Hähnchenbrust", "Hähnchenbrüste", true);
 
     }
+     // Feta, Feta-Käse, Hirtenkäse
+        // Peffer, frisch gemahlener Pfeffer,
+        // Apfel, Äpfel
+        // Frühlingszwiebel, Frühlingszwiebel(n)
+        // Hähnchenbrust, Hänschenbrustfilet, Hähnchenbrustfilet(s), Hühnerbrüste
 
     @Test
     void differentIngredientsAreNotFuzzyFound() {
         assertFuzzySeachMatchesIngredient("Brötchen", "Brokkoli", false);
         assertFuzzySeachMatchesIngredient("Lachs (Sashimi-Qualität)", "Lachs", false);
         assertFuzzySeachMatchesIngredient("Paprikapulver , scharf", "Paprikapulver", false);
+        assertFuzzySeachMatchesIngredient("Guakernmehl", "Gyros-Gewürz", false);
     }
 
     private void assertFuzzySeachMatchesIngredient(String s, String s1, boolean shouldMatch) {

@@ -119,4 +119,17 @@ public class IngredientExtractor {
         }
         return "";
     }
+
+    // public static float similariry(String name1, String name2) {
+
+        // Feta, Feta-Käse, Hirtenkäse
+        // Peffer, frisch gemahlener Pfeffer,
+        // Apfel, Äpfel
+        // Frühlingszwiebel, Frühlingszwiebel(n)
+        // Hähnchenbrust, Hänschenbrustfilet, Hähnchenbrustfilet(s), Hühnerbrüste
+
+        // Anti examples
+        // Hefe, Hefeflocken
+
+    // }
 }
