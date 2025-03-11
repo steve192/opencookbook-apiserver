@@ -61,7 +61,7 @@ class RecipeAPIIntegrationTest extends IntegrationTest {
         testUser = userRepository.findByEmailAddress("test@test.com");
         if (testUser == null) {
             testUser = new CookpalUser();
-            testUser.setUserId(1L);
+            testUser.setUserId(null);
             testUser.setEmailAddress("test@test.com");
             userRepository.save(testUser);
         }
