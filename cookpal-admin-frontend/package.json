@@ -16,7 +16,7 @@
     "@mui/icons-material": "^5.15.13",
     "@mui/material": "^5.15.13",
     "@mui/x-data-grid": "^6.19.6",
-    "axios": "^1.7.4",
+    "axios": "^1.8.2",
     "buffer": "^6.0.3",
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.4",
