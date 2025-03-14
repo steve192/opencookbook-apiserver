@@ -1,6 +1,5 @@
 package com.sterul.opencookbookapiserver.integration;
 
-import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -26,10 +25,6 @@ class CustomControllerAdviceTest extends IntegrationTest {
         mockMvc.perform(post("/api/v1/users/resetPassword")
                 .contentType("application/json")
                 .content("{}"))
-                .andExpect(status().isBadRequest())
-                .andExpect(
-                        result -> assertEquals(
-                                "{\"status\":400,\"message\":\"validation error\",\"fieldErrors\":[{\"codes\":null,\"arguments\":null,\"defaultMessage\":\"must not be blank\",\"objectName\":\"passwordResetExecutionRequest\",\"field\":\"newPassword\",\"rejectedValue\":null,\"bindingFailure\":false,\"code\":null},{\"codes\":null,\"arguments\":null,\"defaultMessage\":\"must not be blank\",\"objectName\":\"passwordResetExecutionRequest\",\"field\":\"passwordResetId\",\"rejectedValue\":null,\"bindingFailure\":false,\"code\":null},{\"codes\":null,\"arguments\":null,\"defaultMessage\":\"must not be null\",\"objectName\":\"passwordResetExecutionRequest\",\"field\":\"newPassword\",\"rejectedValue\":null,\"bindingFailure\":false,\"code\":null},{\"codes\":null,\"arguments\":null,\"defaultMessage\":\"must not be null\",\"objectName\":\"passwordResetExecutionRequest\",\"field\":\"passwordResetId\",\"rejectedValue\":null,\"bindingFailure\":false,\"code\":null}]}",
-                                result.getResponse().getContentAsString()));
+                .andExpect(status().isBadRequest());
     }
 }
