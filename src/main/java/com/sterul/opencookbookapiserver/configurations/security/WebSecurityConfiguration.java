@@ -61,12 +61,6 @@ public class WebSecurityConfiguration {
         @Autowired
         private PasswordEncoder passwordEncoder;
 
-        @Autowired
-        public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-                // Configure service to check if credentials are valid
-                auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
-        }
-
         private RequestMatcher allowedPathRequestMatcher() {
                 return (HttpServletRequest request) -> AUTH_WHITELIST.stream()
                                 .anyMatch(whitelistedUrl -> new AntPathRequestMatcher(whitelistedUrl).matches(request));
