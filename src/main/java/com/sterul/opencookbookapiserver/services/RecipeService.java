@@ -118,6 +118,7 @@ public class RecipeService {
             log.info("Recipe exists and belongs to {}", existingRecipe.getOwner());
             recipeUpdate.setId(existingRecipe.getId());
             recipeUpdate.setOwner(existingRecipe.getOwner());
+            recipeUpdate.setRecipeSource(existingRecipe.getRecipeSource());
 
             createMissingIngredients(recipeUpdate, existingRecipe.getOwner());
             createMissingRecipeGroup(recipeUpdate);
