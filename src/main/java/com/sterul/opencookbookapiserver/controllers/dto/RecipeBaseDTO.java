@@ -34,4 +34,6 @@ public abstract class RecipeBaseDTO {
     private Long totalTime;
 
     private RecipeType recipeType;
+
+    private String recipeSource;
 }

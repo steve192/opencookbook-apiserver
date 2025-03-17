@@ -3,8 +3,6 @@ package com.sterul.opencookbookapiserver.controllers;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import jakarta.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +28,7 @@ import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImportFailed
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/recipes")
@@ -123,6 +122,7 @@ public class RecipeController extends BaseController {
                 .preparationTime(recipe.getPreparationTime())
                 .totalTime(recipe.getTotalTime())
                 .recipeType(recipe.getRecipeType())
+                .recipeSource(recipe.getRecipeSource())
                 .build();
     }
 
