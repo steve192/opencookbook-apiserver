@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.sterul.opencookbookapiserver.cronjobs.BringExportDeletionJob;
 import com.sterul.opencookbookapiserver.entities.BringExport;
@@ -24,8 +23,7 @@ import com.sterul.opencookbookapiserver.integration.IntegrationTest;
 import com.sterul.opencookbookapiserver.repositories.BringExportRepository;
 
 @SpringBootTest
-@ActiveProfiles("test")
-@Testcontainers
+@ActiveProfiles("integration-test")
 class BringExportDeletionJobTest extends IntegrationTest {
 
     @MockBean

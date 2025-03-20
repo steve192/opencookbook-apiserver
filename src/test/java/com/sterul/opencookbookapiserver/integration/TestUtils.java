@@ -10,6 +10,10 @@ import com.sterul.opencookbookapiserver.repositories.UserRepository;
 
 public final class TestUtils {
 
+    public static CookpalUser getTestUser(UserRepository userRepository) {
+        return userRepository.findByEmailAddress("test@test.com");
+    }
+
     public static void whenAuthenticated(UserRepository userRepository) {
         // Mock currently logged in user
         Authentication authentication = Mockito.mock(Authentication.class);

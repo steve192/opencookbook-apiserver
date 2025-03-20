@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,11 @@ class IngredientServiceTest {
     private IngredientRepository ingredientRepository;
     @Mock
     private Ingredient mockIngredient;
+
+    @BeforeEach
+    void setup() {
+        when(mockIngredient.isPublicIngredient()).thenReturn(false);
+    }
 
     @Test
     void ingredientIsCreated() {
