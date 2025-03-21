@@ -15,6 +15,7 @@ import com.intuit.fuzzymatcher.domain.Document;
 import com.intuit.fuzzymatcher.domain.Element;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
+import com.sterul.opencookbookapiserver.repositories.ActivationLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
@@ -25,9 +26,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class IngredientService {
 
+    private final ActivationLinkRepository activationLinkRepository;
+
     public static final String NEW_INDREGIENT_KEY = "newIngredient";
     @Autowired
     private IngredientRepository ingredientRepository;
+
+    IngredientService(ActivationLinkRepository activationLinkRepository) {
+        this.activationLinkRepository = activationLinkRepository;
+    }
 
     public Ingredient findUserIngredientBySimilarName(String name, CookpalUser user) throws ElementNotFound {
         var ingredients = getUserPermittedIngredients(user);
@@ -66,7 +73,33 @@ public class IngredientService {
         if (bestMatchedIngredient.isEmpty()) {
             throw new ElementNotFound();
         }
-        return bestMatchedIngredient.get();
+        return populateNutrients(bestMatchedIngredient.get());
+    }
+
+    private Ingredient populateNutrients(Ingredient ingredient) {
+        if (ingredient == null || ingredient.isPublicIngredient()) {
+            return ingredient;
+        }
+        var aliasedIngredient = ingredient.getAliasFor();
+        if (aliasedIngredient == null) {
+            return ingredient;
+        }
+
+        ingredient.setNutrientsEnergy(aliasedIngredient.getNutrientsEnergy());
+        ingredient.setNutrientsCarbohydrates(aliasedIngredient.getNutrientsCarbohydrates());
+        ingredient.setNutrientsFat(aliasedIngredient.getNutrientsFat());
+        ingredient.setNutrientsProtein(aliasedIngredient.getNutrientsProtein());
+        ingredient.setNutrientsSalt(aliasedIngredient.getNutrientsSalt());
+        ingredient.setNutrientsSaturatedFat(aliasedIngredient.getNutrientsSaturatedFat());
+        ingredient.setNutrientsSugar(aliasedIngredient.getNutrientsSugar());
+
+        return ingredient;
+    }
+
+    public Ingredient createPublicIngredient(Ingredient ingredient) {
+        ingredient.setId(null);
+        ingredient.setPublicIngredient(true);
+        return ingredientRepository.save(ingredient);
     }
 
     public Ingredient createOrGetIngredient(Ingredient ingredient, CookpalUser user) {
@@ -85,7 +118,7 @@ public class IngredientService {
                 user);
 
         if (ownIngredient != null) {
-            return ownIngredient;
+            return populateNutrients(ownIngredient);
         }
         log.info("Ingredient {} created for user", ingredient.getName(), user.getUserId());
 
@@ -94,7 +127,9 @@ public class IngredientService {
         ingredient.setPublicIngredient(false);
         ingredient.setOwner(user);
 
-        return ingredientRepository.save(ingredient);
+        // TODO: Find and link aliasFor public ingredient
+
+        return populateNutrients(ingredientRepository.save(ingredient));
     }
 
     public boolean hasPermissionForIngredient(Long id, CookpalUser user) throws ElementNotFound {
@@ -111,7 +146,7 @@ public class IngredientService {
         if (optional.isEmpty()) {
             throw new ElementNotFound();
         }
-        return optional.get();
+        return populateNutrients(optional.get());
     }
 
     public List<Ingredient> getUserPermittedIngredients(CookpalUser user) {
@@ -121,14 +156,15 @@ public class IngredientService {
                 user);
         var publicIngredients = ingredientRepository.findAllByIsPublicIngredient(true);
 
-        return Stream.concat(publicIngredients.stream(), ownIngredients.stream()).toList();
+        return Stream.concat(publicIngredients.stream(), ownIngredients.stream().map(this::populateNutrients)).toList();
     }
 
     public List<Ingredient> getAllIngredients() {
-        return ingredientRepository.findAll();
+        return ingredientRepository.findAll().stream().map(this::populateNutrients).toList();
     }
 
     public void deleteAllIngredientsOfUser(CookpalUser user) {
+        // TODO: Check is aliased ingredients are not deleted
         log.info("Deleting all ingredients of user {}", user.getUserId());
         ingredientRepository.deleteAllByOwner(user);
     }

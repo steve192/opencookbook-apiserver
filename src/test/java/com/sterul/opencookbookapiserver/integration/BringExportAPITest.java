@@ -15,7 +15,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.sterul.opencookbookapiserver.controllers.BringExportController;
 import com.sterul.opencookbookapiserver.controllers.BringExportController.ExportCreationRequest;
@@ -29,7 +28,6 @@ import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 @SpringBootTest
 @ActiveProfiles("integration-test")
-@Testcontainers
 class BringExportAPITest extends IntegrationTest {
         @Autowired
         private BringExportController cut;
