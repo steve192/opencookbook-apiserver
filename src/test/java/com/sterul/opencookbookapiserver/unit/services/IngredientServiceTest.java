@@ -8,7 +8,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,12 +36,29 @@ class IngredientServiceTest {
     @Mock
     private Ingredient mockIngredient;
 
+    @BeforeEach
+    void setup() {
+        when(mockIngredient.isPublicIngredient()).thenReturn(false);
+    }
+
     @Test
     void ingredientIsCreated() {
         when(ingredientRepository.findByNameAndIsPublicIngredientAndOwner(any(), eq(false), eq(testUser))).thenReturn(null);
         when(ingredientRepository.findByNameAndIsPublicIngredient(any(), eq(true))).thenReturn(null);
+        // TODO: Check if this in ok
+        when(ingredientRepository.findAllByIsPublicIngredient(eq(true))).thenReturn(List.of());
         cut.createOrGetIngredient(mockIngredient, testUser);
         verify(ingredientRepository, times(1)).save(mockIngredient);
+    }
+
+    @Test
+    void newIngredientIsLinkedToSimilarPublicIngredient() {
+        fail();
+    }
+    
+    @Test
+    void newIngredientIsNotLinkedToUnsimilarPublicIngredient() {
+        fail();
     }
 
     @Test
