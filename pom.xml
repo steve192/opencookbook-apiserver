@@ -21,7 +21,7 @@
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
 
         <!-- JaCoCo Properties -->
-        <jacoco.version>0.8.12</jacoco.version>
+        <jacoco.version>0.8.13</jacoco.version>
         <sonar.language>java</sonar.language>
     </properties>
 
@@ -37,7 +37,7 @@
         <dependency>
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.8.12</version>
+            <version>0.8.13</version>
         </dependency>
 
         <dependency>
