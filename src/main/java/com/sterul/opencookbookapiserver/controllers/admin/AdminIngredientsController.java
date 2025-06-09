@@ -37,7 +37,7 @@ public class AdminIngredientsController {
     @PreAuthorize("hasAuthority('ADMIN')")
     public List<Ingredient> getAll(@RequestParam(required = false) Boolean publicOnly) {
         log.info("Admin: Accessing all ingredients");
-        if (publicOnly.booleanValue()) {
+        if (publicOnly != null && publicOnly.booleanValue()) {
             return ingredientService.getPublicIngredients();
         }
         return ingredientService.getAllIngredients();
