@@ -62,6 +62,11 @@ export const IngredientsScreen = () => {
     setIsDialogOpen(true);
   };
 
+  const updateJson = async (newJson: string) => {
+    setJsonInput(newJson);
+    setFormInput(JSON.parse(newJson)); // Update form input with parsed JSON
+  };
+
   const handleSaveIngredient = async () => {
     if (editingIngredient) {
       const updatedIngredient = await RestAPI.updateIngredient(formInput); // Update the ingredient
@@ -206,7 +211,7 @@ Potato
                 rows={6}
                 fullWidth
                 value={jsonInput}
-                onChange={(e) => setJsonInput(e.target.value)}
+                onChange={(e) => updateJson(e.target.value)}
               />
               <Accordion>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
