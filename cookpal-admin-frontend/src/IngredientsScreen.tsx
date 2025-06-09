@@ -3,6 +3,8 @@ import {useEffect, useState} from 'react';
 import RestAPI, {Ingredient} from './RestAPI';
 import {Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Switch, FormControlLabel, Accordion, AccordionSummary, AccordionDetails} from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 interface IngredientAlternativeName {
   id: number;
@@ -38,6 +40,8 @@ export const IngredientsScreen = () => {
     nutrientsSalt: null,
   });
   const [editingIngredient, setEditingIngredient] = useState<Ingredient | null>(null); // Track the ingredient being edited
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [ingredientToDelete, setIngredientToDelete] = useState<Ingredient | null>(null);
 
   useEffect(() => {
     RestAPI.getAllIngredients().then((ingredients) => {
@@ -64,6 +68,21 @@ export const IngredientsScreen = () => {
     setEditingIngredient(ingredient);
     setFormInput(ingredient); // Populate the form with the ingredient's data
     setIsDialogOpen(true);
+  };
+
+  const handleOpenConfirmDialog = (ingredient: Ingredient) => {
+    setIngredientToDelete(ingredient);
+    setIsConfirmDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (ingredientToDelete) {
+      await RestAPI.deleteIngredient(ingredientToDelete.id); // Call the API to delete the ingredient
+      setIngredients((prev) => prev?.filter((ing) => ing.id !== ingredientToDelete.id)); // Remove from ingredients state
+      setFilteredIngredients((prev) => prev?.filter((ing) => ing.id !== ingredientToDelete.id)); // Remove from filtered ingredients state
+      setIngredientToDelete(null);
+      setIsConfirmDialogOpen(false);
+    }
   };
 
   const updateJson = async (newJson: string) => {
@@ -181,13 +200,23 @@ Potato
             headerName: 'Actions',
             width: 150,
             renderCell: (params) =>
-              params.row.publicIngredient ? ( // Only display the button if the ingredient is public
-                <Button
-                  variant="outlined"
-                  onClick={() => handleEditIngredient(params.row)}
-                >
-                  Edit
-                </Button>
+              params.row.publicIngredient ? ( // Only display the buttons if the ingredient is public
+                <>
+                  <Button
+                    variant="outlined"
+                    onClick={() => handleEditIngredient(params.row)}
+                    style={{marginRight: '0.5rem'}}
+                  >
+                    <EditIcon />
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    onClick={() => handleOpenConfirmDialog(params.row)}
+                  >
+                    <DeleteIcon />
+                  </Button>
+                </>
               ) : null,
           },
         ]}
@@ -358,6 +387,19 @@ Potato
           <Button onClick={() => setIsDialogOpen(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleSaveIngredient}>
             {editingIngredient ? 'Save' : 'Add'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={isConfirmDialogOpen} onClose={() => setIsConfirmDialogOpen(false)}>
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          Are you sure you want to delete the ingredient &quot;{ingredientToDelete?.name}&quot;?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setIsConfirmDialogOpen(false)}>Cancel</Button>
+          <Button variant="contained" color="error" onClick={handleConfirmDelete}>
+            Delete
           </Button>
         </DialogActions>
       </Dialog>

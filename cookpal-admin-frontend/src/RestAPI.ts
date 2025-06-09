@@ -73,6 +73,10 @@ export interface BringExport {
 }
 
 class RestAPI {
+  static async deleteIngredient(id: number) {
+    const response = await this.delete('/admin/ingredients/' + id);
+    return response?.data;
+  }
   static async updateIngredient(ingredient: Partial<Ingredient>) {
     const response = await this.put('/admin/ingredients/' + ingredient.id, ingredient);
     return response?.data;
