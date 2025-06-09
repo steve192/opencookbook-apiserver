@@ -1,4 +1,8 @@
-package com.sterul.opencookbookapiserver.controllers.responses;
+package com.sterul.opencookbookapiserver.controllers.admin.requests;
+
+import java.util.List;
+
+import com.sterul.opencookbookapiserver.entities.IngredientAlternativeNames;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,11 +13,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class IngredientResponse {
+public class AdminIngredientRequest {
     private Long id;
     private String name;
-    private String additionalInfo;
-
+    private List<IngredientAlternativeNames> alternativeNames;
     private Float nutrientsEnergy;
     private Float nutrientsFat;
     private Float nutrientsSaturatedFat;
@@ -21,4 +24,5 @@ public class IngredientResponse {
     private Float nutrientsSugar;
     private Float nutrientsProtein;
     private Float nutrientsSalt;
+
 }

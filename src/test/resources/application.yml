@@ -3,11 +3,6 @@ spring:
     activate:
       on-profile: [integration-test]
 
-  datasource:
-    url: jdbc:tc:postgresql:postgres:16-alpine:///cookpal
-    username: user
-    password: password
-  datasource.driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
   jpa.hibernate.ddl-auto: create
   flyway:
     enabled: false

@@ -9,6 +9,8 @@ const StyledContainer = styled(Container)({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
+  justifyContent: 'center', // Added to center vertically
+  height: '100vh', // Added to ensure full viewport height
 });
 
 const StyledForm = styled('form')({
