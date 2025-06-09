@@ -57,6 +57,10 @@ export const IngredientsScreen = () => {
   }, [searchQuery, ingredients]); // Update filtered ingredients when search query changes
 
   const handleEditIngredient = (ingredient: Ingredient) => {
+    if (!ingredient.publicIngredient) {
+      alert('Only public ingredients can be edited.');
+      return;
+    }
     setEditingIngredient(ingredient);
     setFormInput(ingredient); // Populate the form with the ingredient's data
     setIsDialogOpen(true);
@@ -167,17 +171,24 @@ Potato
           {field: 'nutrientsProtein', headerName: 'Protein (g)', width: 150},
           {field: 'nutrientsSalt', headerName: 'Salt (g)', width: 150},
           {
+            field: 'publicIngredient',
+            headerName: 'Public',
+            width: 100,
+            renderCell: (params) => (params.value ? 'Yes' : 'No'), // Display 'Yes' or 'No' based on the boolean value
+          },
+          {
             field: 'actions',
             headerName: 'Actions',
             width: 150,
-            renderCell: (params) => (
-              <Button
-                variant="outlined"
-                onClick={() => handleEditIngredient(params.row)}
-              >
-                Edit
-              </Button>
-            ),
+            renderCell: (params) =>
+              params.row.publicIngredient ? ( // Only display the button if the ingredient is public
+                <Button
+                  variant="outlined"
+                  onClick={() => handleEditIngredient(params.row)}
+                >
+                  Edit
+                </Button>
+              ) : null,
           },
         ]}
         components={{
