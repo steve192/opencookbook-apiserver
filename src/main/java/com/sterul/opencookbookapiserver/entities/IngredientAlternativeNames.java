@@ -1,5 +1,7 @@
 package com.sterul.opencookbookapiserver.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -16,18 +18,17 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class IngredientAlternativeNames extends AuditableEntity{
+public class IngredientAlternativeNames extends AuditableEntity {
     @Id
     @SequenceGenerator(name = "ingredient_alternativenames_seq", sequenceName = "ingredient_alternativenames_seq", allocationSize = 1)
     @GeneratedValue(generator = "ingredient_alternativenames_seq")
     private Long id;
 
-    @Id
     @ManyToOne
-    @JoinColumn(name = "ingredient_id", nullable = false)
+    @JoinColumn(name = "ingredient_id", nullable = false, updatable = false)
+    @JsonIgnore
     private Ingredient ingredient;
 
-    @Id
     private String languageIsoCode;
 
     private String alternativeName;

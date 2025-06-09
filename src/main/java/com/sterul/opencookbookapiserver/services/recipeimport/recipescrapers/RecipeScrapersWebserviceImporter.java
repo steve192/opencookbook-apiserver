@@ -1,7 +1,6 @@
 package com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers;
 
 import java.io.IOException;
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +16,6 @@ import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
 import com.sterul.opencookbookapiserver.services.IngredientService;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.recipeimport.AbstractRecipeImporter;
 import com.sterul.opencookbookapiserver.services.recipeimport.ImportNotSupportedException;
 import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImportFailedException;
@@ -41,7 +39,8 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
     private IngredientService ingredientService;
 
     @Override
-    public Recipe importRecipe(String url, CookpalUser owner) throws RecipeImportFailedException, ImportNotSupportedException {
+    public Recipe importRecipe(String url, CookpalUser owner)
+            throws RecipeImportFailedException, ImportNotSupportedException {
         log.info("Importing recipe " + url);
         ScrapedRecipe scrapedRecipe;
         try {
@@ -102,14 +101,10 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
             var name = IngredientExtractor.extractName(ingredient);
             var additionalInfo = IngredientExtractor.extractAdditionalInfo(ingredient);
 
-            Ingredient newIngredient;
-            try {
-                newIngredient = ingredientService.findUserIngredientBySimilarName(name, owner);
-            } catch (ElementNotFound e) {
-                newIngredient = Ingredient.builder()
-                        .name(name)
-                        .build();
-            }
+            var newIngredient = Ingredient.builder()
+                    .name(name)
+                    .additionalInfo(additionalInfo)
+                    .build();
             return IngredientNeed.builder()
                     .amount(amount)
                     .unit(unit)

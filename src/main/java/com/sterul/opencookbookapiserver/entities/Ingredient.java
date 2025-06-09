@@ -1,5 +1,6 @@
 package com.sterul.opencookbookapiserver.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
@@ -8,7 +9,6 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
@@ -30,12 +30,14 @@ public class Ingredient extends AuditableEntity {
 
     private String name;
 
+    private String additionalInfo;
+
     @ManyToOne
     private CookpalUser owner;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "ingredient_id") 
-    private List<IngredientAlternativeNames> alternativeNames;
+    @OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<IngredientAlternativeNames> alternativeNames = new ArrayList<>();
 
     private boolean isPublicIngredient;
 

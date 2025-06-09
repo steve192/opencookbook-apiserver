@@ -2,6 +2,8 @@ package com.sterul.opencookbookapiserver.controllers.admin.requests;
 
 import java.util.List;
 
+import com.sterul.opencookbookapiserver.entities.IngredientAlternativeNames;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class AdminIngredientRequest {
     private Long id;
     private String name;
-    private List<AlternativeName> alternativeNames;
+    private List<IngredientAlternativeNames> alternativeNames;
     private Float nutrientsEnergy;
     private Float nutrientsFat;
     private Float nutrientsSaturatedFat;
@@ -23,6 +25,4 @@ public class AdminIngredientRequest {
     private Float nutrientsProtein;
     private Float nutrientsSalt;
 
-    private record AlternativeName(String languageIsoCode, String alternativeName) {
-    }
 }

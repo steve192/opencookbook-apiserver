@@ -9,6 +9,7 @@ import {UsersScreen} from './UsersScreen';
 import {BringExportScreen} from './BringExportScreen';
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {IngredientsScreen} from './IngredientsScreen';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -27,6 +28,7 @@ function App() {
       },
       {
         path: 'ingredients',
+        element: <IngredientsScreen/>,
       },
       {
         path: 'bringexports',

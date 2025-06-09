@@ -11,7 +11,7 @@
     last_change timestamp(6) with time zone,
     alternative_name character varying(255) COLLATE pg_catalog."default",
     language_iso_code character varying(255) COLLATE pg_catalog."default" NOT NULL,
-    CONSTRAINT ingredient_alternative_names_pkey PRIMARY KEY (id, ingredient_id, language_iso_code),
+    CONSTRAINT ingredient_alternative_names_pkey PRIMARY KEY (id),
     CONSTRAINT fkamtnn0066o2q08mmyh5we82we FOREIGN KEY (ingredient_id)
         REFERENCES public.ingredient (id) MATCH SIMPLE
         ON UPDATE NO ACTION
@@ -44,6 +44,10 @@ ALTER TABLE IF EXISTS public.ingredient
 
 ALTER TABLE IF EXISTS public.ingredient
     ADD COLUMN nutrients_sugar real;
+
+ALTER TABLE IF EXISTS public.ingredient
+    ADD COLUMN additional_info character varying(255) COLLATE pg_catalog."default";
+    
 
 ALTER TABLE IF EXISTS public.ingredient
     ADD CONSTRAINT fkpksl6g80n423tap734mprav1v FOREIGN KEY (alias_for_id)

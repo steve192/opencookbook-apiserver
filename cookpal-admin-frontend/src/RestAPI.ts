@@ -43,14 +43,26 @@ export interface IngredientNeed {
   unit: string;
   ingredient: Ingredient
 }
-
+export interface IngredientAlternativeNames {
+  id: number;
+  languageIsoCode: string;
+  alternativeName: string;
+}
 export interface Ingredient {
   createdOn: string;
   lastChange: string;
   id: number;
   name: string;
+  alternativeNames: Partial<IngredientAlternativeNames>[];
   owner: User;
   publicIngredient: boolean;
+  nutrientsEnergy: number | null;
+  nutrientsFat: number | null;
+  nutrientsSaturatedFat: number | null;
+  nutrientsCarbohydrates: number | null;
+  nutrientsSugar: number | null;
+  nutrientsProtein: number | null;
+  nutrientsSalt: number | null;
 }
 
 export interface BringExport {
@@ -61,6 +73,14 @@ export interface BringExport {
 }
 
 class RestAPI {
+  static async updateIngredient(ingredient: Partial<Ingredient>) {
+    const response = await this.put('/admin/ingredients/' + ingredient.id, ingredient);
+    return response?.data;
+  }
+  static async addIngredient(ingredient: Partial<Ingredient>) {
+    const response = await this.post('/admin/ingredients', ingredient);
+    return response?.data;
+  }
   static async setUserRoles(userId: string, roles: string[]) {
     const response = await this.post('/admin/users/' + userId + '/roles', roles);
     return response?.data;
@@ -96,6 +116,11 @@ class RestAPI {
 
   static async getAvailableImportHosts(): Promise<string[]> {
     const response = await this.get('/recipes/import/available-hosts');
+    return response?.data;
+  }
+
+  static async getAllIngredients(): Promise<Ingredient[]> {
+    const response = await this.get('/admin/ingredients');
     return response?.data;
   }
 

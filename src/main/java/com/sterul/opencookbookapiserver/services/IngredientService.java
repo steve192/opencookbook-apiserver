@@ -24,13 +24,12 @@ public class IngredientService {
     @Autowired
     private IngredientMatcher ingredientMatcher;
 
-
     public Ingredient findUserIngredientBySimilarName(String name, CookpalUser user) throws ElementNotFound {
         var ingredients = getUserPermittedIngredients(user);
         return populateNutrients(ingredientMatcher.findIngredientbySimilarName(ingredients, name));
     }
 
-    private Ingredient findPublicIngredientBySimilarName(String name) throws ElementNotFound {
+    public Ingredient findPublicIngredientBySimilarName(String name) throws ElementNotFound {
         var ingredients = getPublicIngredients();
         return populateNutrients(ingredientMatcher.findIngredientbySimilarName(ingredients, name));
     }
@@ -59,6 +58,8 @@ public class IngredientService {
     public Ingredient createPublicIngredient(Ingredient ingredient) {
         ingredient.setId(null);
         ingredient.setPublicIngredient(true);
+        ingredient.setAliasFor(null);
+        ingredient.getAlternativeNames().forEach(name -> name.setIngredient(ingredient));
         return ingredientRepository.save(ingredient);
     }
 
@@ -95,6 +96,8 @@ public class IngredientService {
         } catch (ElementNotFound e) {
             // No public ingredient found
         }
+
+        ingredient.getAlternativeNames().forEach(name -> name.setIngredient(ingredient));
 
         return populateNutrients(ingredientRepository.save(ingredient));
     }
@@ -151,6 +154,7 @@ public class IngredientService {
         newIngredient.setId(existingIngredient.getId());
         newIngredient.setOwner(existingIngredient.getOwner());
         newIngredient.setPublicIngredient(existingIngredient.isPublicIngredient());
+        newIngredient.getAlternativeNames().forEach(name -> name.setIngredient(newIngredient));
         if (existingIngredient.getAliasFor() != null) {
             newIngredient.setAliasFor(existingIngredient.getAliasFor());
         }
