@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,11 +14,9 @@ import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
-import com.sterul.opencookbookapiserver.services.IngredientService;
 import com.sterul.opencookbookapiserver.services.recipeimport.AbstractRecipeImporter;
 import com.sterul.opencookbookapiserver.services.recipeimport.ImportNotSupportedException;
 import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImportFailedException;
-import com.sterul.opencookbookapiserver.util.IngredientUnitHelper;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -29,14 +26,11 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
 
-    @Autowired
-    private RecipeScraperServiceProxy recipeScraperServiceProxy;
+    private final RecipeScraperServiceProxy recipeScraperServiceProxy;
 
-    @Autowired
-    private IngredientUnitHelper unitHelper;
-
-    @Autowired
-    private IngredientService ingredientService;
+    public RecipeScrapersWebserviceImporter(RecipeScraperServiceProxy recipeScraperServiceProxy) {
+        this.recipeScraperServiceProxy = recipeScraperServiceProxy;
+    }
 
     @Override
     public Recipe importRecipe(String url, CookpalUser owner)

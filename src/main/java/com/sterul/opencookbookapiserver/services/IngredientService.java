@@ -3,7 +3,6 @@ package com.sterul.opencookbookapiserver.services;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,11 +17,14 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 @Slf4j
 public class IngredientService {
-    @Autowired
-    private IngredientRepository ingredientRepository;
+    private final IngredientRepository ingredientRepository;
 
-    @Autowired
-    private IngredientMatcher ingredientMatcher;
+    private final IngredientMatcher ingredientMatcher;
+
+    public IngredientService(IngredientRepository ingredientRepository, IngredientMatcher ingredientMatcher) {
+        this.ingredientRepository = ingredientRepository;
+        this.ingredientMatcher = ingredientMatcher;
+    }
 
     public Ingredient findUserIngredientBySimilarName(String name, CookpalUser user) throws ElementNotFound {
         var ingredients = getUserPermittedIngredients(user);
@@ -138,7 +140,6 @@ public class IngredientService {
     }
 
     public void deleteAllIngredientsOfUser(CookpalUser user) {
-        // TODO: Check if aliased ingredients are not deleted
         log.info("Deleting all ingredients of user {}", user.getUserId());
         ingredientRepository.deleteAllByOwner(user);
     }
