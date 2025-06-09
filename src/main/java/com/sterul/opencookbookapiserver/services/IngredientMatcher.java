@@ -23,12 +23,21 @@ public class IngredientMatcher {
             throw new ElementNotFound();
         }
         var documentList = possibleIngredients.stream()
-                .map(ingredient -> new Document.Builder(ingredient.getId().toString())
-                        .addElement(new Element.Builder<String>()
-                                .setValue(ingredient.getName())
-                                .setType(NAME)
-                                .createElement())
-                        .createDocument())
+                .map(ingredient -> {
+                    var builder = new Document.Builder(ingredient.getId().toString())
+                            .addElement(new Element.Builder<String>()
+                                    .setValue(ingredient.getName())
+                                    .setType(NAME)
+                                    .createElement());
+                    if (ingredient.getAlternativeNames() != null) {
+                        ingredient.getAlternativeNames()
+                                .forEach(alternativeName -> builder.addElement(new Element.Builder<String>()
+                                        .setValue(alternativeName.getAlternativeName())
+                                        .setType(NAME)
+                                        .createElement()));
+                    }
+                    return builder.createDocument();
+                })
                 .collect(Collectors.toList());
 
         documentList.add(new Document.Builder(NEW_INDREGIENT_KEY)
