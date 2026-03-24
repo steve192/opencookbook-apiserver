@@ -9,17 +9,18 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Calendar;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sterul.opencookbookapiserver.controllers.UserController;
@@ -48,22 +49,22 @@ class UserAPIIntegrationTest extends IntegrationTest{
 
     final String testPassword = "12345";
 
-    @MockBean
+    @MockitoBean
     UserRepository userRepository;
 
-    @MockBean
+    @MockitoBean
     EmailService emailService;
 
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    @MockBean
+    @MockitoBean
     RefreshTokenService refreshTokenService;
 
-    @MockBean
+    @MockitoBean
     PasswordResetLinkRepository passwordResetLinkRepository;
 
-    @MockBean
+    @MockitoBean
     ActivationLinkRepository activationLinkRepository;
 
     @Autowired
@@ -88,12 +89,10 @@ class UserAPIIntegrationTest extends IntegrationTest{
         when(userRepository.findByEmailAddress(testUser.getEmailAddress())).thenReturn(testUser);
         when(userRepository.existsByEmailAddress(testUser.getEmailAddress())).thenReturn(true);
 
-        var future = Calendar.getInstance();
-        future.add(Calendar.HOUR, 1);
         passwordResetLink = new PasswordResetLink();
         passwordResetLink.setUser(testUser);
         passwordResetLink.setId("test");
-        passwordResetLink.setValidUntil(future.getTime());
+        passwordResetLink.setValidUntil(Instant.now().plus(1, ChronoUnit.HOURS));
         when(passwordResetLinkRepository.findById(passwordResetLink.getId()))
                 .thenReturn(Optional.of(passwordResetLink));
     }

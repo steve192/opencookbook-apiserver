@@ -12,11 +12,10 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import com.sterul.opencookbookapiserver.cronjobs.ImageDeletionJob;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
@@ -33,34 +32,29 @@ class ImageDeletionJobTest extends IntegrationTest {
     @Autowired
     ImageDeletionJob cut;
 
-    @MockBean
+    @MockitoBean
     RecipeImageService recipeImageService;
 
-    @MockBean
+    @MockitoBean
     RecipeRepository recipeRepository;
 
-    @MockBean
+    @MockitoBean
     RecipeImageRepository recipeImageRepository;
 
-    @Mock
     RecipeImage oldRecipeImage;
 
-    @Mock
     RecipeImage newReipceImage;
 
-    @Mock
     Recipe testRecipe;
 
     @BeforeEach
     void setup() {
-        when(oldRecipeImage.getCreatedOn()).thenReturn(Instant.now().minus(100, ChronoUnit.DAYS));
-        when(oldRecipeImage.getUuid()).thenReturn("3284u398h2");
+        oldRecipeImage = RecipeImage.builder().uuid("3284u398h2").build();
+        oldRecipeImage.setCreatedOn(Instant.now().minus(100, ChronoUnit.DAYS));
 
-        when(newReipceImage.getCreatedOn()).thenReturn(Instant.now().minus(100, ChronoUnit.SECONDS));
-        when(newReipceImage.getUuid()).thenReturn("3284u398nqw9ddh2");
+        newReipceImage = RecipeImage.builder().uuid("3284u398nqw9ddh2").build();
 
         when(recipeImageRepository.findAllByCreatedOnBefore(any())).thenReturn(List.of(oldRecipeImage));
-        when(recipeImageRepository.findAll()).thenReturn(List.of(oldRecipeImage, newReipceImage));
     }
 
     private void whenRecipeWithImagesExists(List<RecipeImage> images) {

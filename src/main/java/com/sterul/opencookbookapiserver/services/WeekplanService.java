@@ -1,6 +1,6 @@
 package com.sterul.opencookbookapiserver.services;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -23,12 +23,12 @@ public class WeekplanService {
     @Autowired
     WeekplanDayRepository weekplanDayRepository;
 
-    public List<WeekplanDay> getWeekplanDaysBetweenTime(Date startTime, Date endTime, CookpalUser owner) {
-        return weekplanDayRepository.findAllByDayBetweenAndOwner(startTime, endTime, owner);
+    public List<WeekplanDay> getWeekplanDaysBetweenTime(LocalDate startTime, LocalDate endTime, CookpalUser owner) {
+        return weekplanDayRepository.findAllByPlanDateBetweenAndOwner(startTime, endTime, owner);
     }
 
-    public WeekplanDay getWeekplanDayByDate(Date date, CookpalUser owner) throws NoSuchElementException {
-        var weekplanDay = weekplanDayRepository.findSingleByDayAndOwner(date, owner);
+    public WeekplanDay getWeekplanDayByDate(LocalDate date, CookpalUser owner) throws NoSuchElementException {
+        var weekplanDay = weekplanDayRepository.findSingleByPlanDateAndOwner(date, owner);
         if (weekplanDay == null) {
             throw new NoSuchElementException();
         }
@@ -36,12 +36,12 @@ public class WeekplanService {
     }
 
     public WeekplanDay createWeekplanDay(WeekplanDay weekplanDay) {
-        log.info("Creating weekplan day {} of user", weekplanDay.getDay(), weekplanDay.getOwner());
+        log.info("Creating weekplan day {} of user", weekplanDay.getPlanDate(), weekplanDay.getOwner());
         return weekplanDayRepository.save(weekplanDay);
     }
 
     public WeekplanDay updateWeekplanDay(WeekplanDay weekplanDay) {
-        log.info("Updating weekplan day {} of user {}", weekplanDay.getDay(), weekplanDay.getOwner());
+        log.info("Updating weekplan day {} of user {}", weekplanDay.getPlanDate(), weekplanDay.getOwner());
         return weekplanDayRepository.save(weekplanDay);
     }
 

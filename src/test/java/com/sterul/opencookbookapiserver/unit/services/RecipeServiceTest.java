@@ -1,7 +1,7 @@
 package com.sterul.opencookbookapiserver.unit.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -16,13 +16,15 @@ import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
@@ -40,20 +42,21 @@ import com.sterul.opencookbookapiserver.services.WeekplanService;
 
 @SpringBootTest
 @ActiveProfiles("unit-test")
+@ExtendWith(MockitoExtension.class)
 class RecipeServiceTest {
 
     @Autowired
     private RecipeService cut;
 
-    @MockBean
+    @MockitoBean
     private RecipeRepository recipeRepository;
-    @MockBean
+    @MockitoBean
     private RecipeImageService recipeImageService;
-    @MockBean
+    @MockitoBean
     private RecipeGroupService recipeGroupService;
-    @MockBean
+    @MockitoBean
     private IngredientService ingredientService;
-    @MockBean
+    @MockitoBean
     private WeekplanService weekplanService;
 
     @Mock
@@ -80,17 +83,19 @@ class RecipeServiceTest {
 
     @BeforeEach
     void setup() {
-        when(mockRecipe.getOwner()).thenReturn(testUser);
+        testRecipeList = new ArrayList<>();
     }
 
     @Test
     void recipeCreated() {
+        when(mockRecipe.getOwner()).thenReturn(testUser);
         cut.createNewRecipe(mockRecipe);
         verify(recipeRepository, times(1)).save(mockRecipe);
     }
 
     @Test
     void recipeGroupCreatedIfNotExistent() {
+        when(mockRecipe.getOwner()).thenReturn(testUser);
         when(mockRecipeGroupWithoutId.getId()).thenReturn(null);
         when(mockRecipeGroupWithId.getId()).thenReturn(1L);
         when(recipeGroupService.createRecipeGroup(any())).thenReturn(mockRecipeGroupWithId);
@@ -103,6 +108,7 @@ class RecipeServiceTest {
 
     @Test
     void ingredientCreatedIfNotExistent() {
+        when(mockRecipe.getOwner()).thenReturn(testUser);
         when(mockIngredientWithoutId.getId()).thenReturn(null);
         when(mockIngredientNeed.getIngredient()).thenReturn(mockIngredientWithoutId);
         when(mockRecipe.getNeededIngredients()).thenReturn(Arrays.asList(mockIngredientNeed));
@@ -133,6 +139,7 @@ class RecipeServiceTest {
 
     @Test
     void servingsCannotBeNegative() {
+        when(mockRecipe.getOwner()).thenReturn(testUser);
         mockRecipe.setServings(-10);
         cut.createNewRecipe(mockRecipe);
 

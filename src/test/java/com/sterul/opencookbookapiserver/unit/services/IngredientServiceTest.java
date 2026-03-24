@@ -1,6 +1,6 @@
 package com.sterul.opencookbookapiserver.unit.services;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -10,13 +10,14 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
@@ -27,25 +28,20 @@ import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 @SpringBootTest
 @ActiveProfiles("unit-test")
+@ExtendWith(MockitoExtension.class)
 class IngredientServiceTest {
 
     private final CookpalUser testUser = new CookpalUser();
     @Autowired
     private IngredientService cut;
-    @MockBean
+    @MockitoBean
     private IngredientRepository ingredientRepository;
     @Mock
     private Ingredient mockIngredient;
     @Mock
     private Ingredient mockIngredient2;
-    @MockBean
+    @MockitoBean
     private IngredientMatcher mockIngredientMatcher;
-
-    @BeforeEach
-    void setup() {
-        when(mockIngredient.isPublicIngredient()).thenReturn(false);
-        when(mockIngredient2.isPublicIngredient()).thenReturn(true);
-    }
 
     @Test
     void ingredientIsCreated() {
@@ -75,6 +71,7 @@ class IngredientServiceTest {
 
     @Test
     void privateIngredientIsReused() {
+        when(mockIngredient.isPublicIngredient()).thenReturn(false);
         when(ingredientRepository.findByNameAndIsPublicIngredientAndOwner(any(), eq(false), eq(testUser)))
                 .thenReturn(mockIngredient);
         cut.createOrGetIngredient(mockIngredient, testUser);
@@ -107,7 +104,6 @@ class IngredientServiceTest {
     }
 
     private void assertFuzzySeachMatchesIngredient(String s, String s1, boolean shouldMatch) {
-        when(mockIngredient.getName()).thenReturn(s);
         when(ingredientRepository.findAllByIsPublicIngredientAndOwner(false, testUser))
                 .thenReturn(Arrays.asList(mockIngredient));
         try {

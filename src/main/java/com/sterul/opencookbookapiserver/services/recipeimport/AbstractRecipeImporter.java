@@ -1,5 +1,6 @@
 package com.sterul.opencookbookapiserver.services.recipeimport;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import com.google.gson.Gson;
@@ -8,9 +9,10 @@ import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
 import com.sterul.opencookbookapiserver.services.RecipeImageService;
 
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class AbstractRecipeImporter implements IRecipeImporter {
@@ -28,10 +30,7 @@ public abstract class AbstractRecipeImporter implements IRecipeImporter {
 
     protected RecipeImage fetchImage(String url, CookpalUser owner)
             throws UnsupportedOperationException, IllegalFiletypeException, IOException {
-        var request = new HttpGet(url);
-        var response = client.execute(request);
-
-        return recipeImageService.saveNewImage(response.getEntity().getContent(),
-                response.getEntity().getContentLength(), owner);
+        var imageBytes = client.execute(new HttpGet(url), response -> EntityUtils.toByteArray(response.getEntity()));
+        return recipeImageService.saveNewImage(new ByteArrayInputStream(imageBytes), imageBytes.length, owner);
     }
 }

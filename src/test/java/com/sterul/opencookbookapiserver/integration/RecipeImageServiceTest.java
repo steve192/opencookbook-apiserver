@@ -10,7 +10,6 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ResourceLoader;
@@ -36,8 +35,7 @@ class RecipeImageServiceTest extends IntegrationTest{
     private File pngFile;
     private File invalidFile;
 
-    @Mock
-    private CookpalUser testUser;
+    private final CookpalUser testUser = new CookpalUser();
 
     @BeforeEach
     void setup() throws IOException {

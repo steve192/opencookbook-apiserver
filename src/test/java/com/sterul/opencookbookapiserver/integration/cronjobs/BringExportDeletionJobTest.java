@@ -10,11 +10,10 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import com.sterul.opencookbookapiserver.cronjobs.BringExportDeletionJob;
 import com.sterul.opencookbookapiserver.entities.BringExport;
@@ -26,12 +25,10 @@ import com.sterul.opencookbookapiserver.repositories.BringExportRepository;
 @ActiveProfiles("integration-test")
 class BringExportDeletionJobTest extends IntegrationTest {
 
-    @MockBean
+    @MockitoBean
     BringExportRepository bringExportRepository;
 
-    @Mock
     BringExport validExport;
-    @Mock
     BringExport invalidExport;
 
     @Autowired
@@ -39,14 +36,13 @@ class BringExportDeletionJobTest extends IntegrationTest {
 
     @BeforeEach
     void setup() {
-        when(validExport.getId()).thenReturn("valid");
-        when(validExport.getCreatedOn()).thenReturn(Instant.now());
-        when(validExport.getOwner()).thenReturn(new CookpalUser());
-        
-        
-        when(invalidExport.getId()).thenReturn("invalid");
-        when(invalidExport.getCreatedOn()).thenReturn(Instant.now().minusSeconds(10000));
-        when(invalidExport.getOwner()).thenReturn(new CookpalUser());
+        validExport = BringExport.builder().id("valid").owner(new CookpalUser()).build();
+        validExport.setCreatedOn(Instant.now());
+
+        var expiredExportOwner = new CookpalUser();
+        expiredExportOwner.setEmailAddress("expired@example.com");
+        invalidExport = BringExport.builder().id("invalid").owner(expiredExportOwner).build();
+        invalidExport.setCreatedOn(Instant.now().minusSeconds(10000));
 
         when(bringExportRepository.findAll()).thenReturn(List.of(validExport, invalidExport));
     }
