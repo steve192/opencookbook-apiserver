@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sterul.opencookbookapiserver.controllers.exceptions.NotAuthorizedException;
 import com.sterul.opencookbookapiserver.controllers.requests.RecipeRequest;
-import com.sterul.opencookbookapiserver.controllers.responses.RecipeGroupResponse;
 import com.sterul.opencookbookapiserver.controllers.responses.RecipeResponse;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
@@ -47,7 +46,7 @@ public class RecipeController extends BaseController {
             @RequestParam(required = false) List<Recipe.RecipeType> categories) {
         var user = getLoggedInUser();
         return recipeService.searchUserRecipes(user, searchString, categories).stream()
-                .map(this::entityToResponse)
+                .map(RecipeResponse::fromEntity)
                 .toList();
     }
 
@@ -59,7 +58,7 @@ public class RecipeController extends BaseController {
         if (newRecipe.getServings() <= 0) {
             newRecipe.setServings(1);
         }
-        return entityToResponse(recipeService.createNewRecipe(newRecipe));
+        return RecipeResponse.fromEntity(recipeService.createNewRecipe(newRecipe));
     }
 
     @Operation(summary = "Get a single recipe")
@@ -68,7 +67,7 @@ public class RecipeController extends BaseController {
         if (!recipeService.hasAccessPermissionToRecipe(id, getLoggedInUser())) {
             throw new NotAuthorizedException();
         }
-        return entityToResponse(recipeService.getRecipeById(id));
+        return RecipeResponse.fromEntity(recipeService.getRecipeById(id));
     }
 
     @Operation(summary = "Update an existing recipe")
@@ -79,7 +78,7 @@ public class RecipeController extends BaseController {
             throw new NotAuthorizedException();
         }
         recipeUpdate.setId(id);
-        return entityToResponse(recipeService.updateSingleRecipe(requestToEntity(recipeUpdate)));
+        return RecipeResponse.fromEntity(recipeService.updateSingleRecipe(requestToEntity(recipeUpdate)));
 
     }
 
@@ -97,7 +96,7 @@ public class RecipeController extends BaseController {
     public RecipeResponse importRecipe(@RequestParam String importUrl)
             throws ImportNotSupportedException, RecipeImportFailedException {
         var owner = getLoggedInUser();
-        return entityToResponse(recipeImportService.importRecipe(importUrl, owner));
+        return RecipeResponse.fromEntity(recipeImportService.importRecipe(importUrl, owner));
     }
 
     @Operation(summary = "Get a list of supported websites", description = "Additional websites are supported by a generic import. Quality can vary")
@@ -106,25 +105,7 @@ public class RecipeController extends BaseController {
         return recipeImportService.getAvailableImportHosts();
     }
 
-    private RecipeResponse entityToResponse(Recipe recipe) {
-        return RecipeResponse.builder()
-                .id(recipe.getId())
-                .title(recipe.getTitle())
-                .images(recipe.getImages())
-                .neededIngredients(recipe.getNeededIngredients())
-                .preparationSteps(recipe.getPreparationSteps())
-                .recipeGroups(recipe.getRecipeGroups().stream().map(recipeEntity -> RecipeGroupResponse.builder()
-                        .title(recipeEntity.getTitle())
-                        .id(recipeEntity.getId())
-                        .build())
-                        .toList())
-                .servings(recipe.getServings())
-                .preparationTime(recipe.getPreparationTime())
-                .totalTime(recipe.getTotalTime())
-                .recipeType(recipe.getRecipeType())
-                .recipeSource(recipe.getRecipeSource())
-                .build();
-    }
+    
 
     private Recipe requestToEntity(RecipeRequest recipe) {
         return Recipe.builder()
