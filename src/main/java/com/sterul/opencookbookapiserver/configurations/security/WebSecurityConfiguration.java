@@ -9,29 +9,23 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 
 import com.sterul.opencookbookapiserver.configurations.security.requestfilters.JwtRequestFilter;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfiguration {
 
-        private static final List<String> AUTH_WHITELIST = Arrays.asList(
+        private static final String[] AUTH_WHITELIST = {
                         "/api/v1/users/signup",
                         "/api/v1/users/activate",
                         "/api/v1/users/resendActivationLink",
@@ -39,33 +33,18 @@ public class WebSecurityConfiguration {
                         "/api/v1/users/resetPassword",
                         "/api/v1/users/login",
                         "/api/v1/users/refreshToken",
-                        "/swagger-ui/*",
-                        "/v3/api-docs/*",
-                        "/api-docs*",
-                        "/api-docs",
-                        "/api-docs/*",
-                        "/api-docs/*/*",
-                        "/api/v1/instance*",
-                        "/api/v1/bringexport*",
-                        "/h2-console/*",
+                        "/swagger-ui/**",
+                        "/api-docs/**",
+                        "/api/v1/instance/**",
+                        "/api/v1/bringexport/**",
                         "/error",
                         "/actuator/health",
-                        "/admin",
-                        "/admin/**");
-        @Autowired
-        private UserDetailsService userDetailsService;
+                        "/admin/**"
+        };
         @Autowired
         private UnauthorizedEntryPoint unauthorizedEntryPoint;
         @Autowired
         private JwtRequestFilter jwtRequestFilter;
-        @Autowired
-        private PasswordEncoder passwordEncoder;
-
-        private RequestMatcher allowedPathRequestMatcher() {
-                return (HttpServletRequest request) -> AUTH_WHITELIST.stream()
-                                .anyMatch(whitelistedUrl -> new AntPathRequestMatcher(whitelistedUrl).matches(request));
-
-        };
 
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -79,7 +58,7 @@ public class WebSecurityConfiguration {
 
                 // Permit whitelist and authenticated request
                 http.authorizeHttpRequests(
-                                authorize -> authorize.requestMatchers(allowedPathRequestMatcher()).permitAll()
+                                authorize -> authorize.requestMatchers(AUTH_WHITELIST).permitAll()
                                                 .anyRequest().authenticated());
 
                 http.exceptionHandling(configurer -> configurer
@@ -109,11 +88,9 @@ public class WebSecurityConfiguration {
         }
 
         @Bean
-        public AuthenticationManager authenticationManager(HttpSecurity http)
+        public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
                         throws Exception {
-                return http.getSharedObject(AuthenticationManagerBuilder.class)
-                                .userDetailsService(userDetailsService)
-                                .passwordEncoder(passwordEncoder).and().build();
+                return authenticationConfiguration.getAuthenticationManager();
         }
 
 }

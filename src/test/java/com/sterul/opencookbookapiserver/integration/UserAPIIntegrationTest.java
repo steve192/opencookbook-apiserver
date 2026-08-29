@@ -9,17 +9,18 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Calendar;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sterul.opencookbookapiserver.controllers.UserController;
@@ -48,22 +49,22 @@ class UserAPIIntegrationTest extends IntegrationTest{
 
     final String testPassword = "12345";
 
-    @MockBean
+    @MockitoBean
     UserRepository userRepository;
 
-    @MockBean
+    @MockitoBean
     EmailService emailService;
 
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    @MockBean
+    @MockitoBean
     RefreshTokenService refreshTokenService;
 
-    @MockBean
+    @MockitoBean
     PasswordResetLinkRepository passwordResetLinkRepository;
 
-    @MockBean
+    @MockitoBean
     ActivationLinkRepository activationLinkRepository;
 
     @Autowired
@@ -88,12 +89,10 @@ class UserAPIIntegrationTest extends IntegrationTest{
         when(userRepository.findByEmailAddress(testUser.getEmailAddress())).thenReturn(testUser);
         when(userRepository.existsByEmailAddress(testUser.getEmailAddress())).thenReturn(true);
 
-        var future = Calendar.getInstance();
-        future.add(Calendar.HOUR, 1);
         passwordResetLink = new PasswordResetLink();
         passwordResetLink.setUser(testUser);
         passwordResetLink.setId("test");
-        passwordResetLink.setValidUntil(future.getTime());
+        passwordResetLink.setValidUntil(Instant.now().plus(1, ChronoUnit.HOURS));
         when(passwordResetLinkRepository.findById(passwordResetLink.getId()))
                 .thenReturn(Optional.of(passwordResetLink));
     }
@@ -137,7 +136,7 @@ class UserAPIIntegrationTest extends IntegrationTest{
     @Test
     @Transactional
     void registrationEmailSent() throws UserAlreadyExistsException, MessagingException, SignupDisabledException {
-        cut.signup(UserCreationRequest.builder().emailAddress("testi@cookpal.io").password("12345").build());
+        cut.signup(new UserCreationRequest("testi@cookpal.io", "12345"));
         verify(emailService, times(1)).sendActivationMail(any());
     }
 
@@ -146,10 +145,7 @@ class UserAPIIntegrationTest extends IntegrationTest{
     void nonActivatedUserCannotLogin() throws UnauthorizedException, MessagingException {
         whenTestUserExists(false);
 
-        var response = cut.login(UserLoginRequest.builder()
-                .emailAddress(testUser.getEmailAddress())
-                .password(testPassword)
-                .build());
+        var response = cut.login(new UserLoginRequest(testUser.getEmailAddress(), testPassword));
 
         verify(activationLinkRepository, times(1)).deleteAllByUser(any());
         verify(activationLinkRepository, times(1)).save(any());
@@ -206,10 +202,7 @@ class UserAPIIntegrationTest extends IntegrationTest{
     void activeUserCanLogin() throws UnauthorizedException, MessagingException {
         whenTestUserExists(true);
 
-        var response = cut.login(UserLoginRequest.builder()
-                .emailAddress(testUser.getEmailAddress())
-                .password(testPassword)
-                .build());
+        var response = cut.login(new UserLoginRequest(testUser.getEmailAddress(), testPassword));
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertTrue(response.getBody().toString().contains(testRefreshToken.getToken()));

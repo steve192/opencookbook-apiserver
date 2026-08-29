@@ -14,11 +14,10 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import com.sterul.opencookbookapiserver.cronjobs.IngredientDeletionJob;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
@@ -34,28 +33,25 @@ class IngredientDeletionJobTest extends IntegrationTest {
     @Autowired
     IngredientDeletionJob cut;
 
-    @MockBean
+    @MockitoBean
     IngredientRepository ingredientRepository;
 
-    @MockBean
+    @MockitoBean
     RecipeRepository recipeRepository;
 
-    @Mock
     Recipe testRecipe;
 
-    @Mock
     Ingredient oldTestIngredient;
 
-    @Mock
     Ingredient newTestIngredient;
 
     @BeforeEach
     void setup() {
-        when(oldTestIngredient.getCreatedOn()).thenReturn(Instant.now().minus(100, ChronoUnit.DAYS));
-        when(oldTestIngredient.getId()).thenReturn(1L);
+        oldTestIngredient = Ingredient.builder().id(1L).build();
+        oldTestIngredient.setCreatedOn(Instant.now().minus(100, ChronoUnit.DAYS));
         
-        when(newTestIngredient.getCreatedOn()).thenReturn(Instant.now().minus(100, ChronoUnit.DAYS));
-        when(newTestIngredient.getId()).thenReturn(2L);
+        newTestIngredient = Ingredient.builder().id(2L).build();
+        newTestIngredient.setCreatedOn(Instant.now().minus(100, ChronoUnit.DAYS));
 
         when(ingredientRepository.findAllByIsPublicIngredientAndCreatedOnBefore(eq(false),any()))
            .thenReturn(new ArrayList<>(Arrays.asList(newTestIngredient, oldTestIngredient)));

@@ -4,13 +4,13 @@ import com.sterul.opencookbookapiserver.entities.WeekplanDay;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface WeekplanDayRepository extends JpaRepository<WeekplanDay, Long> {
-    List<WeekplanDay> findAllByDayBetweenAndOwner(Date dayStart, Date dayEnd, CookpalUser owner);
+    List<WeekplanDay> findAllByPlanDateBetweenAndOwner(LocalDate dayStart, LocalDate dayEnd, CookpalUser owner);
 
-    WeekplanDay findSingleByDayAndOwner(Date day, CookpalUser owner);
+    WeekplanDay findSingleByPlanDateAndOwner(LocalDate day, CookpalUser owner);
 
     List<WeekplanDay> findAllByRecipes_Recipe_Id(Long recipeId);
 

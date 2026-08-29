@@ -1,7 +1,7 @@
 package com.sterul.opencookbookapiserver.services;
 
 import java.io.IOException;
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -208,7 +208,7 @@ public class UserService {
         }
         log.info("Resetting password for user {}", link.get().getUser());
 
-        if (link.get().getValidUntil().before(new Date())) {
+        if (link.get().getValidUntil().isBefore(Instant.now())) {
             passwordResetLinkRepository.delete(link.get());
             throw new PasswordResetLinkNotExistingException();
         }

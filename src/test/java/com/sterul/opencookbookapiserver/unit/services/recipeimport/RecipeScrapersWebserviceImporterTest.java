@@ -9,16 +9,13 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
-import com.sterul.opencookbookapiserver.services.IngredientService;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.recipeimport.ImportNotSupportedException;
 import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImportFailedException;
 import com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers.RecipeScraperServiceProxy;
@@ -72,22 +69,17 @@ class RecipeScrapersWebserviceImporterTest {
             }
                     """;
 
-    @MockBean
+    @MockitoBean
     private RecipeScraperServiceProxy recipeScraperServiceProxy;
-
-    @MockBean
-    private IngredientService ingredientService;
 
     @Autowired
     private RecipeScrapersWebserviceImporter cut;
 
-    @Mock
-    private CookpalUser userMock;
+    private final CookpalUser userMock = new CookpalUser();
 
     @BeforeEach
-    public void setup() throws IOException, ImportNotSupportedException, ElementNotFound {
+    public void setup() throws IOException, ImportNotSupportedException {
         when(recipeScraperServiceProxy.scrapeRecipe(testRecipeUrl)).thenReturn(testRecipeJson);
-        when(ingredientService.findUserIngredientBySimilarName(any(), any())).thenThrow(new ElementNotFound());
     }
 
     @Test

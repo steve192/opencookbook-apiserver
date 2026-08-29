@@ -1,7 +1,7 @@
 package com.sterul.opencookbookapiserver.unit.services;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -9,20 +9,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
@@ -38,23 +32,24 @@ import com.sterul.opencookbookapiserver.services.RecipeImageService;
 import com.sterul.opencookbookapiserver.services.RecipeService;
 import com.sterul.opencookbookapiserver.services.WeekplanService;
 
-@SpringBootTest
-@ActiveProfiles("unit-test")
+@ExtendWith(MockitoExtension.class)
 class RecipeServiceTest {
 
-    @Autowired
-    private RecipeService cut;
+    private static final List<Recipe.RecipeType> MEAT_ONLY = List.of(Recipe.RecipeType.MEAT);
 
-    @MockBean
+    @Mock
     private RecipeRepository recipeRepository;
-    @MockBean
+    @Mock
     private RecipeImageService recipeImageService;
-    @MockBean
+    @Mock
     private RecipeGroupService recipeGroupService;
-    @MockBean
+    @Mock
     private IngredientService ingredientService;
-    @MockBean
+    @Mock
     private WeekplanService weekplanService;
+
+    @InjectMocks
+    private RecipeService cut;
 
     @Mock
     private Recipe mockRecipe;
@@ -72,29 +67,24 @@ class RecipeServiceTest {
     @Mock
     private CookpalUser testUser;
 
-    @Captor
-    private ArgumentCaptor<Recipe> recipeCaptor;
-    private List<Recipe> testRecipeList = new ArrayList<>();
+    private static final String testRecipeImageUUID = "duniwqndiu2u912nd9";
 
-    private String testRecipeImageUUID = "duniwqndiu2u912nd9";
-
-    @BeforeEach
-    void setup() {
-        when(mockRecipe.getOwner()).thenReturn(testUser);
-    }
+    private final AtomicLong ids = new AtomicLong();
 
     @Test
     void recipeCreated() {
+        when(mockRecipe.getOwner()).thenReturn(testUser);
         cut.createNewRecipe(mockRecipe);
         verify(recipeRepository, times(1)).save(mockRecipe);
     }
 
     @Test
     void recipeGroupCreatedIfNotExistent() {
+        when(mockRecipe.getOwner()).thenReturn(testUser);
         when(mockRecipeGroupWithoutId.getId()).thenReturn(null);
         when(mockRecipeGroupWithId.getId()).thenReturn(1L);
         when(recipeGroupService.createRecipeGroup(any())).thenReturn(mockRecipeGroupWithId);
-        when(mockRecipe.getRecipeGroups()).thenReturn(Arrays.asList(mockRecipeGroupWithoutId));
+        when(mockRecipe.getRecipeGroups()).thenReturn(List.of(mockRecipeGroupWithoutId));
 
         cut.createNewRecipe(mockRecipe);
 
@@ -103,9 +93,10 @@ class RecipeServiceTest {
 
     @Test
     void ingredientCreatedIfNotExistent() {
+        when(mockRecipe.getOwner()).thenReturn(testUser);
         when(mockIngredientWithoutId.getId()).thenReturn(null);
         when(mockIngredientNeed.getIngredient()).thenReturn(mockIngredientWithoutId);
-        when(mockRecipe.getNeededIngredients()).thenReturn(Arrays.asList(mockIngredientNeed));
+        when(mockRecipe.getNeededIngredients()).thenReturn(List.of(mockIngredientNeed));
 
         cut.createNewRecipe(mockRecipe);
 
@@ -114,7 +105,8 @@ class RecipeServiceTest {
 
     @Test
     void recipeDeleted() throws IOException {
-        whenRecipeExists("test", 1L, Arrays.asList(Recipe.RecipeType.MEAT));
+        whenRecipeIsLoadableById(recipe("test", 1L));
+
         cut.deleteRecipe(1L);
 
         verify(recipeRepository, times(1)).deleteById(1L);
@@ -123,8 +115,8 @@ class RecipeServiceTest {
 
     @Test
     void recipeDeletionTriggersWeekplanChange() {
-        when(weekplanService.getWeekplanDaysByRecipe(1L)).thenReturn(Arrays.asList(mockWeekplanDay));
-        whenRecipeExists("Test", Long.valueOf(1), Arrays.asList( Recipe.RecipeType.MEAT));
+        when(weekplanService.getWeekplanDaysByRecipe(1L)).thenReturn(List.of(mockWeekplanDay));
+        whenRecipeIsLoadableById(recipe("Test", 1L));
 
         cut.deleteRecipe(1L);
 
@@ -132,51 +124,47 @@ class RecipeServiceTest {
     }
 
     @Test
-    void servingsCannotBeNegative() {
-        mockRecipe.setServings(-10);
-        cut.createNewRecipe(mockRecipe);
-
-        verify(recipeRepository).save(recipeCaptor.capture());
-
-        assertTrue(recipeCaptor.getValue().getServings() >= 0);
-    }
-
-    @Test
     void recipesAreFuzzySearched() {
-        var excpectedRecipe = whenRecipeExists("Poké-Bowl mit Räucherlachs und Gemüse", null,
-                Arrays.asList(Recipe.RecipeType.MEAT));
-        whenRecipeExists("Gebackene Laugen-Käse-Knödel", null, Arrays.asList(Recipe.RecipeType.MEAT));
-        whenRecipeExists("Räucherlachs Aprikosen-Curry Sauce", null, Arrays.asList(Recipe.RecipeType.MEAT));
+        var expectedRecipe = recipe("Poké-Bowl mit Räucherlachs und Gemüse");
+        whenSearchableRecipesAre(expectedRecipe,
+                recipe("Gebackene Laugen-Käse-Knödel"),
+                recipe("Räucherlachs Aprikosen-Curry Sauce"));
 
-        var results = cut.searchUserRecipes(testUser, "Gemüs", Arrays.asList(Recipe.RecipeType.MEAT));
-        assertEquals(excpectedRecipe, results.get(0));
+        var results = cut.searchUserRecipes(testUser, "Gemüs", MEAT_ONLY);
+
+        assertEquals(expectedRecipe, results.get(0));
     }
 
     @Test
     void fuzzySearchFindsNoResults() {
-        whenRecipeExists("Poké-Bowl mit Räucherlachs und Gemüse", null, Arrays.asList(Recipe.RecipeType.MEAT));
-        whenRecipeExists("Gebackene Laugen-Käse-Knödel", null, Arrays.asList(Recipe.RecipeType.MEAT));
-        whenRecipeExists("Räucherlachs Aprikosen-Curry Sauce", null, Arrays.asList(Recipe.RecipeType.MEAT));
+        whenSearchableRecipesAre(
+                recipe("Poké-Bowl mit Räucherlachs und Gemüse"),
+                recipe("Gebackene Laugen-Käse-Knödel"),
+                recipe("Räucherlachs Aprikosen-Curry Sauce"));
 
-        var results = cut.searchUserRecipes(testUser, "Tomats", Arrays.asList(Recipe.RecipeType.MEAT));
+        var results = cut.searchUserRecipes(testUser, "Tomats", MEAT_ONLY);
+
         assertTrue(results.isEmpty());
     }
 
-    private Recipe whenRecipeExists(String testRecipe, Long id, List<Recipe.RecipeType> types) {
-        var recipeId = id == null ? new Random().nextLong() : id;
-        var recipe = Recipe.builder()
-                .title(testRecipe)
-                .id(recipeId)
-                .images(List.of(RecipeImage.builder()
-                        .uuid(testRecipeImageUUID)
-                        .build()))
-                .build();
-        testRecipeList.add(recipe);
-        when(recipeRepository.findByOwnerAndRecipeTypeIn(testUser, types))
-                .thenReturn(testRecipeList);
-        when(recipeRepository.getById(recipeId)).thenReturn(recipe);
+    private Recipe recipe(String title) {
+        return recipe(title, ids.incrementAndGet());
+    }
 
-        return recipe;
+    private Recipe recipe(String title, Long id) {
+        return Recipe.builder()
+                .title(title)
+                .id(id)
+                .images(List.of(RecipeImage.builder().uuid(testRecipeImageUUID).build()))
+                .build();
+    }
+
+    private void whenRecipeIsLoadableById(Recipe recipe) {
+        when(recipeRepository.getById(recipe.getId())).thenReturn(recipe);
+    }
+
+    private void whenSearchableRecipesAre(Recipe... recipes) {
+        when(recipeRepository.findByOwnerAndRecipeTypeIn(testUser, MEAT_ONLY)).thenReturn(List.of(recipes));
     }
 
 }

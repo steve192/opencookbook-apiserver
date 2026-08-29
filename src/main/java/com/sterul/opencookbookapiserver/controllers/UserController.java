@@ -80,8 +80,8 @@ public class UserController extends BaseController {
     @Transactional
     public CookpalUser signup(@Valid @RequestBody UserCreationRequest userCreationRequest)
             throws UserAlreadyExistsException, SignupDisabledException {
-        var createdUser = userService.createUser(userCreationRequest.getEmailAddress(),
-                userCreationRequest.getPassword());
+        var createdUser = userService.createUser(userCreationRequest.emailAddress(),
+                userCreationRequest.password());
         var activationLink = userService.createActivationLink(createdUser);
         try {
             emailService.sendActivationMail(activationLink);
@@ -97,10 +97,10 @@ public class UserController extends BaseController {
             throws UnauthorizedException {
 
         try {
-            login(authenticationRequest.getEmailAddress(), authenticationRequest.getPassword());
+            login(authenticationRequest.emailAddress(), authenticationRequest.password());
         } catch (UserNotActiveException e) {
             try {
-                userService.resendActivationLink(authenticationRequest.getEmailAddress());
+                userService.resendActivationLink(authenticationRequest.emailAddress());
             } catch (MessagingException e1) {
                 log.error("Error re-sending activation link for user", e1);
             }
@@ -110,7 +110,7 @@ public class UserController extends BaseController {
         }
 
         final UserDetails userDetails = userDetailsService
-                .loadUserByUsername(authenticationRequest.getEmailAddress());
+                .loadUserByUsername(authenticationRequest.emailAddress());
 
         final String token = jwtTokenUtil.generateToken(userDetails);
 

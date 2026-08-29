@@ -12,11 +12,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -32,15 +33,15 @@ public class WeekplanController extends BaseController {
 
     @Operation(summary = "Fetch weekplan days in timerange")
     @GetMapping("/{from}/to/{to}")
-    public List<WeekplanDayResponse> getBetweenDates(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date from,
-                                                     @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") Date to) {
+    public List<WeekplanDayResponse> getBetweenDates(@PathVariable @DateTimeFormat(iso = ISO.DATE) LocalDate from,
+                                                     @PathVariable @DateTimeFormat(iso = ISO.DATE) LocalDate to) {
         return weekplanService.getWeekplanDaysBetweenTime(from, to, getLoggedInUser()).stream()
                 .map(this::entityToResponse).toList();
     }
 
     @Operation(summary = "Change a single weekplan day")
     @PutMapping("/{date}")
-    public WeekplanDayResponse createAndUpdate(@PathVariable @DateTimeFormat(pattern = "yyy-MM-dd") Date date,
+    public WeekplanDayResponse createAndUpdate(@PathVariable @DateTimeFormat(iso = ISO.DATE) LocalDate date,
                                                @RequestBody WeekplanDayPut weekplanDayPut) throws NotAuthorizedException, ElementNotFound {
 
         WeekplanDay weekplanDayEntity;
@@ -52,7 +53,7 @@ public class WeekplanController extends BaseController {
             weekplanDayEntity = new WeekplanDay();
             weekplanDayEntity.setRecipes(new ArrayList<>());
             weekplanDayEntity.setOwner(getLoggedInUser());
-            weekplanDayEntity.setDay(date);
+            weekplanDayEntity.setPlanDate(date);
             populateWeekplanDayWithRecipes(weekplanDayPut, weekplanDayEntity);
 
             weekplanDayEntity = weekplanService.createWeekplanDay(weekplanDayEntity);
@@ -63,7 +64,7 @@ public class WeekplanController extends BaseController {
 
     private WeekplanDayResponse entityToResponse(WeekplanDay weekplanDayEntity) {
         var response = new WeekplanDayResponse();
-        response.setDay(weekplanDayEntity.getDay());
+        response.setDay(weekplanDayEntity.getPlanDate());
         for (var recipe : weekplanDayEntity.getRecipes()) {
             if (recipe.isSimpleRecipe()) {
                 var simpleRecipe = new WeekplanDayResponse.SimpleRecipe();
@@ -120,4 +121,3 @@ public class WeekplanController extends BaseController {
         }
     }
 }
-

@@ -33,10 +33,10 @@ public class EmailConfiguration {
     @Bean
     public VelocityEngine getVelocityEngine() throws VelocityException {
         var engine = new VelocityEngine();
-        engine.setProperty("resource.loader", "class");
-        engine.setProperty("class.resource.loader.class",
+        engine.setProperty("resource.loaders", "classpath");
+        engine.setProperty("resource.loader.classpath.class",
                 "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
-
+        engine.init();
         return engine;
     }
 }

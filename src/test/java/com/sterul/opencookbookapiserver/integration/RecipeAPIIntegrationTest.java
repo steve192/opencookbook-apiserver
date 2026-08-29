@@ -1,9 +1,9 @@
 package com.sterul.opencookbookapiserver.integration;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -16,12 +16,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sterul.opencookbookapiserver.controllers.IngredientsController;
@@ -51,7 +51,7 @@ class RecipeAPIIntegrationTest extends IntegrationTest {
     private UserRepository userRepository;
 
     private CookpalUser testUser;
-    @MockBean
+    @MockitoBean
     private RecipeScraperServiceProxy recipeScraperServiceProxy;
 
     @BeforeEach
@@ -103,6 +103,17 @@ class RecipeAPIIntegrationTest extends IntegrationTest {
         assertListsEqual(newRecipeResponse.getRecipeGroups(), newRecipe.getRecipeGroups());
         assertListsEqual(newRecipeResponse.getImages(), newRecipe.getImages());
 
+    }
+
+    @Test
+    @Transactional
+    void nonPositiveServingsAreNormalisedToOne() {
+        var newRecipe = RecipeRequest.builder()
+                .title("test")
+                .servings(-10)
+                .build();
+
+        assertEquals(1, cut.newRecipe(newRecipe).getServings());
     }
 
     @Test

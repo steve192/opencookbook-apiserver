@@ -67,7 +67,6 @@ public class Recipe extends AuditableEntity {
     private String recipeSource;
 
     @Enumerated
-    @org.springframework.data.relational.core.mapping.Embedded.Nullable
     private RecipeType recipeType;
 
     public enum RecipeType {

@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -28,21 +27,24 @@ import lombok.extern.slf4j.Slf4j;
 public class RecipeService {
 
     public static final String SEARCH_DOCUMENT = "searchDocument";
-    @Autowired
-    private IngredientService ingredientService;
 
-    @Autowired
-    private RecipeRepository recipeRepository;
+    private final IngredientService ingredientService;
+    private final RecipeRepository recipeRepository;
+    private final RecipeImageService recipeImageService;
+    private final RecipeGroupService recipeGroupService;
+    private final WeekplanService weekplanService;
 
-    @Autowired
-    private RecipeImageService recipeImageService;
-
-    @Autowired
-    @Lazy
-    private RecipeGroupService recipeGroupService;
-
-    @Autowired
-    private WeekplanService weekplanService;
+    public RecipeService(IngredientService ingredientService, RecipeRepository recipeRepository,
+            RecipeImageService recipeImageService,
+            // RecipeGroupService depends on RecipeService in turn
+            @Lazy RecipeGroupService recipeGroupService,
+            WeekplanService weekplanService) {
+        this.ingredientService = ingredientService;
+        this.recipeRepository = recipeRepository;
+        this.recipeImageService = recipeImageService;
+        this.recipeGroupService = recipeGroupService;
+        this.weekplanService = weekplanService;
+    }
 
     public Recipe createNewRecipe(Recipe newRecipe) {
         log.info("Creating new recipe {} for user {}", newRecipe.getTitle(), newRecipe.getOwner());

@@ -1,6 +1,7 @@
 package com.sterul.opencookbookapiserver.services.recipeimport;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,8 +12,8 @@ import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
 
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.springframework.stereotype.Component;
 
 import lombok.Data;
@@ -29,8 +30,8 @@ public class ChefkochImporter extends AbstractRecipeImporter {
 
         ChefkochPublicRecipe publicRecipe;
         try {
-            var response = client.execute(request);
-            var jsonString = EntityUtils.toString(response.getEntity(), "UTF-8");
+            var jsonString = client.execute(request,
+                    response -> EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8));
             publicRecipe = gson.fromJson(jsonString, ChefkochPublicRecipe.class);
         } catch (IOException e) {
             throw new RecipeImportFailedException();
