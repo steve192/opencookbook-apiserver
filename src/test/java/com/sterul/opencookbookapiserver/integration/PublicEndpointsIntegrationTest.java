@@ -1,14 +1,17 @@
 package com.sterul.opencookbookapiserver.integration;
 
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -29,7 +32,6 @@ class PublicEndpointsIntegrationTest extends IntegrationTest {
     @CsvSource({
             "/api/v1/instance,      200",
             "/actuator/health,      200",
-            "/admin,                200",
             "/api-docs,             302",
             "/swagger-ui/index.html,200",
             // reaches the controller and fails on the missing request parameter, i.e. not blocked
@@ -37,6 +39,14 @@ class PublicEndpointsIntegrationTest extends IntegrationTest {
     })
     void whitelistedEndpointIsReachableWithoutAuthentication(String path, int expectedStatus) throws Exception {
         mockMvc.perform(get(path)).andExpect(status().is(expectedStatus));
+    }
+
+    @Test
+    void adminFrontendIsNotRejectedBySecurity() throws Exception {
+        var status = mockMvc.perform(get("/admin")).andReturn().getResponse().getStatus();
+
+        assertNotEquals(HttpStatus.UNAUTHORIZED.value(), status, "/admin must stay whitelisted");
+        assertNotEquals(HttpStatus.FORBIDDEN.value(), status, "/admin must stay whitelisted");
     }
 
     @ParameterizedTest(name = "GET {0} -> 401")
