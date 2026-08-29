@@ -107,6 +107,17 @@ class RecipeAPIIntegrationTest extends IntegrationTest {
 
     @Test
     @Transactional
+    void nonPositiveServingsAreNormalisedToOne() {
+        var newRecipe = RecipeRequest.builder()
+                .title("test")
+                .servings(-10)
+                .build();
+
+        assertEquals(1, cut.newRecipe(newRecipe).getServings());
+    }
+
+    @Test
+    @Transactional
     @DirtiesContext
     void testRecipeCreationWithGroup() {
 

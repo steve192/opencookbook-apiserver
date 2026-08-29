@@ -8,7 +8,6 @@ import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.HttpStatus;
 import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
@@ -18,38 +17,39 @@ import java.nio.charset.StandardCharsets;
 @Component
 public class RecipeScraperServiceProxy {
 
-    private static final HttpClientResponseHandler<String> READ_AS_UTF8_STRING =
-            response -> EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
+    /**
+     * Captures the parts of the response the callers need, so that status handling
+     * happens after the connection has been released instead of inside the handler.
+     */
+    private record ScrapeResponse(int statusCode, String body) {
+    }
 
-    @Autowired
-    OpencookbookConfiguration opencookbookConfiguration;
+    private static final HttpClientResponseHandler<ScrapeResponse> RESPONSE_HANDLER = response -> new ScrapeResponse(
+            response.getCode(), EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8));
+
+    private final OpencookbookConfiguration opencookbookConfiguration;
+
+    public RecipeScraperServiceProxy(OpencookbookConfiguration opencookbookConfiguration) {
+        this.opencookbookConfiguration = opencookbookConfiguration;
+    }
 
     public String scrapeRecipe(String url) throws IOException, ImportNotSupportedException {
-        var request = new HttpGet(
-                opencookbookConfiguration.getRecipeScaperServiceUrl() + "/api/v1/scrape-recipe?url=" + url);
-        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
-            return httpclient.execute(request, response -> {
-                if (response.getCode() == HttpStatus.SC_NOT_IMPLEMENTED) {
-                    // ImportNotSupported is checked; HttpClientResponseHandler only allows
-                    // IOException/HttpException, so signal via an IOException and unwrap below.
-                    throw new ImportNotSupportedSignal();
-                }
-                return EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
-            });
-        } catch (ImportNotSupportedSignal e) {
+        var response = get("/api/v1/scrape-recipe?url=" + url);
+        if (response.statusCode() == HttpStatus.SC_NOT_IMPLEMENTED) {
             throw new ImportNotSupportedException();
         }
+        return response.body();
     }
 
     @Cacheable("recipe_scrapers_supported_hosts")
     public String getSupportedHosts() throws IOException {
-        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
-            var request = new HttpGet(
-                    opencookbookConfiguration.getRecipeScaperServiceUrl() + "/api/v1/scrape-recipe/supported-hosts");
-            return httpclient.execute(request, READ_AS_UTF8_STRING);
-        }
+        return get("/api/v1/scrape-recipe/supported-hosts").body();
     }
 
-    private static final class ImportNotSupportedSignal extends IOException {
+    private ScrapeResponse get(String path) throws IOException {
+        var request = new HttpGet(opencookbookConfiguration.getRecipeScaperServiceUrl() + path);
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            return httpclient.execute(request, RESPONSE_HANDLER);
+        }
     }
 }

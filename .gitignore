@@ -38,3 +38,5 @@ recipe-images/
 database/
 src/main/resources/ingredientsources
 src/main/resources/static
+
+**.code-workspace

@@ -1,0 +1,8 @@
+# Layered on top of the production application.yml so that tests exercise the real configuration.
+spring:
+  # The schema is created from the entities; the Flyway chain is verified separately.
+  flyway:
+    enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: create

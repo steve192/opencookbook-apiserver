@@ -1,0 +1,9 @@
+# Layered on top of the production application.yml so that tests exercise the real configuration.
+spring:
+  flyway:
+    enabled: false
+  # Not actually used, just to enable spring to create its beans correctly
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password: ""

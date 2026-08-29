@@ -19,6 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 
 import com.sterul.opencookbookapiserver.configurations.security.requestfilters.JwtRequestFilter;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
@@ -33,17 +34,11 @@ public class WebSecurityConfiguration {
                         "/api/v1/users/login",
                         "/api/v1/users/refreshToken",
                         "/swagger-ui/**",
-                        "/v3/api-docs/**",
-                        "/api-docs",
                         "/api-docs/**",
-                        "/api/v1/instance",
                         "/api/v1/instance/**",
-                        "/api/v1/bringexport",
                         "/api/v1/bringexport/**",
-                        "/h2-console/**",
                         "/error",
                         "/actuator/health",
-                        "/admin",
                         "/admin/**"
         };
         @Autowired

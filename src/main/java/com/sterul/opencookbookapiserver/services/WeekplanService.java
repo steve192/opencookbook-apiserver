@@ -36,7 +36,7 @@ public class WeekplanService {
     }
 
     public WeekplanDay createWeekplanDay(WeekplanDay weekplanDay) {
-        log.info("Creating weekplan day {} of user", weekplanDay.getPlanDate(), weekplanDay.getOwner());
+        log.info("Creating weekplan day {} of user {}", weekplanDay.getPlanDate(), weekplanDay.getOwner());
         return weekplanDayRepository.save(weekplanDay);
     }
 

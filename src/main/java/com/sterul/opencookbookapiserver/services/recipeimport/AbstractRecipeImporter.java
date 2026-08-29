@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import com.google.gson.Gson;
+import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
@@ -28,9 +29,17 @@ public abstract class AbstractRecipeImporter implements IRecipeImporter {
     @Autowired
     private RecipeImageService recipeImageService;
 
+    @Autowired
+    private OpencookbookConfiguration opencookbookConfiguration;
+
     protected RecipeImage fetchImage(String url, CookpalUser owner)
             throws UnsupportedOperationException, IllegalFiletypeException, IOException {
-        var imageBytes = client.execute(new HttpGet(url), response -> EntityUtils.toByteArray(response.getEntity()));
+        // Bound the download by the configured limit: the response is read into memory,
+        // so an oversized image has to be rejected while reading, not afterwards.
+        var maxImageSize = Math.toIntExact(opencookbookConfiguration.getMaxImageSize());
+        var imageBytes = client.execute(new HttpGet(url),
+                response -> EntityUtils.toByteArray(response.getEntity(), maxImageSize));
+
         return recipeImageService.saveNewImage(new ByteArrayInputStream(imageBytes), imageBytes.length, owner);
     }
 }

@@ -12,7 +12,6 @@ spring:
       enabled: true
   jpa:
     show-sql: false
-    open-in-view: false
 springdoc:
     api-docs:
         enabled: true

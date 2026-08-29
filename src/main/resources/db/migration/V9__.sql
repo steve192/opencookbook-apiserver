@@ -1,20 +1,8 @@
--- WeekplanDay: rename reserved-word column `day` -> `plan_date` to match LocalDate-based entity mapping.
--- Guarded with IF EXISTS so this is a no-op on freshly created schemas.
-DO $$
-BEGIN
-    IF EXISTS (
-        SELECT 1
-        FROM information_schema.columns
-        WHERE table_schema = 'public'
-          AND table_name = 'weekplan_day'
-          AND column_name = 'day'
-    ) THEN
-        ALTER TABLE public.weekplan_day RENAME COLUMN day TO plan_date;
-    END IF;
-END $$;
+-- WeekplanDay.day -> WeekplanDay.planDate: `day` is a reserved word in H2, which the tests run against.
+ALTER TABLE public.weekplan_day RENAME COLUMN day TO plan_date;
 
 -- PasswordResetLink.validUntil: java.util.Date (TIMESTAMP) -> java.time.Instant (TIMESTAMPTZ).
--- Existing rows are treated as UTC, matching how Date was serialized.
+-- Existing values were written in the JVM default timezone, which is UTC in the shipped container.
 ALTER TABLE public.password_reset_link
     ALTER COLUMN valid_until TYPE timestamp(6) with time zone
     USING valid_until AT TIME ZONE 'UTC';

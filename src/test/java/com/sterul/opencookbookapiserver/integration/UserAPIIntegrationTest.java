@@ -136,7 +136,7 @@ class UserAPIIntegrationTest extends IntegrationTest{
     @Test
     @Transactional
     void registrationEmailSent() throws UserAlreadyExistsException, MessagingException, SignupDisabledException {
-        cut.signup(UserCreationRequest.builder().emailAddress("testi@cookpal.io").password("12345").build());
+        cut.signup(new UserCreationRequest("testi@cookpal.io", "12345"));
         verify(emailService, times(1)).sendActivationMail(any());
     }
 
@@ -145,10 +145,7 @@ class UserAPIIntegrationTest extends IntegrationTest{
     void nonActivatedUserCannotLogin() throws UnauthorizedException, MessagingException {
         whenTestUserExists(false);
 
-        var response = cut.login(UserLoginRequest.builder()
-                .emailAddress(testUser.getEmailAddress())
-                .password(testPassword)
-                .build());
+        var response = cut.login(new UserLoginRequest(testUser.getEmailAddress(), testPassword));
 
         verify(activationLinkRepository, times(1)).deleteAllByUser(any());
         verify(activationLinkRepository, times(1)).save(any());
@@ -205,10 +202,7 @@ class UserAPIIntegrationTest extends IntegrationTest{
     void activeUserCanLogin() throws UnauthorizedException, MessagingException {
         whenTestUserExists(true);
 
-        var response = cut.login(UserLoginRequest.builder()
-                .emailAddress(testUser.getEmailAddress())
-                .password(testPassword)
-                .build());
+        var response = cut.login(new UserLoginRequest(testUser.getEmailAddress(), testPassword));
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertTrue(response.getBody().toString().contains(testRefreshToken.getToken()));
