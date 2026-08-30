@@ -131,7 +131,10 @@ public class UserController extends BaseController {
             try {
                 userService.requestPasswordReset(passwordResetRequest.getEmailAddress());
             } catch (MessagingException e) {
-                ResponseEntity.internalServerError().build();
+                // The response was built and dropped here, so a mail server that never sent
+                // anything still told the caller to go and check their inbox.
+                log.error("Could not send password reset mail", e);
+                return ResponseEntity.internalServerError().build();
             }
         }
         return ResponseEntity.ok().build();

@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -196,6 +197,20 @@ class UserAPIIntegrationTest extends IntegrationTest{
                 .build());
 
         verify(emailService, times(1)).sendPasswordResetMail(any());
+    }
+
+    // A dropped ResponseEntity used to leave this at 200, so the app told people to check an
+    // inbox that never received anything.
+    @Test
+    void passwordResetRequestReportsWhenTheMailCannotBeSent() throws MessagingException {
+        whenTestUserExists(true);
+        doThrow(new MessagingException("mail server down")).when(emailService).sendPasswordResetMail(any());
+
+        var response = cut.requestPasswordReset(PasswordResetRequest.builder()
+                .emailAddress(testUser.getEmailAddress())
+                .build());
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
     @Test
