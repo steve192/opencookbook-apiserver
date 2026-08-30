@@ -64,10 +64,50 @@ public class RecipeImageService {
 
     public void generateThumbnail(String uuid) throws IOException {
         log.info("Generating thumbnail for {}", uuid);
-        var originalImageFile = imageUploadPath.resolve(uuid).toFile();
-        var bufferedImage = ImageIO.read(originalImageFile);
-        var thumbnailImage = scaleImage(bufferedImage, opencookbookConfiguration.getImageThumbnailScaleWidth());
-        saveAndConvertImage(thumbnailImage, uuid, thumbnailUploadPath);
+        var thumbnailWidth = opencookbookConfiguration.getImageThumbnailScaleWidth();
+        var originalImage = readNoLargerThan(imageUploadPath.resolve(uuid).toFile(), thumbnailWidth);
+        if (originalImage == null) {
+            throw new IOException("Stored image " + uuid + " can no longer be decoded");
+        }
+        saveAndConvertImage(scaleImage(originalImage, thumbnailWidth), uuid, thumbnailUploadPath);
+    }
+
+    /**
+     * Decodes an image no larger than it has to be.
+     *
+     * ImageIO.read always decodes at full resolution, so a 24 megapixel photo claims about 92 MB
+     * of heap before anything gets scaled down - more than this service is given in total. Asking
+     * the decoder to subsample lets it skip pixels while reading, which bounds the cost by the
+     * size we actually want rather than by whatever the camera produced.
+     *
+     * The result is at least targetWidth wide whenever the source is, so the scaling afterwards
+     * still only ever shrinks and no quality is invented.
+     *
+     * @param source anything ImageIO can open, here an InputStream or a File
+     * @param targetWidth width the image is going to be scaled to afterwards
+     * @return the decoded image, or null when no decoder recognises the source
+     */
+    private BufferedImage readNoLargerThan(Object source, int targetWidth) throws IOException {
+        try (var imageInput = ImageIO.createImageInputStream(source)) {
+            if (imageInput == null) {
+                return null;
+            }
+            var readers = ImageIO.getImageReaders(imageInput);
+            if (!readers.hasNext()) {
+                return null;
+            }
+
+            var reader = readers.next();
+            try {
+                reader.setInput(imageInput);
+                var readParam = reader.getDefaultReadParam();
+                var subsampling = Math.max(1, reader.getWidth(0) / targetWidth);
+                readParam.setSourceSubsampling(subsampling, subsampling, 0, 0);
+                return reader.read(0, readParam);
+            } finally {
+                reader.dispose();
+            }
+        }
     }
 
     public RecipeImage saveNewImage(InputStream inputStream, long expectedSize, CookpalUser owner)
@@ -78,7 +118,8 @@ public class RecipeImageService {
                     opencookbookConfiguration.getMaxImageSize());
         }
 
-        var bufferedImage = ImageIO.read(inputStream);
+        var imageWidth = opencookbookConfiguration.getImageScaleWidth();
+        var bufferedImage = readNoLargerThan(inputStream, imageWidth);
 
         if (bufferedImage == null) {
             log.warn("Uploaded image is not an image, aborting");
@@ -89,10 +130,12 @@ public class RecipeImageService {
         recipeImage.setOwner(owner);
         recipeImage = recipeImageRepository.save(recipeImage);
 
-        var mainImage = scaleImage(bufferedImage, opencookbookConfiguration.getImageScaleWidth());
-        saveAndConvertImage(mainImage, recipeImage.getUuid(), imageUploadPath);
+        saveAndConvertImage(scaleImage(bufferedImage, imageWidth), recipeImage.getUuid(), imageUploadPath);
 
-        generateThumbnail(recipeImage.getUuid());
+        // Derived from the image already in memory. Reading the just written file back in meant a
+        // third decode while the full sized one was still held, which is what ran the heap out.
+        var thumbnailWidth = opencookbookConfiguration.getImageThumbnailScaleWidth();
+        saveAndConvertImage(scaleImage(bufferedImage, thumbnailWidth), recipeImage.getUuid(), thumbnailUploadPath);
 
         return recipeImage;
     }
