@@ -19,6 +19,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderColumn;
 import jakarta.persistence.SequenceGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -51,7 +52,10 @@ public class Recipe extends AuditableEntity {
     @JsonIgnore
     private CookpalUser owner;
 
+    // Ordered: the first image is the recipe's title image, so the order has to survive a
+    // round trip. Without an order column this is a bag and jpa gives no such guarantee.
     @OneToMany
+    @OrderColumn(name = "image_order")
     @Builder.Default
     private List<RecipeImage> images = new ArrayList<>();
 
