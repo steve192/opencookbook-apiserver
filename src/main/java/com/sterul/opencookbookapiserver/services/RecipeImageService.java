@@ -37,24 +37,29 @@ public class RecipeImageService {
     @Autowired
     private RecipeImageRepository recipeImageRepository;
 
-    RecipeImageService(OpencookbookConfiguration opencookbookConfiguration) {
+    public RecipeImageService(OpencookbookConfiguration opencookbookConfiguration) {
         this.opencookbookConfiguration = opencookbookConfiguration;
-        imageUploadPath = Paths.get(opencookbookConfiguration.getUploadDir());
-        if (!Files.exists(imageUploadPath)) {
-            try {
-                Files.createDirectories(imageUploadPath);
-            } catch (IOException e) {
-                log.error("Error creating file upload directory. There will be errors when images are uploaded");
-            }
+        imageUploadPath = prepareStorageDirectory(opencookbookConfiguration.getUploadDir());
+        thumbnailUploadPath = prepareStorageDirectory(opencookbookConfiguration.getThumbnailDir());
+    }
+
+    /**
+     * Storage that cannot be written makes every future upload fail, so a directory we cannot
+     * create is a misconfiguration worth refusing to start over. Logging and carrying on only
+     * moves the failure to each individual upload, where it is far harder to recognise.
+     *
+     * @param configuredPath configured directory, created including missing parents
+     * @return the prepared directory
+     */
+    private Path prepareStorageDirectory(String configuredPath) {
+        var path = Paths.get(configuredPath);
+        try {
+            Files.createDirectories(path);
+        } catch (IOException e) {
+            throw new IllegalStateException(
+                    "Cannot create image storage directory " + path.toAbsolutePath(), e);
         }
-        thumbnailUploadPath = Paths.get(opencookbookConfiguration.getThumbnailDir());
-        if (!Files.exists(thumbnailUploadPath)) {
-            try {
-                Files.createDirectories(thumbnailUploadPath);
-            } catch (IOException e) {
-                log.error("Error creating file thumbnail directory. There will be errors when images are uploaded");
-            }
-        }
+        return path;
     }
 
     public void generateThumbnail(String uuid) throws IOException {
@@ -62,12 +67,7 @@ public class RecipeImageService {
         var originalImageFile = imageUploadPath.resolve(uuid).toFile();
         var bufferedImage = ImageIO.read(originalImageFile);
         var thumbnailImage = scaleImage(bufferedImage, opencookbookConfiguration.getImageThumbnailScaleWidth());
-        try {
-            saveAndConvertImage(thumbnailImage, uuid, thumbnailUploadPath);
-        } catch (IllegalFiletypeException e) {
-            // Filetype is not expected to be illegal
-            log.error("Illegal filetype while generating thumbnail");
-        }
+        saveAndConvertImage(thumbnailImage, uuid, thumbnailUploadPath);
     }
 
     public RecipeImage saveNewImage(InputStream inputStream, long expectedSize, CookpalUser owner)
@@ -112,16 +112,16 @@ public class RecipeImageService {
         return newImage;
     }
 
+    // Whatever goes wrong while writing is our problem, not the uploader's, so it stays an
+    // IOException. Reporting it as an illegal filetype told users their image was broken while
+    // the real cause was a disk we could not write to.
     private void saveAndConvertImage(BufferedImage bufferedImage, String uuid, Path uploadPath)
-            throws IllegalFiletypeException {
+            throws IOException {
 
         var imageFile = uploadPath.resolve(uuid).toFile();
 
         try (var outputStream = new FileOutputStream(imageFile)) {
             ImageIO.write(bufferedImage, "jpg", outputStream);
-        } catch (IOException e) {
-            log.error("IO Error when converting image", e);
-            throw new IllegalFiletypeException();
         }
     }
 
