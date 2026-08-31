@@ -91,7 +91,11 @@ public class WeekplanController extends BaseController {
     private void populateWeekplanDayWithRecipes(WeekplanDayPut weekplanDayPut, final WeekplanDay newWeekplanDay)
             throws NotAuthorizedException, ElementNotFound {
 
-        newWeekplanDay.getRecipes().clear();
+        // Built up separately and only swapped in at the end. RecipeService is transactional,
+        // so every lookup below commits a transaction of its own and flushes the session that
+        // open-session-in-view keeps around. Rebuilding the day's collection in place exposed
+        // a half finished collection to that flush.
+        var meals = new ArrayList<WeekplanDayRecipe>();
 
         for (var recipe : weekplanDayPut.getRecipes()) {
             switch (recipe.getType()) {
@@ -102,7 +106,7 @@ public class WeekplanController extends BaseController {
                         throw new NotAuthorizedException();
                     }
                     var recipeEntity = recipeService.getRecipeById(recipeId);
-                    newWeekplanDay.getRecipes().add(WeekplanDayRecipe.builder()
+                    meals.add(WeekplanDayRecipe.builder()
                             .isSimpleRecipe(false)
                             .recipe(recipeEntity)
                             .build());
@@ -110,14 +114,19 @@ public class WeekplanController extends BaseController {
                 case SIMPLE_RECIPE -> {
                     var simpleRecipe = (WeekplanDayPut.SimpleRecipe) recipe;
 
-                    newWeekplanDay.getRecipes().add(WeekplanDayRecipe.builder()
+                    // The id the client sends back identifies a row this request replaces.
+                    // Carrying it into a new instance handed JPA an entity it considers
+                    // detached, so every entry of the day is created fresh and the rows it
+                    // replaces are removed as orphans.
+                    meals.add(WeekplanDayRecipe.builder()
                             .isSimpleRecipe(true)
-                            // JPA wants an null id if entries needs to be created
-                            .id("".equals(simpleRecipe.getId()) ? null : simpleRecipe.getId())
                             .simpleRecipeText(simpleRecipe.getTitle())
                             .build());
                 }
             }
         }
+
+        newWeekplanDay.getRecipes().clear();
+        newWeekplanDay.getRecipes().addAll(meals);
     }
 }

@@ -13,6 +13,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderColumn;
 import jakarta.persistence.SequenceGenerator;
 import lombok.Data;
 
@@ -31,6 +32,10 @@ public class WeekplanDay extends AuditableEntity {
     @JsonIgnore
     private CookpalUser owner;
 
+    // Ordered: the meals of a day are shown, printed and reordered in list order, so the
+    // order has to survive a round trip. Without an order column this is a bag and jpa
+    // gives no such guarantee - a reorder was written and then read back arbitrarily.
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderColumn(name = "recipe_order")
     private List<WeekplanDayRecipe> recipes;
 }
