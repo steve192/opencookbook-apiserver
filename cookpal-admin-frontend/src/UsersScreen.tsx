@@ -1,12 +1,12 @@
 import {DataGrid} from '@mui/x-data-grid';
 import {useEffect, useState} from 'react';
 import RestAPI, {User} from './RestAPI';
-import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, MenuItem, Select, TextField, Toolbar, Tooltip, Typography} from '@mui/material';
+import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, MenuItem, Select} from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
-import {alpha} from '@mui/material/styles';
 import {toast} from 'react-toastify';
+import {TableToolbar} from './TableToolbar';
 
 
 export const UsersScreen = () => {
@@ -95,10 +95,13 @@ export const UsersScreen = () => {
   return (
     <>
       <TableToolbar
-        selectedItems={selectedItems}
-        onDeletePressed={deleteSelectedItems}
-        onActivatePressed={activateSelectedUsers}
-        onRoleSelectionPressed={() => setRoleSelectionOpen(true)} />
+        title="Users"
+        selectedCount={selectedItems.length}
+        actions={[
+          {label: 'Delete', icon: <DeleteIcon />, onPress: deleteSelectedItems},
+          {label: 'Activate', icon: <CheckCircleIcon />, onPress: activateSelectedUsers},
+          {label: 'Set role', icon: <ManageAccountsIcon />, onPress: () => setRoleSelectionOpen(true)},
+        ]} />
       <DataGrid
         rows={users ?? []}
         columns={[
@@ -122,61 +125,3 @@ export const UsersScreen = () => {
       {roleSelectionDialog}
     </>);
 };
-
-
-function TableToolbar(props: {selectedItems: string[], onDeletePressed: () => void, onActivatePressed: () => void, onRoleSelectionPressed: () => void}) {
-  const numSelected = props.selectedItems.length;
-
-  return (
-    <Toolbar
-      sx={{
-        pl: {sm: 2},
-        pr: {xs: 1, sm: 1},
-        ...(numSelected > 0 && {
-          bgcolor: (theme) =>
-            alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
-        }),
-      }}
-    >
-      {numSelected > 0 ? (
-        <Typography
-          sx={{flex: '1 1 100%'}}
-          color="inherit"
-          variant="subtitle1"
-          component="div"
-        >
-          {numSelected} selected
-        </Typography>
-      ) : (
-        <Typography
-          sx={{flex: '1 1 100%'}}
-          variant="h6"
-          id="tableTitle"
-          component="div"
-        >
-          Users
-        </Typography>
-      )}
-      {numSelected > 0 && (
-        <>
-          <Tooltip title="Delete">
-            <IconButton onClick={props.onDeletePressed}>
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Activate">
-            <IconButton onClick={props.onActivatePressed}>
-              <CheckCircleIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Set role">
-            <IconButton onClick={props.onRoleSelectionPressed}>
-              <ManageAccountsIcon />
-            </IconButton>
-          </Tooltip>
-        </>
-      ) }
-    </Toolbar>
-  );
-}
-

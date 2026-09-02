@@ -31,6 +31,7 @@ import com.sterul.opencookbookapiserver.services.RecipeGroupService;
 import com.sterul.opencookbookapiserver.services.RecipeImageService;
 import com.sterul.opencookbookapiserver.services.RecipeService;
 import com.sterul.opencookbookapiserver.services.WeekplanService;
+import com.sterul.opencookbookapiserver.services.sharing.ShareService;
 
 @ExtendWith(MockitoExtension.class)
 class RecipeServiceTest {
@@ -47,6 +48,8 @@ class RecipeServiceTest {
     private IngredientService ingredientService;
     @Mock
     private WeekplanService weekplanService;
+    @Mock
+    private ShareService shareService;
 
     @InjectMocks
     private RecipeService cut;
@@ -111,6 +114,19 @@ class RecipeServiceTest {
 
         verify(recipeRepository, times(1)).deleteById(1L);
         verify(recipeImageService, times(1)).deleteImage(testRecipeImageUUID);
+    }
+
+    @Test
+    void recipeDeletionWithdrawsItsShares() {
+        var deletedRecipe = recipe("test", 1L);
+        whenRecipeIsLoadableById(deletedRecipe);
+        when(recipeRepository.getReferenceById(1L)).thenReturn(deletedRecipe);
+
+        cut.deleteRecipe(1L);
+
+        // A share outliving what it points at resolves to nothing, which looks to whoever holds
+        // the link like the app is broken rather than like the recipe is gone.
+        verify(shareService, times(1)).revokeAllSharesOfRecipe(deletedRecipe);
     }
 
     @Test

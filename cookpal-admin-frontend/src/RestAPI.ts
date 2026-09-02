@@ -65,6 +65,27 @@ export interface Ingredient {
   nutrientsSalt: number | null;
 }
 
+/** One public share link, as the administration panel needs to see it. */
+export interface Share {
+  shareId: string;
+  shareUrl: string;
+  recipeId: number;
+  recipeTitle: string;
+  ownerUserId: number;
+  ownerEmailAddress: string;
+  createdOn: string;
+  expiresAt: string;
+  expired: boolean;
+  accessCount: number;
+}
+
+/** How much sharing is going on, at a glance. */
+export interface ShareStatistics {
+  totalShares: number;
+  totalAccesses: number;
+  expiringSoon: number;
+}
+
 export interface BringExport {
   id: string;
   owner: User;
@@ -103,6 +124,18 @@ class RestAPI {
   }
   static async getAllUsers(): Promise<User[]> {
     const response = await this.get('/admin/users');
+    return response?.data;
+  }
+  static async getAllShares(): Promise<Share[]> {
+    const response = await this.get('/admin/shares');
+    return response?.data;
+  }
+  static async getShareStatistics(): Promise<ShareStatistics> {
+    const response = await this.get('/admin/shares/statistics');
+    return response?.data;
+  }
+  static async revokeShare(shareId: string) {
+    const response = await this.delete('/admin/shares/' + shareId);
     return response?.data;
   }
   static async getAllBringExports(): Promise<BringExport[]> {

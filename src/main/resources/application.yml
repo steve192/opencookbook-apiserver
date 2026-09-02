@@ -23,6 +23,7 @@ springdoc:
         disable-swagger-default-url: true
         supported-submit-methods:
 opencookbook:
+  # instanceURL: https://cookpal.io
   jwtSecret: default-jwt-secret
   uploadDir: recipe-images
   thumbnailDir: recipe-images/thumbnails
@@ -56,4 +57,6 @@ spring:
     jpa.hibernate.ddl-auto: update
 opencookbook:
   activate-users-after-signup: true
+  # The expo web dev server, which is where /share/... is a route
+  instanceURL: http://localhost:8081
 

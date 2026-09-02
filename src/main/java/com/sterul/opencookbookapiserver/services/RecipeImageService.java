@@ -189,6 +189,28 @@ public class RecipeImageService {
         return Files.readAllBytes(path);
     }
 
+    /**
+     * Duplicates a stored image under a new owner. An imported recipe needs image files of its
+     * own: a reference to the sharer's image would stop working the moment they deleted theirs.
+     */
+    public RecipeImage copyImage(String sourceUuid, CookpalUser newOwner) throws IOException {
+        var copy = new RecipeImage();
+        copy.setOwner(newOwner);
+        copy = recipeImageRepository.save(copy);
+
+        Files.copy(imageUploadPath.resolve(sourceUuid), imageUploadPath.resolve(copy.getUuid()));
+
+        // A missing thumbnail is regenerated on first read, so copying it is an optimisation
+        // rather than a requirement - which is why a source that never had one is not an error.
+        var sourceThumbnail = thumbnailUploadPath.resolve(sourceUuid);
+        if (Files.exists(sourceThumbnail)) {
+            Files.copy(sourceThumbnail, thumbnailUploadPath.resolve(copy.getUuid()));
+        }
+
+        log.info("Copied image {} to {} for user {}", sourceUuid, copy.getUuid(), newOwner.getUserId());
+        return copy;
+    }
+
     public void deleteImage(String uuid) throws IOException {
         log.info("Deleting image {}", uuid);
         recipeImageRepository.deleteById(uuid);
