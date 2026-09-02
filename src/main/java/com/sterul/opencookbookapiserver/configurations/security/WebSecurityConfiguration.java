@@ -19,6 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 
 import com.sterul.opencookbookapiserver.configurations.security.requestfilters.JwtRequestFilter;
+import com.sterul.opencookbookapiserver.controllers.sharing.SharePaths;
 
 @Configuration
 @EnableWebSecurity
@@ -37,6 +38,7 @@ public class WebSecurityConfiguration {
                         "/api-docs/**",
                         "/api/v1/instance/**",
                         "/api/v1/bringexport/**",
+                        SharePaths.PUBLIC_PATTERN,
                         "/error",
                         "/actuator/health",
                         "/admin/**"

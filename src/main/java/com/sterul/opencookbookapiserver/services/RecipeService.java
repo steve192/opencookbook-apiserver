@@ -17,6 +17,7 @@ import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
+import com.sterul.opencookbookapiserver.services.sharing.ShareService;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -33,17 +34,22 @@ public class RecipeService {
     private final RecipeImageService recipeImageService;
     private final RecipeGroupService recipeGroupService;
     private final WeekplanService weekplanService;
+    private final ShareService shareService;
 
     public RecipeService(IngredientService ingredientService, RecipeRepository recipeRepository,
             RecipeImageService recipeImageService,
             // RecipeGroupService depends on RecipeService in turn
             @Lazy RecipeGroupService recipeGroupService,
-            WeekplanService weekplanService) {
+            WeekplanService weekplanService,
+            // ShareService depends on RecipeService in turn: sharing is about recipes, and the
+            // only thing pointing the other way is withdrawing a share when its recipe goes.
+            @Lazy ShareService shareService) {
         this.ingredientService = ingredientService;
         this.recipeRepository = recipeRepository;
         this.recipeImageService = recipeImageService;
         this.recipeGroupService = recipeGroupService;
         this.weekplanService = weekplanService;
+        this.shareService = shareService;
     }
 
     public Recipe createNewRecipe(Recipe newRecipe) {
@@ -81,6 +87,9 @@ public class RecipeService {
 
     public void deleteRecipe(Long id) {
         log.info("Deleting recipe {}", id);
+
+        shareService.revokeAllSharesOfRecipe(recipeRepository.getReferenceById(id));
+
         var weekplanDays = weekplanService.getWeekplanDaysByRecipe(id);
         for (var weekplanDay : weekplanDays) {
             var iterator = weekplanDay.getRecipes().iterator();
@@ -135,6 +144,15 @@ public class RecipeService {
             throw new ElementNotFound();
         }
         return recipe.get();
+    }
+
+    /**
+     * A recipe, held against concurrent writers until the surrounding transaction ends. For
+     * callers that decide something by reading a recipe and then writing it - "share this unless
+     * it is already shared" - which two requests arriving together would both answer "not yet".
+     */
+    public Recipe getRecipeForUpdate(Long id) throws ElementNotFound {
+        return recipeRepository.findForUpdateById(id).orElseThrow(ElementNotFound::new);
     }
 
     public List<Recipe> searchUserRecipes(CookpalUser user, String searchString, List<Recipe.RecipeType> categories) {

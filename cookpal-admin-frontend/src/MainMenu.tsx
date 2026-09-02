@@ -2,6 +2,7 @@ import {Edit} from '@mui/icons-material';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import LocalDiningIcon from '@mui/icons-material/LocalDining';
 import LocalPizzaIcon from '@mui/icons-material/LocalPizza';
+import ShareIcon from '@mui/icons-material/Share';
 import MenuIcon from '@mui/icons-material/Menu';
 import PersonIcon from '@mui/icons-material/Person';
 import {AppBar, Box, CssBaseline, Divider, Drawer, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography} from '@mui/material';
@@ -54,6 +55,12 @@ export const MainMenu = () => {
             <LocalPizzaIcon />
           </ListItemIcon>
           <ListItemText primary={'Ingredients'} />
+        </ListItemButton>
+        <ListItemButton onClick={() => navigate('/admin/shares')} sx={{color: 'white'}}>
+          <ListItemIcon sx={{color: 'white'}}>
+            <ShareIcon />
+          </ListItemIcon>
+          <ListItemText primary={'Shared Recipes'} />
         </ListItemButton>
         <ListItemButton onClick={() => navigate('/admin/bringexports')} sx={{color: 'white'}}>
           <ListItemIcon sx={{color: 'white'}}>

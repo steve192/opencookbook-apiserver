@@ -10,6 +10,7 @@ import {BringExportScreen} from './BringExportScreen';
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {IngredientsScreen} from './IngredientsScreen';
+import {SharesScreen} from './SharesScreen';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -29,6 +30,10 @@ function App() {
       {
         path: 'ingredients',
         element: <IngredientsScreen/>,
+      },
+      {
+        path: 'shares',
+        element: <SharesScreen/>,
       },
       {
         path: 'bringexports',

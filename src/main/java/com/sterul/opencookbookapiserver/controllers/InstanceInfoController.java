@@ -1,5 +1,6 @@
 package com.sterul.opencookbookapiserver.controllers;
 
+import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.controllers.responses.InstanceInfoResponse;
 import com.sterul.opencookbookapiserver.services.InstanceInfoService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,10 +19,14 @@ public class InstanceInfoController extends BaseController {
     @Autowired
     private InstanceInfoService instanceInfoService;
 
+    @Autowired
+    private OpencookbookConfiguration opencookbookConfiguration;
+
     @GetMapping("")
     public InstanceInfoResponse getInstanceInfo() {
         return InstanceInfoResponse.builder()
                 .termsOfService(instanceInfoService.getTermsOfSerivice())
+                .sharingEnabled(opencookbookConfiguration.getSharing().isEnabled())
                 .build();
     }
 }

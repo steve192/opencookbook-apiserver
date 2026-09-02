@@ -1,12 +1,13 @@
 package com.sterul.opencookbookapiserver.configurations;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 
 import lombok.Getter;
 import lombok.Setter;
 
-@Configuration
+/**
+ * Everything about this instance that an operator can set.
+ */
 @ConfigurationProperties(prefix = "opencookbook")
 @Getter
 @Setter
@@ -107,5 +108,55 @@ public class OpencookbookConfiguration {
      * Disables / enabled signups
      */
     private boolean allowSignup = true;
+
+    /**
+     * Settings for recipe sharing
+     */
+    private Sharing sharing = new Sharing();
+
+    /**
+     * Public sharing of recipes. Grouped rather than flat because every one of these values is
+     * meaningless without the others: they describe how long a public link lives and how hard it
+     * may be pulled while it does.
+     */
+    @Getter
+    @Setter
+    public static class Sharing {
+
+        /**
+         * Whether recipes can be shared at all. Turning this off takes the endpoints away, so
+         * links already handed out stop resolving. Existing shares themselves are kept, and the
+         * administration api still lists and removes them.
+         */
+        private boolean enabled = true;
+
+        /**
+         * How many days a share link stays valid. The clock starts when the link is created and
+         * is never extended, so a link that is still in use lapses too - which is why the app
+         * shows the owner when it will.
+         */
+        private int validityDays = 90;
+
+        /**
+         * How often one client may open shared recipes per hour. Aimed at a client walking many
+         * share ids rather than at people reading one recipe. Sized for a household, where a
+         * whole family shares one address.
+         */
+        private int viewsPerHourPerIp = 30;
+
+        /**
+         * How often a single share may be opened per hour, from anywhere. The backstop for a
+         * leaked link, and the only limit that does not depend on a client supplied address.
+         */
+        private int viewsPerHourPerShare = 60;
+
+        /**
+         * How many images of shared recipes one client may load per hour. Counted separately
+         * because a recipe with six pictures costs seven requests to render, so sharing a budget
+         * with the recipe itself would make the effective limit depend on how photographed a
+         * recipe happens to be.
+         */
+        private int imageViewsPerHourPerIp = 120;
+    }
 
 }

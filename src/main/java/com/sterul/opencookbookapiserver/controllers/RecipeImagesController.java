@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sterul.opencookbookapiserver.controllers.exceptions.NotAuthorizedException;
+import com.sterul.opencookbookapiserver.controllers.support.RecipeImageResponses;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
 import com.sterul.opencookbookapiserver.services.RecipeImageService;
@@ -22,7 +23,6 @@ import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.extern.slf4j.Slf4j;
@@ -38,48 +38,20 @@ public class RecipeImagesController extends BaseController {
 
     @Operation(summary = "Fetch single recipe image")
     @GetMapping(value = "/{uuid}", produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity<byte[]> getRecipeImage(@Valid @NotBlank @PathVariable String uuid, HttpServletResponse response)
+    public ResponseEntity<byte[]> getRecipeImage(@Valid @NotBlank @PathVariable String uuid)
             throws ElementNotFound, NotAuthorizedException {
 
-        if (!recipeImageService.hasAccessPermissionToRecipeImage(uuid, getLoggedInUser())) {
-            throw new NotAuthorizedException();
-        }
-
-        byte[] imageData;
-        try {
-            imageData = recipeImageService.getImage(uuid);
-        } catch (IOException e) {
-            log.warn("Exception while loading image {} {}", uuid, e);
-            throw new ElementNotFound();
-        }
-
-        response.setHeader("Cache-Control", "no-transform, private, max-age=86400");
-        return ResponseEntity.ok()
-                .contentType(MediaType.IMAGE_JPEG)
-                .body(imageData);
+        requireAccessTo(uuid);
+        return RecipeImageResponses.servePrivately(() -> recipeImageService.getImage(uuid), uuid);
     }
 
     @Operation(summary = "Fetch single recipe image thumbnail")
     @GetMapping(value = "/thumbnail/{uuid}", produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity<byte[]> getRecipeThumbnailImage(@Valid @NotBlank @PathVariable String uuid, HttpServletResponse response)
+    public ResponseEntity<byte[]> getRecipeThumbnailImage(@Valid @NotBlank @PathVariable String uuid)
             throws ElementNotFound, NotAuthorizedException {
 
-        if (!recipeImageService.hasAccessPermissionToRecipeImage(uuid, getLoggedInUser())) {
-            throw new NotAuthorizedException();
-        }
-
-        byte[] imageData;
-        try {
-            imageData = recipeImageService.getThumbnailImage(uuid);
-        } catch (IOException e) {
-            log.warn("Exception while loading thumbnail image {} {}", uuid, e);
-            throw new ElementNotFound();
-        }
-
-        response.setHeader("Cache-Control", "no-transform, private, max-age=86400");
-        return ResponseEntity.ok()
-                .contentType(MediaType.IMAGE_JPEG)
-                .body(imageData);
+        requireAccessTo(uuid);
+        return RecipeImageResponses.servePrivately(() -> recipeImageService.getThumbnailImage(uuid), uuid);
     }
 
     @Operation(summary = "Upload a new image", description = "Upload an image as multipart file. The images uuid can later on be assigned to a recipe. If they are not assigned they will be deleted after a while")
@@ -93,15 +65,19 @@ public class RecipeImagesController extends BaseController {
     @Operation(summary = "Delete an image")
     @DeleteMapping("/{uuid}")
     public void deleteImage(@Valid @NotBlank @PathVariable String uuid) throws ElementNotFound, NotAuthorizedException {
-        if (!recipeImageService.hasAccessPermissionToRecipeImage(uuid, getLoggedInUser())) {
-            throw new NotAuthorizedException();
-        }
+        requireAccessTo(uuid);
 
         try {
             recipeImageService.deleteImage(uuid);
         } catch (IOException e) {
             log.warn("Exception while deleting image {} {}", uuid, e);
             throw new ElementNotFound();
+        }
+    }
+
+    private void requireAccessTo(String uuid) throws ElementNotFound, NotAuthorizedException {
+        if (!recipeImageService.hasAccessPermissionToRecipeImage(uuid, getLoggedInUser())) {
+            throw new NotAuthorizedException();
         }
     }
 }
