@@ -8,11 +8,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.ZoneOffset;
 
 import org.junit.jupiter.api.Test;
 
 import com.sterul.opencookbookapiserver.ratelimiting.FixedWindowRateLimiter;
+import com.sterul.opencookbookapiserver.unit.MovableClock;
 
 /**
  * The rate limiter without a servlet or a database anywhere near it.
@@ -137,31 +137,4 @@ class FixedWindowRateLimiterTest {
     }
 
     /** A clock that only moves when a test says so. */
-    private static final class MovableClock extends Clock {
-
-        private Instant now;
-
-        private MovableClock(Instant startingAt) {
-            this.now = startingAt;
-        }
-
-        private void advanceBy(Duration duration) {
-            now = now.plus(duration);
-        }
-
-        @Override
-        public Instant instant() {
-            return now;
-        }
-
-        @Override
-        public ZoneOffset getZone() {
-            return ZoneOffset.UTC;
-        }
-
-        @Override
-        public Clock withZone(java.time.ZoneId zone) {
-            throw new UnsupportedOperationException("The tests only ever need UTC");
-        }
-    }
 }

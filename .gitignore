@@ -40,3 +40,11 @@ src/main/resources/ingredientsources
 src/main/resources/static
 
 **.code-workspace
+
+# Spring reads ./config/application.yml over the packaged one, which is where local
+# secrets belong - an api token for the machine learning subsystem, say. See
+# config/application.yml.example.
+# Excluding the contents rather than the directory: git does not descend into an
+# excluded directory, so a negation inside one never takes effect.
+/config/*
+!/config/application.yml.example

@@ -115,6 +115,118 @@ public class OpencookbookConfiguration {
     private Sharing sharing = new Sharing();
 
     /**
+     * Connection to the machine learning subsystem. Leaving the url empty is how an instance
+     * says it has none, and every feature that would need one disappears rather than failing.
+     */
+    private Ml ml = new Ml();
+
+    /**
+     * The optional machine learning subsystem: a separate service that runs OCR and, later,
+     * other model-backed work. It is reached with an api token held only here, so the app
+     * never learns that it exists.
+     */
+    @Getter
+    @Setter
+    public static class Ml {
+
+        /**
+         * Where the subsystem is reachable (e.g. https://ml.cookpal.io). Empty means this
+         * instance has no subsystem, which is the default and a supported way to run cookpal.
+         */
+        private String serviceUrl = "";
+
+        /**
+         * The api token issued for this instance. Never leaves the server.
+         */
+        private String apiToken = "";
+
+        /**
+         * Salt used to turn a user into the opaque id the subsystem groups their jobs by. It
+         * must stay stable for as long as donated training data is kept, because changing it
+         * makes earlier donations unmatchable to a later "delete everything of mine".
+         *
+         * Left empty it is derived from the api token, which is already per-instance and
+         * secret. Set it explicitly on an instance that expects to rotate that token.
+         */
+        private String submitterSalt = "";
+
+        /**
+         * How long to wait for a connection to the subsystem before giving up.
+         */
+        private int connectTimeoutSeconds = 5;
+
+        /**
+         * How long a single request to the subsystem may take. Submitting an image is the
+         * slow one, because the bytes travel with it.
+         */
+        private int requestTimeoutSeconds = 30;
+
+        /**
+         * How often we ask the subsystem whether a job has finished.
+         */
+        private int pollIntervalSeconds = 2;
+
+        /**
+         * After this long an unfinished job is abandoned. Without it a subsystem that
+         * silently loses work would leave a user watching a spinner for ever.
+         */
+        private int jobTimeoutSeconds = 300;
+
+        /**
+         * How long a finished job is kept before it is deleted. Long enough that the app can
+         * still collect a result after a restart, short enough that we are not storing
+         * everybody's recipes twice.
+         */
+        private int jobRetentionHours = 24;
+
+        /**
+         * Settings for reading a recipe from a photograph.
+         */
+        private RecipeOcr recipeOcr = new RecipeOcr();
+
+        /**
+         * Whether this instance has a subsystem at all. The url is the switch, so that there
+         * is no second flag that can disagree with it.
+         */
+        public boolean isConfigured() {
+            return serviceUrl != null && !serviceUrl.isBlank();
+        }
+
+        /**
+         * The salt actually in use, falling back to the api token so that there is no way to
+         * configure a subsystem and accidentally leave the derivation unkeyed.
+         */
+        public String effectiveSubmitterSalt() {
+            if (submitterSalt != null && !submitterSalt.isBlank()) {
+                return submitterSalt;
+            }
+            // "apiToken:" with no value binds to null, not to the empty default above.
+            return apiToken == null ? "" : apiToken;
+        }
+
+        @Getter
+        @Setter
+        public static class RecipeOcr {
+
+            /**
+             * Whether photographed recipes may be imported. Off takes the endpoints away.
+             */
+            private boolean enabled = true;
+
+            /**
+             * How many recipes one user may scan per day. The instance's own allowance with
+             * the subsystem is finite and shared, so one user must not be able to spend it.
+             */
+            private int jobsPerUserPerDay = 20;
+
+            /**
+             * How many photographs may make up one recipe.
+             */
+            private int maxPages = 6;
+        }
+    }
+
+    /**
      * Public sharing of recipes. Grouped rather than flat because every one of these values is
      * meaningless without the others: they describe how long a public link lives and how hard it
      * may be pulled while it does.

@@ -7,8 +7,8 @@ spring:
     baseline-on-migrate: true
   servlet:
     multipart:
-      max-file-size: 5MB
-      max-request-size: 5MB
+      max-file-size: ${MAX_IMAGE_SIZE_MB:10}MB
+      max-request-size: ${MAX_UPLOAD_SIZE_MB:30}MB
       enabled: true
   jpa:
     show-sql: false
@@ -34,6 +34,22 @@ opencookbook:
   # 1 year
   refreshTokenDuration: 31536000 
   recipeScaperServiceUrl: http://recipe-scrapers:9090
+  ml:
+    # Empty means this instance has no machine learning subsystem, and every feature that
+    # would need one is absent rather than broken. That is the default.
+    serviceUrl: ""
+    apiToken: ""
+    # Leave empty to derive it from the api token. See OpencookbookConfiguration.Ml.
+    submitterSalt: ""
+    connectTimeoutSeconds: 5
+    requestTimeoutSeconds: 30
+    pollIntervalSeconds: 2
+    jobTimeoutSeconds: 300
+    jobRetentionHours: 24
+    recipeOcr:
+      enabled: true
+      jobsPerUserPerDay: 20
+      maxPages: 6
 server:
     # This is okay if we trust the direct caller of this service
     # This will be our own reverse proxy server
@@ -59,4 +75,20 @@ opencookbook:
   activate-users-after-signup: true
   # The expo web dev server, which is where /share/... is a route
   instanceURL: http://localhost:8081
+  ml:
+    # The subsystem's own compose stack, published on this port by its .env.
+    #   cd ../cookpal-ml-subsystem && cp .env.example .env && docker compose up -d
+    serviceUrl: http://localhost:8100
+    # Issued once and shown once, so it never belongs in a tracked file. Take it from the
+    # environment, or from config/application.yml which is git ignored - see
+    # config/application.yml.example:
+    #   docker compose exec ml-web python manage.py issue_token "local development"
+    #   export ML_API_TOKEN=cpml_...
+    # Left empty nothing is sent to the subsystem at all, which reads as "not available" and
+    # takes recipe scanning out of the app rather than breaking it.
+    apiToken: ${ML_API_TOKEN:}
+    recipeOcr:
+      # Generous locally: the limit is there to stop one person spending an
+      # instance's allowance, and on this machine there is only one person.
+      jobsPerUserPerDay: 200
 
