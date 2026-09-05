@@ -93,10 +93,11 @@ public class MlController extends BaseController {
     @Operation(summary = "Correct where the ingredients and the steps are",
             description = "Send the areas somebody marked and the recipe is read again against "
                     + "them. The photograph is not read a second time, so this answers at once. "
-                    + "Body: {\"blocks\":{\"ingredients\":{\"pageIndex\":0,"
-                    + "\"box\":[left,top,right,bottom]},\"steps\":null}}, where a null means "
-                    + "there is none of that in the picture and an absent key means it was not "
-                    + "asked about.")
+                    + "Body: {\"blocks\":{\"ingredients\":[{\"pageIndex\":0,"
+                    + "\"box\":[left,top,right,bottom]}],\"steps\":null}}. A kind takes a "
+                    + "list of areas, or a single area on its own, or null to say there is "
+                    + "none of that in the picture; an absent key means it was not asked "
+                    + "about. Corners are fractions of the page.")
     @PostMapping("/jobs/{id}/refine")
     public MlJobResponse refineJob(@PathVariable String id,
             @RequestBody(required = false) Map<String, Object> corrections)
