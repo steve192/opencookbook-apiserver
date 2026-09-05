@@ -1,0 +1,12 @@
+# Copy to config/application.yml. Spring loads that over the packaged
+# application.yml, and it is git ignored - so this is where a local secret goes
+# instead of into src/main/resources, and it reaches a run started from an IDE
+# just as well as one started from a shell.
+
+opencookbook:
+  ml:
+    # Issued once and shown once, by the machine learning subsystem:
+    #   cd ../cookpal-ml-subsystem
+    #   docker compose exec ml-web python manage.py issue_token "local development"
+    # or from its admin at http://localhost:8100/admin/ml_tokens/apitoken/add/
+    apiToken: cpml_replace_me
