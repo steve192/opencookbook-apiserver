@@ -73,13 +73,7 @@ public class MlJobService {
         return mlJobRepository.save(job);
     }
 
-    /**
-     * Where the page is in a photograph.
-     *
-     * @param image the photograph just taken
-     * @return the corners the app should start the crop from
-     * @throws MlSubsystemException when the subsystem refuses or cannot be reached
-     */
+    /** The corners the app should start the crop from. */
     public MlSubsystemProxy.DetectedPage detectPageEdges(MultipartFile image)
             throws MlSubsystemException {
         var detected = proxy.detectPageEdges(image);
@@ -91,16 +85,7 @@ public class MlJobService {
         return mlJobRepository.findByIdAndOwner(id, owner).orElseThrow(ElementNotFound::new);
     }
 
-    /**
-     * Apply what somebody said about where the ingredients and the steps are.
-     *
-     * @param owner whose scan it is
-     * @param id the scan
-     * @param corrections the marked areas, in the subsystem's own shape
-     * @return the corrected job
-     * @throws ElementNotFound when there is no such scan for this person
-     * @throws MlSubsystemException when the subsystem refuses or cannot be reached
-     */
+    /** Apply what somebody marked as the ingredients and the steps, in the subsystem's shape. */
     public MlJob refine(CookpalUser owner, String id, Map<String, Object> corrections)
             throws ElementNotFound, MlSubsystemException {
         var job = get(owner, id);
@@ -114,6 +99,7 @@ public class MlJobService {
         return job;
     }
 
+    /** Reports a refusing subsystem back, unlike {@link #resetJob}, which carries on. */
     public void cancel(CookpalUser owner, String id) throws ElementNotFound, MlSubsystemException {
         var job = get(owner, id);
         if (job.isFinished()) {
@@ -122,9 +108,55 @@ public class MlJobService {
         if (job.getRemoteJobId() != null) {
             proxy.cancel(job.getRemoteJobId());
         }
+        markCancelled(job);
+        mlJobRepository.save(job);
+    }
+
+    /** Newest first. A null owner or state means "any". */
+    public List<MlJob> jobs(Long userId, MlJobStatus status) {
+        return mlJobRepository.findMatching(userId, status);
+    }
+
+    public MlJob getAnyJob(String id) throws ElementNotFound {
+        return mlJobRepository.findById(id).orElseThrow(ElementNotFound::new);
+    }
+
+    /** Stops a running scan and takes it off its owner's allowance, so they can try again. */
+    public MlJob resetJob(String id) throws ElementNotFound {
+        var job = getAnyJob(id);
+        if (!job.isFinished()) {
+            stopRemotely(job);
+            markCancelled(job);
+        }
+        job.setCountsTowardsQuota(false);
+        log.info("Admin: reset the scan {} of user {}", id, job.getOwner().getUserId());
+        return mlJobRepository.save(job);
+    }
+
+    public void deleteJob(String id) throws ElementNotFound {
+        var job = getAnyJob(id);
+        if (!job.isFinished()) {
+            stopRemotely(job);
+        }
+        log.info("Admin: deleted the scan {} of user {}", id, job.getOwner().getUserId());
+        mlJobRepository.delete(job);
+    }
+
+    /** Best effort: an unreachable subsystem must not block clearing a stuck scan. */
+    private void stopRemotely(MlJob job) {
+        if (job.getRemoteJobId() == null) {
+            return;
+        }
+        try {
+            proxy.cancel(job.getRemoteJobId());
+        } catch (MlSubsystemException e) {
+            log.warn("Could not stop job {} at the subsystem: {}", job.getId(), e.getMessage());
+        }
+    }
+
+    private void markCancelled(MlJob job) {
         job.setStatus(MlJobStatus.CANCELLED);
         job.setFinishedAt(clock.instant());
-        mlJobRepository.save(job);
     }
 
     /** Withdraw consent: everything this person donated for training is deleted. */
@@ -132,12 +164,7 @@ public class MlJobService {
         return proxy.deleteTrainingData(submitterIds.of(owner));
     }
 
-    /**
-     * Bring every unfinished job up to date with the subsystem.
-     *
-     * Not @Transactional on purpose: every job here is an http call, and wrapping the loop
-     * would hold a database connection for the length of all of them.
-     */
+    /** Not @Transactional on purpose: one http call per job would hold a connection for all of them. */
     public void refreshUnfinishedJobs() {
         var unfinished = mlJobRepository
                 .findByStatusIn(List.of(MlJobStatus.QUEUED, MlJobStatus.PROCESSING));
@@ -228,8 +255,7 @@ public class MlJobService {
                 .collect(Collectors.toMap(MlJobRepository.StatusCount::getStatus,
                         MlJobRepository.StatusCount::getCount));
 
-        // Every state is listed, including the ones nothing is in: "no failures" is an answer,
-        // and an absent key would read as "unknown" on the dashboard.
+        // Every state is listed: an absent key would read as "unknown" rather than "none".
         var jobsByStatus = new LinkedHashMap<MlJobStatus, Long>();
         Arrays.stream(MlJobStatus.values())
                 .forEach(status -> jobsByStatus.put(status, counted.getOrDefault(status, 0L)));
@@ -251,12 +277,7 @@ public class MlJobService {
                 .toList();
     }
 
-    /**
-     * Give somebody their allowance back for the rest of today.
-     *
-     * @param owner whose allowance to reset
-     * @return how many scans stopped counting
-     */
+    /** Gives back today's allowance, returning how many scans stopped counting. */
     @Transactional
     public int resetQuota(CookpalUser owner) {
         var counted = mlJobRepository.findUsageSince(owner, startOfToday());
@@ -289,11 +310,7 @@ public class MlJobService {
                 "The subsystem did not finish this job in time", true));
     }
 
-    /**
-     * A submission the subsystem never took on. The daily allowance is there to stop one person
-     * spending the instance's allowance with the subsystem, and a scan that got no further than
-     * this spent none of it - so it must not cost somebody their day when the subsystem is down.
-     */
+    /** A scan the subsystem never took on spent nothing, so it must not cost somebody their day. */
     private void failBeforeItWasAccepted(MlJob job, MlSubsystemException failure) {
         job.setCountsTowardsQuota(false);
         fail(job, failure);

@@ -3,8 +3,10 @@ package com.sterul.opencookbookapiserver.services;
 import static com.intuit.fuzzymatcher.domain.ElementType.NAME;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
+import com.sterul.opencookbookapiserver.repositories.projections.OwnerCount;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.sharing.ShareService;
 
@@ -85,23 +88,32 @@ public class RecipeService {
         return recipeRepository.findByOwner(owner);
     }
 
-    public void deleteRecipe(Long id) {
+    public Map<Long, Long> countRecipesPerOwner() {
+        return OwnerCount.asMap(recipeRepository.countGroupedByOwner());
+    }
+
+    public void deleteRecipe(Long id) throws ElementNotFound {
+        deleteRecipe(getRecipeById(id));
+    }
+
+    public void deleteRecipe(Recipe recipe) {
+        var id = recipe.getId();
         log.info("Deleting recipe {}", id);
 
-        shareService.revokeAllSharesOfRecipe(recipeRepository.getReferenceById(id));
+        shareService.revokeAllSharesOfRecipe(recipe);
 
         var weekplanDays = weekplanService.getWeekplanDaysByRecipe(id);
         for (var weekplanDay : weekplanDays) {
             var iterator = weekplanDay.getRecipes().iterator();
             while (iterator.hasNext()) {
-                var recipe = iterator.next();
-                if (recipe.getRecipe() != null && recipe.getRecipe().getId().equals(id)) {
+                var planned = iterator.next();
+                if (planned.getRecipe() != null && planned.getRecipe().getId().equals(id)) {
                     iterator.remove();
                 }
             }
             weekplanService.updateWeekplanDay(weekplanDay);
         }
-        recipeRepository.getById(id).getImages().forEach(image -> {
+        recipe.getImages().forEach(image -> {
             try {
                 recipeImageService.deleteImage(image.getUuid());
             } catch (IOException e) {
@@ -136,6 +148,30 @@ public class RecipeService {
 
             return recipeRepository.save(recipeUpdate);
         }).orElseThrow();
+    }
+
+    /** The details an operator may correct; ingredients, images and groups are untouched. */
+    public record RecipeDetails(String title, int servings, Long preparationTime, Long totalTime,
+            Recipe.RecipeType recipeType, List<String> preparationSteps) {
+
+        public RecipeDetails {
+            preparationSteps = preparationSteps == null ? List.of() : List.copyOf(preparationSteps);
+        }
+    }
+
+    /** Every detail given replaces the one that was there, so leaving one out clears it. */
+    public Recipe updateRecipeDetails(Long id, RecipeDetails details) throws ElementNotFound {
+        log.info("Updating the details of recipe {}", id);
+        var recipe = getRecipeById(id);
+
+        recipe.setTitle(details.title());
+        recipe.setServings(details.servings());
+        recipe.setPreparationTime(details.preparationTime());
+        recipe.setTotalTime(details.totalTime());
+        recipe.setRecipeType(details.recipeType());
+        recipe.setPreparationSteps(new ArrayList<>(details.preparationSteps()));
+
+        return recipeRepository.save(recipe);
     }
 
     public Recipe getRecipeById(Long id) throws ElementNotFound {

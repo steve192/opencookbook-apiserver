@@ -12,6 +12,10 @@ spring:
       enabled: true
   jpa:
     show-sql: false
+    properties:
+      hibernate:
+        # Fills lazy collections in batches instead of one query per parent.
+        default_batch_fetch_size: 50
 springdoc:
     api-docs:
         enabled: true

@@ -2,8 +2,7 @@ package com.sterul.opencookbookapiserver.controllers.admin.requests;
 
 import java.util.List;
 
-import com.sterul.opencookbookapiserver.entities.IngredientAlternativeNames;
-
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,9 +13,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AdminIngredientRequest {
-    private Long id;
+
+    @NotBlank
     private String name;
-    private List<IngredientAlternativeNames> alternativeNames;
+
+    private String additionalInfo;
+    private List<AlternativeNameRequest> alternativeNames;
     private Float nutrientsEnergy;
     private Float nutrientsFat;
     private Float nutrientsSaturatedFat;
@@ -25,4 +27,14 @@ public class AdminIngredientRequest {
     private Float nutrientsProtein;
     private Float nutrientsSalt;
 
+    /** One name the same ingredient also goes by, in one language. */
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class AlternativeNameRequest {
+        private Long id;
+        private String languageIsoCode;
+        private String alternativeName;
+    }
 }

@@ -39,6 +39,7 @@ import com.sterul.opencookbookapiserver.services.RefreshTokenService;
 import com.sterul.opencookbookapiserver.services.UserDetailsServiceImpl;
 import com.sterul.opencookbookapiserver.services.UserService;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
+import com.sterul.opencookbookapiserver.services.exceptions.LastAdministratorException;
 import com.sterul.opencookbookapiserver.services.exceptions.InvalidActivationLinkException;
 import com.sterul.opencookbookapiserver.services.exceptions.PasswordResetLinkNotExistingException;
 import com.sterul.opencookbookapiserver.services.exceptions.SignupDisabledException;
@@ -209,9 +210,11 @@ public class UserController extends BaseController {
         return response;
     }
 
-    @Operation(summary = "Delete authenticated user account")
+    @Operation(summary = "Delete authenticated user account",
+            description = "The last administrator who can sign in cannot delete themselves; the "
+                    + "instance would be left with nobody able to administer it.")
     @DeleteMapping("/self")
-    public ResponseEntity deleteOwnUser() {
+    public ResponseEntity deleteOwnUser() throws LastAdministratorException {
         var user = getLoggedInUser();
         if (Role.DEMO.equals(user.getRoles())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

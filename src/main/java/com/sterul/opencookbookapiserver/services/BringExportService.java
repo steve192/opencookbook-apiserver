@@ -1,5 +1,6 @@
 package com.sterul.opencookbookapiserver.services;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sterul.opencookbookapiserver.entities.BringExport;
+import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.repositories.BringExportRepository;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
@@ -28,7 +30,8 @@ public class BringExportService {
 
     public void deleteExpiredExports() {
         var allExports = bringExportRepository.findAll();
-        allExports.stream().filter(export -> export.getCreatedOn().plusSeconds(300).isBefore(Instant.now()))
+        var now = Instant.now();
+        allExports.stream().filter(export -> export.hasExpired(now))
                 .forEach(expiredExport -> {
                     bringExportRepository.delete(expiredExport);
                     log.info("Deleting expired bring export {} ({})", expiredExport.getId(),
@@ -36,18 +39,18 @@ public class BringExportService {
                 });
     }
 
+    public void deleteExport(String bringExportId) throws ElementNotFound {
+        var export = bringExportRepository.findById(bringExportId).orElseThrow(ElementNotFound::new);
+        log.info("Deleting bring export {}", bringExportId);
+        bringExportRepository.delete(export);
+    }
+
     public BringExport createBringExport(Long recipeId, CookpalUser user) throws ElementNotFound {
         var recipe = recipeService.getRecipeById(recipeId);
 
         var bringExport = BringExport.builder().baseAmount(recipe.getServings()).owner(user)
                 .ingredients(recipe.getNeededIngredients().stream()
-                        .map(ingredient -> {
-                            var amount = ingredient.getAmount() == null ? ""
-                                    : ingredient.getAmount().toString().replace(".0", "");
-                            var unit = ingredient.getUnit() == null ? "" : ingredient.getUnit();
-                            return amount + " "
-                                    + unit + " " + ingredient.getIngredient().getName();
-                        })
+                        .map(IngredientNeed::describe)
                         .toList())
                 .build();
 
@@ -56,7 +59,7 @@ public class BringExportService {
 
     public BringExport getBringExport(String bringExportId) throws ElementNotFound {
         var export = bringExportRepository.findById(bringExportId).orElseThrow(ElementNotFound::new);
-        if (export.getCreatedOn().plusSeconds(300).isBefore(Instant.now())) {
+        if (export.hasExpired(Instant.now())) {
             // Not valid anymore
             throw new ElementNotFound();
         }

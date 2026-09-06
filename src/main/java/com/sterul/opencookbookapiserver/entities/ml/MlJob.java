@@ -30,7 +30,7 @@ public class MlJob extends AuditableEntity {
     @Id
     private String id;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JsonIgnore
     private CookpalUser owner;
 

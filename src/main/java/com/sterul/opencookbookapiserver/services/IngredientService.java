@@ -1,14 +1,19 @@
 package com.sterul.opencookbookapiserver.services;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sterul.opencookbookapiserver.entities.Ingredient;
+import com.sterul.opencookbookapiserver.entities.IngredientAlternativeNames;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
+import com.sterul.opencookbookapiserver.repositories.projections.OwnerCount;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 import lombok.extern.slf4j.Slf4j;
@@ -61,7 +66,7 @@ public class IngredientService {
         ingredient.setId(null);
         ingredient.setPublicIngredient(true);
         ingredient.setAliasFor(null);
-        ingredient.getAlternativeNames().forEach(name -> name.setIngredient(ingredient));
+        adoptAlternativeNames(ingredient, Set.of());
         return ingredientRepository.save(ingredient);
     }
 
@@ -139,6 +144,10 @@ public class IngredientService {
         return ingredientRepository.findAllByIsPublicIngredient(true);
     }
 
+    public Map<Long, Long> countIngredientsPerOwner() {
+        return OwnerCount.asMap(ingredientRepository.countGroupedByOwner());
+    }
+
     public void deleteAllIngredientsOfUser(CookpalUser user) {
         log.info("Deleting all ingredients of user {}", user.getUserId());
         ingredientRepository.deleteAllByOwner(user);
@@ -155,11 +164,28 @@ public class IngredientService {
         newIngredient.setId(existingIngredient.getId());
         newIngredient.setOwner(existingIngredient.getOwner());
         newIngredient.setPublicIngredient(existingIngredient.isPublicIngredient());
-        newIngredient.getAlternativeNames().forEach(name -> name.setIngredient(newIngredient));
+        adoptAlternativeNames(newIngredient, idsOf(existingIngredient.getAlternativeNames()));
         if (existingIngredient.getAliasFor() != null) {
             newIngredient.setAliasFor(existingIngredient.getAliasFor());
         }
 
         return ingredientRepository.save(newIngredient);
+    }
+
+    /**
+     * Hangs the names off the ingredient. An id that is not already one of its own rows is
+     * dropped: carried in from elsewhere it would write over that other ingredient's name.
+     */
+    private void adoptAlternativeNames(Ingredient ingredient, Set<Long> ownNameIds) {
+        ingredient.getAlternativeNames().forEach(name -> {
+            if (name.getId() != null && !ownNameIds.contains(name.getId())) {
+                name.setId(null);
+            }
+            name.setIngredient(ingredient);
+        });
+    }
+
+    private Set<Long> idsOf(List<IngredientAlternativeNames> names) {
+        return names.stream().map(IngredientAlternativeNames::getId).collect(Collectors.toSet());
     }
 }
