@@ -1,0 +1,16 @@
+##
+## The plain text half of every mail. Not a courtesy: a mail with only an html part reads as
+## spam to a good many filters, and some people genuinely read mail as text.
+##
+## Whitespace here is the design, so mind the line breaks when editing.
+##
+$i18n.get("mail.app.name").toUpperCase()
+
+$body
+
+--
+$i18n.get("mail.app.tagline")
+$i18n.get("mail.common.footer.sentTo", $recipient)
+$i18n.get("mail.common.footer.automated")
+#if($instanceUrl)$instanceUrl
+#end

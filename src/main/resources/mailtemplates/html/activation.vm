@@ -1,0 +1,7 @@
+#heading($i18n.get("mail.activation.heading"))
+#paragraph($i18n.get("mail.common.greeting"))
+#paragraph($i18n.get("mail.activation.intro"))
+#button($activationLink $i18n.get("mail.activation.button"))
+#fallbackLink($activationLink)
+#divider()
+#note($i18n.get("mail.activation.ignore"))

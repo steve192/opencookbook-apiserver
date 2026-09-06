@@ -1,0 +1,10 @@
+$i18n.get("mail.accountDeleted.heading")
+
+$i18n.get("mail.common.greeting")
+
+$i18n.get("mail.accountDeleted.intro")
+
+$i18n.get("mail.accountDeleted.comeback")
+#if($instanceUrl)
+$i18n.get("mail.accountDeleted.button"): $instanceUrl
+#end

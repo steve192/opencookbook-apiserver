@@ -1,0 +1,53 @@
+##
+## The building blocks every mail body is written from, so that a new mail is a handful of
+## directives rather than another copy of the table markup below.
+##
+## Everything here is styled inline. Gmail's mobile apps drop <style> blocks for accounts that
+## are not Gmail accounts, so anything that only exists in the layout's stylesheet is an
+## enhancement, never the thing that carries the design.
+##
+## Colours are the app's own (src/styles/custom-theme-light.ts in the frontend):
+##   #72B600 color-primary-500   #5C9C00 color-primary-600   #F0FBC9 color-primary-100
+##
+#macro(heading $text)
+<h1 style="margin:0 0 16px 0;color:#1C2417;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:24px;line-height:32px;font-weight:700;mso-line-height-rule:exactly;" class="dark-heading">$text</h1>
+#end
+##
+#macro(paragraph $text)
+<p style="margin:0 0 16px 0;color:#3D4B33;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:16px;line-height:26px;mso-line-height-rule:exactly;" class="dark-text">$text</p>
+#end
+##
+## The small print: still readable, clearly secondary.
+#macro(note $text)
+<p style="margin:0 0 12px 0;color:#6B7A5E;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:14px;line-height:22px;mso-line-height-rule:exactly;" class="dark-muted">$text</p>
+#end
+##
+## A table cell rather than a styled anchor: bgcolor and cell padding are the only button
+## technique Outlook's Word engine renders as asked. It loses the rounded corners there and
+## nothing else.
+#macro(button $url $label)
+<table role="presentation" border="0" cellpadding="0" cellspacing="0" style="margin:8px 0 24px 0;">
+  <tr>
+    <td align="center" bgcolor="#72B600" style="background-color:#72B600;border-radius:8px;">
+      <a href="$url" target="_blank" style="display:block;padding:15px 32px;color:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:16px;line-height:20px;font-weight:700;text-decoration:none;border-radius:8px;mso-line-height-rule:exactly;">$label</a>
+    </td>
+  </tr>
+</table>
+#end
+##
+## The address in full, for everyone whose client swallowed the button. Long ids have to be
+## allowed to break mid-word or they push the whole layout wider than the screen.
+#macro(fallbackLink $url)
+<p style="margin:0 0 6px 0;color:#6B7A5E;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:13px;line-height:20px;mso-line-height-rule:exactly;" class="dark-muted">$i18n.get("mail.common.buttonFallback")</p>
+<p style="margin:0 0 8px 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:13px;line-height:20px;word-break:break-all;mso-line-height-rule:exactly;"><a href="$url" target="_blank" style="color:#5C9C00;text-decoration:underline;" class="dark-link">$url</a></p>
+#end
+##
+#macro(divider)
+<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="width:100%;">
+  <tr>
+    <td height="1" style="height:1px;line-height:1px;font-size:0;padding:12px 0 20px 0;">
+      <div style="height:1px;line-height:1px;font-size:0;background-color:#E6EADF;" class="dark-rule">&nbsp;</div>
+    </td>
+  </tr>
+</table>
+#end
