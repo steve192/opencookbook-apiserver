@@ -57,4 +57,9 @@ public interface MlJobRepository extends JpaRepository<MlJob, String> {
     }
 
     List<MlJob> findTop50ByStatusOrderByCreatedOnDesc(MlJobStatus status);
+
+    /** Newest first. A null owner or state means "any". */
+    @Query("select job from MlJob job where (:userId is null or job.owner.userId = :userId) "
+            + "and (:status is null or job.status = :status) order by job.createdOn desc")
+    List<MlJob> findMatching(@Param("userId") Long userId, @Param("status") MlJobStatus status);
 }

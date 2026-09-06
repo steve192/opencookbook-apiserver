@@ -1,5 +1,7 @@
 package com.sterul.opencookbookapiserver.entities;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +26,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BringExport extends AuditableEntity {
+
+    /** How long an export stays fetchable. */
+    public static final Duration LIFETIME = Duration.ofMinutes(5);
+
     @Id
     @UuidGenerator
     private String id;
@@ -37,4 +43,14 @@ public class BringExport extends AuditableEntity {
     @ElementCollection
     @Column(length = 10000)
     private List<String> ingredients = new ArrayList<>();
+
+    /** Null until it has been stored. */
+    public Instant getExpiresAt() {
+        return getCreatedOn() == null ? null : getCreatedOn().plus(LIFETIME);
+    }
+
+    public boolean hasExpired(Instant now) {
+        var expiresAt = getExpiresAt();
+        return expiresAt != null && !expiresAt.isAfter(now);
+    }
 }

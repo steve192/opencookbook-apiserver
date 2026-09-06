@@ -1,17 +1,24 @@
 package com.sterul.opencookbookapiserver.controllers.admin;
 
 import java.util.Comparator;
+import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sterul.opencookbookapiserver.configurations.ml.ConditionalOnMlConfigured;
+import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminMlJobResponse;
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminMlQuotaResponse;
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminMlStatisticsResponse;
+import com.sterul.opencookbookapiserver.entities.ml.MlJobStatus;
 import com.sterul.opencookbookapiserver.services.UserService;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.ml.MlAvailabilityService;
@@ -60,6 +67,36 @@ public class AdminMlController {
                                 .build())
                         .toList())
                 .build();
+    }
+
+    @Operation(summary = "Every scan on this instance, newest first",
+            description = "Optionally narrowed to one person or one state.")
+    @GetMapping("/jobs")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public List<AdminMlJobResponse> getJobs(
+            @RequestParam(required = false) Long userId,
+            @RequestParam(required = false) MlJobStatus status) {
+        log.info("Admin: Accessing the scan jobs");
+        return mlJobService.jobs(userId, status).stream()
+                .map(AdminMlJobResponse::fromEntity)
+                .toList();
+    }
+
+    @Operation(summary = "Let somebody try a scan again",
+            description = "A scan still running is stopped, and it stops counting against its "
+                    + "owner's daily allowance.")
+    @PostMapping("/jobs/{id}/reset")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public AdminMlJobResponse resetJob(@PathVariable String id) throws ElementNotFound {
+        return AdminMlJobResponse.fromEntity(mlJobService.resetJob(id));
+    }
+
+    @Operation(summary = "Delete a scan", description = "Stops it first if it is still running.")
+    @DeleteMapping("/jobs/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteJob(@PathVariable String id) throws ElementNotFound {
+        mlJobService.deleteJob(id);
     }
 
     @Operation(summary = "How much of today's scan allowance each person has used",

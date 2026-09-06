@@ -26,6 +26,11 @@
 
         <jjwt.version>0.13.0</jjwt.version>
         <velocity.version>2.4.1</velocity.version>
+
+        <!-- The admin panel, which is bundled into this server's static resources -->
+        <frontend-maven-plugin.version>1.15.1</frontend-maven-plugin.version>
+        <node.version>v20.19.0</node.version>
+        <skipAdminUi>false</skipAdminUi>
     </properties>
 
     <dependencies>
@@ -193,6 +198,45 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <!--
+                Builds the admin panel into src/main/resources/static before the resources are
+                copied, so a jar always carries the panel that belongs to it. The npm script
+                does nothing when neither the sources nor the dependencies have changed.
+                Skip it with -DskipAdminUi.
+            -->
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>${frontend-maven-plugin.version}</version>
+                <configuration>
+                    <workingDirectory>cookpal-admin-frontend</workingDirectory>
+                    <!-- Outside target, so a clean does not mean downloading node again -->
+                    <installDirectory>cookpal-admin-frontend</installDirectory>
+                    <skip>${skipAdminUi}</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>install-node-and-npm</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <configuration>
+                            <nodeVersion>${node.version}</nodeVersion>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>build-admin-panel</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>run build:if-changed</arguments>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>

@@ -3,6 +3,7 @@ package com.sterul.opencookbookapiserver.services;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,6 +20,7 @@ import com.sterul.opencookbookapiserver.repositories.PasswordResetLinkRepository
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.exceptions.InvalidActivationLinkException;
+import com.sterul.opencookbookapiserver.services.exceptions.LastAdministratorException;
 import com.sterul.opencookbookapiserver.services.exceptions.PasswordResetLinkNotExistingException;
 import com.sterul.opencookbookapiserver.services.exceptions.SignupDisabledException;
 import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
@@ -109,10 +111,42 @@ public class UserService {
         return activationLinkRepository.save(activationLink);
     }
 
-    public void activateUserById(Long userId) throws ElementNotFound {
-        var user = userRepository.findById(userId).orElseThrow(ElementNotFound::new);
-        user.setActivated(true);
-        userRepository.save(user);
+    public CookpalUser setUserActivation(Long userId, boolean activated)
+            throws ElementNotFound, LastAdministratorException {
+        var user = getUserById(userId);
+        requireAnAdministratorRemains(user, activated && user.getRoles() == Role.ADMIN);
+        user.setActivated(activated);
+        return userRepository.save(user);
+    }
+
+    /** Everything given replaces what was there, so a role of null takes the role away. */
+    public CookpalUser updateUser(Long userId, String emailAddress, boolean activated, Role role)
+            throws ElementNotFound, UserAlreadyExistsException, LastAdministratorException {
+        var user = getUserById(userId);
+        requireAnAdministratorRemains(user, activated && role == Role.ADMIN);
+
+        if (!emailAddress.equalsIgnoreCase(user.getEmailAddress())) {
+            if (userExists(emailAddress)) {
+                throw new UserAlreadyExistsException("User already exists");
+            }
+            log.info("Changing the address of user {} to {}", userId, emailAddress);
+            user.setEmailAddress(emailAddress);
+        }
+
+        user.setActivated(activated);
+        user.setRoles(role);
+        return userRepository.save(user);
+    }
+
+    /** Only the admin panel gives the role back, so losing the last one is final. */
+    private void requireAnAdministratorRemains(CookpalUser user, boolean staysAnAdministrator)
+            throws LastAdministratorException {
+        if (staysAnAdministrator || user.getRoles() != Role.ADMIN || !user.isActivated()) {
+            return;
+        }
+        if (userRepository.countByRolesAndActivated(Role.ADMIN, true) <= 1) {
+            throw new LastAdministratorException();
+        }
     }
 
     public CookpalUser activateUser(String activationId) throws InvalidActivationLinkException {
@@ -127,10 +161,11 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public void deleteUser(CookpalUser user) {
+    public void deleteUser(CookpalUser user) throws LastAdministratorException {
+        requireAnAdministratorRemains(user, false);
         log.info("Deleting user {}", user);
         var recipes = recipeService.getRecipesByOwner(user);
-        recipes.forEach(recipe -> recipeService.deleteRecipe(recipe.getId()));
+        recipes.forEach(recipeService::deleteRecipe);
 
         var recipeGroups = recipeGroupService.getRecipeGroupsByOwner(user);
         recipeGroups.forEach(group -> recipeGroupService.deleteRecipeGroup(group.getId()));
@@ -222,14 +257,30 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public CookpalUser getUserById(Long id) throws ElementNotFound {
-        return userRepository.findById(id).orElseThrow(ElementNotFound::new);
+    /** One row of the operator's overview: an account and how much it holds. */
+    public record UserHoldings(CookpalUser user, long recipeCount, long ingredientCount) {
     }
 
-    public CookpalUser updateUserRoles(Long id, List<Role> roles) throws ElementNotFound {
-        var user = getUserById(id);
-        // Change if multiple roles are supported some time
-        user.setRoles(roles.get(0));
-        return userRepository.save(user);
+    /**
+     * Two grouped queries for the whole instance, not a pair of counts per account. Only the
+     * overview needs these numbers, so nothing else asks for them one account at a time.
+     */
+    public List<UserHoldings> getAllUserHoldings() {
+        var recipeCounts = recipeService.countRecipesPerOwner();
+        var ingredientCounts = ingredientService.countIngredientsPerOwner();
+
+        return getAllUsers().stream()
+                .map(user -> new UserHoldings(user,
+                        countOf(recipeCounts, user),
+                        countOf(ingredientCounts, user)))
+                .toList();
+    }
+
+    private static long countOf(Map<Long, Long> counts, CookpalUser user) {
+        return counts.getOrDefault(user.getUserId(), 0L);
+    }
+
+    public CookpalUser getUserById(Long id) throws ElementNotFound {
+        return userRepository.findById(id).orElseThrow(ElementNotFound::new);
     }
 }

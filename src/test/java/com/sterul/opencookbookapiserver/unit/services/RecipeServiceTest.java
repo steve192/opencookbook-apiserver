@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.sterul.opencookbookapiserver.entities.Ingredient;
+import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.entities.WeekplanDay;
@@ -107,7 +109,7 @@ class RecipeServiceTest {
     }
 
     @Test
-    void recipeDeleted() throws IOException {
+    void recipeDeleted() throws IOException, ElementNotFound {
         whenRecipeIsLoadableById(recipe("test", 1L));
 
         cut.deleteRecipe(1L);
@@ -117,10 +119,9 @@ class RecipeServiceTest {
     }
 
     @Test
-    void recipeDeletionWithdrawsItsShares() {
+    void recipeDeletionWithdrawsItsShares() throws ElementNotFound {
         var deletedRecipe = recipe("test", 1L);
         whenRecipeIsLoadableById(deletedRecipe);
-        when(recipeRepository.getReferenceById(1L)).thenReturn(deletedRecipe);
 
         cut.deleteRecipe(1L);
 
@@ -130,7 +131,7 @@ class RecipeServiceTest {
     }
 
     @Test
-    void recipeDeletionTriggersWeekplanChange() {
+    void recipeDeletionTriggersWeekplanChange() throws ElementNotFound {
         when(weekplanService.getWeekplanDaysByRecipe(1L)).thenReturn(List.of(mockWeekplanDay));
         whenRecipeIsLoadableById(recipe("Test", 1L));
 
@@ -176,7 +177,7 @@ class RecipeServiceTest {
     }
 
     private void whenRecipeIsLoadableById(Recipe recipe) {
-        when(recipeRepository.getById(recipe.getId())).thenReturn(recipe);
+        when(recipeRepository.findById(recipe.getId())).thenReturn(Optional.of(recipe));
     }
 
     private void whenSearchableRecipesAre(Recipe... recipes) {
