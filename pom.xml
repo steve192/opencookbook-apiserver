@@ -28,7 +28,7 @@
         <velocity.version>2.4.1</velocity.version>
 
         <!-- The admin panel, which is bundled into this server's static resources -->
-        <frontend-maven-plugin.version>1.15.1</frontend-maven-plugin.version>
+        <frontend-maven-plugin.version>2.0.2</frontend-maven-plugin.version>
         <node.version>v20.19.0</node.version>
         <skipAdminUi>false</skipAdminUi>
     </properties>
