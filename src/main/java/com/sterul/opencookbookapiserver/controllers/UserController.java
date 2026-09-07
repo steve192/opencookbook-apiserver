@@ -44,6 +44,7 @@ import com.sterul.opencookbookapiserver.services.exceptions.InvalidActivationLin
 import com.sterul.opencookbookapiserver.services.exceptions.PasswordResetLinkNotExistingException;
 import com.sterul.opencookbookapiserver.services.exceptions.SignupDisabledException;
 import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
+import com.sterul.opencookbookapiserver.services.mail.MailLanguages;
 import com.sterul.opencookbookapiserver.util.JwtTokenUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -76,13 +77,18 @@ public class UserController extends BaseController {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private MailLanguages mailLanguages;
+
     @Operation(summary = "Creates a new user")
     @PostMapping("/signup")
     @Transactional
     public CookpalUser signup(@Valid @RequestBody UserCreationRequest userCreationRequest)
             throws UserAlreadyExistsException, SignupDisabledException {
+        // Whatever the client asked for in Accept-Language, which is the only thing known about
+        // a person who does not have an account yet.
         var createdUser = userService.createUser(userCreationRequest.emailAddress(),
-                userCreationRequest.password());
+                userCreationRequest.password(), mailLanguages.fromCurrentRequest().orElse(null));
         var activationLink = userService.createActivationLink(createdUser);
         try {
             emailService.sendActivationMail(activationLink);
@@ -115,11 +121,14 @@ public class UserController extends BaseController {
 
         final String token = jwtTokenUtil.generateToken(userDetails);
 
+        var user = userService.getUserByEmail(userDetails.getUsername());
+        // Signing in is the clearest statement a client makes about which language it is in.
+        userService.rememberLanguageOfCurrentRequest(user);
+
         var response = UserLoginResponse.builder()
                 .token(token)
                 .userActive(true)
-                .refreshToken(refreshTokenService.createRefreshTokenForUser(
-                        userService.getUserByEmail(userDetails.getUsername())).getToken())
+                .refreshToken(refreshTokenService.createRefreshTokenForUser(user).getToken())
                 .build();
 
         return ResponseEntity.ok(response);
@@ -237,6 +246,10 @@ public class UserController extends BaseController {
             throw new NotAuthorizedException();
         }
         var userDetails = userDetailsService.loadUserByUsername(refreshToken.getOwner().getEmailAddress());
+        // The app renews its token every few minutes, which makes this the place where a change
+        // of app language is noticed without waiting for the next sign in. It only writes when
+        // the answer is different from the stored one.
+        userService.rememberLanguageOfCurrentRequest(refreshToken.getOwner());
         var jwtToken = jwtTokenUtil.generateToken(userDetails);
 
         var response = new RefreshTokenResponse();

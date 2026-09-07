@@ -1,0 +1,10 @@
+$i18n.get("mail.activation.heading")
+
+$i18n.get("mail.common.greeting")
+
+$i18n.get("mail.activation.intro")
+
+$i18n.get("mail.activation.button"):
+$activationLink
+
+$i18n.get("mail.activation.ignore")

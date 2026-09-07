@@ -9,6 +9,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
+import com.sterul.opencookbookapiserver.services.AppLinkFactory;
 import com.sterul.opencookbookapiserver.services.sharing.ShareLinkFactory;
 
 /**
@@ -23,7 +24,7 @@ class ShareLinkFactoryTest {
     private static final String SHARE_ID = "f88e77ba-fc97-4729-8bf7-3e0f21b55823";
 
     private final OpencookbookConfiguration configuration = new OpencookbookConfiguration();
-    private final ShareLinkFactory cut = new ShareLinkFactory(configuration);
+    private final ShareLinkFactory cut = new ShareLinkFactory(new AppLinkFactory(configuration));
 
     @AfterEach
     void forgetTheRequest() {

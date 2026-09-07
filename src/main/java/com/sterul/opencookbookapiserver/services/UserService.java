@@ -3,6 +3,7 @@ package com.sterul.opencookbookapiserver.services;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import com.sterul.opencookbookapiserver.services.exceptions.LastAdministratorExc
 import com.sterul.opencookbookapiserver.services.exceptions.PasswordResetLinkNotExistingException;
 import com.sterul.opencookbookapiserver.services.exceptions.SignupDisabledException;
 import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
+import com.sterul.opencookbookapiserver.services.mail.MailLanguages;
 
 import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
@@ -69,12 +71,20 @@ public class UserService {
     @Autowired
     private OpencookbookConfiguration opencookbookConfiguration;
 
+    @Autowired
+    private MailLanguages mailLanguages;
+
     public CookpalUser getUserByEmail(String username) {
         return userRepository.findByEmailAddress(username);
     }
 
+    /**
+     * @param language the language to write to this account in, or null when the client did not
+     *                 say - which leaves the account on the default rather than pinning it to a
+     *                 guess it can never be talked out of
+     */
     public com.sterul.opencookbookapiserver.entities.account.CookpalUser createUser(String emailAddress,
-            String unencryptedPassword) throws UserAlreadyExistsException, SignupDisabledException {
+            String unencryptedPassword, Locale language) throws UserAlreadyExistsException, SignupDisabledException {
         if (!opencookbookConfiguration.isAllowSignup()) {
             throw new SignupDisabledException();
         }
@@ -86,9 +96,32 @@ public class UserService {
         createdUser.setEmailAddress(emailAddress);
         createdUser.setPasswordHash(passwordEncoder.encode(unencryptedPassword));
         createdUser.setActivated(opencookbookConfiguration.isActivateUsersAfterSignup());
+        createdUser.setLanguage(language == null ? null : language.getLanguage());
         createdUser = userRepository.save(createdUser);
 
         return createdUser;
+    }
+
+    /**
+     * Keep the account's language in step with the client it is being used from, so that a mail
+     * sent months later is still in the language the app is in.
+     *
+     * Called from the few places that already know who is asking - signing up, signing in,
+     * renewing a token - rather than from a filter, and it writes only when the answer actually
+     * changed, so a client that keeps saying the same thing costs nothing.
+     */
+    public void rememberLanguage(CookpalUser user, Locale language) {
+        if (user == null || language == null || language.getLanguage().equals(user.getLanguage())) {
+            return;
+        }
+        log.info("Language of user {} is now {}", user, language.getLanguage());
+        user.setLanguage(language.getLanguage());
+        userRepository.save(user);
+    }
+
+    /** What the client asking right now wants, if it said and if we have it. */
+    public void rememberLanguageOfCurrentRequest(CookpalUser user) {
+        mailLanguages.fromCurrentRequest().ifPresent(language -> rememberLanguage(user, language));
     }
 
     public boolean userExists(String emailAddress) {

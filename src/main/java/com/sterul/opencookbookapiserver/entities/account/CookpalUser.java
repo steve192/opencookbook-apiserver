@@ -33,6 +33,16 @@ public class CookpalUser extends AuditableEntity {
     @Enumerated(EnumType.STRING)
     private Role roles;
 
+    /**
+     * The language mails to this account are written in, as a plain language tag ("de", "en").
+     *
+     * Kept on the account because a mail is usually sent while nobody is holding a request open
+     * - and even when one is, the account is the better answer than whatever browser happens to
+     * be asking. It is filled in from the client's Accept-Language and updated whenever that
+     * changes, so an account that has never said anything leaves it null and gets the default.
+     */
+    private String language;
+
     @Override
     public String toString() {
         return getUserId() + " " + getEmailAddress();

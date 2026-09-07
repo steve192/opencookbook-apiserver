@@ -1,0 +1,110 @@
+##
+## The shell every mail is poured into. $body is already rendered html, produced by one of the
+## templates next to this file.
+##
+## Written for the worst client rather than the best one: tables for layout, inline styles for
+## everything that matters, a single column, and no image the mail depends on. The <style>
+## block below only adds the things that can be lost without hurting - the small screen tweaks
+## and the dark palette.
+##
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="$lang">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="x-apple-disable-message-reformatting" />
+<meta name="color-scheme" content="light dark" />
+<meta name="supported-color-schemes" content="light dark" />
+<title>$title</title>
+<!--[if mso]>
+<style type="text/css">
+  body, table, td, a, p, h1 { font-family: Arial, Helvetica, sans-serif !important; }
+</style>
+<noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript>
+<![endif]-->
+<style type="text/css">
+  /* Clients that leave a message its own line height put gaps between stacked table rows. */
+  body { margin:0 !important; padding:0 !important; width:100% !important; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
+  table { border-collapse:collapse !important; mso-table-lspace:0pt; mso-table-rspace:0pt; }
+  img { border:0; outline:none; text-decoration:none; -ms-interpolation-mode:bicubic; }
+  a { text-decoration:underline; }
+
+  /* Outlook.com and iOS turn addresses and dates into links of their own choosing. */
+  .appleLinks a, a[x-apple-data-detectors] { color:inherit !important; text-decoration:none !important; font-size:inherit !important; font-family:inherit !important; font-weight:inherit !important; line-height:inherit !important; }
+  #MessageViewBody a { color:inherit; text-decoration:none; font-size:inherit; font-family:inherit; font-weight:inherit; line-height:inherit; }
+
+  @media only screen and (max-width:620px) {
+    .wrap { width:100% !important; }
+    .gutter { padding-left:20px !important; padding-right:20px !important; }
+    .pad-y { padding-top:28px !important; padding-bottom:28px !important; }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .dark-page { background-color:#12170E !important; }
+    .dark-card { background-color:#1B2216 !important; border-color:#2C3724 !important; }
+    .dark-heading { color:#F2F7EA !important; }
+    .dark-text { color:#D3DEC6 !important; }
+    .dark-muted { color:#9BA98C !important; }
+    .dark-link { color:#9ED334 !important; }
+    .dark-rule > div, .dark-rule { background-color:#2C3724 !important; }
+  }
+</style>
+</head>
+<body style="margin:0;padding:0;background-color:#F4F6F0;" class="dark-page">
+
+## Shown in the inbox next to the subject and nowhere else. The filler stops the client from
+## carrying on into the body text to fill up the preview.
+<div style="display:none;font-size:1px;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;mso-hide:all;">$preheader&#847;&nbsp;&#847;&nbsp;&#847;&nbsp;&#847;&nbsp;&#847;&nbsp;&#847;&nbsp;&#847;&nbsp;&#847;&nbsp;&#847;&nbsp;&#847;&nbsp;&#847;&nbsp;&#847;&nbsp;&#847;&nbsp;&#847;&nbsp;&#847;&nbsp;&#847;&nbsp;&#847;&nbsp;&#847;&nbsp;</div>
+
+<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="width:100%;background-color:#F4F6F0;" class="dark-page">
+  <tr>
+    <td align="center" style="padding:32px 12px;" class="pad-y">
+
+      <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="600" class="wrap" style="width:600px;max-width:600px;">
+
+        <!-- brand -->
+        <tr>
+          <td align="center" style="padding:0 0 22px 0;">
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="padding-right:10px;line-height:0;">
+                  <img src="cid:$logoContentId" width="40" height="40" alt="" style="display:block;width:40px;height:40px;" />
+                </td>
+                <td style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:23px;line-height:28px;font-weight:700;letter-spacing:-0.2px;color:#4A7A00;mso-line-height-rule:exactly;" class="dark-link">$i18n.get("mail.app.name")</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- card -->
+        <tr>
+          <td style="background-color:#FFFFFF;border:1px solid #E6EADF;border-radius:14px;" class="dark-card">
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="width:100%;">
+              <tr>
+                <td height="5" bgcolor="#72B600" style="height:5px;line-height:5px;font-size:0;border-radius:14px 14px 0 0;">&nbsp;</td>
+              </tr>
+              <tr>
+                <td style="padding:36px 40px 32px 40px;" class="gutter">
+$body
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- footer -->
+        <tr>
+          <td align="center" style="padding:22px 16px 8px 16px;">
+            <p style="margin:0 0 6px 0;color:#7C8A6E;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:13px;line-height:20px;mso-line-height-rule:exactly;" class="dark-muted">$i18n.get("mail.app.tagline")</p>
+            <p style="margin:0 0 6px 0;color:#9AA88C;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:12px;line-height:18px;mso-line-height-rule:exactly;" class="dark-muted appleLinks">$i18n.get("mail.common.footer.sentTo", $recipient)</p>
+            <p style="margin:0;color:#9AA88C;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-size:12px;line-height:18px;mso-line-height-rule:exactly;" class="dark-muted">$i18n.get("mail.common.footer.automated")#if($instanceUrl) &middot; <a href="$instanceUrl" target="_blank" style="color:#5C9C00;text-decoration:underline;" class="dark-link">$instanceHost</a>#end</p>
+          </td>
+        </tr>
+
+      </table>
+
+    </td>
+  </tr>
+</table>
+</body>
+</html>
