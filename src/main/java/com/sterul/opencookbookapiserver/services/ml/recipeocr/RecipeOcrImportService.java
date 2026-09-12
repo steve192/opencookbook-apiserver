@@ -12,6 +12,7 @@ import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
+import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
 import com.sterul.opencookbookapiserver.services.ml.MlSubsystemException;
 import com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers.IngredientExtractor;
 import com.sterul.opencookbookapiserver.util.IngredientUnitHelper;
@@ -39,13 +40,13 @@ public class RecipeOcrImportService {
         try {
             var result = gson.fromJson(resultJson, RecipeOcrResult.class);
             if (result == null) {
-                throw new MlSubsystemException("ML_EMPTY_RESULT",
-                        "The subsystem returned no recipe", false);
+                throw new MlSubsystemException(ApiErrorCode.SCAN_NO_TEXT_FOUND,
+                        "The subsystem returned no recipe");
             }
             return result;
         } catch (JsonSyntaxException e) {
-            throw new MlSubsystemException("ML_MALFORMED_RESULT",
-                    "The subsystem's recipe could not be read", false, e);
+            throw new MlSubsystemException(ApiErrorCode.SCAN_FAILED,
+                    "The subsystem's recipe could not be read", e);
         }
     }
 

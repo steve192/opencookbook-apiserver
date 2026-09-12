@@ -1,9 +1,11 @@
 package com.sterul.opencookbookapiserver.services.exceptions;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
+import com.sterul.opencookbookapiserver.errors.ApiException;
 
-@ResponseStatus(value = HttpStatus.NOT_FOUND)
-public class ElementNotFound extends Exception{
-    
+public class ElementNotFound extends ApiException {
+
+    public ElementNotFound() {
+        super(ApiErrorCode.RESOURCE_NOT_FOUND);
+    }
 }

@@ -31,11 +31,16 @@ public class MlJobResponse {
 
     private Error error;
 
+    /**
+     * Why a scan did not finish.
+     *
+     * The code alone, because the subsystem's own wording is written for whoever operates it -
+     * the app has its own for each code, and an administrator sees the original.
+     */
     @Data
     @Builder
     public static class Error {
         private String code;
-        private String message;
         private boolean retryable;
     }
 
@@ -59,7 +64,6 @@ public class MlJobResponse {
         }
         return Error.builder()
                 .code(job.getErrorCode())
-                .message(job.getErrorMessage())
                 .retryable(job.isErrorRetryable())
                 .build();
     }

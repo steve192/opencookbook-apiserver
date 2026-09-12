@@ -40,7 +40,7 @@ import com.sterul.opencookbookapiserver.services.ml.MlSubmitterIds;
 import com.sterul.opencookbookapiserver.services.ml.MlSubsystemException;
 import com.sterul.opencookbookapiserver.services.ml.MlSubsystemProxy;
 import com.sterul.opencookbookapiserver.services.ml.MlUnavailableException;
-import com.sterul.opencookbookapiserver.services.ml.MlUserQuotaExceededException;
+import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
 import com.sterul.opencookbookapiserver.services.ml.RecipeOcrPayload;
 import com.sterul.opencookbookapiserver.unit.MovableClock;
 
@@ -96,7 +96,7 @@ class MlJobServiceTest {
         // The point of the feature: the count is what has to change, not just a flag.
         when(repository.countUsageSince(eq(owner), any()))
                 .thenReturn(2L, 0L);
-        assertThrows(MlUserQuotaExceededException.class,
+        assertThrows(MlSubsystemException.class,
                 () -> cut.submitRecipeOcr(owner, List.of(), new RecipeOcrPayload(), false));
         when(repository.findUsageSince(eq(owner), any()))
                 .thenReturn(List.of(MlJob.builder().id("a").owner(owner).build()));
@@ -129,9 +129,10 @@ class MlJobServiceTest {
         when(repository.countUsageSince(eq(owner), any()))
                 .thenReturn(2L);
 
-        assertThrows(MlUserQuotaExceededException.class,
+        var thrown = assertThrows(MlSubsystemException.class,
                 () -> cut.submitRecipeOcr(owner, List.of(), new RecipeOcrPayload(), false));
 
+        assertEquals(ApiErrorCode.SCAN_DAILY_LIMIT_REACHED, thrown.getErrorCode());
         verify(proxy, never()).submitRecipeOcr(anyString(), any(RecipeOcrPayload.class),
                 anyList(), anyBoolean(), anyString());
         verify(repository, never()).save(any(MlJob.class));
@@ -161,14 +162,14 @@ class MlJobServiceTest {
     @Test
     void aRefusedSubmissionLeavesAFailedJobRatherThanOneThatWaitsForEver() throws Exception {
         when(submitted())
-                .thenThrow(new MlSubsystemException("ATTACHMENT_TOO_LARGE", "too big", false));
+                .thenThrow(new MlSubsystemException(ApiErrorCode.SCAN_IMAGE_TOO_LARGE, "too big"));
 
         assertThrows(MlSubsystemException.class,
                 () -> cut.submitRecipeOcr(owner, List.of(), new RecipeOcrPayload(), false));
 
         var saved = savedJob();
         assertEquals(MlJobStatus.FAILED, saved.getStatus());
-        assertEquals("ATTACHMENT_TOO_LARGE", saved.getErrorCode());
+        assertEquals("SCAN_IMAGE_TOO_LARGE", saved.getErrorCode());
         assertEquals(clock.instant(), saved.getFinishedAt());
     }
 
@@ -176,7 +177,7 @@ class MlJobServiceTest {
     void aScanTheSubsystemNeverTookOnDoesNotCostSomebodyTheirDay() throws Exception {
         // The allowance rations the instance's allowance with the subsystem, and a submission
         // that never arrived spent none of it.
-        when(submitted()).thenThrow(new MlUnavailableException("ML_UNREACHABLE", "down"));
+        when(submitted()).thenThrow(new MlUnavailableException("down"));
 
         assertThrows(MlUnavailableException.class,
                 () -> cut.submitRecipeOcr(owner, List.of(), new RecipeOcrPayload(), false));
@@ -199,7 +200,7 @@ class MlJobServiceTest {
 
     @Test
     void anUnreachableSubsystemIsRememberedSoTheFeatureCanSwitchItselfOff() throws Exception {
-        when(submitted()).thenThrow(new MlUnavailableException("ML_UNREACHABLE", "down"));
+        when(submitted()).thenThrow(new MlUnavailableException("down"));
 
         assertThrows(MlUnavailableException.class,
                 () -> cut.submitRecipeOcr(owner, List.of(), new RecipeOcrPayload(), false));
@@ -253,7 +254,7 @@ class MlJobServiceTest {
         var job = queuedJob();
         when(repository.findByStatusIn(anyList())).thenReturn(List.of(job));
         when(proxy.fetch(REMOTE_ID))
-                .thenThrow(new MlUnavailableException("ML_UNREACHABLE", "down"));
+                .thenThrow(new MlUnavailableException("down"));
 
         cut.refreshUnfinishedJobs();
 
@@ -271,7 +272,7 @@ class MlJobServiceTest {
         cut.refreshUnfinishedJobs();
 
         assertEquals(MlJobStatus.FAILED, job.getStatus());
-        assertEquals("ML_TIMEOUT", job.getErrorCode());
+        assertEquals("SCAN_TIMED_OUT", job.getErrorCode());
         verify(proxy, never()).fetch(anyString());
     }
 

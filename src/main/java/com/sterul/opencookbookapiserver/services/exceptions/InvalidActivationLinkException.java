@@ -1,8 +1,11 @@
 package com.sterul.opencookbookapiserver.services.exceptions;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
+import com.sterul.opencookbookapiserver.errors.ApiException;
 
-@ResponseStatus( HttpStatus.NOT_FOUND )
-public class InvalidActivationLinkException extends Exception {
+public class InvalidActivationLinkException extends ApiException {
+
+    public InvalidActivationLinkException() {
+        super(ApiErrorCode.ACTIVATION_LINK_INVALID);
+    }
 }

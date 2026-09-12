@@ -2,6 +2,7 @@ package com.sterul.opencookbookapiserver.integration;
 
 import static com.sterul.opencookbookapiserver.integration.TestUtils.whenAuthenticated;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -69,7 +70,7 @@ class BringExportAPITest extends IntegrationTest {
         }
 
         @Test
-        void cannotGenerateExportForOtherUser() throws ElementNotFound {
+        void cannotGenerateExportForOtherUser() {
                 var testRecipe = Recipe.builder()
                                 .owner(new CookpalUser(123l, "tester_other@test.invalid", "dpsadjopsad", true, null, null))
                                 .servings(10)
@@ -84,8 +85,9 @@ class BringExportAPITest extends IntegrationTest {
                 whenAuthenticated(userRepository);
                 when(recipeRepository.findById(any())).thenReturn(Optional.of(testRecipe));
 
-                var result = cut.createBringExport(new ExportCreationRequest(123456789l));
-
-                assertEquals( HttpStatus.UNAUTHORIZED, result.getStatusCode());
+                // "Not found" rather than "not allowed", so that this cannot be used to find
+                // out which recipe ids exist.
+                assertThrows(ElementNotFound.class,
+                                () -> cut.createBringExport(new ExportCreationRequest(123456789l)));
         }
 }

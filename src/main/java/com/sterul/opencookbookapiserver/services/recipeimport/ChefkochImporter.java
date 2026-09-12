@@ -34,7 +34,7 @@ public class ChefkochImporter extends AbstractRecipeImporter {
                     response -> EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8));
             publicRecipe = gson.fromJson(jsonString, ChefkochPublicRecipe.class);
         } catch (IOException e) {
-            throw new RecipeImportFailedException();
+            throw new RecipeImportFailedException("Could not read recipe " + recipeId, e);
         }
 
         extractGeneralInformation(importRecipe, publicRecipe);
@@ -43,7 +43,7 @@ public class ChefkochImporter extends AbstractRecipeImporter {
         try {
             extractAndSaveImages(importRecipe, recipeId, publicRecipe, owner);
         } catch (IOException e) {
-            throw new RecipeImportFailedException();
+            throw new RecipeImportFailedException("Could not save images of recipe " + recipeId, e);
         }
         extractIngredientNeeds(importRecipe, publicRecipe);
 

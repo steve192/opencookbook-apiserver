@@ -9,8 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
-import com.sterul.opencookbookapiserver.services.recipeimport.ImportNotSupportedException;
-import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImportFailedException;
+import com.sterul.opencookbookapiserver.errors.ApiException;
 import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImporterFactory;
 
 @Service
@@ -23,8 +22,7 @@ public class RecipeImportService {
     @Autowired
     private RecipeService recipeService;
 
-    public Recipe importRecipe(String importUrl, CookpalUser owner)
-            throws ImportNotSupportedException, RecipeImportFailedException {
+    public Recipe importRecipe(String importUrl, CookpalUser owner) throws ApiException {
         var importer = importerFactory.getRecipeImporter(importUrl);
         var importedRecipe = importer.importRecipe(importUrl, owner);
         return recipeService.createNewRecipe(importedRecipe);

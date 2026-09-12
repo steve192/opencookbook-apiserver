@@ -32,6 +32,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.configurations.ml.ConditionalOnMlConfigured;
+import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
 import com.sterul.opencookbookapiserver.entities.ml.MlJobStatus;
 
 import lombok.extern.slf4j.Slf4j;
@@ -138,9 +139,8 @@ public class MlSubsystemProxy {
         } catch (RuntimeException e) {
             // Gson throws whatever it likes at an unexpected shape; the caller wants to hear
             // that the subsystem answered oddly.
-            throw new MlSubsystemException("ML_MALFORMED_RESPONSE",
-                    "The machine learning subsystem answered with something unreadable",
-                    false, e);
+            throw new MlSubsystemException(ApiErrorCode.SCAN_FAILED,
+                    "The machine learning subsystem answered with something unreadable", e);
         }
     }
 
@@ -210,7 +210,7 @@ public class MlSubsystemProxy {
         try {
             response = httpClient.execute(request, RESPONSE_HANDLER);
         } catch (IOException e) {
-            throw new MlUnavailableException("ML_UNREACHABLE",
+            throw new MlUnavailableException(
                     "The machine learning subsystem could not be reached", e);
         }
 
@@ -222,7 +222,7 @@ public class MlSubsystemProxy {
 
     private MlSubsystemException failureFor(RawResponse response) {
         var error = errorOf(response.body());
-        var code = error == null ? "ML_ERROR" : stringOrEmpty(error, "code");
+        var code = error == null ? null : stringOrEmpty(error, "code");
         var message = error == null
                 ? "The machine learning subsystem returned " + response.statusCode()
                 : stringOrEmpty(error, "message");
@@ -232,15 +232,12 @@ public class MlSubsystemProxy {
         if (response.statusCode() == HttpStatus.SC_UNAUTHORIZED
                 || response.statusCode() == HttpStatus.SC_FORBIDDEN) {
             log.error("The machine learning subsystem rejected our token: {}", message);
-            return new MlUnavailableException(code, message);
-        }
-        if (response.statusCode() == HttpStatus.SC_TOO_MANY_REQUESTS) {
-            return new MlQuotaExceededException(code, message);
+            return new MlUnavailableException(message);
         }
         if (response.statusCode() >= 500) {
-            return new MlUnavailableException(code, message);
+            return new MlUnavailableException(message);
         }
-        return new MlSubsystemException(code, message, flag(error, "retryable"));
+        return new MlSubsystemException(MlErrorCodes.of(code), message);
     }
 
     private MlJobState toState(JsonObject body) {
@@ -274,8 +271,8 @@ public class MlSubsystemProxy {
         try {
             return JsonParser.parseString(body).getAsJsonObject();
         } catch (JsonSyntaxException | IllegalStateException e) {
-            throw new MlSubsystemException("ML_MALFORMED_RESPONSE",
-                    "The machine learning subsystem answered with something unreadable", false, e);
+            throw new MlSubsystemException(ApiErrorCode.SCAN_FAILED,
+                    "The machine learning subsystem answered with something unreadable", e);
         }
     }
 
@@ -300,8 +297,8 @@ public class MlSubsystemProxy {
         try {
             return image.getBytes();
         } catch (IOException e) {
-            throw new MlSubsystemException("ML_UPLOAD_UNREADABLE",
-                    "An uploaded image could not be read", false, e);
+            throw new MlSubsystemException(ApiErrorCode.SCAN_IMAGE_UNREADABLE,
+                    "An uploaded image could not be read", e);
         }
     }
 

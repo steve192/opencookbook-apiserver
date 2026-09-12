@@ -3,6 +3,7 @@ package com.sterul.opencookbookapiserver.configurations.security;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -26,23 +27,38 @@ import com.sterul.opencookbookapiserver.controllers.sharing.SharePaths;
 @EnableMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfiguration {
 
-        private static final String[] AUTH_WHITELIST = {
+        /**
+         * Everything under /users a stranger can reach. Also what the auth rate limit counts,
+         * so the two cannot drift apart and leave a new endpoint uncounted.
+         */
+        static final String[] UNAUTHENTICATED_USER_PATHS = {
                         "/api/v1/users/signup",
                         "/api/v1/users/activate",
                         "/api/v1/users/resendActivationLink",
                         "/api/v1/users/requestPasswordReset",
                         "/api/v1/users/resetPassword",
-                        "/api/v1/users/login",
-                        "/api/v1/users/refreshToken",
-                        "/swagger-ui/**",
-                        "/api-docs/**",
-                        "/api/v1/instance/**",
-                        "/api/v1/bringexport/**",
-                        SharePaths.PUBLIC_PATTERN,
-                        "/error",
-                        "/actuator/health",
-                        "/admin/**"
+                        "/api/v1/users/login"
         };
+
+        /**
+         * Public as well, but left out of the budget: the app renews every few minutes, so a
+         * household behind one address would exhaust any sane limit in normal use.
+         */
+        private static final String REFRESH_TOKEN_PATH = "/api/v1/users/refreshToken";
+
+        private static final String[] AUTH_WHITELIST = Stream.concat(
+                        Arrays.stream(UNAUTHENTICATED_USER_PATHS),
+                        Stream.of(
+                                        REFRESH_TOKEN_PATH,
+                                        "/swagger-ui/**",
+                                        "/api-docs/**",
+                                        "/api/v1/instance/**",
+                                        "/api/v1/bringexport/**",
+                                        SharePaths.PUBLIC_PATTERN,
+                                        "/error",
+                                        "/actuator/health",
+                                        "/admin/**"))
+                        .toArray(String[]::new);
         @Autowired
         private UnauthorizedEntryPoint unauthorizedEntryPoint;
         @Autowired
