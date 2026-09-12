@@ -63,12 +63,14 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
 
         Integer servings;
         try {
+            // A page the scraper only partly understood comes back with fields missing, so this
+            // has to survive a null as readily as it survives "a few".
             servings = Integer.parseInt(scrapedRecipe.yields.split(" ")[0]);
-            if (servings == null || servings < 1) {
+            if (servings < 1) {
                 // Servings must atleast be 1
                 servings = 1;
             }
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException | NullPointerException e) {
             servings = 1;
         }
         Recipe importRecipe = Recipe.builder()

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sterul.opencookbookapiserver.controllers.exceptions.NotAuthorizedException;
 import com.sterul.opencookbookapiserver.controllers.requests.RecipeGroupRequest;
 import com.sterul.opencookbookapiserver.controllers.responses.RecipeGroupResponse;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
@@ -51,11 +50,9 @@ public class RecipeGroupController extends BaseController {
     @Operation(summary = "Change a recipe group")
     @PutMapping("/{id}")
     public RecipeGroupResponse change(@PathVariable Long id, @Valid @RequestBody RecipeGroupRequest updatedRecipeGroup)
-            throws NotAuthorizedException, ElementNotFound {
+            throws ElementNotFound {
 
-        if (!recipeGroupService.hasAccessPermissionToRecipeGroup(id, getLoggedInUser())) {
-            throw new NotAuthorizedException();
-        }
+        requireOwnRecipeGroup(id);
         var groupEntity = requestToEntity(updatedRecipeGroup);
         groupEntity.setId(id);
 
@@ -64,10 +61,8 @@ public class RecipeGroupController extends BaseController {
 
     @Operation(summary = "Delete a recipe group", description = "Assigned recipes will not be deleted, but the recipe group will be removed from them")
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) throws NotAuthorizedException, ElementNotFound {
-        if (!recipeGroupService.hasAccessPermissionToRecipeGroup(id, getLoggedInUser())) {
-            throw new NotAuthorizedException();
-        }
+    public void delete(@PathVariable Long id) throws ElementNotFound {
+        requireOwnRecipeGroup(id);
 
         recipeGroupService.deleteRecipeGroup(id);
     }
@@ -84,5 +79,16 @@ public class RecipeGroupController extends BaseController {
                 .id(recipeGroupRequest.getId())
                 .title(recipeGroupRequest.getTitle())
                 .build();
+    }
+
+    /**
+     * Refuses with "not found" rather than "not allowed", deliberately: answering differently
+     * for a recipe that exists but belongs to somebody else would let anyone count the recipes
+     * on this server by walking the ids.
+     */
+    private void requireOwnRecipeGroup(Long id) throws ElementNotFound {
+        if (!recipeGroupService.hasAccessPermissionToRecipeGroup(id, getLoggedInUser())) {
+            throw new ElementNotFound();
+        }
     }
 }

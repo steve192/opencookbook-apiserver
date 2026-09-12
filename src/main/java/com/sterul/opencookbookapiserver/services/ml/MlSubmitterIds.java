@@ -39,7 +39,7 @@ public class MlSubmitterIds {
             // No token and no salt: there is nothing to key the derivation with. That is the
             // same "configured but not usable" state an unreachable subsystem is in, and it
             // has to read that way rather than as an internal error.
-            throw new MlUnavailableException("ML_NO_CREDENTIAL",
+            throw new MlUnavailableException(
                     "This instance has no machine learning credential configured");
         }
         try {

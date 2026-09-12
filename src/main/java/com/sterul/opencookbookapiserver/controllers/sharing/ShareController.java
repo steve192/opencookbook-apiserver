@@ -16,7 +16,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sterul.opencookbookapiserver.controllers.BaseController;
-import com.sterul.opencookbookapiserver.controllers.exceptions.NotAuthorizedException;
 import com.sterul.opencookbookapiserver.controllers.responses.RecipeResponse;
 import com.sterul.opencookbookapiserver.controllers.sharing.requests.ShareRecipeRequest;
 import com.sterul.opencookbookapiserver.controllers.sharing.responses.ShareResponse;
@@ -54,7 +53,7 @@ public class ShareController extends BaseController {
     @Operation(summary = "The shares of one of your recipes", description = "Empty while the recipe is not shared.")
     @GetMapping
     public List<ShareResponse> getSharesOfRecipe(@RequestParam Long recipeId)
-            throws NotAuthorizedException, ElementNotFound {
+            throws ElementNotFound {
         requireOwnershipOfRecipe(recipeId);
         return shareService.findPublicRecipeShare(recipeId)
                 .map(share -> List.of(ShareResponse.fromEntity(share, shareLinkFactory)))
@@ -64,7 +63,7 @@ public class ShareController extends BaseController {
     @Operation(summary = "Share a recipe publicly", description = "Returns the existing link if the recipe already has one.")
     @PostMapping
     public ShareResponse shareRecipe(@Valid @RequestBody ShareRecipeRequest request)
-            throws NotAuthorizedException, ElementNotFound {
+            throws ElementNotFound {
         requireOwnershipOfRecipe(request.recipeId());
         return ShareResponse.fromEntity(shareService.shareRecipePublicly(request.recipeId()),
                 shareLinkFactory);
@@ -84,9 +83,14 @@ public class ShareController extends BaseController {
         return RecipeResponse.fromEntity(sharedRecipeImportService.importSharedRecipe(shareId, getLoggedInUser()));
     }
 
-    private void requireOwnershipOfRecipe(Long recipeId) throws NotAuthorizedException, ElementNotFound {
+    /**
+     * Refuses with "not found" rather than "not allowed", deliberately: answering differently
+     * for a recipe that exists but belongs to somebody else would let anyone count the recipes
+     * on this server by walking the ids.
+     */
+    private void requireOwnershipOfRecipe(Long recipeId) throws ElementNotFound {
         if (!recipeService.hasAccessPermissionToRecipe(recipeId, getLoggedInUser())) {
-            throw new NotAuthorizedException();
+            throw new ElementNotFound();
         }
     }
 

@@ -1,7 +1,6 @@
 package com.sterul.opencookbookapiserver.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -34,6 +33,9 @@ import com.sterul.opencookbookapiserver.controllers.responses.UserLoginResponse;
 import com.sterul.opencookbookapiserver.entities.RefreshToken;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.account.Role;
+import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
+import com.sterul.opencookbookapiserver.errors.ApiException;
+import com.sterul.opencookbookapiserver.services.AuthRateLimiter;
 import com.sterul.opencookbookapiserver.services.EmailService;
 import com.sterul.opencookbookapiserver.services.RefreshTokenService;
 import com.sterul.opencookbookapiserver.services.UserDetailsServiceImpl;
@@ -80,6 +82,9 @@ public class UserController extends BaseController {
     @Autowired
     private MailLanguages mailLanguages;
 
+    @Autowired
+    private AuthRateLimiter authRateLimiter;
+
     @Operation(summary = "Creates a new user")
     @PostMapping("/signup")
     @Transactional
@@ -93,7 +98,9 @@ public class UserController extends BaseController {
         try {
             emailService.sendActivationMail(activationLink);
         } catch (MessagingException e) {
-            log.error("Error sending activation mail");
+            // The account exists either way, and the link can be sent again from the login
+            // screen, so a mail server that is down must not undo a signup.
+            log.error("Error sending activation mail", e);
         }
         return createdUser;
     }
@@ -101,19 +108,20 @@ public class UserController extends BaseController {
     @Operation(summary = "Logs a user in", description = "Logs in and generates tokens for authentication")
     @PostMapping("/login")
     public ResponseEntity<UserLoginResponse> login(@Valid @RequestBody UserLoginRequest authenticationRequest)
-            throws UnauthorizedException {
+            throws UnauthorizedException, UserNotActiveException {
 
         try {
             login(authenticationRequest.emailAddress(), authenticationRequest.password());
         } catch (UserNotActiveException e) {
+            // Somebody trying to sign in has lost or never received the link, so send it again
+            // before saying why they cannot. A mail server that is down must not turn that into
+            // a different answer than the one they need to read.
             try {
-                userService.resendActivationLink(authenticationRequest.emailAddress());
+                resendActivationLinkWithinBudget(authenticationRequest.emailAddress());
             } catch (MessagingException e1) {
                 log.error("Error re-sending activation link for user", e1);
             }
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(UserLoginResponse.builder()
-                            .userActive(false).build());
+            throw e;
         }
 
         final UserDetails userDetails = userDetailsService
@@ -134,39 +142,37 @@ public class UserController extends BaseController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Request a password reset for the given user. Does always answer with 200 ok, no matter if the user exists or not")
+    @Operation(summary = "Request a password reset for the given user",
+            description = "Answers 200 whether or not the address belongs to an account, so that "
+                    + "this cannot be used to find out which addresses are registered. The one "
+                    + "exception is a mail server that will not accept the message, which is "
+                    + "reported rather than silently swallowed.")
     @PostMapping("/requestPasswordReset")
-    public ResponseEntity<String> requestPasswordReset(@Valid @RequestBody PasswordResetRequest passwordResetRequest) {
-        if (userService.userExists(passwordResetRequest.getEmailAddress())) {
-            try {
-                userService.requestPasswordReset(passwordResetRequest.getEmailAddress());
-            } catch (MessagingException e) {
-                // The response was built and dropped here, so a mail server that never sent
-                // anything still told the caller to go and check their inbox.
-                log.error("Could not send password reset mail", e);
-                return ResponseEntity.internalServerError().build();
-            }
+    public ResponseEntity<String> requestPasswordReset(
+            @Valid @RequestBody PasswordResetRequest passwordResetRequest)
+            throws MessagingException {
+        var emailAddress = passwordResetRequest.getEmailAddress();
+        if (userService.userExists(emailAddress) && mayMail(emailAddress)) {
+            userService.requestPasswordReset(emailAddress);
         }
         return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "Executes a password reset")
     @PostMapping("/resetPassword")
-    public ResponseEntity<String> resetPassword(@Valid @RequestBody PasswordResetExecutionRequest request) {
-        try {
-            userService.resetPassword(request.getNewPassword(), request.getPasswordResetId());
-        } catch (PasswordResetLinkNotExistingException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<String> resetPassword(@Valid @RequestBody PasswordResetExecutionRequest request)
+            throws PasswordResetLinkNotExistingException {
+        userService.resetPassword(request.getNewPassword(), request.getPasswordResetId());
         return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "Sets a new password")
     @PostMapping("/changePassword")
-    public ResponseEntity<String> changePassword(@Valid @RequestBody PasswordChangeRequest request) {
+    public ResponseEntity<String> changePassword(@Valid @RequestBody PasswordChangeRequest request)
+            throws UnauthorizedException {
         var loggedInUser = this.getLoggedInUser();
         if (!userService.isPasswordCorrect(loggedInUser.getEmailAddress(), request.getOldPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            throw new UnauthorizedException();
         }
 
         userService.changePassword(loggedInUser, request.getNewPassword());
@@ -196,15 +202,9 @@ public class UserController extends BaseController {
 
     @Operation(summary = "Resends an activation link to the users email address. Ignores requests for when users are already active or users do not exist")
     @PostMapping("/resendActivationLink")
-    public ResponseEntity<String> resendActivationLink(@Valid @RequestBody ResendActivationLinkRequest request) {
-        if (!userService.userExists(request.getEmailAddress())) {
-            return ResponseEntity.ok().build();
-        }
-        try {
-            userService.resendActivationLink(request.getEmailAddress());
-        } catch (MessagingException e) {
-            return ResponseEntity.internalServerError().build();
-        }
+    public ResponseEntity<String> resendActivationLink(
+            @Valid @RequestBody ResendActivationLinkRequest request) throws MessagingException {
+        resendActivationLinkWithinBudget(request.getEmailAddress());
         return ResponseEntity.ok().build();
     }
 
@@ -223,10 +223,10 @@ public class UserController extends BaseController {
             description = "The last administrator who can sign in cannot delete themselves; the "
                     + "instance would be left with nobody able to administer it.")
     @DeleteMapping("/self")
-    public ResponseEntity deleteOwnUser() throws LastAdministratorException {
+    public ResponseEntity deleteOwnUser() throws LastAdministratorException, NotAuthorizedException {
         var user = getLoggedInUser();
         if (Role.DEMO.equals(user.getRoles())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            throw new NotAuthorizedException();
         }
         userService.deleteUser(user);
         return ResponseEntity.ok().build();
@@ -235,15 +235,17 @@ public class UserController extends BaseController {
     @Operation(summary = "Generate a JWT token from a refresh token", description = "The JWT token is used to authenticate against all apis using the \"Authentication: Bearer < token >\" header field")
     @PostMapping("/refreshToken")
     public RefreshTokenResponse renewToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest)
-            throws NotAuthorizedException {
+            throws ApiException {
+        // "Sign in again", not "you may not": a spent refresh token is the app's cue to send
+        // somebody back to the login screen, and 403 reads as a permission they will never have.
         if (!refreshTokenService.isTokenValid(refreshTokenRequest.getRefreshToken())) {
-            throw new NotAuthorizedException();
+            throw new ApiException(ApiErrorCode.AUTHENTICATION_REQUIRED, "Refresh token expired");
         }
         RefreshToken refreshToken;
         try {
             refreshToken = refreshTokenService.getRefreshToken(refreshTokenRequest.getRefreshToken());
         } catch (ElementNotFound e) {
-            throw new NotAuthorizedException();
+            throw new ApiException(ApiErrorCode.AUTHENTICATION_REQUIRED, "Refresh token unknown", e);
         }
         var userDetails = userDetailsService.loadUserByUsername(refreshToken.getOwner().getEmailAddress());
         // The app renews its token every few minutes, which makes this the place where a change
@@ -255,6 +257,27 @@ public class UserController extends BaseController {
         var response = new RefreshTokenResponse();
         response.setToken(jwtToken);
         return response;
+    }
+
+    private void resendActivationLinkWithinBudget(String emailAddress) throws MessagingException {
+        if (userService.userExists(emailAddress) && mayMail(emailAddress)) {
+            userService.resendActivationLink(emailAddress);
+        }
+    }
+
+    /**
+     * Whether one more mail may be sent to an address. A spent budget is not reported: these
+     * endpoints answer the same whether or not an account exists.
+     *
+     * @param emailAddress who would be written to
+     * @return whether to send
+     */
+    private boolean mayMail(String emailAddress) {
+        if (authRateLimiter.mayMail(emailAddress)) {
+            return true;
+        }
+        log.warn("Not sending another mail to a recipient who has had their hourly allowance");
+        return false;
     }
 
     private void login(String username, String password) throws UnauthorizedException, UserNotActiveException {

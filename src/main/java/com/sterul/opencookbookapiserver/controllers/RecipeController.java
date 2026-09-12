@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sterul.opencookbookapiserver.controllers.exceptions.NotAuthorizedException;
 import com.sterul.opencookbookapiserver.controllers.requests.RecipeRequest;
 import com.sterul.opencookbookapiserver.controllers.responses.RecipeResponse;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
@@ -22,8 +21,7 @@ import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.services.RecipeImportService;
 import com.sterul.opencookbookapiserver.services.RecipeService;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
-import com.sterul.opencookbookapiserver.services.recipeimport.ImportNotSupportedException;
-import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImportFailedException;
+import com.sterul.opencookbookapiserver.errors.ApiException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -63,20 +61,16 @@ public class RecipeController extends BaseController {
 
     @Operation(summary = "Get a single recipe")
     @GetMapping("/{id}")
-    public RecipeResponse single(@PathVariable Long id) throws NotAuthorizedException, ElementNotFound {
-        if (!recipeService.hasAccessPermissionToRecipe(id, getLoggedInUser())) {
-            throw new NotAuthorizedException();
-        }
+    public RecipeResponse single(@PathVariable Long id) throws ElementNotFound {
+        requireOwnRecipe(id);
         return RecipeResponse.fromEntity(recipeService.getRecipeById(id));
     }
 
     @Operation(summary = "Update an existing recipe")
     @PutMapping("/{id}")
     public RecipeResponse updateRecipe(@PathVariable Long id, @RequestBody @Valid RecipeRequest recipeUpdate)
-            throws NoSuchElementException, NotAuthorizedException, ElementNotFound {
-        if (!recipeService.hasAccessPermissionToRecipe(id, getLoggedInUser())) {
-            throw new NotAuthorizedException();
-        }
+            throws NoSuchElementException, ElementNotFound {
+        requireOwnRecipe(id);
         recipeUpdate.setId(id);
         return RecipeResponse.fromEntity(recipeService.updateSingleRecipe(requestToEntity(recipeUpdate)));
 
@@ -84,17 +78,15 @@ public class RecipeController extends BaseController {
 
     @Operation(summary = "Delete a recipe", description = "Deleted recipes will automatically deleted from weekplan days. Also linked images will be automatically deleted")
     @DeleteMapping("/{id}")
-    public void deleteRecipe(@PathVariable Long id) throws NotAuthorizedException, ElementNotFound {
-        if (!recipeService.hasAccessPermissionToRecipe(id, getLoggedInUser())) {
-            throw new NotAuthorizedException();
-        }
+    public void deleteRecipe(@PathVariable Long id) throws ElementNotFound {
+        requireOwnRecipe(id);
         recipeService.deleteRecipe(id);
     }
 
     @Operation(summary = "Import a recipe from a recipe website")
     @GetMapping("/import")
     public RecipeResponse importRecipe(@RequestParam String importUrl)
-            throws ImportNotSupportedException, RecipeImportFailedException {
+            throws ApiException {
         var owner = getLoggedInUser();
         return RecipeResponse.fromEntity(recipeImportService.importRecipe(importUrl, owner));
     }
@@ -103,6 +95,17 @@ public class RecipeController extends BaseController {
     @GetMapping("/import/available-hosts")
     public List<String> getAvilableImportHosts() {
         return recipeImportService.getAvailableImportHosts();
+    }
+
+    /**
+     * Refuses with "not found" rather than "not allowed", deliberately: answering differently
+     * for a recipe that exists but belongs to somebody else would let anyone count the recipes
+     * on this server by walking the ids.
+     */
+    private void requireOwnRecipe(Long id) throws ElementNotFound {
+        if (!recipeService.hasAccessPermissionToRecipe(id, getLoggedInUser())) {
+            throw new ElementNotFound();
+        }
     }
 
     private Recipe requestToEntity(RecipeRequest recipe) {

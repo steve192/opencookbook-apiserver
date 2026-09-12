@@ -1,6 +1,5 @@
 package com.sterul.opencookbookapiserver.controllers;
 
-import com.sterul.opencookbookapiserver.controllers.exceptions.NotAuthorizedException;
 import com.sterul.opencookbookapiserver.controllers.requests.WeekplanDayPut;
 import com.sterul.opencookbookapiserver.controllers.responses.WeekplanDayResponse;
 import com.sterul.opencookbookapiserver.entities.WeekplanDay;
@@ -42,7 +41,7 @@ public class WeekplanController extends BaseController {
     @Operation(summary = "Change a single weekplan day")
     @PutMapping("/{date}")
     public WeekplanDayResponse createAndUpdate(@PathVariable @DateTimeFormat(iso = ISO.DATE) LocalDate date,
-                                               @RequestBody WeekplanDayPut weekplanDayPut) throws NotAuthorizedException, ElementNotFound {
+                                               @RequestBody WeekplanDayPut weekplanDayPut) throws ElementNotFound {
 
         WeekplanDay weekplanDayEntity;
         try {
@@ -89,7 +88,7 @@ public class WeekplanController extends BaseController {
     }
 
     private void populateWeekplanDayWithRecipes(WeekplanDayPut weekplanDayPut, final WeekplanDay newWeekplanDay)
-            throws NotAuthorizedException, ElementNotFound {
+            throws ElementNotFound {
 
         // Built up separately and only swapped in at the end. RecipeService is transactional,
         // so every lookup below commits a transaction of its own and flushes the session that
@@ -103,7 +102,9 @@ public class WeekplanController extends BaseController {
                     var recipeId = ((WeekplanDayPut.NormalRecipe) recipe).getId();
 
                     if (!recipeService.hasAccessPermissionToRecipe(recipeId, getLoggedInUser())) {
-                        throw new NotAuthorizedException();
+                        // "Not found" rather than "not allowed", so that planning a meal cannot
+                        // be used to find out which recipe ids exist.
+                        throw new ElementNotFound();
                     }
                     var recipeEntity = recipeService.getRecipeById(recipeId);
                     meals.add(WeekplanDayRecipe.builder()

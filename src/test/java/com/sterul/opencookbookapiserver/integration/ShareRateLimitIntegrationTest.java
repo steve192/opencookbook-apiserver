@@ -4,6 +4,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -83,9 +84,13 @@ class ShareRateLimitIntegrationTest extends IntegrationTest {
         mockMvc.perform(get("/api/v1/shared/" + shareId).with(client)).andExpect(status().isOk());
         mockMvc.perform(get("/api/v1/shared/" + shareId).with(client)).andExpect(status().isOk());
 
+        // The interceptor throws rather than writing a body of its own, so a refusal here reads
+        // exactly like a refusal from anywhere else.
         mockMvc.perform(get("/api/v1/shared/" + shareId).with(client))
                 .andExpect(status().isTooManyRequests())
-                .andExpect(header().exists("Retry-After"));
+                .andExpect(header().exists("Retry-After"))
+                .andExpect(jsonPath("$.code").value("RATE_LIMITED"))
+                .andExpect(jsonPath("$.retryable").value(true));
     }
 
     @Test

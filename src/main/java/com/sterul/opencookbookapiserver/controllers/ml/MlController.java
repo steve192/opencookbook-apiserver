@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,10 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.sterul.opencookbookapiserver.configurations.ml.ConditionalOnMlConfigured;
 import com.sterul.opencookbookapiserver.controllers.BaseController;
+import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
+import com.sterul.opencookbookapiserver.errors.ApiException;
 import com.sterul.opencookbookapiserver.controllers.ml.responses.MlJobResponse;
 import com.sterul.opencookbookapiserver.controllers.ml.responses.PageEdgesResponse;
 import com.sterul.opencookbookapiserver.controllers.responses.RecipeResponse;
@@ -63,7 +63,7 @@ public class MlController extends BaseController {
             @RequestParam("images") List<MultipartFile> images,
             @RequestParam(value = "payload", required = false) String payload,
             @RequestParam(value = "trainingConsent", defaultValue = "false")
-            boolean trainingConsent) throws MlSubsystemException {
+            boolean trainingConsent) throws ApiException {
 
         requirePlausiblePageCount(images);
         var parsed = parse(payload, images.size());
@@ -132,23 +132,23 @@ public class MlController extends BaseController {
                 job, RecipeResponse.fromEntity(recipe), result.getBlocks(), result.getPhoto());
     }
 
-    private void requirePlausiblePageCount(List<MultipartFile> images) {
+    private void requirePlausiblePageCount(List<MultipartFile> images) throws ApiException {
         var maxPages = mlJobService.maxPagesPerRecipe();
         if (images == null || images.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+            throw new ApiException(ApiErrorCode.VALIDATION_FAILED,
                     "At least one photograph is needed");
         }
         if (images.size() > maxPages) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+            throw new ApiException(ApiErrorCode.SCAN_TOO_MANY_PAGES,
                     "A recipe may span at most " + maxPages + " photographs");
         }
     }
 
-    private RecipeOcrPayload parse(String payload, int imageCount) {
+    private RecipeOcrPayload parse(String payload, int imageCount) throws ApiException {
         try {
             return RecipeOcrPayload.parse(payload, imageCount);
         } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+            throw new ApiException(ApiErrorCode.MALFORMED_REQUEST, "Unreadable scan payload", e);
         }
     }
 }

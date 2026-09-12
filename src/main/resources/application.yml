@@ -55,8 +55,8 @@ opencookbook:
       jobsPerUserPerDay: 20
       maxPages: 6
 server:
-    # This is okay if we trust the direct caller of this service
-    # This will be our own reverse proxy server
+    # Safe only because our reverse proxy overwrites X-Forwarded-For rather than appending to
+    # it; appending lets a caller pick the address their rate limit is counted against.
   forward-headers-strategy: framework
   error:
     # Disable trace in rest api

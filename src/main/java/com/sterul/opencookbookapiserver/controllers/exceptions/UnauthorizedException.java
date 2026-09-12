@@ -1,9 +1,11 @@
 package com.sterul.opencookbookapiserver.controllers.exceptions;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
+import com.sterul.opencookbookapiserver.errors.ApiException;
 
-@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
-public class UnauthorizedException extends Exception {
+public class UnauthorizedException extends ApiException {
 
+    public UnauthorizedException() {
+        super(ApiErrorCode.INVALID_CREDENTIALS);
+    }
 }

@@ -106,29 +106,20 @@ class FixedWindowRateLimiterTest {
     }
 
     @Test
-    void aSaturatedTableStopsCountingRatherThanLockingEverybodyOut() {
+    void aFullTableKeepsCountingAndForgetsTheCallerHeardFromLongestAgo() {
         var cut = new FixedWindowRateLimiter(1, WINDOW, 2, clock);
         cut.tryAcquire("first caller");
         cut.tryAcquire("second caller");
 
-        // Anyone can present an unlimited number of distinct callers - the client address comes
-        // from a header the client sends. Refusing the ones that no longer fit would hand that
-        // client an outage for everybody else; the share id is what keeps people out, not this.
-        assertTrue(cut.tryAcquire("a caller that does not fit").allowed());
+        assertFalse(cut.tryAcquire("second caller").allowed());
 
-        // The callers already being counted still have their budgets enforced.
-        assertFalse(cut.tryAcquire("first caller").allowed());
-    }
-
-    @Test
-    void aFullTableMakesRoomBySheddingCountersThatHaveExpired() {
-        var cut = new FixedWindowRateLimiter(10, WINDOW, 2, clock);
-        cut.tryAcquire("first caller");
-        cut.tryAcquire("second caller");
-
-        clock.advanceBy(WINDOW);
-
+        // Makes room rather than giving up: a caller that does not fit must never mean nobody
+        // is counted, or presenting enough distinct callers would buy unlimited attempts.
         assertTrue(cut.tryAcquire("third caller").allowed());
+        assertFalse(cut.tryAcquire("third caller").allowed());
+
+        // The price of a bounded table: whoever was displaced starts over.
+        assertTrue(cut.tryAcquire("first caller").allowed());
     }
 
     @Test
