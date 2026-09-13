@@ -1,17 +1,16 @@
 package com.sterul.opencookbookapiserver.services.recipeimport;
 
-public class RecipeImportFailedException extends Exception {
+import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
+import com.sterul.opencookbookapiserver.errors.ApiException;
 
-    public RecipeImportFailedException() {
-        super();
+/** The website was reached but nothing recipe shaped came back. */
+public class RecipeImportFailedException extends ApiException {
+
+    public RecipeImportFailedException(String internalMessage) {
+        super(ApiErrorCode.IMPORT_FAILED, internalMessage);
     }
 
-    public RecipeImportFailedException(String message) {
-        super(message);
+    public RecipeImportFailedException(String internalMessage, Throwable cause) {
+        super(ApiErrorCode.IMPORT_FAILED, internalMessage, cause);
     }
-
-    public RecipeImportFailedException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
 }

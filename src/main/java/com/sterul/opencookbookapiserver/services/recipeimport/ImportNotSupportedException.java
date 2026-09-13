@@ -1,9 +1,11 @@
 package com.sterul.opencookbookapiserver.services.recipeimport;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
+import com.sterul.opencookbookapiserver.errors.ApiException;
 
-@ResponseStatus(HttpStatus.NOT_IMPLEMENTED)
-public class ImportNotSupportedException extends Exception {
+public class ImportNotSupportedException extends ApiException {
 
+    public ImportNotSupportedException() {
+        super(ApiErrorCode.IMPORT_NOT_SUPPORTED);
+    }
 }

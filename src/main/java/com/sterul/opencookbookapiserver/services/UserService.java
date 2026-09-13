@@ -28,6 +28,7 @@ import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsExc
 import com.sterul.opencookbookapiserver.services.mail.MailLanguages;
 
 import jakarta.mail.MessagingException;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -263,6 +264,11 @@ public class UserService {
     public PasswordResetLink createPasswordResetLink(CookpalUser user) {
         log.info("Creating password reset link for user {}", user);
         passwordResetLinkRepository.deleteAllByUser(user);
+        // Flushed before the insert, as the activation links are: a user may hold only one reset
+        // link, and without this Hibernate ordered the insert ahead of the delete within the
+        // transaction - so asking for a second reset broke the unique constraint and 500ed.
+        passwordResetLinkRepository.flush();
+
         var passwordResetLink = new PasswordResetLink();
         passwordResetLink.setUser(user);
         return passwordResetLinkRepository.save(passwordResetLink);

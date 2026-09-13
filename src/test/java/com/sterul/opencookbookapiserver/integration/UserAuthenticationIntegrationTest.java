@@ -26,7 +26,9 @@ import com.sterul.opencookbookapiserver.repositories.ActivationLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.EmailService;
 
-@SpringBootTest
+// Pinned rather than inherited: these tests are about activation, and config/application.yml is
+// read over the packaged configuration, so a developer's local convenience would decide them.
+@SpringBootTest(properties = "opencookbook.activate-users-after-signup=false")
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
 class UserAuthenticationIntegrationTest extends IntegrationTest {
@@ -60,7 +62,7 @@ class UserAuthenticationIntegrationTest extends IntegrationTest {
 
         login(credentials.emailAddress(), credentials.password())
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.userActive").value(false));
+                .andExpect(jsonPath("$.code").value("ACCOUNT_NOT_ACTIVATED"));
 
         var activationLink = findActivationLinkForUser(credentials.emailAddress());
 
@@ -88,9 +90,11 @@ class UserAuthenticationIntegrationTest extends IntegrationTest {
         signUp(credentials.emailAddress(), credentials.password())
                 .andExpect(status().isOk());
 
+        // An account that exists but cannot be used yet is its own answer, told apart from a
+        // wrong password by the code rather than by what is missing from a success body.
         login(credentials.emailAddress(), credentials.password())
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.userActive").value(false))
+                .andExpect(jsonPath("$.code").value("ACCOUNT_NOT_ACTIVATED"))
                 .andExpect(jsonPath("$.token").doesNotExist())
                 .andExpect(jsonPath("$.refreshToken").doesNotExist());
     }
@@ -106,13 +110,15 @@ class UserAuthenticationIntegrationTest extends IntegrationTest {
                 .andExpect(status().isOk());
 
         login(credentials.emailAddress(), "wrong-password")
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value("INVALID_CREDENTIALS"));
     }
 
     @Test
     void loginWithUnknownEmailFails() throws Exception {
         login("missing-" + UUID.randomUUID() + "@example.com", "wrong-password")
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value("INVALID_CREDENTIALS"));
     }
 
     private Credentials newCredentials() {

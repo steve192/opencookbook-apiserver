@@ -12,6 +12,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 @Component
@@ -34,7 +35,11 @@ public class RecipeScraperServiceProxy {
     }
 
     public String scrapeRecipe(String url) throws IOException, ImportNotSupportedException {
-        var response = get("/api/v1/scrape-recipe?url=" + url);
+        // Encoded rather than concatenated: a recipe link carrying its own query string ("?id=7")
+        // used to have everything after the first "&" read as further parameters of this call,
+        // which both truncated the link and let a caller add parameters of their own to it.
+        var response = get("/api/v1/scrape-recipe?url="
+                + URLEncoder.encode(url, StandardCharsets.UTF_8));
         if (response.statusCode() == HttpStatus.SC_NOT_IMPLEMENTED) {
             throw new ImportNotSupportedException();
         }

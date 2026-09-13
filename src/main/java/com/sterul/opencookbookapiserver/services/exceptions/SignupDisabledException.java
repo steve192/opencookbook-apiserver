@@ -1,9 +1,11 @@
 package com.sterul.opencookbookapiserver.services.exceptions;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
+import com.sterul.opencookbookapiserver.errors.ApiException;
 
-@ResponseStatus(value = HttpStatus.METHOD_NOT_ALLOWED)
-public class SignupDisabledException extends Exception {
+public class SignupDisabledException extends ApiException {
 
+    public SignupDisabledException() {
+        super(ApiErrorCode.SIGNUP_DISABLED);
+    }
 }

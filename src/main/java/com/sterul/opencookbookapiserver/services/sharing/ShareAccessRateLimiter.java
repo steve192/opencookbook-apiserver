@@ -6,11 +6,12 @@ import java.time.Duration;
 import org.springframework.stereotype.Component;
 
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
+import com.sterul.opencookbookapiserver.ratelimiting.EvictableRateLimits;
 import com.sterul.opencookbookapiserver.ratelimiting.FixedWindowRateLimiter;
 import com.sterul.opencookbookapiserver.ratelimiting.RateLimitDecision;
 
 @Component
-public class ShareAccessRateLimiter {
+public class ShareAccessRateLimiter implements EvictableRateLimits {
 
     private static final Duration WINDOW = Duration.ofHours(1);
 
@@ -42,6 +43,7 @@ public class ShareAccessRateLimiter {
         return imageViewsPerAddress.tryAcquire(clientAddress);
     }
 
+    @Override
     public int evictEndedWindows() {
         return recipeViewsPerAddress.evictEndedWindows()
                 + recipeViewsPerShare.evictEndedWindows()

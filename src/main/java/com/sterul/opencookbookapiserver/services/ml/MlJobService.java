@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.configurations.ml.ConditionalOnMlConfigured;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
+import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
 import com.sterul.opencookbookapiserver.entities.ml.MlJob;
 import com.sterul.opencookbookapiserver.entities.ml.MlJobStatus;
 import com.sterul.opencookbookapiserver.repositories.MlJobRepository;
@@ -197,11 +198,12 @@ public class MlJobService {
     }
 
     private void apply(MlJob job, MlSubsystemProxy.MlJobState state) {
+        var code = state.errorCode() == null ? null : MlErrorCodes.of(state.errorCode());
         job.setStatus(state.status());
         job.setResult(state.resultJson());
-        job.setErrorCode(state.errorCode());
+        job.setErrorCode(code == null ? null : code.name());
         job.setErrorMessage(state.errorMessage());
-        job.setErrorRetryable(state.errorRetryable());
+        job.setErrorRetryable(code != null && code.isRetryable());
         job.setQueuePosition(state.queuePosition());
         if (state.status().isFinished()) {
             job.setFinishedAt(clock.instant());
@@ -226,13 +228,14 @@ public class MlJobService {
                 .build());
     }
 
-    private void requireRemainingQuota(CookpalUser owner) throws MlUserQuotaExceededException {
+    private void requireRemainingQuota(CookpalUser owner) throws MlSubsystemException {
         var limit = configuration.getMl().getRecipeOcr().getJobsPerUserPerDay();
         if (limit <= 0) {
             return;
         }
         if (usedToday(owner) >= limit) {
-            throw new MlUserQuotaExceededException(limit);
+            throw new MlSubsystemException(ApiErrorCode.SCAN_DAILY_LIMIT_REACHED,
+                    "The daily allowance of " + limit + " scans is used up");
         }
     }
 
@@ -306,8 +309,8 @@ public class MlJobService {
     private void abandon(MlJob job) {
         log.warn("Job {} was never finished and is being abandoned", job.getId());
         // Failing for a reason of our own rather than one the subsystem gave.
-        fail(job, new MlSubsystemException("ML_TIMEOUT",
-                "The subsystem did not finish this job in time", true));
+        fail(job, new MlSubsystemException(ApiErrorCode.SCAN_TIMED_OUT,
+                "The subsystem did not finish this job in time"));
     }
 
     /** A scan the subsystem never took on spent nothing, so it must not cost somebody their day. */
@@ -318,9 +321,9 @@ public class MlJobService {
 
     private void fail(MlJob job, MlSubsystemException failure) {
         job.setStatus(MlJobStatus.FAILED);
-        job.setErrorCode(failure.getCode());
+        job.setErrorCode(failure.getErrorCode().name());
         job.setErrorMessage(failure.getMessage());
-        job.setErrorRetryable(failure.isRetryable());
+        job.setErrorRetryable(failure.getErrorCode().isRetryable());
         job.setFinishedAt(clock.instant());
         mlJobRepository.save(job);
     }

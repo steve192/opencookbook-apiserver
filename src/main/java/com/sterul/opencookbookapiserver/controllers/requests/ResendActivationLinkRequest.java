@@ -5,8 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Data
 @Builder
@@ -16,5 +18,7 @@ public class ResendActivationLinkRequest {
 
     @NotNull
     @NotBlank
+    @Email
+    @Size(max = EmailAddresses.MAX_LENGTH)
     private String emailAddress;
 }

@@ -130,11 +130,24 @@ class ShareApiIntegrationTest extends IntegrationTest {
                 .andExpect(jsonPath("$.length()").value(0));
     }
 
+    /**
+     * Answered as "not found" rather than "not allowed" on purpose: telling a stranger that the
+     * recipe exists but is not theirs would let them count the recipes on the server.
+     */
     @Test
     @WithMockUser(username = STRANGER)
     void somebodyElsesRecipeCannotBeShared() throws Exception {
         mockMvc.perform(shareRequestFor(recipeId))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("RESOURCE_NOT_FOUND"));
+    }
+
+    @Test
+    @WithMockUser(username = STRANGER)
+    void aRecipeThatDoesNotExistIsRefusedTheSameWayAsSomebodyElsesIsExercised() throws Exception {
+        mockMvc.perform(shareRequestFor(999999L))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("RESOURCE_NOT_FOUND"));
     }
 
     @Test

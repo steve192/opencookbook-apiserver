@@ -2,6 +2,7 @@ package com.sterul.opencookbookapiserver.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.when;
@@ -33,8 +34,9 @@ import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
+import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
+import com.sterul.opencookbookapiserver.errors.ApiException;
 import com.sterul.opencookbookapiserver.services.recipeimport.ImportNotSupportedException;
-import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImportFailedException;
 import com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers.RecipeScraperServiceProxy;
 
 @SpringBootTest
@@ -170,14 +172,22 @@ class RecipeAPIIntegrationTest extends IntegrationTest {
     @Test
     void errorWhenRecipeWebsiteImportNotSupported() {
         whenImportWebsiteNotSupported();
-        try {
-            var response = cut.importRecipe("https://doesnotmatter.com/");
-        } catch (ImportNotSupportedException e) {
-            return;
-        } catch (RecipeImportFailedException e) {
-            fail();
-        }
-        fail();
+
+        var thrown = assertThrows(ApiException.class,
+                () -> cut.importRecipe("https://doesnotmatter.com/"));
+
+        assertEquals(ApiErrorCode.IMPORT_NOT_SUPPORTED, thrown.getErrorCode());
+    }
+
+    /**
+     * Somebody pasting something that is not a link at all. It never reaches an importer, so
+     * this is the controller answering for itself - and it must not be a server error.
+     */
+    @Test
+    void errorWhenTheUrlIsNotAUrl() {
+        var thrown = assertThrows(ApiException.class, () -> cut.importRecipe("not a url"));
+
+        assertEquals(ApiErrorCode.IMPORT_URL_INVALID, thrown.getErrorCode());
     }
 
     @Test

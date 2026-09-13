@@ -1,29 +1,11 @@
 package com.sterul.opencookbookapiserver.services.exceptions;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
+import com.sterul.opencookbookapiserver.errors.ApiException;
 
-@ResponseStatus(value = HttpStatus.CONFLICT)
-public class UserAlreadyExistsException extends Exception {
+public class UserAlreadyExistsException extends ApiException {
 
-    public UserAlreadyExistsException() {
+    public UserAlreadyExistsException(String internalMessage) {
+        super(ApiErrorCode.EMAIL_ALREADY_REGISTERED, internalMessage);
     }
-
-    public UserAlreadyExistsException(String message) {
-        super(message);
-    }
-
-    public UserAlreadyExistsException(Throwable cause) {
-        super(cause);
-    }
-
-    public UserAlreadyExistsException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public UserAlreadyExistsException(String message, Throwable cause, boolean enableSuppression,
-            boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
-
 }

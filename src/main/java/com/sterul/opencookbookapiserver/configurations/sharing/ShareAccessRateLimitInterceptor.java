@@ -3,9 +3,11 @@ package com.sterul.opencookbookapiserver.configurations.sharing;
 import java.util.Map;
 
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
+
+import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
+import com.sterul.opencookbookapiserver.errors.ApiException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,7 +25,8 @@ public class ShareAccessRateLimitInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
+            Object handler) throws ApiException {
         var shareId = shareIdOf(request);
         if (shareId == null) {
             // Nothing was matched, so there is no share to charge and the request is about to be
@@ -36,10 +39,14 @@ public class ShareAccessRateLimitInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        log.info("Refusing access to share {} from {}: rate limit exceeded", shareId, request.getRemoteAddr());
-        response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
-        response.setHeader(HttpHeaders.RETRY_AFTER, Long.toString(Math.max(1, decision.retryAfter().toSeconds())));
-        return false;
+        log.info("Refusing access to share {} from {}: rate limit exceeded", shareId,
+                request.getRemoteAddr());
+        // Set before throwing, on the response the error body is about to be written to. An
+        // interceptor runs inside the dispatcher servlet, so throwing from here reaches the one
+        // handler that formats errors instead of writing a second kind of body by hand.
+        response.setHeader(HttpHeaders.RETRY_AFTER,
+                Long.toString(Math.max(1, decision.retryAfter().toSeconds())));
+        throw new ApiException(ApiErrorCode.RATE_LIMITED, "Share access rate limit exceeded");
     }
 
     private String shareIdOf(HttpServletRequest request) {

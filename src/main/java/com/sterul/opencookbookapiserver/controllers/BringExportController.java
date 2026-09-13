@@ -2,7 +2,6 @@ package com.sterul.opencookbookapiserver.controllers;
 
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,45 +32,36 @@ public class BringExportController extends BaseController {
 
     @Operation(summary = "Get the bring export data for a given export id")
     @GetMapping
-    public ResponseEntity<String> getExportData(@RequestParam String exportId) {
-        try {
-            var export = bringExportService.getBringExport(exportId);
-            var stringBuilder = new StringBuilder();
-            stringBuilder.append("<div itemType='http://schema.org/Recipe'>");
-            stringBuilder.append("<span itemProp='yield'>" + export.getBaseAmount() + "</span>");
-            stringBuilder.append("<h1 itemProp='name'>Cookpal Import</h1>");
-            stringBuilder.append("<img itemprop=\"image\" src=\"favicon.ico\"/>");
-            stringBuilder.append("<ul>");
-            export.getIngredients().forEach(ingredient -> {
-                stringBuilder.append("<li itemProp='ingredients'>" + ingredient + "</li>");
-            });
-            stringBuilder.append("</ul>");
-            stringBuilder.append("</div>");
+    public ResponseEntity<String> getExportData(@RequestParam String exportId)
+            throws ElementNotFound {
+        var export = bringExportService.getBringExport(exportId);
+        var stringBuilder = new StringBuilder();
+        stringBuilder.append("<div itemType='http://schema.org/Recipe'>");
+        stringBuilder.append("<span itemProp='yield'>" + export.getBaseAmount() + "</span>");
+        stringBuilder.append("<h1 itemProp='name'>Cookpal Import</h1>");
+        stringBuilder.append("<img itemprop=\"image\" src=\"favicon.ico\"/>");
+        stringBuilder.append("<ul>");
+        export.getIngredients().forEach(ingredient -> {
+            stringBuilder.append("<li itemProp='ingredients'>" + ingredient + "</li>");
+        });
+        stringBuilder.append("</ul>");
+        stringBuilder.append("</div>");
 
-            return ResponseEntity.ok(stringBuilder.toString());
-
-        } catch (ElementNotFound e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(stringBuilder.toString());
     }
 
     @Operation(summary = "Create a bring export", description = "Creates a bring export for the given recipe. The logged in user must be owner. Exports are valid for 5 minutes")
     @PostMapping
-    public ResponseEntity<ExportCreationResponse> createBringExport(@RequestBody ExportCreationRequest request) {
+    public ResponseEntity<ExportCreationResponse> createBringExport(
+            @RequestBody ExportCreationRequest request)
+            throws ElementNotFound {
         var user = this.getLoggedInUser();
-        try {
-            if (!recipeService.hasAccessPermissionToRecipe(request.recipeId(), user)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-            }
-        } catch (ElementNotFound e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if (!recipeService.hasAccessPermissionToRecipe(request.recipeId(), user)) {
+            // "Not found" rather than "not allowed": see RecipeController.requireOwnRecipe.
+            throw new ElementNotFound();
         }
-        try {
-            var createdExport = bringExportService.createBringExport(request.recipeId(), user);
-            return ResponseEntity.ok(new ExportCreationResponse(createdExport.getId()));
-        } catch (ElementNotFound e) {
-            return ResponseEntity.notFound().build();
-        }
+        var createdExport = bringExportService.createBringExport(request.recipeId(), user);
+        return ResponseEntity.ok(new ExportCreationResponse(createdExport.getId()));
     }
 
     public record ExportCreationRequest(Long recipeId) {

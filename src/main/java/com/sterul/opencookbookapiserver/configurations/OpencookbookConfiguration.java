@@ -115,6 +115,11 @@ public class OpencookbookConfiguration {
     private Sharing sharing = new Sharing();
 
     /**
+     * What may be done by somebody who is not signed in yet.
+     */
+    private Auth auth = new Auth();
+
+    /**
      * Connection to the machine learning subsystem. Leaving the url empty is how an instance
      * says it has none, and every feature that would need one disappears rather than failing.
      */
@@ -269,6 +274,29 @@ public class OpencookbookConfiguration {
          * recipe happens to be.
          */
         private int imageViewsPerHourPerIp = 120;
+    }
+
+    /**
+     * Budgets for the endpoints that need no token: reachable by anybody, and two of them make
+     * the server send e-mail.
+     */
+    @Getter
+    @Setter
+    public static class Auth {
+
+        /**
+         * How many calls to the endpoints that need no token one address may make per hour.
+         * Generous on purpose: signing in is rare, and a household or a mobile network can put
+         * a great many people behind one address.
+         */
+        private int attemptsPerHourPerIp = 60;
+
+        /**
+         * How many activation or password reset mails one address may be sent per hour, whoever
+         * asks. Counted per recipient, not per caller: a caller with many addresses of their own
+         * would slip a per-caller budget.
+         */
+        private int mailsPerHourPerAddress = 5;
     }
 
 }
