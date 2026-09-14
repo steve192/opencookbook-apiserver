@@ -32,56 +32,30 @@ public class RecipeService {
 
     public static final String SEARCH_DOCUMENT = "searchDocument";
 
-    private final IngredientService ingredientService;
+    private final RecipeReferenceResolver recipeReferenceResolver;
     private final RecipeRepository recipeRepository;
     private final RecipeImageService recipeImageService;
-    private final RecipeGroupService recipeGroupService;
     private final WeekplanService weekplanService;
     private final ShareService shareService;
 
-    public RecipeService(IngredientService ingredientService, RecipeRepository recipeRepository,
+    public RecipeService(RecipeReferenceResolver recipeReferenceResolver, RecipeRepository recipeRepository,
             RecipeImageService recipeImageService,
-            // RecipeGroupService depends on RecipeService in turn
-            @Lazy RecipeGroupService recipeGroupService,
             WeekplanService weekplanService,
             // ShareService depends on RecipeService in turn: sharing is about recipes, and the
             // only thing pointing the other way is withdrawing a share when its recipe goes.
             @Lazy ShareService shareService) {
-        this.ingredientService = ingredientService;
+        this.recipeReferenceResolver = recipeReferenceResolver;
         this.recipeRepository = recipeRepository;
         this.recipeImageService = recipeImageService;
-        this.recipeGroupService = recipeGroupService;
         this.weekplanService = weekplanService;
         this.shareService = shareService;
     }
 
-    public Recipe createNewRecipe(Recipe newRecipe) {
+    public Recipe createNewRecipe(Recipe newRecipe) throws ElementNotFound {
         log.info("Creating new recipe {} for user {}", newRecipe.getTitle(), newRecipe.getOwner());
-        createMissingIngredients(newRecipe, newRecipe.getOwner());
-        createMissingRecipeGroup(newRecipe);
+        recipeReferenceResolver.resolve(newRecipe, newRecipe.getOwner());
 
         return recipeRepository.save(newRecipe);
-    }
-
-    private void createMissingIngredients(Recipe recipe, CookpalUser user) {
-        for (var ingredientNeed : recipe.getNeededIngredients()) {
-            var ingredient = ingredientNeed.getIngredient();
-            if (ingredient.getId() == null) {
-                // Convenience api which creates ingredients
-                ingredientNeed.setIngredient(ingredientService.createOrGetIngredient(ingredient, user));
-            }
-        }
-    }
-
-    private void createMissingRecipeGroup(Recipe recipe) {
-        for (var recipeGroup : recipe.getRecipeGroups()) {
-            if (recipeGroup.getId() == null) {
-                // Convenience api which creates recipe groups
-                recipeGroup.setOwner(recipe.getOwner());
-                var createdRecipeGroup = recipeGroupService.createRecipeGroup(recipeGroup);
-                recipeGroup.setId(createdRecipeGroup.getId());
-            }
-        }
     }
 
     public List<Recipe> getRecipesByOwner(CookpalUser owner) {
@@ -131,23 +105,23 @@ public class RecipeService {
         return recipe.get().getOwner().getUserId().equals(user.getUserId());
     }
 
-    public List<Recipe> getRecipesByRecipeGroup(RecipeGroup recipeGroup) {
-        return recipeRepository.findByRecipeGroups(recipeGroup);
+    public void removeRecipeGroupFromRecipes(RecipeGroup recipeGroup) {
+        for (var recipe : recipeRepository.findByRecipeGroups(recipeGroup)) {
+            log.info("Removing recipe group {} from recipe {}", recipeGroup.getId(), recipe.getId());
+            recipe.getRecipeGroups().removeIf(group -> group.getId().equals(recipeGroup.getId()));
+            recipeRepository.save(recipe);
+        }
     }
 
-    public Recipe updateSingleRecipe(Recipe recipeUpdate) {
-        log.info("Updating recipe {} of user {}", recipeUpdate.getId());
-        return recipeRepository.findById(recipeUpdate.getId()).map(existingRecipe -> {
-            log.info("Recipe exists and belongs to {}", existingRecipe.getOwner());
-            recipeUpdate.setId(existingRecipe.getId());
-            recipeUpdate.setOwner(existingRecipe.getOwner());
-            recipeUpdate.setRecipeSource(existingRecipe.getRecipeSource());
+    public Recipe updateSingleRecipe(Recipe recipeUpdate) throws ElementNotFound {
+        var existingRecipe = getRecipeById(recipeUpdate.getId());
+        log.info("Updating recipe {} of user {}", existingRecipe.getId(), existingRecipe.getOwner());
+        recipeUpdate.setOwner(existingRecipe.getOwner());
+        recipeUpdate.setRecipeSource(existingRecipe.getRecipeSource());
 
-            createMissingIngredients(recipeUpdate, existingRecipe.getOwner());
-            createMissingRecipeGroup(recipeUpdate);
+        recipeReferenceResolver.resolve(recipeUpdate, existingRecipe.getOwner());
 
-            return recipeRepository.save(recipeUpdate);
-        }).orElseThrow();
+        return recipeRepository.save(recipeUpdate);
     }
 
     /** The details an operator may correct; ingredients, images and groups are untouched. */

@@ -11,8 +11,8 @@ import com.sterul.opencookbookapiserver.services.sharing.ShareAccessRateLimiter;
  * Applies the share budgets to the public endpoints.
  *
  * Recipes and images are registered separately rather than sorted out inside the interceptor: a
- * single asterisk does not cross a slash, so the two patterns are disjoint by construction and
- * neither has to know that the other exists.
+ * single asterisk does not cross a slash, so the patterns are disjoint by construction and none has
+ * to know that the others exist. A nutrition sheet reads the recipe again, so it spends the recipe budget.
  */
 @Configuration
 public class ShareRateLimitConfiguration implements WebMvcConfigurer {
@@ -26,7 +26,7 @@ public class ShareRateLimitConfiguration implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new ShareAccessRateLimitInterceptor(rateLimiter::recordRecipeView))
-                .addPathPatterns(SharePaths.PUBLIC_RECIPE_PATTERN);
+                .addPathPatterns(SharePaths.PUBLIC_RECIPE_PATTERN, SharePaths.PUBLIC_NUTRITION_PATTERN);
         registry.addInterceptor(new ShareAccessRateLimitInterceptor(rateLimiter::recordImageView))
                 .addPathPatterns(SharePaths.PUBLIC_IMAGE_PATTERN);
     }

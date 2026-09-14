@@ -13,12 +13,4 @@ public class IngredientResponse {
     private Long id;
     private String name;
     private String additionalInfo;
-
-    private Float nutrientsEnergy;
-    private Float nutrientsFat;
-    private Float nutrientsSaturatedFat;
-    private Float nutrientsCarbohydrates;
-    private Float nutrientsSugar;
-    private Float nutrientsProtein;
-    private Float nutrientsSalt;
 }

@@ -19,6 +19,7 @@ import com.sterul.opencookbookapiserver.controllers.BaseController;
 import com.sterul.opencookbookapiserver.controllers.responses.RecipeResponse;
 import com.sterul.opencookbookapiserver.controllers.sharing.requests.ShareRecipeRequest;
 import com.sterul.opencookbookapiserver.controllers.sharing.responses.ShareResponse;
+import com.sterul.opencookbookapiserver.controllers.support.RecipeResponses;
 import com.sterul.opencookbookapiserver.services.RecipeService;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.sharing.ShareLinkFactory;
@@ -41,13 +42,15 @@ public class ShareController extends BaseController {
     private final SharedRecipeImportService sharedRecipeImportService;
     private final RecipeService recipeService;
     private final ShareLinkFactory shareLinkFactory;
+    private final RecipeResponses recipeResponses;
 
     public ShareController(ShareService shareService, SharedRecipeImportService sharedRecipeImportService,
-            RecipeService recipeService, ShareLinkFactory shareLinkFactory) {
+            RecipeService recipeService, ShareLinkFactory shareLinkFactory, RecipeResponses recipeResponses) {
         this.shareService = shareService;
         this.sharedRecipeImportService = sharedRecipeImportService;
         this.recipeService = recipeService;
         this.shareLinkFactory = shareLinkFactory;
+        this.recipeResponses = recipeResponses;
     }
 
     @Operation(summary = "The shares of one of your recipes", description = "Empty while the recipe is not shared.")
@@ -80,7 +83,7 @@ public class ShareController extends BaseController {
     @PostMapping("/{" + SharePaths.SHARE_ID_VARIABLE + "}/import")
     public RecipeResponse importSharedRecipe(@Valid @NotBlank @PathVariable String shareId)
             throws ElementNotFound, IOException {
-        return RecipeResponse.fromEntity(sharedRecipeImportService.importSharedRecipe(shareId, getLoggedInUser()));
+        return recipeResponses.of(sharedRecipeImportService.importSharedRecipe(shareId, getLoggedInUser()));
     }
 
     /**

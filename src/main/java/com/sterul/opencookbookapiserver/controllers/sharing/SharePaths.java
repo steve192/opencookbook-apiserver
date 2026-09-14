@@ -24,6 +24,9 @@ public final class SharePaths {
     /** The images of a shared recipe. */
     public static final String PUBLIC_IMAGE_PATTERN = PUBLIC_BASE + "/*/images/**";
 
+    /** The nutrition sheet of a shared recipe. */
+    public static final String PUBLIC_NUTRITION_PATTERN = PUBLIC_BASE + "/*/nutrition";
+
     /** Managing your own shares, and importing somebody else's. Always authenticated. */
     public static final String OWNER_BASE = "/api/v1/shares";
 

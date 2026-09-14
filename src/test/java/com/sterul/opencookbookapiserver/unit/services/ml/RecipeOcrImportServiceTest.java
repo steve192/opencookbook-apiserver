@@ -13,6 +13,7 @@ import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.services.ml.MlSubsystemException;
 import com.sterul.opencookbookapiserver.services.ml.recipeocr.RecipeOcrImportService;
+import com.sterul.opencookbookapiserver.unit.services.nutrition.ShippedNutritionDataset;
 
 /**
  * Turning the subsystem's reading of a photograph into a recipe.
@@ -22,7 +23,8 @@ import com.sterul.opencookbookapiserver.services.ml.recipeocr.RecipeOcrImportSer
  */
 class RecipeOcrImportServiceTest {
 
-    private final RecipeOcrImportService cut = new RecipeOcrImportService();
+    private final RecipeOcrImportService cut = new RecipeOcrImportService(ShippedNutritionDataset.ingredientExtractor(),
+            ShippedNutritionDataset.UNIT_LEXICON);
     private final CookpalUser owner = new CookpalUser();
 
     private static final String FULL_RESULT = """
@@ -75,9 +77,9 @@ class RecipeOcrImportServiceTest {
 
     @Test
     void aUnitThisInstanceDoesNotKnowMakesTheLineBeReadAgainHere() throws MlSubsystemException {
-        // "oz" has no entry in cookpal's vocabulary, so the proposal cannot be used as it is.
+        // "Schnapsglas" has no entry in cookpal's vocabulary, so the proposal cannot be used as it is.
         var result = ingredientResult(
-                "{\"raw\": \"8 oz Frischkaese\", \"amount\": 8.0, \"unit\": \"oz\","
+                "{\"raw\": \"8 Schnapsglas Frischkaese\", \"amount\": 8.0, \"unit\": \"Schnapsglas\","
                         + " \"name\": \"Frischkaese\", \"additionalInfo\": \"\","
                         + " \"confidence\": 0.9}");
 

@@ -2,13 +2,13 @@ package com.sterul.opencookbookapiserver.unit.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
@@ -19,18 +19,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
-import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.entities.WeekplanDay;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
-import com.sterul.opencookbookapiserver.services.IngredientService;
-import com.sterul.opencookbookapiserver.services.RecipeGroupService;
 import com.sterul.opencookbookapiserver.services.RecipeImageService;
+import com.sterul.opencookbookapiserver.services.RecipeReferenceResolver;
 import com.sterul.opencookbookapiserver.services.RecipeService;
 import com.sterul.opencookbookapiserver.services.WeekplanService;
 import com.sterul.opencookbookapiserver.services.sharing.ShareService;
@@ -45,9 +42,7 @@ class RecipeServiceTest {
     @Mock
     private RecipeImageService recipeImageService;
     @Mock
-    private RecipeGroupService recipeGroupService;
-    @Mock
-    private IngredientService ingredientService;
+    private RecipeReferenceResolver recipeReferenceResolver;
     @Mock
     private WeekplanService weekplanService;
     @Mock
@@ -59,14 +54,6 @@ class RecipeServiceTest {
     @Mock
     private Recipe mockRecipe;
     @Mock
-    private RecipeGroup mockRecipeGroupWithoutId;
-    @Mock
-    private RecipeGroup mockRecipeGroupWithId;
-    @Mock
-    private Ingredient mockIngredientWithoutId;
-    @Mock
-    private IngredientNeed mockIngredientNeed;
-    @Mock
     private WeekplanDay mockWeekplanDay;
 
     @Mock
@@ -77,35 +64,44 @@ class RecipeServiceTest {
     private final AtomicLong ids = new AtomicLong();
 
     @Test
-    void recipeCreated() {
+    void recipeCreatedWithItsReferencesResolvedForItsOwner() throws ElementNotFound {
         when(mockRecipe.getOwner()).thenReturn(testUser);
+
         cut.createNewRecipe(mockRecipe);
-        verify(recipeRepository, times(1)).save(mockRecipe);
+
+        var inOrder = inOrder(recipeReferenceResolver, recipeRepository);
+        inOrder.verify(recipeReferenceResolver).resolve(mockRecipe, testUser);
+        inOrder.verify(recipeRepository).save(mockRecipe);
     }
 
     @Test
-    void recipeGroupCreatedIfNotExistent() {
-        when(mockRecipe.getOwner()).thenReturn(testUser);
-        when(mockRecipeGroupWithoutId.getId()).thenReturn(null);
-        when(mockRecipeGroupWithId.getId()).thenReturn(1L);
-        when(recipeGroupService.createRecipeGroup(any())).thenReturn(mockRecipeGroupWithId);
-        when(mockRecipe.getRecipeGroups()).thenReturn(List.of(mockRecipeGroupWithoutId));
+    void updatedRecipeKeepsOwnerAndSourceAndIsResolvedForTheOwner() throws ElementNotFound {
+        var existing = recipe("Stored", 7L);
+        existing.setOwner(testUser);
+        existing.setRecipeSource("https://example.com/recipe");
+        whenRecipeIsLoadableById(existing);
+        var update = recipe("Changed", 7L);
 
-        cut.createNewRecipe(mockRecipe);
+        cut.updateSingleRecipe(update);
 
-        verify(recipeGroupService, times(1)).createRecipeGroup(mockRecipeGroupWithoutId);
+        assertEquals(testUser, update.getOwner());
+        assertEquals("https://example.com/recipe", update.getRecipeSource());
+        verify(recipeReferenceResolver).resolve(update, testUser);
+        verify(recipeRepository).save(update);
     }
 
     @Test
-    void ingredientCreatedIfNotExistent() {
-        when(mockRecipe.getOwner()).thenReturn(testUser);
-        when(mockIngredientWithoutId.getId()).thenReturn(null);
-        when(mockIngredientNeed.getIngredient()).thenReturn(mockIngredientWithoutId);
-        when(mockRecipe.getNeededIngredients()).thenReturn(List.of(mockIngredientNeed));
+    void removingAGroupTakesOnlyThatGroupOffItsRecipes() {
+        var removed = RecipeGroup.builder().id(1L).title("Removed").build();
+        var kept = RecipeGroup.builder().id(2L).title("Kept").build();
+        var filed = recipe("Filed", 3L);
+        filed.setRecipeGroups(new ArrayList<>(List.of(removed, kept)));
+        when(recipeRepository.findByRecipeGroups(removed)).thenReturn(List.of(filed));
 
-        cut.createNewRecipe(mockRecipe);
+        cut.removeRecipeGroupFromRecipes(removed);
 
-        verify(ingredientService, times(1)).createOrGetIngredient(eq(mockIngredientWithoutId), any());
+        assertEquals(List.of(kept), filed.getRecipeGroups());
+        verify(recipeRepository).save(filed);
     }
 
     @Test

@@ -9,6 +9,9 @@ export class ApiError extends Error {
   }
 }
 
+export const errorMessage = (cause: unknown): string =>
+  cause instanceof ApiError ? cause.message : String(cause);
+
 const BACKEND_URL = '';
 const API_ROUTE = '/api/v1';
 
@@ -45,8 +48,8 @@ export class HttpClient {
     return this.unwrap(this.client.put<T>(path, body));
   }
 
-  async delete<T>(path: string): Promise<T> {
-    return this.unwrap(this.client.delete<T>(path));
+  async delete<T>(path: string, params?: Record<string, unknown>): Promise<T> {
+    return this.unwrap(this.client.delete<T>(path, {params}));
   }
 
   async getImageAsDataUri(path: string): Promise<string> {

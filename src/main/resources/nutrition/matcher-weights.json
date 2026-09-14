@@ -1,0 +1,14 @@
+{
+  "bias" : -2.535,
+  "queryCoverage" : 1.395,
+  "candidateCoverage" : 3.677,
+  "exact" : 2.033,
+  "fuzzyShare" : 0.045,
+  "unexplainedWords" : -1.022,
+  "conflictingFoodWords" : -0.598,
+  "otherFoodWords" : -0.735,
+  "missingStates" : -1.836,
+  "extraStates" : -1.356,
+  "otherLanguage" : -0.731,
+  "margin" : 1.315
+}

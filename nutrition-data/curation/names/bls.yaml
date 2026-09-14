@@ -1,0 +1,58 @@
+# Curated names for BLS foods. A food listed here gets exactly these names instead of the ones
+# derived from its description. The first name per language is the display name.
+
+bls-T422100:
+  de: [Forelle, Forellen]
+  en: [Trout]
+bls-T422112:
+  de: [Forellenfilet mit Haut, Regenbogenforellenfilet mit Haut]
+  en: [Trout fillet with skin, rainbow trout fillet with skin]
+
+bls-U040100:
+  de: ["Hackfleisch gemischt, überwiegend Schwein", Schwein-Rind-Hackfleisch]
+  en: ["Mixed mince, mostly pork", pork and beef mince]
+bls-U047200:
+  de: ["Hackfleisch gemischt, überwiegend Schwein, tiefgefroren"]
+  en: ["Mixed mince, mostly pork, deep-frozen"]
+bls-U050100:
+  de: [Hackfleisch gemischt, Gemischtes Hackfleisch, Gemischtes Hack, Hack gemischt, Rind-Schwein-Hackfleisch, Halb-und-halb-Hackfleisch]
+  en: [Mixed mince, mixed ground meat, beef and pork mince, ground beef and pork]
+bls-U050200:
+  de: ["Hackfleisch gemischt, tiefgefroren"]
+  en: ["Mixed mince, deep-frozen"]
+
+bls-T107902:
+  de: ["Makrele im eigenen Saft, Konserve, abgetropft", Makrele in eigenem Saft]
+  en: ["Mackerel in its own juice, canned, drained"]
+bls-T830802:
+  de: ["Bratmakrele Konserve, abgetropft", Bratmakrele]
+  en: ["Fried mackerel, canned, drained"]
+
+bls-U632700:
+  de: ["Schwein Kamm, Rohpökelware, geräuchert", Schweinekamm geräuchert]
+  en: ["Pork neck, dry-cured, smoked"]
+bls-W511000:
+  de: [Kasseler Kamm, Kassler Kamm, Kasseler]
+  en: [Kassler neck, cured smoked pork neck]
+
+# BLS spells potato "Potatoe" in these English names.
+bls-K110100:
+  de: [Kartoffel geschält]
+  en: [Potato peeled]
+bls-K110902:
+  de: ["Kartoffel geschält, Konserve, abgetropft"]
+  en: ["Potato peeled, canned, drained"]
+bls-K120100:
+  de: [Kartoffel ungeschält]
+  en: [Potato unpeeled]
+bls-K120200:
+  de: ["Kartoffel ungeschält, tiefgefroren"]
+  en: ["Potato unpeeled, deep-frozen"]
+bls-G569902:
+  de: ["Tomate getrocknet, mariniert, abgetropft"]
+  en: ["Tomato dried, marinated, drained"]
+
+# The dried grain; "Mais" in recipes is sweetcorn (synonyms/everyday.yaml).
+bls-C341000:
+  de: [Körnermais, Maiskörner getrocknet]
+  en: [Maize grain, dried corn kernels]

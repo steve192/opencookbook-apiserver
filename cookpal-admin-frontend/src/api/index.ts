@@ -1,18 +1,33 @@
 import {http} from './HttpClient';
 import {
   BringExport,
+  CatalogueFood,
+  CatalogueFoodSummary,
+  Coverage,
+  CustomFoodDraft,
   Ingredient,
-  IngredientDraft,
   MlJob,
   MlQuota,
   MlStatistics,
+  NameCleanupDecision,
+  NameCleanupOutcome,
+  NameCleanupProposal,
+  NameRule,
+  NameRuleKind,
+  NutritionDataset,
   Recipe,
   RecipeUpdate,
+  RelinkDecision,
+  RelinkProposal,
+  RelinkRun,
+  RelinkScope,
   SelfInfo,
   Share,
   ShareStatistics,
   User,
   UserAccount,
+  UnmatchedName,
+  UserCorrection,
   UserUpdate,
 } from './types';
 
@@ -36,10 +51,58 @@ export const RecipesApi = {
 
 export const IngredientsApi = {
   getAll: () => http.get<Ingredient[]>('/admin/ingredients'),
-  create: (ingredient: IngredientDraft) => http.post<Ingredient>('/admin/ingredients', ingredient),
-  update: (id: number, ingredient: IngredientDraft) =>
-    http.put<Ingredient>(`/admin/ingredients/${id}`, ingredient),
   delete: (id: number) => http.delete<void>(`/admin/ingredients/${id}`),
+  link: (id: number, catalogueFoodId: number) =>
+    http.put<Ingredient>(`/admin/ingredients/${id}/link`, {catalogueFoodId}),
+  exclude: (id: number) => http.put<Ingredient>(`/admin/ingredients/${id}/link`, {excluded: true}),
+  nameCleanupPreview: () => http.get<NameCleanupProposal[]>('/admin/ingredients/name-cleanup'),
+  applyNameCleanup: (decisions: NameCleanupDecision[]) =>
+    http.post<NameCleanupOutcome>('/admin/ingredients/name-cleanup/apply', {decisions}),
+};
+
+export const CatalogueApi = {
+  getFoods: () => http.get<CatalogueFoodSummary[]>('/admin/catalogue/foods'),
+  getFood: (id: number) => http.get<CatalogueFood>(`/admin/catalogue/foods/${id}`),
+  create: (food: CustomFoodDraft) => http.post<CatalogueFood>('/admin/catalogue/foods', food),
+  update: (id: number, food: CustomFoodDraft) =>
+    http.put<CatalogueFood>(`/admin/catalogue/foods/${id}`, food),
+  delete: (id: number) => http.delete<void>(`/admin/catalogue/foods/${id}`),
+  addName: (id: number, languageIsoCode: string, name: string) =>
+    http.post<CatalogueFood>(`/admin/catalogue/foods/${id}/names`, {languageIsoCode, name}),
+  removeName: (id: number, languageIsoCode: string, name: string) =>
+    http.delete<CatalogueFood>(`/admin/catalogue/foods/${id}/names`, {languageIsoCode, name}),
+  merge: (id: number, targetId: number) =>
+    http.post<CatalogueFood>(`/admin/catalogue/foods/${id}/merge`, {targetId}),
+  dataset: () => http.get<NutritionDataset>('/admin/catalogue/dataset'),
+};
+
+export const RelinkApi = {
+  getRuns: () => http.get<RelinkRun[]>('/admin/nutrition/relink-runs'),
+  preview: (scope: RelinkScope, belowConfidence: number | null) =>
+    http.post<RelinkRun>('/admin/nutrition/relink-runs', {scope, belowConfidence}),
+  getRun: (id: number) => http.get<RelinkRun>(`/admin/nutrition/relink-runs/${id}`),
+  getProposals: (id: number) => http.get<RelinkProposal[]>(`/admin/nutrition/relink-runs/${id}/proposals`),
+  decide: (id: number, proposalIds: number[], decision: RelinkDecision, remember: boolean) =>
+    http.post<RelinkProposal[]>(`/admin/nutrition/relink-runs/${id}/decisions`, {proposalIds, decision, remember}),
+  getSampleRecipes: (id: number, proposalId: number) =>
+    http.get<Recipe[]>(`/admin/nutrition/relink-runs/${id}/proposals/${proposalId}/recipes`),
+  apply: (id: number) => http.post<RelinkRun>(`/admin/nutrition/relink-runs/${id}/apply`),
+  revert: (id: number) => http.post<RelinkRun>(`/admin/nutrition/relink-runs/${id}/revert`),
+  discard: (id: number) => http.post<RelinkRun>(`/admin/nutrition/relink-runs/${id}/discard`),
+};
+
+export const NameRulesApi = {
+  getAll: () => http.get<NameRule[]>('/admin/nutrition/name-rules'),
+  add: (name: string, kind: NameRuleKind, catalogueFoodId: number | null) =>
+    http.post<NameRule>('/admin/nutrition/name-rules', {name, kind, catalogueFoodId}),
+  delete: (id: number) => http.delete<void>(`/admin/nutrition/name-rules/${id}`),
+};
+
+export const NutritionReportsApi = {
+  unmatchedNames: () => http.get<UnmatchedName[]>('/admin/nutrition/unmatched-names'),
+  userCorrections: () => http.get<UserCorrection[]>('/admin/nutrition/user-corrections'),
+  namesExport: () => http.get<string>('/admin/nutrition/names-export'),
+  coverage: () => http.get<Coverage>('/admin/nutrition/coverage'),
 };
 
 export const SharesApi = {
@@ -68,4 +131,4 @@ export const AccountApi = {
 };
 
 export * from './types';
-export {ApiError} from './HttpClient';
+export {ApiError, errorMessage} from './HttpClient';

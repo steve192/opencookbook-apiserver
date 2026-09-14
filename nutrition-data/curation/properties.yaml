@@ -1,0 +1,39 @@
+# Density (g/ml) and negligibility per catalogue food key:
+#   bls-Q120000: {density: 0.91}
+#   bls-R111000: {negligible: true}
+# Estimates where FDC gives no usable density; without one a volume is weighed as water.
+
+# --- fresh herbs: counted or added without an amount, they change next to nothing (dried herbs and
+#     spices are negligible by rule, see scripts/cookpal_nutrition/catalogue/amounts.py)
+bls-G061000: {negligible: true}   # Basilikum
+bls-G081100: {negligible: true}   # Schnittlauch
+bls-G250100: {negligible: true}   # Petersilie
+
+# --- dairy and fats
+bls-M111300: {density: 1.03}   # Vollmilch
+bls-M113300: {density: 1.03}   # H-Vollmilch
+bls-M111200: {density: 1.03}   # fettarme Milch
+bls-M111100: {density: 1.035}  # Magermilch
+bls-M141300: {density: 1.03}   # Joghurt
+bls-Q630000: {density: 0.91}   # Butter
+bls-Q683000: {density: 0.9}    # Butterschmalz
+
+# --- flour, starch, flakes
+bls-C214200: {density: 0.55}   # Weizenmehl Type 550
+bls-C234000: {density: 0.55}   # Dinkelmehl
+bls-C211000: {density: 0.55}   # Vollkornmehl
+bls-C446000: {density: 0.6}    # Speisestärke
+bls-C133000: {density: 0.37}   # Haferflocken
+bls-H210400: {density: 0.45}   # gemahlene Mandeln
+
+# --- sugar, baking
+bls-S112000: {density: 0.85}   # brauner Zucker
+bls-S111100: {density: 0.56}   # Puderzucker
+bls-S114000: {density: 0.85}   # Vanillezucker
+bls-R421100: {density: 0.9}    # Backpulver
+bls-R114000: {density: 1.2}    # Jodsalz
+
+# --- sauces and spreads
+bls-R141100: {density: 1.15}   # Ketchup
+bls-Q991000: {density: 0.94}   # Mayonnaise
+bls-S132000: {density: 1.3}    # Konfitüre

@@ -14,8 +14,8 @@ import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
 import com.sterul.opencookbookapiserver.services.ml.MlSubsystemException;
+import com.sterul.opencookbookapiserver.services.nutrition.UnitLexicon;
 import com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers.IngredientExtractor;
-import com.sterul.opencookbookapiserver.util.IngredientUnitHelper;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,6 +28,13 @@ public class RecipeOcrImportService {
     private static final int DEFAULT_SERVINGS = 1;
 
     private final Gson gson = new Gson();
+    private final IngredientExtractor ingredientExtractor;
+    private final UnitLexicon unitLexicon;
+
+    public RecipeOcrImportService(IngredientExtractor ingredientExtractor, UnitLexicon unitLexicon) {
+        this.ingredientExtractor = ingredientExtractor;
+        this.unitLexicon = unitLexicon;
+    }
 
     /**
      * Reads the subsystem's answer without interpreting it.
@@ -82,13 +89,13 @@ public class RecipeOcrImportService {
         var amount = parsed.getAmount() == null ? 0f : parsed.getAmount().floatValue();
         var additionalInfo = trimmed(parsed.getAdditionalInfo());
 
-        if (!unit.isEmpty() && !IngredientUnitHelper.isKnownUnit(unit)) {
+        if (!unit.isEmpty() && !unitLexicon.isKnownUnit(unit)) {
             var raw = trimmed(parsed.getRaw());
             log.debug("Unknown unit '{}' from the subsystem, re-reading '{}'", unit, raw);
-            unit = IngredientExtractor.extractUnit(raw);
-            amount = IngredientExtractor.extractAmount(raw);
-            name = IngredientExtractor.extractName(raw);
-            additionalInfo = IngredientExtractor.extractAdditionalInfo(raw);
+            unit = ingredientExtractor.extractUnit(raw);
+            amount = ingredientExtractor.extractAmount(raw);
+            name = ingredientExtractor.extractName(raw);
+            additionalInfo = ingredientExtractor.extractAdditionalInfo(raw);
         }
 
         if (name.isEmpty()) {

@@ -1,0 +1,69 @@
+{
+ "states": [
+  {
+   "key": "RAW",
+   "kind": "PREPARATION",
+   "unprepared": true
+  },
+  {
+   "key": "BOILED",
+   "kind": "PREPARATION"
+  },
+  {
+   "key": "STEAMED",
+   "kind": "PREPARATION"
+  },
+  {
+   "key": "STEWED",
+   "kind": "PREPARATION"
+  },
+  {
+   "key": "BAKED",
+   "kind": "PREPARATION"
+  },
+  {
+   "key": "GRILLED",
+   "kind": "PREPARATION"
+  },
+  {
+   "key": "PAN_FRIED",
+   "kind": "PREPARATION"
+  },
+  {
+   "key": "DEEP_FRIED",
+   "kind": "PREPARATION"
+  },
+  {
+   "key": "DRIED",
+   "kind": "PROCESSING"
+  },
+  {
+   "key": "POWDERED",
+   "kind": "PROCESSING"
+  },
+  {
+   "key": "CONCENTRATED",
+   "kind": "PROCESSING"
+  },
+  {
+   "key": "CANNED",
+   "kind": "PROCESSING"
+  },
+  {
+   "key": "PICKLED",
+   "kind": "PROCESSING"
+  },
+  {
+   "key": "SMOKED",
+   "kind": "PROCESSING"
+  },
+  {
+   "key": "REDUCED_FAT",
+   "kind": "PROCESSING"
+  },
+  {
+   "key": "SWEETENED",
+   "kind": "PROCESSING"
+  }
+ ]
+}

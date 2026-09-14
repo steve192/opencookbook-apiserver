@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sterul.opencookbookapiserver.controllers.sharing.responses.SharedRecipeResponse;
 import com.sterul.opencookbookapiserver.controllers.support.RecipeImageResponses;
+import com.sterul.opencookbookapiserver.controllers.support.RecipeResponses;
 import com.sterul.opencookbookapiserver.services.RecipeImageService;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.sharing.ShareService;
@@ -35,17 +36,21 @@ public class SharedRecipeController {
 
     private final ShareService shareService;
     private final RecipeImageService recipeImageService;
+    private final RecipeResponses recipeResponses;
 
-    public SharedRecipeController(ShareService shareService, RecipeImageService recipeImageService) {
+    public SharedRecipeController(ShareService shareService, RecipeImageService recipeImageService,
+            RecipeResponses recipeResponses) {
         this.shareService = shareService;
         this.recipeImageService = recipeImageService;
+        this.recipeResponses = recipeResponses;
     }
 
     @Operation(summary = "Read a shared recipe", description = "No authentication required. Rate limited per client and per share.")
     @GetMapping("/{" + SharePaths.SHARE_ID_VARIABLE + "}")
     public SharedRecipeResponse getSharedRecipe(@Valid @NotBlank @PathVariable String shareId)
             throws ElementNotFound {
-        return SharedRecipeResponse.fromEntity(shareService.openSharedRecipe(shareId));
+        var recipe = shareService.openSharedRecipe(shareId);
+        return SharedRecipeResponse.fromEntity(recipe, recipeResponses.nutritionOf(recipe));
     }
 
     @Operation(summary = "Read an image of a shared recipe")

@@ -1,0 +1,9 @@
+# Downloads and production exports never enter git; see SOURCES.md and README.md.
+/raw/*
+!/raw/.gitkeep
+/local/*
+!/local/.gitkeep
+
+/.venv/
+__pycache__/
+.pytest_cache/

@@ -26,11 +26,16 @@
 
         <jjwt.version>0.13.0</jjwt.version>
         <velocity.version>2.4.1</velocity.version>
+        <lucene.version>10.5.1</lucene.version>
 
         <!-- The admin panel, which is bundled into this server's static resources -->
         <frontend-maven-plugin.version>1.15.1</frontend-maven-plugin.version>
         <node.version>v20.19.0</node.version>
         <skipAdminUi>false</skipAdminUi>
+
+        <!-- Test groups that need what a normal build has not: see the profiles below -->
+        <testGroups></testGroups>
+        <excludedTestGroups>production-gold,calibration,local-instance</excludedTestGroups>
     </properties>
 
     <dependencies>
@@ -40,6 +45,18 @@
             <artifactId>mockito-core</artifactId>
             <version>5.18.0</version>
             <scope>test</scope>
+        </dependency>
+
+        <!-- In-process search index of the nutrition catalogue, for matching ingredient names -->
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+            <version>${lucene.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-analysis-common</artifactId>
+            <version>${lucene.version}</version>
         </dependency>
 
         <dependency>
@@ -239,6 +256,19 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <groups>${testGroups}</groups>
+                    <excludedGroups>${excludedTestGroups}</excludedGroups>
+                    <systemPropertyVariables>
+                        <!-- Tests run on the packaged configuration only: a developer's config/application.yml
+                             (secrets, switched-on features) must not change what they check. -->
+                        <spring.config.location>classpath:/</spring.config.location>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco.version}</version>
@@ -269,5 +299,40 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!--
+            Also measures the catalogue matcher on the production gold set, which is never committed
+            (nutrition-data/local/names-production.tsv). The test skips itself where the file is absent.
+        -->
+        <profile>
+            <id>production-gold</id>
+            <properties>
+                <excludedTestGroups>calibration,local-instance</excludedTestGroups>
+            </properties>
+        </profile>
+        <!--
+            Only writes the admin reports of a local copy of an instance's database to nutrition-data/local/,
+            reading it: mvn test -DskipAdminUi -Plocal-instance-reports -Dlocal.instance.url=jdbc:postgresql://...
+        -->
+        <profile>
+            <id>local-instance-reports</id>
+            <properties>
+                <testGroups>local-instance</testGroups>
+                <excludedTestGroups></excludedTestGroups>
+            </properties>
+        </profile>
+        <!--
+            Only fits the catalogue matcher's weights to the gold sets and writes them to
+            src/main/resources/nutrition/matcher-weights.json: mvn test -Pcalibrate-matcher -DskipAdminUi
+        -->
+        <profile>
+            <id>calibrate-matcher</id>
+            <properties>
+                <testGroups>calibration</testGroups>
+                <excludedTestGroups></excludedTestGroups>
+            </properties>
+        </profile>
+    </profiles>
 
 </project>

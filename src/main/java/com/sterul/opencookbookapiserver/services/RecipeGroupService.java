@@ -48,14 +48,7 @@ public class RecipeGroupService {
             log.warn("Recipe group does not exist");
             throw new NoSuchElementException("Receipe group " + recipeGroupId + " not existing. Cannot delete");
         }
-        var recipesToUnassignGroup = recipeService.getRecipesByRecipeGroup(recipeGroupOptional.get());
-
-        // TODO: Replace clean with specific group if multi groups are implemented
-        recipesToUnassignGroup.forEach(recipe -> {
-            log.info("Deleting recipe group from recipe {}", recipe.getId());
-            recipe.getRecipeGroups().clear();
-            recipeService.updateSingleRecipe(recipe);
-        });
+        recipeService.removeRecipeGroupFromRecipes(recipeGroupOptional.get());
 
         recipeGroupRepository.deleteById(recipeGroupId);
     }

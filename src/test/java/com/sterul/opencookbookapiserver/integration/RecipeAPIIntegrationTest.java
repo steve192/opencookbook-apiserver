@@ -27,11 +27,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sterul.opencookbookapiserver.controllers.IngredientsController;
 import com.sterul.opencookbookapiserver.controllers.RecipeController;
+import com.sterul.opencookbookapiserver.controllers.requests.IngredientNeedRequest;
+import com.sterul.opencookbookapiserver.controllers.requests.IngredientReference;
 import com.sterul.opencookbookapiserver.controllers.requests.IngredientRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.RecipeGroupRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.RecipeRequest;
-import com.sterul.opencookbookapiserver.entities.Ingredient;
-import com.sterul.opencookbookapiserver.entities.IngredientNeed;
+import com.sterul.opencookbookapiserver.controllers.responses.RecipeResponse;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
@@ -77,7 +78,7 @@ class RecipeAPIIntegrationTest extends IntegrationTest {
 
     @Test
     @Transactional
-    void testRecipeCreation() {
+    void testRecipeCreation() throws ApiException {
         var ingredient = ingredientsController.create(
                 IngredientRequest.builder()
                         .name("TestIngredient")
@@ -87,29 +88,24 @@ class RecipeAPIIntegrationTest extends IntegrationTest {
                 .title("test")
                 .servings(5)
                 .preparationSteps(Arrays.asList("Step1", "Step2"))
-                .neededIngredients(Arrays.asList(
-                        IngredientNeed.builder()
-                                .amount(4F)
-                                .ingredient(Ingredient.builder()
-                                        .id(ingredient.getId())
-                                        .build())
-                                .build()))
+                .neededIngredients(List.of(fourOf(ingredient.getName())))
                 .build();
 
         var newRecipeResponse = cut.newRecipe(newRecipe);
         assertEquals(newRecipeResponse.getTitle(), newRecipe.getTitle());
         assertEquals(newRecipeResponse.getServings(), newRecipe.getServings());
         assertListsEqual(newRecipeResponse.getPreparationSteps(), newRecipe.getPreparationSteps());
-        assertListsEqual(newRecipeResponse.getNeededIngredients(), newRecipe.getNeededIngredients());
+        assertIngredientLinesMatch(newRecipe, newRecipeResponse);
+        assertEquals(ingredient.getId(), newRecipeResponse.getNeededIngredients().get(0).ingredient().id());
 
-        assertListsEqual(newRecipeResponse.getRecipeGroups(), newRecipe.getRecipeGroups());
-        assertListsEqual(newRecipeResponse.getImages(), newRecipe.getImages());
+        assertTrue(newRecipeResponse.getRecipeGroups().isEmpty());
+        assertTrue(newRecipeResponse.getImages().isEmpty());
 
     }
 
     @Test
     @Transactional
-    void nonPositiveServingsAreNormalisedToOne() {
+    void nonPositiveServingsAreNormalisedToOne() throws ApiException {
         var newRecipe = RecipeRequest.builder()
                 .title("test")
                 .servings(-10)
@@ -121,7 +117,7 @@ class RecipeAPIIntegrationTest extends IntegrationTest {
     @Test
     @Transactional
     @DirtiesContext
-    void testRecipeCreationWithGroup() {
+    void testRecipeCreationWithGroup() throws ApiException {
 
         var ingredient = ingredientsController.create(
                 IngredientRequest.builder()
@@ -132,13 +128,7 @@ class RecipeAPIIntegrationTest extends IntegrationTest {
                 .title("test")
                 .servings(5)
                 .preparationSteps(Arrays.asList("Step1", "Step2"))
-                .neededIngredients(Arrays.asList(
-                        IngredientNeed.builder()
-                                .amount(4F)
-                                .ingredient(Ingredient.builder()
-                                        .id(ingredient.getId())
-                                        .build())
-                                .build()))
+                .neededIngredients(List.of(fourOf(ingredient.getName())))
                 .recipeGroups(List.of(RecipeGroupRequest.builder()
                         .title("Test group")
                         .build()))
@@ -148,13 +138,13 @@ class RecipeAPIIntegrationTest extends IntegrationTest {
         assertEquals(newRecipeResponse.getTitle(), newRecipe.getTitle());
         assertEquals(newRecipeResponse.getServings(), newRecipe.getServings());
         assertListsEqual(newRecipeResponse.getPreparationSteps(), newRecipe.getPreparationSteps());
-        assertListsEqual(newRecipeResponse.getNeededIngredients(), newRecipe.getNeededIngredients());
+        assertIngredientLinesMatch(newRecipe, newRecipeResponse);
 
         assertEquals(newRecipeResponse.getRecipeGroups().get(0).getTitle(),
                 newRecipe.getRecipeGroups().get(0).getTitle());
         assertNotNull(newRecipeResponse.getRecipeGroups().get(0).getId());
 
-        assertListsEqual(newRecipeResponse.getImages(), newRecipe.getImages());
+        assertTrue(newRecipeResponse.getImages().isEmpty());
 
     }
 
@@ -200,9 +190,26 @@ class RecipeAPIIntegrationTest extends IntegrationTest {
         assertTrue(response.contains(testhost));
     }
 
-    private void assertListsEqual(List list1, List list2) {
-        assertEquals(new ArrayList(list1),
-                new ArrayList(list2));
+    private void assertListsEqual(List<?> list1, List<?> list2) {
+        assertEquals(new ArrayList<>(list1), new ArrayList<>(list2));
+    }
+
+    private static IngredientNeedRequest fourOf(String ingredientName) {
+        return IngredientNeedRequest.builder()
+                .amount(4F)
+                .ingredient(IngredientReference.builder().name(ingredientName).build())
+                .build();
+    }
+
+    private void assertIngredientLinesMatch(RecipeRequest request, RecipeResponse response) {
+        assertEquals(request.getNeededIngredients().size(), response.getNeededIngredients().size());
+        for (var i = 0; i < request.getNeededIngredients().size(); i++) {
+            var requested = request.getNeededIngredients().get(i);
+            var answered = response.getNeededIngredients().get(i);
+            assertEquals(requested.getAmount(), answered.amount());
+            assertEquals(requested.getUnit(), answered.unit());
+            assertEquals(requested.getIngredient().getName(), answered.ingredient().name());
+        }
     }
 
 }

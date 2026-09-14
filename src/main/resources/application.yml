@@ -38,6 +38,10 @@ opencookbook:
   # 1 year
   refreshTokenDuration: 31536000 
   recipeScaperServiceUrl: http://recipe-scrapers:9090
+  nutrition:
+    # Nutrition estimation from the shipped food catalogue. Off by default; switching it on imports
+    # the catalogue on the next start.
+    enabled: false
   ml:
     # Empty means this instance has no machine learning subsystem, and every feature that
     # would need one is absent rather than broken. That is the default.

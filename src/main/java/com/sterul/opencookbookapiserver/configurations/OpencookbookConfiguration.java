@@ -119,6 +119,9 @@ public class OpencookbookConfiguration {
      */
     private Auth auth = new Auth();
 
+    /** Nutrition estimation from the shipped food catalogue. */
+    private Nutrition nutrition = new Nutrition();
+
     /**
      * Connection to the machine learning subsystem. Leaving the url empty is how an instance
      * says it has none, and every feature that would need one disappears rather than failing.
@@ -229,6 +232,14 @@ public class OpencookbookConfiguration {
              */
             private int maxPages = 6;
         }
+    }
+
+    @Getter
+    @Setter
+    public static class Nutrition {
+
+        /** Off: no catalogue import and no nutrition endpoints. The schema exists either way. */
+        private boolean enabled = false;
     }
 
     /**

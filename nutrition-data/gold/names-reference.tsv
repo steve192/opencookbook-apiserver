@@ -1,0 +1,644 @@
+# Reference gold set for the catalogue matcher: ingredient names as recipes write them, with the
+# catalogue foods they mean. Written for the purpose, never taken from production data.
+#
+# Columns: typed name, language it is written in, expected catalogue keys. Several keys separated by
+# "|" are equally right; "-" means no food fits and nothing must be linked silently.
+# Keys must exist in the shipped catalogue; CatalogueMatcherReferenceSetTest checks that too.
+#
+# Deliberately included: plurals, adjectives that do not change the food, state words, compounds,
+# typos, English names, and traps where a word of another food is part of the name.
+
+# --- dairy, eggs
+Milch	de	bls-M111300|bls-M113300
+Vollmilch	de	bls-M111300|bls-M113300
+frische Vollmilch	de	bls-M111300
+H-Milch	de	bls-M113300
+fettarme Milch	de	bls-M111200|bls-M113200
+Milch 1,5%	de	bls-M111200|bls-M113200|bls-M111300
+Magermilch	de	bls-M111100|bls-M113100
+Buttermilch	de	bls-M150000
+Sahne	de	bls-M173800|bls-M173900
+Schlagsahne	de	bls-M173800|bls-M173900
+flüssige Sahne	de	bls-M173800|bls-M173900
+Schlagsahne 30%	de	bls-M173800
+Kochsahne	de	bls-M171500
+saure Sahne	de	bls-M172500
+Sauerrahm	de	bls-M172500
+Schmand	de	bls-M172700
+Crème fraîche	de	bls-M172900|bls-M176800
+Creme Fraiche	de	bls-M172900|bls-M176800
+Quark	de	bls-M713500|bls-M713100|bls-M713300
+Magerquark	de	bls-M713100
+Speisequark 40%	de	bls-M713500
+Joghurt	de	bls-M141300
+Naturjoghurt	de	bls-M141300
+griechischer Joghurt	de	fdc-2259794
+Frischkäse	de	bls-M820600|bls-M710800|bls-M820500
+Doppelrahmfrischkäse	de	bls-M710800
+körniger Frischkäse	de	bls-M711100|bls-M711300
+Hüttenkäse	de	bls-M711100|bls-M711300
+Mascarpone	de	bls-M7A6800
+Ricotta	de	bls-M741600
+Mozzarella	de	bls-M032100|bls-M0A1000
+Büffelmozzarella	de	bls-M032100
+geriebener Parmesan	de	bls-M306400
+Parmesan	de	bls-M306400
+Gouda	de	bls-M402600|bls-M402500|bls-M402400
+geriebener Gouda	de	bls-M402600|bls-M402500|bls-M402400
+Emmentaler	de	bls-M304600
+Reibekäse	de	bls-M402600|bls-M304600
+geriebener Käse	de	bls-M402600|bls-M304600
+Feta	de	bls-M012200
+Fetakäse	de	bls-M012200
+Schafskäse	de	bls-M6A6800|bls-M3A4300
+Hirtenkäse	de	bls-M052000
+Cheddar	de	bls-M303600|bls-M303700
+Butter	de	bls-Q630000|bls-Q620000|bls-Q611000
+weiche Butter	de	bls-Q630000|bls-Q620000|bls-Q611000
+kalte Butter	de	bls-Q630000|bls-Q620000|bls-Q611000
+geschmolzene Butter	de	bls-Q630000|bls-Q620000|bls-Q611000
+Butterflöckchen	de	bls-Q630000|bls-Q620000|bls-Q611000
+gesalzene Butter	de	bls-Q6A4000
+Margarine	de	bls-Q400000
+Butterschmalz	de	bls-Q683000
+Ghee	de	bls-Q683000
+Ei	de	bls-E111100
+Eier	de	bls-E111100
+Eier Größe M	de	bls-E111100
+großes Ei	de	bls-E111100
+Bio-Eier	de	bls-E111100
+hartgekochte Eier	de	bls-E111132|bls-E107122
+gekochte Eier	de	bls-E111132|bls-E107122
+Eigelb	de	bls-E112100
+Eigelbe	de	bls-E112100
+Eidotter	de	bls-E112100
+Eiweiß	de	bls-E113100
+Eiklar	de	bls-E113100
+milk	en	bls-M111300|bls-M113300
+whole milk	en	bls-M111300|bls-M113300
+skimmed milk	en	bls-M111100|bls-M113100
+buttermilk	en	bls-M150000
+heavy cream	en	bls-M173800|bls-M173900
+whipping cream	en	bls-M173800|bls-M173900
+sour cream	en	bls-M172500
+cream cheese	en	bls-M820600|bls-M710800|bls-M820500
+cottage cheese	en	bls-M711100|bls-M711300
+grated parmesan	en	bls-M306400
+feta cheese	en	bls-M012200
+cheddar cheese	en	bls-M303600|bls-M303700
+unsalted butter	en	bls-Q630000
+butter	en	bls-Q630000|bls-Q620000|bls-Q611000
+eggs	en	bls-E111100
+large eggs	en	bls-E111100
+egg yolks	en	bls-E112100
+egg whites	en	bls-E113100
+plain yogurt	en	bls-M141300
+greek yogurt	en	fdc-2259794
+
+# --- flour, grains, pasta, bread
+Mehl	de	bls-C214100|bls-C214200
+Weizenmehl	de	bls-C214100|bls-C214200
+Weizenmehl Type 405	de	bls-C214100
+Mehl Type 550	de	bls-C214200
+Dinkelmehl	de	bls-C234000|bls-C234100|bls-C234200
+Dinkelmehl Type 630	de	bls-C234000
+Vollkornmehl	de	bls-C211000
+Roggenmehl	de	bls-C223200|bls-C223100|bls-C223300|bls-C223400
+Speisestärke	de	bls-C446000
+Maisstärke	de	bls-C446000
+Kartoffelstärke	de	bls-K230000
+Haferflocken	de	bls-C133000
+zarte Haferflocken	de	bls-C133000
+Reis	de	bls-C352000
+Basmatireis	de	bls-C352000
+Langkornreis	de	bls-C352000
+Risottoreis	de	bls-C352000
+Vollkornreis	de	bls-C351000
+Naturreis	de	bls-C351000
+Wildreis	de	bls-C353100
+gekochter Reis	de	bls-C352032|bls-C352000
+Nudeln	de	bls-E401000|bls-E432000
+Spaghetti	de	bls-E401000
+Penne	de	bls-E401000
+Bandnudeln	de	bls-E432000
+Tagliatelle	de	bls-E432000
+Vollkornnudeln	de	bls-E530000|bls-E401000
+Glasnudeln	de	bls-H030400
+Reisnudeln	de	bls-C559000
+Couscous	de	bls-C119200
+Bulgur	de	bls-C119100
+Quinoa	de	bls-C118000
+Hirse	de	bls-C332000
+Buchweizen	de	bls-C322000
+Polenta	de	bls-C346000|bls-C526000
+Paniermehl	de	bls-B821000
+Semmelbrösel	de	bls-B821000
+Blätterteig	de	bls-D072000|bls-D490300
+Toastbrot	de	bls-B314000
+Brötchen	de	bls-B511000
+Baguette	de	bls-B781200
+Weißbrot	de	bls-B311000
+Roggenbrot	de	bls-B221000
+Löffelbiskuits	de	bls-D710200
+flour	en	bls-C214100|bls-C214200
+all-purpose flour	en	bls-C214100
+whole wheat flour	en	bls-C211000
+cornstarch	en	bls-C446000
+rolled oats	en	bls-C133000
+rice	en	bls-C352000
+basmati rice	en	bls-C352000
+brown rice	en	bls-C351000
+pasta	en	bls-E401000|bls-E432000
+spaghetti	en	bls-E401000
+egg noodles	en	bls-E432000
+couscous	en	bls-C119200
+breadcrumbs	en	bls-B821000
+puff pastry	en	bls-D072000|bls-D490300
+
+# --- pulses, nuts, seeds
+Linsen	de	bls-H725100
+rote Linsen	de	bls-H730000
+Kichererbsen	de	bls-G770400|bls-H720902
+Kichererbsen aus der Dose	de	bls-H720902|bls-G770400
+Kidneybohnen	de	bls-H742100|bls-H742902
+weiße Bohnen	de	bls-H739400
+grüne Bohnen	de	bls-G710100
+Brechbohnen	de	bls-G710100
+Erbsen	de	bls-G760100|bls-G760200
+TK-Erbsen	de	bls-G760200
+Erbsen tiefgekühlt	de	bls-G760200|bls-G760100
+Zuckerschoten	de	bls-G761100
+Mais	de	bls-G570100|bls-G570902
+Mais aus der Dose	de	bls-G570902|bls-G570100
+Tofu	de	bls-H861000
+Seidentofu	de	bls-H861100
+Mandeln	de	bls-H210100
+gemahlene Mandeln	de	bls-H210400
+Mandelblättchen	de	bls-H210100
+gehackte Mandeln	de	bls-H210100
+Haselnüsse	de	bls-H130100
+gemahlene Haselnüsse	de	bls-H130400
+Walnüsse	de	bls-H120100
+Walnusskerne	de	bls-H120100
+Cashewkerne	de	bls-H170100
+Pinienkerne	de	bls-H320100
+Erdnüsse	de	bls-H110600|bls-H110700
+gesalzene Erdnüsse	de	bls-H110700
+Erdnussbutter	de	bls-H880200|bls-H110800
+Sesam	de	bls-H420100
+Leinsamen	de	bls-H410100
+Sonnenblumenkerne	de	bls-H430100
+Kürbiskerne	de	bls-H310100
+Chiasamen	de	bls-H480100
+Kokosraspeln	de	bls-H150400
+Kokosmilch	de	bls-H154000
+Tahini	de	bls-Q901000
+lentils	en	bls-H725100
+red lentils	en	bls-H730000
+chickpeas	en	bls-G770400|bls-H720902
+kidney beans	en	bls-H742100|bls-H742902
+green beans	en	bls-G710100
+frozen peas	en	bls-G760200
+almonds	en	bls-H210100
+ground almonds	en	bls-H210400
+walnuts	en	bls-H120100
+pine nuts	en	bls-H320100
+peanut butter	en	bls-H880200|bls-H110800
+coconut milk	en	bls-H154000
+sesame seeds	en	bls-H420100
+
+# --- vegetables
+Kartoffeln	de	bls-K110100|bls-K120100
+Kartoffel	de	bls-K110100|bls-K120100
+festkochende Kartoffeln	de	bls-K110100|bls-K120100
+mehligkochende Kartoffeln	de	bls-K110100|bls-K120100
+vorwiegend festkochende Kartoffeln	de	bls-K110100|bls-K120100
+kleine Kartoffeln	de	bls-K110100|bls-K120100
+Drillinge	de	bls-K120100|bls-K110100
+gekochte Kartoffeln	de	bls-K110132|bls-K120134
+Pellkartoffeln	de	bls-K120134|bls-K120100
+Kartofeln	de	bls-K110100|bls-K120100
+Süßkartoffeln	de	bls-K420100
+Süßkartoffel	de	bls-K420100
+Zwiebel	de	bls-G480100
+Zwiebeln	de	bls-G480100
+rote Zwiebeln	de	bls-G480100
+große Zwiebel	de	bls-G480100
+Gemüsezwiebel	de	bls-G480100
+Zwiebelwürfel	de	bls-G480100
+Röstzwiebeln	de	bls-G860192
+Frühlingszwiebeln	de	bls-G482100|bls-G486100
+Lauchzwiebeln	de	bls-G482100|bls-G486100
+Schalotten	de	bls-G485100
+Knoblauch	de	bls-G490100
+Knoblauchzehe	de	bls-G490100
+Knoblauchzehen	de	bls-G490100
+Knoblauchzehen, gepresst	de	bls-G490100
+Knoblauchpulver	de	bls-G490500
+Lauch	de	bls-G470100
+Porree	de	bls-G470100
+Karotten	de	bls-G620100
+Möhren	de	bls-G620100
+Karotte	de	bls-G620100
+Mohrrüben	de	bls-G620100
+Sellerie	de	bls-G660100|bls-G220100
+Knollensellerie	de	bls-G660100
+Staudensellerie	de	bls-G220100
+Paprika	de	bls-G543100|bls-G541100|bls-G542100
+rote Paprika	de	bls-G543100
+rote Paprikaschote	de	bls-G543100
+gelbe Paprika	de	bls-G542100
+grüne Paprikaschoten	de	bls-G541100
+Zucchini	de	bls-G582100
+Aubergine	de	bls-G510100
+Auberginen	de	bls-G510100
+Gurke	de	bls-G520100
+Salatgurke	de	bls-G520100
+Gewürzgurken	de	bls-G520802
+Tomaten	de	bls-G561100
+Tomate	de	bls-G561100
+Kirschtomaten	de	bls-G561100
+Cocktailtomaten	de	bls-G561100
+reife Tomaten	de	bls-G561100
+getrocknete Tomaten	de	bls-G560400|bls-G567702|bls-G569902
+getrocknete Tomaten in Öl	de	bls-G567702|bls-G560400
+passierte Tomaten	de	bls-R161200
+stückige Tomaten	de	bls-G568900
+geschälte Tomaten	de	bls-G568900
+Dosentomaten	de	bls-G568900|bls-G560900
+Tomatenmark	de	bls-R160000
+Brokkoli	de	bls-G312100
+Broccoli	de	bls-G312100
+Blumenkohl	de	bls-G311100
+Spinat	de	bls-G211100|bls-G211200
+Blattspinat	de	bls-G211100|bls-G211200
+Babyspinat	de	bls-G211100
+TK-Spinat	de	bls-G211200
+Weißkohl	de	bls-G342100
+Rotkohl	de	bls-G341100
+Wirsing	de	bls-G343100
+Grünkohl	de	bls-G322100
+Rosenkohl	de	bls-G332100|bls-G332200
+Kohlrabi	de	bls-G331100
+Champignons	de	bls-K701100
+braune Champignons	de	bls-K701100
+Pilze	de	bls-K701100|bls-K750100
+Steinpilze	de	bls-K718100
+getrocknete Steinpilze	de	bls-K718400
+Austernpilze	de	bls-K740100
+Erbsen und Möhren	de	bls-G992100|bls-G992200
+Kürbis	de	bls-G581000|bls-G581100
+Hokkaido-Kürbis	de	bls-G581000
+Rote Bete	de	bls-G613100
+Radieschen	de	bls-G691100
+Rucola	de	bls-G130100
+Feldsalat	de	bls-G104100
+Eisbergsalat	de	bls-G103100
+Kopfsalat	de	bls-G105100
+Salat	de	bls-G105100|bls-G103100
+Chicorée	de	bls-G101100
+Radicchio	de	bls-G106100
+Fenchel	de	bls-G430100
+Fenchelknolle	de	bls-G430100
+Spargel	de	bls-G450100
+grüner Spargel	de	bls-G450100
+Sauerkraut	de	bls-G345100|bls-G345902
+Mangold	de	bls-G230100
+Avocado	de	bls-F502100
+Avocados	de	bls-F502100
+Ingwer	de	bls-R211200
+frischer Ingwer	de	bls-R211200
+gemahlener Ingwer	de	fdc-170926
+Chilischote	de	bls-G554100|bls-G553100
+rote Chilischote	de	bls-G554100
+Peperoni	de	bls-G554100|bls-G553100|fdc-2747660
+Oliven	de	bls-H510802|bls-H520800
+schwarze Oliven	de	bls-H520800
+Kapern	de	bls-G012902
+Meerrettich	de	bls-G630100|bls-G898300
+potatoes	en	bls-K110100|bls-K120100
+sweet potatoes	en	bls-K420100
+onions	en	bls-G480100
+red onion	en	bls-G480100
+spring onions	en	bls-G482100|bls-G486100
+garlic	en	bls-G490100
+garlic cloves	en	bls-G490100
+carrots	en	bls-G620100
+celery	en	bls-G220100
+red bell pepper	en	bls-G543100
+zucchini	en	bls-G582100
+eggplant	en	bls-G510100
+cucumber	en	bls-G520100
+tomatoes	en	bls-G561100
+cherry tomatoes	en	bls-G561100
+sun-dried tomatoes	en	bls-G560400|bls-G567702|bls-G569902
+canned tomatoes	en	bls-G568900|bls-G560900
+tomato paste	en	bls-R160000
+broccoli	en	bls-G312100
+cauliflower	en	bls-G311100
+spinach	en	bls-G211100|bls-G211200
+mushrooms	en	bls-K701100
+pumpkin	en	bls-G581000|bls-G581100
+leek	en	bls-G470100
+fresh ginger	en	bls-R211200
+avocado	en	bls-F502100
+
+# --- fruit
+Äpfel	de	bls-F110100
+Apfel	de	bls-F110100
+säuerliche Äpfel	de	bls-F110100
+Bananen	de	bls-F503100
+reife Banane	de	bls-F503100
+Zitrone	de	bls-F601100
+Bio-Zitrone	de	bls-F601100
+Zitronensaft	de	bls-F601600
+Saft einer Zitrone	de	bls-F601600
+Limette	de	bls-F602100
+Limettensaft	de	bls-F602600
+Orange	de	bls-F603100
+Orangensaft	de	bls-F603600
+Erdbeeren	de	bls-F301100
+Himbeeren	de	bls-F302100
+TK-Himbeeren	de	bls-F302100
+Heidelbeeren	de	bls-F304100
+Blaubeeren	de	bls-F304100
+Kirschen	de	bls-F211100|bls-F212100
+Sauerkirschen	de	bls-F212100
+Birnen	de	bls-F130100
+Pfirsiche	de	bls-F203100
+Ananas	de	bls-F501100
+Ananas aus der Dose	de	bls-F591902|bls-F501902|bls-F5A1902
+Mango	de	bls-F516100
+Weintrauben	de	bls-F310100
+Rosinen	de	bls-F840100
+Datteln	de	bls-F504100|bls-F504400
+getrocknete Datteln	de	bls-F504400
+Apfelmus	de	fdc-2346414|bls-F921900
+apples	en	bls-F110100
+bananas	en	bls-F503100
+lemon juice	en	bls-F601600
+lime	en	bls-F602100
+orange juice	en	bls-F603600
+strawberries	en	bls-F301100
+raspberries	en	bls-F302100
+blueberries	en	bls-F304100
+raisins	en	bls-F840100
+
+# --- meat, fish
+Hackfleisch	de	bls-U050100
+gemischtes Hackfleisch	de	bls-U050100
+Hackfleisch gemischt	de	bls-U050100
+Rinderhackfleisch	de	bls-U010100
+Rinderhack	de	bls-U010100
+Schweinehackfleisch	de	bls-U020100
+Hähnchenbrustfilet	de	bls-V416100|bls-V4A6100
+Hähnchenbrust	de	bls-V416100|bls-V4A6100
+Hähnchenbrustfilets	de	bls-V416100|bls-V4A6100
+Hühnerbrustfilet	de	bls-V416100|bls-V4A6100
+Hähnchenschenkel	de	bls-V4A5100|bls-V4B5100
+Putenbrust	de	bls-V486100
+Putenschnitzel	de	bls-V486100
+Schweineschnitzel	de	bls-U541100|bls-U543100
+Schweinefilet	de	bls-U611100
+Schweinebauch	de	bls-U642100
+Rindergulasch	de	bls-U151100
+Gulasch	de	bls-U151100
+Rinderfilet	de	bls-U211100
+Rumpsteak	de	bls-U131100
+Rinderrouladen	de	bls-U163100
+Speck	de	bls-W415000|bls-U685100
+Bacon	de	bls-W415000
+Speckwürfel	de	bls-W415000|bls-U685100
+Schinkenwürfel	de	bls-U685100|bls-W424000
+gekochter Schinken	de	bls-W424000|bls-W423000
+Kochschinken	de	bls-W424000|bls-W423000
+Salami	de	bls-W140000
+Wiener Würstchen	de	bls-W211200
+Bratwurst	de	bls-W222600|bls-W222700
+Lachs	de	bls-T410100
+Lachsfilet	de	bls-T410100
+Räucherlachs	de	bls-T410600
+Thunfisch	de	bls-T121100|bls-T121702|bls-T121902
+Thunfisch aus der Dose	de	bls-T121702|bls-T121902
+Garnelen	de	bls-T753100|bls-T753200
+Shrimps	de	bls-T753100|bls-T753200
+Kabeljaufilet	de	bls-T204100|bls-T204200
+Forelle	de	bls-T422100
+Sardellen	de	bls-T104100|bls-T104702
+Miesmuscheln	de	bls-T792100
+ground beef	en	bls-U010100
+chicken breast	en	bls-V416100|bls-V4A6100
+boneless skinless chicken breasts	en	bls-V416100|bls-V4A6100
+chicken thighs	en	bls-V4A5100
+bacon	en	bls-W415000
+salmon	en	bls-T410100
+salmon fillets	en	bls-T410100
+smoked salmon	en	bls-T410600
+tuna	en	bls-T121100|bls-T121702|bls-T121902
+shrimp	en	bls-T753100|bls-T753200
+
+# --- sweet, baking
+Zucker	de	bls-S111000
+weißer Zucker	de	bls-S111000
+brauner Zucker	de	bls-S112000
+Rohrzucker	de	bls-S112000
+Puderzucker	de	bls-S111100
+Vanillezucker	de	bls-S114000
+Päckchen Vanillezucker	de	bls-S114000
+Honig	de	bls-S120000
+flüssiger Honig	de	bls-S120000
+Ahornsirup	de	bls-S151100
+Marmelade	de	bls-S132000
+Aprikosenmarmelade	de	bls-S132000
+Nuss-Nougat-Creme	de	bls-S145000
+Kakao	de	bls-S711000|bls-S713000
+Kakaopulver	de	bls-S711000|bls-S713000
+Zartbitterschokolade	de	bls-S560000
+Zartbitter-Kuvertüre	de	bls-S560000
+Vollmilchschokolade	de	bls-S539900
+Schokolade	de	bls-S500000|bls-S539900|bls-S530000
+Marzipan	de	bls-S420000|bls-S421000
+Marzipanrohmasse	de	bls-S421000
+Backpulver	de	bls-R421100
+Natron	de	fdc-175040
+Hefe	de	bls-R459000
+frische Hefe	de	bls-R459000
+Trockenhefe	de	bls-R458000
+Gelatine	de	bls-R468000
+Blattgelatine	de	bls-R468000
+Puddingpulver Vanille	de	bls-R481100
+Vanillepuddingpulver	de	bls-R481100
+Vanilleextrakt	de	fdc-173471
+sugar	en	bls-S111000
+granulated sugar	en	bls-S111000
+brown sugar	en	bls-S112000
+powdered sugar	en	bls-S111100
+honey	en	bls-S120000
+maple syrup	en	bls-S151100
+cocoa powder	en	bls-S711000|bls-S713000
+dark chocolate	en	bls-S570000|bls-S560000
+baking powder	en	bls-R421100
+baking soda	en	fdc-175040
+vanilla extract	en	fdc-173471
+
+# --- fats, condiments, liquids
+Olivenöl	de	bls-Q120000
+natives Olivenöl	de	bls-Q120000
+Öl	de	bls-Q180000|bls-Q320000
+Rapsöl	de	bls-Q180000
+Sonnenblumenöl	de	bls-Q320000
+Pflanzenöl	de	bls-Q180000|bls-Q320000
+Kokosöl	de	bls-Q550000|bls-Q550100
+Sesamöl	de	bls-Q230000
+Öl zum Braten	de	bls-Q180000|bls-Q320000
+Essig	de	bls-R121000|bls-R122000
+Weißweinessig	de	bls-R121000
+Apfelessig	de	bls-R123100
+Balsamico	de	bls-R125000
+heller Balsamico	de	bls-R125000
+Senf	de	bls-R132000|bls-R133000
+mittelscharfer Senf	de	bls-R132000
+Dijon-Senf	de	bls-R132000|bls-R133000
+Ketchup	de	bls-R141100
+Mayonnaise	de	bls-Q991000
+Sojasauce	de	bls-R143000
+Sojasoße	de	bls-R143000
+Gemüsebrühe	de	fdc-171583|bls-R821000
+Brühe	de	bls-U985200|bls-R810000
+Gemüsebrühe Pulver	de	bls-R821000
+Brühwürfel	de	bls-R821000|bls-R810000
+Wasser	de	bls-N110000
+lauwarmes Wasser	de	bls-N110000
+Rotwein	de	bls-P2A3000|bls-P253000
+trockener Weißwein	de	bls-P210000
+Weißwein	de	bls-P210000|bls-P220000
+Bier	de	bls-P163000
+Hafermilch	de	bls-C660000
+Sojamilch	de	bls-H841100
+olive oil	en	bls-Q120000
+extra virgin olive oil	en	bls-Q120000
+vegetable oil	en	bls-Q180000|bls-Q320000
+sunflower oil	en	bls-Q320000
+white wine vinegar	en	bls-R121000
+balsamic vinegar	en	bls-R125000
+dijon mustard	en	bls-R132000|bls-R133000
+soy sauce	en	bls-R143000
+water	en	bls-N110000
+dry white wine	en	bls-P210000
+
+# --- herbs, spices
+Salz	de	bls-R111000|bls-R112000|bls-R114000
+Meersalz	de	bls-R112000
+Jodsalz	de	bls-R114000|bls-R113000
+Pfeffer	de	bls-R258100
+schwarzer Pfeffer	de	bls-R258100
+Pfeffer aus der Mühle	de	bls-R258100
+frisch gemahlener Pfeffer	de	bls-R258100
+weißer Pfeffer	de	fdc-170933
+Paprikapulver	de	fdc-171329
+Paprikapulver edelsüß	de	fdc-171329
+geräuchertes Paprikapulver	de	fdc-171329
+Cayennepfeffer	de	fdc-170932
+Chilipulver	de	fdc-171319
+Chiliflocken	de	fdc-170932|fdc-171319
+Curry	de	fdc-170924
+Currypulver	de	fdc-170924
+Kurkuma	de	fdc-172231
+Kreuzkümmel	de	fdc-170923
+gemahlener Kreuzkümmel	de	fdc-170923
+Kümmel	de	fdc-170918
+Zimt	de	fdc-171320
+gemahlener Zimt	de	fdc-171320
+Zimtstange	de	fdc-171320
+Muskatnuss	de	fdc-171326
+Muskat	de	fdc-171326
+frisch geriebene Muskatnuss	de	fdc-171326
+Nelken	de	fdc-171321
+Lorbeerblätter	de	fdc-170917
+Lorbeerblatt	de	fdc-170917
+Piment	de	fdc-171315
+Kardamom	de	fdc-170919
+Oregano	de	fdc-171328
+getrockneter Oregano	de	fdc-171328
+Thymian	de	fdc-173470|fdc-170938
+frischer Thymian	de	fdc-173470
+Thymianzweige	de	fdc-173470
+Rosmarin	de	fdc-173473|fdc-171333
+Rosmarinzweig	de	fdc-173473
+Majoran	de	fdc-170928
+Basilikum	de	bls-G061000|bls-R231000
+frisches Basilikum	de	bls-G061000
+Basilikumblätter	de	bls-G061000
+Petersilie	de	bls-G250100
+glatte Petersilie	de	bls-G250100
+gehackte Petersilie	de	bls-G250100
+Schnittlauch	de	bls-G081100
+Schnittlauchröllchen	de	bls-G081100
+Dill	de	fdc-172233|fdc-171322
+Koriander	de	fdc-169997|fdc-170922
+frischer Koriander	de	fdc-169997
+Minze	de	fdc-173475|fdc-173474
+Minzblätter	de	fdc-173475|fdc-173474
+Salbei	de	fdc-170935
+Estragon	de	fdc-170937
+Zitronengras	de	fdc-168573
+Pesto	de	fdc-171579
+Vanilleschote	de	-
+Safran	de	fdc-170934
+salt	en	bls-R111000|bls-R112000|bls-R114000
+kosher salt	en	bls-R111000|bls-R112000
+black pepper	en	bls-R258100
+freshly ground black pepper	en	bls-R258100
+paprika	en	fdc-171329
+smoked paprika	en	fdc-171329
+ground cumin	en	fdc-170923
+cinnamon	en	fdc-171320
+nutmeg	en	fdc-171326
+dried oregano	en	fdc-171328
+fresh thyme	en	fdc-173470
+fresh basil	en	bls-G061000
+parsley	en	bls-G250100
+fresh cilantro	en	fdc-169997
+bay leaves	en	fdc-170917
+chili powder	en	fdc-171319
+curry powder	en	fdc-170924
+
+# --- traps: nothing fits, or another food's word is part of the name
+Salz und Pfeffer	de	-
+Salz, Pfeffer	de	-
+Öl und Salz	de	-
+Zahnstocher	de	-
+Backpapier	de	-
+Küchengarn	de	-
+nach Belieben	de	-
+Garam Masala	de	-
+Butterkekse	de	bls-D630400
+Kokosblütenzucker	de	-
+Hühnerbrühe	de	fdc-174536|bls-R822000
+Hühnerbrühe Pulver	de	bls-R822000
+Pizzateig	de	bls-D079000
+Tortilla-Wraps	de	bls-B783012
+Erdnussöl	de	bls-Q210000
+Kürbiskernöl	de	bls-Q250000
+Walnussöl	de	bls-Q310000
+Zitronenschale	de	-
+Orangenschale	de	-
+Tomatensoße	de	fdc-2685579
+Orangenmarmelade	de	bls-S132000
+Erdbeermarmelade	de	bls-S132000
+Zimtzucker	de	bls-S111000
+Knoblauchsalz	de	bls-R111000|bls-R115000
+Zitronenpfeffer	de	bls-R258100
+Honigsenf	de	bls-R135000|bls-R132000
+Spinatnudeln	de	bls-E401000|bls-E432000
+Mandelmehl	de	bls-H210400
+Kräutersalz	de	bls-R115000
+Chilisauce	de	-
+Sesampaste	de	bls-Q901000
+Zucker und Zimt	de	-
+Essig und Öl	de	-
+Milch oder Wasser	de	-
+salt and pepper	en	-
+toothpicks	en	-
+parchment paper	en	-
+garam masala	en	-

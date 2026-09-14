@@ -12,7 +12,7 @@ A separate Python service that runs ML/AI workloads for cookpal. It exposes one 
 
 The subsystem stays closed source. It is simply not published. When no ML URL is configured in a cookpal instance, every ML feature disappears — no endpoints, no UI entry points — exactly the way `opencookbook.sharing.enabled` already works today.
 
-Recipe OCR is the first tenant, not the design target. Calorie detection and ingredient deduplication are planned, so the job API, queue, quota and admin surfaces are all generic from day one; adding a usecase must mean writing one handler and one result schema, nothing else.
+Recipe OCR is the first tenant, not the design target. Further usecases are expected (for example optional embedding-based ingredient matching; nutrition estimation itself lives in the apiserver and never depends on this subsystem), so the job API, queue, quota and admin surfaces are all generic from day one; adding a usecase must mean writing one handler and one result schema, nothing else.
 
 ---
 
@@ -150,7 +150,7 @@ class RecipeOcrHandler(JobHandler):
     def run(self, payload: dict, attachments: list[Attachment]) -> RecipeOcrResult: ...
 ```
 
-`calorie_detection` and `ingredient_deduplication` later become two more decorated classes. No new routes, no new auth code, no new quota code.
+A later usecase such as `ingredient_embedding_match` becomes one more decorated class. No new routes, no new auth code, no new quota code.
 
 `max_attachments` is per job type: `recipe_ocr` accepts several pages of one recipe, ordered by the order they were sent. Submitting more than a type allows is a `400`, not a silent truncation.
 

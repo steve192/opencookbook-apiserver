@@ -3,13 +3,16 @@ package com.sterul.opencookbookapiserver.controllers.sharing.responses;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sterul.opencookbookapiserver.controllers.responses.NutritionSummaryResponse;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe.RecipeType;
 
 /**
  * A recipe as it is published to anybody holding a share link.
  *
- * Purposely not a reuse of the response the owner gets. 
+ * Purposely not a reuse of the response the owner gets.
+ *
+ * @param nutrition null while nutrition is off
  */
 public record SharedRecipeResponse(
         String title,
@@ -20,9 +23,10 @@ public record SharedRecipeResponse(
         Long preparationTime,
         Long totalTime,
         RecipeType recipeType,
-        String recipeSource) {
+        String recipeSource,
+        NutritionSummaryResponse nutrition) {
 
-    public static SharedRecipeResponse fromEntity(Recipe recipe) {
+    public static SharedRecipeResponse fromEntity(Recipe recipe, NutritionSummaryResponse nutrition) {
         return new SharedRecipeResponse(
                 recipe.getTitle(),
                 recipe.getNeededIngredients().stream()
@@ -42,6 +46,7 @@ public record SharedRecipeResponse(
                 recipe.getPreparationTime(),
                 recipe.getTotalTime(),
                 recipe.getRecipeType(),
-                recipe.getRecipeSource());
+                recipe.getRecipeSource(),
+                nutrition);
     }
 }
