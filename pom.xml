@@ -29,7 +29,7 @@
         <lucene.version>10.5.1</lucene.version>
 
         <!-- The admin panel, which is bundled into this server's static resources -->
-        <frontend-maven-plugin.version>1.15.1</frontend-maven-plugin.version>
+        <frontend-maven-plugin.version>2.0.2</frontend-maven-plugin.version>
         <node.version>v20.19.0</node.version>
         <skipAdminUi>false</skipAdminUi>
 
