@@ -17,9 +17,10 @@ public final class RuleBook {
 
     public RuleBook(Collection<CatalogueNameRule> rules) {
         for (var rule : rules) {
-            switch (rule.getKind()) {
-                case NOT_A_FOOD -> notFoods.add(rule.getName());
-                case NEVER_LINK_TO -> forbiddenFoodKeys.computeIfAbsent(rule.getName(), name -> new HashSet<>())
+            if (rule.getKind() == CatalogueNameRule.Kind.NOT_A_FOOD) {
+                notFoods.add(rule.getName());
+            } else {
+                forbiddenFoodKeys.computeIfAbsent(rule.getName(), name -> new HashSet<>())
                         .add(rule.getCatalogueFood().getCatalogueKey());
             }
         }

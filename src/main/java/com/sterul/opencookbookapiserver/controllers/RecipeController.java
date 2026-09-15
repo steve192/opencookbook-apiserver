@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,14 +37,15 @@ import jakarta.validation.Valid;
 @Tag(name = "Recipes", description = "Creating, chaning, deleting, importing recipes")
 public class RecipeController extends BaseController {
 
-    @Autowired
-    private RecipeImportService recipeImportService;
+    private final RecipeImportService recipeImportService;
+    private final RecipeService recipeService;
+    private final RecipeResponses recipeResponses;
 
-    @Autowired
-    private RecipeService recipeService;
-
-    @Autowired
-    private RecipeResponses recipeResponses;
+    public RecipeController(RecipeImportService recipeImportService, RecipeService recipeService, RecipeResponses recipeResponses) {
+        this.recipeImportService = recipeImportService;
+        this.recipeService = recipeService;
+        this.recipeResponses = recipeResponses;
+    }
 
     @Operation(summary = "Search or get recipes")
     @GetMapping("")

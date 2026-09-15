@@ -91,6 +91,7 @@ class LocalInstanceReportsTest {
     }
 
     @Test
+    @SuppressWarnings("java:S2699") // A report writer run through Maven, not a check: the files are its outcome.
     void writeTheReports() throws IOException, ApiException {
         assumeTrue(URL != null, "no local instance given with -Dlocal.instance.url");
         indexUpdater.rebuild();

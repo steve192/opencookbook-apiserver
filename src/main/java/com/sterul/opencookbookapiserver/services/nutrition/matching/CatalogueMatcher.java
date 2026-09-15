@@ -131,14 +131,17 @@ public class CatalogueMatcher {
         var candidates = new ArrayList<MatchCandidate>();
         for (var position = 0; position < ranked.size(); position++) {
             var scored = ranked.get(position);
-            var probability = MatcherWeights.logistic(scored.logOdds());
-            var rival = position == 0
-                    ? (ranked.size() > 1 ? MatcherWeights.logistic(ranked.get(1).logOdds()) : 0)
-                    : MatcherWeights.logistic(ranked.get(0).logOdds());
-            var features = scored.features().withMargin(probability - rival);
+            var margin = MatcherWeights.logistic(scored.logOdds()) - rivalProbability(ranked, position);
+            var features = scored.features().withMargin(margin);
             candidates.add(new MatchCandidate(scored.food().key(), scored.matchedName(), weights.confidence(features), features));
         }
         return candidates;
+    }
+
+    /** The runner-up's for the best candidate, the best's for every other; 0 without a rival. */
+    private static double rivalProbability(List<Scored> ranked, int position) {
+        var rival = position == 0 ? 1 : 0;
+        return rival < ranked.size() ? MatcherWeights.logistic(ranked.get(rival).logOdds()) : 0;
     }
 
     private static Set<String> withoutUnprepared(Set<String> states) {

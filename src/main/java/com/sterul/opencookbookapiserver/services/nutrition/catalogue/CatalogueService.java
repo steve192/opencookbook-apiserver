@@ -117,9 +117,9 @@ public class CatalogueService {
     /** Only administrator names can be removed. */
     public CatalogueFood removeName(Long id, String languageIsoCode, String name) throws ApiException {
         var food = getFood(id);
-        var removed = food.getNames().removeIf(existing -> existing.getOrigin() == CatalogueFoodName.Origin.ADMIN
-                && existing.getLanguageIsoCode().equals(languageIsoCode)
-                && existing.getName().equalsIgnoreCase(name.trim()));
+        var unwanted = CatalogueFoodName.adminAlias(languageIsoCode, name);
+        var removed = food.getNames()
+                .removeIf(existing -> existing.getOrigin() == CatalogueFoodName.Origin.ADMIN && existing.sameAs(unwanted));
         if (!removed) {
             throw new ElementNotFound();
         }

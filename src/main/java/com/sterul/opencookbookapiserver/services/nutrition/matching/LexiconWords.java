@@ -12,15 +12,17 @@ import com.sterul.opencookbookapiserver.services.nutrition.dataset.NutritionData
 /** Single-word unit ("Zehe") and state ("getrocknet") words of the lexicons. */
 final class LexiconWords {
 
+    private final TextAnalysis analysis;
     private final Set<String> unitWords = new HashSet<>();
     private final Set<String> stateWords = new HashSet<>();
     private final Map<String, String> statesByStem = new HashMap<>();
 
     LexiconWords(NutritionDataset.Lexicons lexicons, TextAnalysis analysis) {
+        this.analysis = analysis;
         for (var lexicon : lexicons.lexicons()) {
-            lexicon.units().values().forEach(words -> words.forEach(word -> singleWord(word, analysis)
+            lexicon.units().values().forEach(words -> words.forEach(word -> singleWord(word)
                     .ifPresent(unitWords::add)));
-            lexicon.states().forEach((state, words) -> words.forEach(word -> singleWord(word, analysis)
+            lexicon.states().forEach((state, words) -> words.forEach(word -> singleWord(word)
                     .ifPresent(single -> {
                         stateWords.add(single);
                         analysis.stems(single, lexicon.language()).forEach(stem -> statesByStem.put(stem, state));
@@ -32,7 +34,7 @@ final class LexiconWords {
         return unitWords.contains(word);
     }
 
-    Optional<String> state(String word, TextAnalysis analysis) {
+    Optional<String> state(String word) {
         return analysis.stems(word).stream().map(statesByStem::get).filter(Objects::nonNull).findFirst();
     }
 
@@ -43,7 +45,7 @@ final class LexiconWords {
         return words;
     }
 
-    private static Optional<String> singleWord(String entry, TextAnalysis analysis) {
+    private Optional<String> singleWord(String entry) {
         var words = analysis.words(entry);
         return words.size() == 1 ? Optional.of(words.get(0)) : Optional.empty();
     }

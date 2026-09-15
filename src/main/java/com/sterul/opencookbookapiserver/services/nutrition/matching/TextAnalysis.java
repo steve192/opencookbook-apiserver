@@ -9,8 +9,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -46,9 +47,9 @@ final class TextAnalysis {
             "de", List.of(stemmer(GermanLightStemFilter::new), stemmer(GermanMinimalStemFilter::new)),
             "en", List.of(stemmer(EnglishMinimalStemFilter::new)));
 
-    private static final Map<String, CharArraySet> STOPWORDS = Map.of(
+    private static final Map<String, CharArraySet> STOPWORDS_BY_LANGUAGE = Map.of(
             "de", GermanAnalyzer.getDefaultStopSet(),
-            "en", EnglishAnalyzer.ENGLISH_STOP_WORDS_SET);
+            "en", EnglishAnalyzer.getDefaultStopSet());
 
     private final List<String> languages;
     private final Set<String> stopwords;
@@ -56,7 +57,7 @@ final class TextAnalysis {
     TextAnalysis(List<String> languages) {
         this.languages = List.copyOf(languages);
         this.stopwords = languages.stream()
-                .map(language -> STOPWORDS.getOrDefault(language, CharArraySet.EMPTY_SET))
+                .map(language -> STOPWORDS_BY_LANGUAGE.getOrDefault(language, CharArraySet.EMPTY_SET))
                 .flatMap(set -> set.stream().map(word -> fold(new String((char[]) word))))
                 .collect(Collectors.toUnmodifiableSet());
     }
@@ -77,7 +78,7 @@ final class TextAnalysis {
         var qualifiers = new ArrayList<String>();
         var brackets = BRACKETS.matcher(text);
         while (brackets.find()) {
-            qualifiers.addAll(tokens(brackets.group(1) != null ? brackets.group(1) : brackets.group(2)));
+            qualifiers.addAll(tokens(Objects.requireNonNullElse(brackets.group(1), brackets.group(2))));
         }
         var outside = BRACKETS.matcher(text).replaceAll(" ");
         var words = new ArrayList<String>();
@@ -150,7 +151,8 @@ final class TextAnalysis {
             return 0;
         }
         var distance = editDistance(first, second);
-        return distance > (longer > LONGEST_WORD_WITH_ONE_TYPO ? 2 : 1) ? 0 : 1 - (double) distance / longer;
+        var typos = longer > LONGEST_WORD_WITH_ONE_TYPO ? 2 : 1;
+        return distance > typos ? 0 : 1 - (double) distance / longer;
     }
 
     /** Damerau-Levenshtein (optimal string alignment) distance. */
@@ -195,7 +197,7 @@ final class TextAnalysis {
     }
 
     /** Stems the whole input as one token; thread-safe, as analyzers reuse streams per thread. */
-    private static Analyzer stemmer(Function<TokenStream, TokenStream> stemFilter) {
+    private static Analyzer stemmer(UnaryOperator<TokenStream> stemFilter) {
         return new Analyzer() {
             @Override
             protected TokenStreamComponents createComponents(String fieldName) {

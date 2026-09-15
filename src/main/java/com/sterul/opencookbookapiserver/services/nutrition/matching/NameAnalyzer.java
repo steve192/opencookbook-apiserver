@@ -3,7 +3,6 @@ package com.sterul.opencookbookapiserver.services.nutrition.matching;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -34,20 +33,13 @@ final class NameAnalyzer {
         for (var word : analysis.typedWords(name)) {
             if (TextAnalysis.isNumber(word)) {
                 words.add(new AnalyzedWord(word, Set.of(word), List.of(), false));
-                continue;
-            }
-            if (analysis.isStopword(word)) {
-                continue;
-            }
-            var state = lexicon.state(word, analysis);
-            if (state.isPresent()) {
-                states.add(state.get());
-            } else if (!lexicon.isUnit(word)) {
-                var stems = analysis.stems(word);
-                var parts = splitter.split(word).stream().flatMap(List::stream)
-                        .map(part -> typedPart(part, splitter.isKnown(word), states))
-                        .toList();
-                words.add(new AnalyzedWord(word, stems, parts, isFoodWord(stems)));
+            } else if (!analysis.isStopword(word)) {
+                var state = lexicon.state(word);
+                if (state.isPresent()) {
+                    states.add(state.get());
+                } else if (!lexicon.isUnit(word)) {
+                    words.add(typedWord(word, states));
+                }
             }
         }
         return new AnalyzedName(name, words, List.of(), states);
@@ -62,16 +54,12 @@ final class NameAnalyzer {
             if (analysis.isStopword(word)) {
                 continue;
             }
-            var state = lexicon.state(word, analysis);
+            var state = lexicon.state(word);
             if (state.isPresent()) {
                 states.add(state.get());
-                continue;
+            } else {
+                words.add(cataloguedWord(word, stemsOf));
             }
-            var stems = stemsOf.apply(word);
-            var parts = splitter.splitNamingPart(word).stream().flatMap(List::stream)
-                    .map(part -> namePart(part, stemsOf.apply(part)))
-                    .toList();
-            words.add(new AnalyzedWord(word, stems, parts, isFoodWord(stems)));
         }
         var qualifiers = cataloguedWords.qualifiers().stream()
                 .filter(word -> TextAnalysis.isNumber(word) || !analysis.isStopword(word))
@@ -80,10 +68,27 @@ final class NameAnalyzer {
         return new AnalyzedName(name, words, qualifiers, states);
     }
 
+    /** State parts of a compound add to {@code states}. */
+    private AnalyzedWord typedWord(String word, Set<String> states) {
+        var stems = analysis.stems(word);
+        var parts = splitter.split(word).stream().flatMap(List::stream)
+                .map(part -> typedPart(part, splitter.isKnown(word), states))
+                .toList();
+        return new AnalyzedWord(word, stems, parts, isFoodWord(stems));
+    }
+
+    private AnalyzedWord cataloguedWord(String word, Function<String, Set<String>> stemsOf) {
+        var stems = stemsOf.apply(word);
+        var parts = splitter.splitNamingPart(word).stream().flatMap(List::stream)
+                .map(part -> namePart(part, stemsOf.apply(part)))
+                .toList();
+        return new AnalyzedWord(word, stems, parts, isFoodWord(stems));
+    }
+
     private AnalyzedWord.Part typedPart(String text, boolean wordIsKnown, Set<String> states) {
         var stems = analysis.stems(text);
         if (!wordIsKnown) {
-            Optional<String> state = lexicon.state(text, analysis);
+            var state = lexicon.state(text);
             if (state.isPresent()) {
                 states.add(state.get());
                 return new AnalyzedWord.Part(text, stems, AnalyzedWord.Kind.STATE, false);

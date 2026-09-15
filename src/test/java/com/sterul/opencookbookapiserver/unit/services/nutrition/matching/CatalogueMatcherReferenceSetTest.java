@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
+import com.sterul.opencookbookapiserver.services.nutrition.dataset.NutritionDataset;
 import com.sterul.opencookbookapiserver.unit.services.nutrition.ShippedNutritionDataset;
 
 /** Regression floors on the reference gold set; they only move up. */
@@ -22,7 +23,7 @@ class CatalogueMatcherReferenceSetTest {
     @Test
     void everyExpectedFoodIsInTheCatalogue() {
         var keys = ShippedNutritionDataset.READER.catalogue().foods().stream()
-                .map(food -> food.key()).collect(Collectors.toSet());
+                .map(NutritionDataset.Food::key).collect(Collectors.toSet());
         var unknown = REFERENCE_SET.stream()
                 .flatMap(name -> name.expected().stream())
                 .filter(key -> !keys.contains(key))

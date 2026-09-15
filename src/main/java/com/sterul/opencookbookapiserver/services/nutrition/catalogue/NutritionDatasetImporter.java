@@ -5,10 +5,12 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import com.sterul.opencookbookapiserver.configurations.nutrition.ConditionalOnNutritionEnabled;
 import com.sterul.opencookbookapiserver.entities.nutrition.NutritionDatasetImport;
+import com.sterul.opencookbookapiserver.services.nutrition.dataset.NutritionDataset;
 import com.sterul.opencookbookapiserver.services.nutrition.dataset.NutritionDatasetReader;
 
 import lombok.extern.slf4j.Slf4j;
@@ -48,7 +50,7 @@ public class NutritionDatasetImporter {
                     manifest.label(), computed, manifest.checksum());
             return;
         }
-        if (!ledger.claim(manifest)) {
+        if (!claim(manifest)) {
             return;
         }
         log.info("Importing nutrition dataset {} ({} foods)", manifest.label(), manifest.foods());
@@ -60,6 +62,15 @@ public class NutritionDatasetImporter {
         } catch (RuntimeException failure) {
             log.error("Importing nutrition dataset {} failed", manifest.label(), failure);
             ledger.finish(manifest, NutritionDatasetImport.Status.FAILED, failure.toString());
+        }
+    }
+
+    private boolean claim(NutritionDataset.Manifest manifest) {
+        try {
+            return ledger.claim(manifest);
+        } catch (DataIntegrityViolationException claimedConcurrently) {
+            log.info("Nutrition dataset {} is being imported by another instance", manifest.label());
+            return false;
         }
     }
 }

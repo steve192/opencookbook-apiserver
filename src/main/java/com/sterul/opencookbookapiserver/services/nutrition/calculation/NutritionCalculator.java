@@ -1,6 +1,5 @@
 package com.sterul.opencookbookapiserver.services.nutrition.calculation;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -41,11 +40,7 @@ public class NutritionCalculator {
     public RecipeNutrition calculate(Recipe recipe) {
         var provisional = recipe.getNeededIngredients().stream().map(this::line).toList();
         var total = provisional.stream().map(LineNutrition::values).reduce(NutrientAmounts.NONE, NutrientAmounts::plus);
-
-        var lines = new ArrayList<LineNutrition>();
-        for (var line : provisional) {
-            lines.add(byImpact(line, total.energyKcal()));
-        }
+        var lines = provisional.stream().map(line -> byImpact(line, total.energyKcal())).toList();
         var warnings = (int) lines.stream().filter(LineNutrition::warns).count();
         var servings = recipe.getServings();
         return new RecipeNutrition(
@@ -97,10 +92,7 @@ public class NutritionCalculator {
 
     /** UNAVAILABLE when at least half of the lines that matter (resolved or warning) warn. */
     private static RecipeNutrition.Status status(List<LineNutrition> lines, int warnings) {
-        var mattering = lines.stream()
-                .filter(line -> line.status() != LineStatus.EXCLUDED)
-                .filter(line -> line.status() == LineStatus.RESOLVED || line.warns())
-                .count();
+        var mattering = lines.stream().filter(line -> line.status() == LineStatus.RESOLVED || line.warns()).count();
         if (mattering == 0 || warnings * 2 >= mattering) {
             return RecipeNutrition.Status.UNAVAILABLE;
         }

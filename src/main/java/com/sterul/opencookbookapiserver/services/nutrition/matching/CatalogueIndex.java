@@ -113,7 +113,7 @@ final class CatalogueIndex {
         for (var food : foods) {
             for (var name : food.names()) {
                 var words = analysis.cataloguedWords(name.name()).words().stream()
-                        .filter(word -> !analysis.isStopword(word) && lexiconWords.state(word, analysis).isEmpty())
+                        .filter(word -> !analysis.isStopword(word) && lexiconWords.state(word).isEmpty())
                         .toList();
                 for (var word : words) {
                     dictionary.add(word);

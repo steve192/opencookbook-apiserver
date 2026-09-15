@@ -17,6 +17,7 @@ import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 import com.sterul.opencookbookapiserver.repositories.projections.RecipeLine;
 import com.sterul.opencookbookapiserver.services.ingredients.IngredientNameSplitter.SplitName;
+import com.sterul.opencookbookapiserver.services.nutrition.IngredientNames;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -87,7 +88,7 @@ public class IngredientNameCleanupService {
         var linesChanged = 0;
         var skipped = 0;
         for (var decision : decisions) {
-            var name = decision.name() == null ? "" : decision.name().trim().replaceAll("\\s+", " ");
+            var name = decision.name() == null ? "" : IngredientNames.tidy(decision.name());
             if (name.isEmpty()) {
                 throw new ApiException(ApiErrorCode.VALIDATION_FAILED, "Ingredient " + decision.ingredientId() + " needs a name");
             }

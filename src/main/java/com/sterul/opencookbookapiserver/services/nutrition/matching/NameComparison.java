@@ -18,56 +18,72 @@ final class NameComparison {
     }
 
     static Result compare(AnalyzedName typed, AnalyzedName catalogued) {
+        var explaining = new ArrayList<>(catalogued.words());
+        explaining.addAll(catalogued.qualifiers());
+        var query = explainTyped(typed.words(), explaining);
+        var candidate = explainCatalogued(catalogued, typed.words());
+        return new Result(query.coverage(), candidate.coverage(), query.exact() && candidate.exact(), query.fuzzyShare(),
+                query.unexplainedWords(), query.conflictingFoodWords(), candidate.otherFoodWords());
+    }
+
+    private record TypedSide(double coverage, double fuzzyShare, int unexplainedWords, int conflictingFoodWords, boolean exact) {
+    }
+
+    private record CataloguedSide(double coverage, int otherFoodWords, boolean exact) {
+    }
+
+    /** A typed word naming nothing known is unexplained; one naming another food conflicts, and counts. */
+    private static TypedSide explainTyped(List<AnalyzedWord> typedWords, List<AnalyzedWord> explaining) {
         var explained = 0.0;
         var counted = 0;
         var fuzzy = 0.0;
         var unexplained = 0;
         var conflicting = 0;
-        var allExact = true;
-        var explaining = new ArrayList<>(catalogued.words());
-        explaining.addAll(catalogued.qualifiers());
-        for (var word : typed.words()) {
+        var exact = true;
+        for (var word : typedWords) {
             var best = best(word, explaining);
             if (best.fraction() == 0) {
-                allExact = false;
+                exact = false;
                 if (word.foodWord() || word.parts().stream().anyMatch(AnalyzedWord.Part::foodWord)) {
                     conflicting++;
                     counted++;
                 } else {
                     unexplained++;
                 }
-                continue;
+            } else {
+                explained += best.fraction();
+                counted++;
+                conflicting += best.unexplainedFoodParts();
+                if (best.fuzzy()) {
+                    fuzzy += best.fraction();
+                }
+                exact &= best.whole();
             }
-            explained += best.fraction();
-            counted++;
-            conflicting += best.unexplainedFoodParts();
-            if (best.fuzzy()) {
-                fuzzy += best.fraction();
-            }
-            allExact &= best.whole();
         }
-        var candidateExplained = 0.0;
+        return new TypedSide(counted == 0 ? 0 : explained / counted, explained == 0 ? 0 : fuzzy / explained, unexplained,
+                conflicting, exact);
+    }
+
+    private static CataloguedSide explainCatalogued(AnalyzedName catalogued, List<AnalyzedWord> typedWords) {
+        var explained = 0.0;
         var otherFoodWords = 0;
+        var exact = true;
         for (var word : catalogued.words()) {
-            var best = best(word, typed.words());
-            candidateExplained += best.fraction();
-            allExact &= best.whole();
-            otherFoodWords += best.fraction() == 0 ? (word.foodWord() ? 1 : 0) : best.unexplainedFoodParts();
+            var best = best(word, typedWords);
+            explained += best.fraction();
+            exact &= best.whole();
+            if (best.fraction() > 0) {
+                otherFoodWords += best.unexplainedFoodParts();
+            } else if (word.foodWord()) {
+                otherFoodWords++;
+            }
         }
-        var candidateSize = (double) catalogued.words().size();
+        var size = (double) catalogued.words().size();
         for (var qualifier : catalogued.qualifiers()) {
-            candidateExplained += QUALIFIER_WEIGHT * best(qualifier, typed.words()).fraction();
-            candidateSize += QUALIFIER_WEIGHT;
+            explained += QUALIFIER_WEIGHT * best(qualifier, typedWords).fraction();
+            size += QUALIFIER_WEIGHT;
         }
-        var candidateCoverage = catalogued.words().isEmpty() ? 0 : candidateExplained / candidateSize;
-        return new Result(
-                counted == 0 ? 0 : explained / counted,
-                candidateCoverage,
-                allExact,
-                explained == 0 ? 0 : fuzzy / explained,
-                unexplained,
-                conflicting,
-                otherFoodWords);
+        return new CataloguedSide(catalogued.words().isEmpty() ? 0 : explained / size, otherFoodWords, exact);
     }
 
     private static Explanation best(AnalyzedWord word, List<AnalyzedWord> others) {
@@ -79,7 +95,7 @@ final class NameComparison {
 
     private static Explanation explain(AnalyzedWord word, AnalyzedWord other) {
         if (word.sharesStemWith(other.stems())) {
-            return Explanation.WHOLE;
+            return Explanation.SAME_WORD;
         }
         var named = word.parts().stream().filter(AnalyzedWord.Part::needsExplaining).toList();
         if (!named.isEmpty()) {
@@ -118,6 +134,6 @@ final class NameComparison {
      */
     private record Explanation(double fraction, boolean whole, boolean fuzzy, int unexplainedFoodParts) {
         static final Explanation NONE = new Explanation(0, false, false, 0);
-        static final Explanation WHOLE = new Explanation(1, true, false, 0);
+        static final Explanation SAME_WORD = new Explanation(1, true, false, 0);
     }
 }

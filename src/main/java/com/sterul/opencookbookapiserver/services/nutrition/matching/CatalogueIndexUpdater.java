@@ -5,6 +5,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.event.TransactionalEventListener;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -26,10 +27,10 @@ public class CatalogueIndexUpdater {
     private final TaskExecutor taskExecutor;
 
     public CatalogueIndexUpdater(CatalogueMatcher matcher, CatalogueFoodRepository foodRepository,
-            TransactionTemplate transactionTemplate, @Qualifier("applicationTaskExecutor") TaskExecutor taskExecutor) {
+            PlatformTransactionManager transactionManager, @Qualifier("applicationTaskExecutor") TaskExecutor taskExecutor) {
         this.matcher = matcher;
         this.foodRepository = foodRepository;
-        this.readOnly = new TransactionTemplate(transactionTemplate.getTransactionManager());
+        this.readOnly = new TransactionTemplate(transactionManager);
         this.readOnly.setReadOnly(true);
         this.taskExecutor = taskExecutor;
     }

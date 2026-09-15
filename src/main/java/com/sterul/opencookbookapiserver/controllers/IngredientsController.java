@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,9 +17,9 @@ import com.sterul.opencookbookapiserver.controllers.requests.IngredientRequest;
 import com.sterul.opencookbookapiserver.controllers.responses.IngredientResponse;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.services.IngredientService;
+import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.mail.MailLanguages;
 import com.sterul.opencookbookapiserver.services.nutrition.linking.CatalogueSearchService;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,14 +29,16 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Ingredients", description = "Ingredients used in recipes")
 public class IngredientsController extends BaseController {
 
-    @Autowired
-    private IngredientService ingredientService;
+    private final IngredientService ingredientService;
+    private final Optional<CatalogueSearchService> catalogueSearch;
+    private final MailLanguages languages;
 
-    @Autowired
-    private Optional<CatalogueSearchService> catalogueSearch;
-
-    @Autowired
-    private MailLanguages languages;
+    public IngredientsController(IngredientService ingredientService, Optional<CatalogueSearchService> catalogueSearch,
+            MailLanguages languages) {
+        this.ingredientService = ingredientService;
+        this.catalogueSearch = catalogueSearch;
+        this.languages = languages;
+    }
 
     @Operation(summary = "The logged in user's ingredients, and names to suggest",
             description = "With nutrition estimation turned on, the catalogue's names in the user's language follow, without ids: "

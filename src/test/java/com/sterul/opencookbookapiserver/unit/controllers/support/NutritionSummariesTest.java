@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 
 import com.sterul.opencookbookapiserver.controllers.support.NutritionSummaries;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
-import com.sterul.opencookbookapiserver.services.nutrition.calculation.GramsResolver;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.NutritionCalculator;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.RecipeNutrition;
 import com.sterul.opencookbookapiserver.services.nutrition.matching.CatalogueMatcher;

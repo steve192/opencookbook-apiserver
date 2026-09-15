@@ -1,9 +1,18 @@
 package com.sterul.opencookbookapiserver.services.ingredients;
 
 import java.text.Normalizer;
+import java.util.regex.Pattern;
 
 /** Amounts as recipes write them: "2", "1,5", "1/2", "½", "1½" or "1 1/2". */
 public final class Amounts {
+
+    /** Matches one amount; possessive, so it never backtracks. */
+    public static final String REGEX = "(?:\\d++(?:[.,]\\d++)?(?:/\\d++|\\s++\\d++/\\d++|\\s*+\\p{No})?|\\p{No})";
+
+    private static final Pattern WHITESPACE = Pattern.compile("\\s++");
+    private static final Pattern VULGAR_FRACTION = Pattern.compile("\\p{No}");
+    private static final Pattern NUMBER_WITH_VULGAR_FRACTION = Pattern.compile("(\\d++(?:\\.\\d++)?)(\\p{No})");
+    private static final String FRACTION_SLASH = "⁄";
 
     private Amounts() {
     }
@@ -14,19 +23,20 @@ public final class Amounts {
      */
     public static float parse(String written) {
         var amount = written.trim().replace(',', '.');
-        if (amount.contains(" ")) {
-            var parts = amount.split("\\s+");
+        var parts = WHITESPACE.split(amount);
+        if (parts.length > 1) {
             return Float.parseFloat(parts[0]) + fraction(parts[1]);
         }
-        if (amount.matches("\\d+\\.*\\d*\\p{No}")) {
-            return Float.parseFloat(amount.replaceAll("[^0-9.]", "")) + vulgarFraction(amount.replaceAll("\\d+\\.*\\d*", ""));
+        var mixed = NUMBER_WITH_VULGAR_FRACTION.matcher(amount);
+        if (mixed.matches()) {
+            return Float.parseFloat(mixed.group(1)) + vulgarFraction(mixed.group(2));
         }
         return fraction(amount);
     }
 
     /** "1/2", "½" or a plain number. */
     private static float fraction(String part) {
-        if (part.matches("\\p{No}")) {
+        if (VULGAR_FRACTION.matcher(part).matches()) {
             return vulgarFraction(part);
         }
         if (part.contains("/")) {
@@ -36,13 +46,12 @@ public final class Amounts {
         return Float.parseFloat(part);
     }
 
-    /** "½" decomposes to "1⁄2". */
+    /** "½" decomposes to "1⁄2"; other number signs ("²") count as nothing. */
     private static float vulgarFraction(String fraction) {
-        var decomposed = Normalizer.normalize(fraction, Normalizer.Form.NFKD);
-        if (!decomposed.contains("⁄")) {
+        var terms = Normalizer.normalize(fraction, Normalizer.Form.NFKD).split(FRACTION_SLASH);
+        if (terms.length != 2) {
             return 0F;
         }
-        var terms = decomposed.split("⁄");
         return (float) Integer.parseInt(terms[0]) / Integer.parseInt(terms[1]);
     }
 }

@@ -40,6 +40,9 @@ src/main/resources/static
 
 **.code-workspace
 
+# Planning drafts stay local.
+draft-*.md
+
 # Spring reads ./config/application.yml over the packaged one, which is where local
 # secrets belong - an api token for the machine learning subsystem, say. See
 # config/application.yml.example.

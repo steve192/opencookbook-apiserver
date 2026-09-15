@@ -12,11 +12,8 @@ import com.sterul.opencookbookapiserver.entities.nutrition.NutritionDatasetImpor
 import com.sterul.opencookbookapiserver.repositories.NutritionDatasetImportRepository;
 import com.sterul.opencookbookapiserver.services.nutrition.dataset.NutritionDataset;
 
-import lombok.extern.slf4j.Slf4j;
-
 /** Records dataset imports; each call commits separately so other instances see claims at once. */
 @Component
-@Slf4j
 public class DatasetImportLedger {
 
     /** A RUNNING import older than this was interrupted and may be taken over. */
@@ -30,24 +27,24 @@ public class DatasetImportLedger {
         this.clock = clock;
     }
 
-    /** False if already imported or being imported elsewhere. */
+    /**
+     * False if already imported or being imported elsewhere.
+     *
+     * @throws DataIntegrityViolationException if another instance claimed it at the same moment; the failed insert
+     *                                         leaves this transaction rollback-only, so it cannot be caught in here
+     */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public boolean claim(NutritionDataset.Manifest manifest) {
         var now = clock.instant();
         var existing = repository.findById(manifest.checksum());
         if (existing.isEmpty()) {
-            try {
-                repository.saveAndFlush(NutritionDatasetImport.builder()
-                        .checksum(manifest.checksum())
-                        .label(manifest.label())
-                        .status(NutritionDatasetImport.Status.RUNNING)
-                        .startedAt(now)
-                        .build());
-                return true;
-            } catch (DataIntegrityViolationException claimedConcurrently) {
-                log.info("Nutrition dataset {} is being imported by another instance", manifest.label());
-                return false;
-            }
+            repository.saveAndFlush(NutritionDatasetImport.builder()
+                    .checksum(manifest.checksum())
+                    .label(manifest.label())
+                    .status(NutritionDatasetImport.Status.RUNNING)
+                    .startedAt(now)
+                    .build());
+            return true;
         }
         var entry = existing.get();
         var abandoned = entry.getStatus() == NutritionDatasetImport.Status.RUNNING
