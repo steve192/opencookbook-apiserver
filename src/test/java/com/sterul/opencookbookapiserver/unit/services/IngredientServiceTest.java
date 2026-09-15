@@ -1,92 +1,92 @@
 package com.sterul.opencookbookapiserver.unit.services;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.List;
+import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
+import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
+import com.sterul.opencookbookapiserver.errors.ApiException;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
-import com.sterul.opencookbookapiserver.services.IngredientMatcher;
+import com.sterul.opencookbookapiserver.services.IngredientLinker;
 import com.sterul.opencookbookapiserver.services.IngredientService;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 @ExtendWith(MockitoExtension.class)
 class IngredientServiceTest {
 
-    private final CookpalUser testUser = new CookpalUser();
+    private final CookpalUser owner = new CookpalUser();
 
     @Mock
     private IngredientRepository ingredientRepository;
     @Mock
-    private IngredientMatcher ingredientMatcher;
-    @Mock
-    private Ingredient mockIngredient;
-    @Mock
-    private Ingredient similarPublicIngredient;
+    private IngredientLinker linker;
 
-    @InjectMocks
     private IngredientService cut;
 
-    @Test
-    void ingredientIsCreated() {
-        when(ingredientRepository.findByNameAndIsPublicIngredientAndOwner(any(), eq(false), eq(testUser)))
-                .thenReturn(null);
-        when(ingredientRepository.findByNameAndIsPublicIngredient(any(), eq(true))).thenReturn(null);
-        when(ingredientRepository.findAllByIsPublicIngredient(eq(true))).thenReturn(List.of());
-
-        cut.createOrGetIngredient(mockIngredient, testUser);
-
-        verify(ingredientRepository, times(1)).save(mockIngredient);
+    @BeforeEach
+    void setup() {
+        cut = new IngredientService(ingredientRepository, Optional.of(linker));
     }
 
     @Test
-    void newIngredientIsLinkedToSimilarPublicIngredient() throws ElementNotFound {
-        when(ingredientMatcher.findIngredientbySimilarName(any(), any())).thenReturn(similarPublicIngredient);
+    void anIngredientOfANewNameIsCreatedForTheOwner() {
+        when(ingredientRepository.findByNameAndOwner("Mehl", owner)).thenReturn(Optional.empty());
+        when(ingredientRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        cut.createOrGetIngredient(mockIngredient, testUser);
+        cut.createOrGetIngredient(Ingredient.builder().id(99L).name(" Mehl ").additionalInfo("Type 405").build(), owner);
 
-        verify(ingredientRepository, times(1)).save(mockIngredient);
-        verify(mockIngredient, times(1)).setAliasFor(similarPublicIngredient);
+        var saved = ArgumentCaptor.forClass(Ingredient.class);
+        verify(ingredientRepository).save(saved.capture());
+        assertEquals("Mehl", saved.getValue().getName());
+        assertEquals("Type 405", saved.getValue().getAdditionalInfo());
+        assertSame(owner, saved.getValue().getOwner());
+        assertEquals(null, saved.getValue().getId());
+        verify(linker).linkNew(saved.getValue());
     }
 
     @Test
-    void newIngredientIsNotLinkedToUnsimilarPublicIngredient() throws ElementNotFound {
-        when(ingredientMatcher.findIngredientbySimilarName(any(), any())).thenThrow(ElementNotFound.class);
+    void withoutNutritionEstimationANewIngredientStaysUnlinked() {
+        var withoutLinker = new IngredientService(ingredientRepository, Optional.empty());
+        when(ingredientRepository.findByNameAndOwner("Mehl", owner)).thenReturn(Optional.empty());
+        when(ingredientRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        cut.createOrGetIngredient(mockIngredient, testUser);
+        var created = withoutLinker.createOrGetIngredient(Ingredient.builder().name("Mehl").build(), owner);
 
-        verify(ingredientRepository, times(1)).save(mockIngredient);
-        verify(mockIngredient, times(0)).setAliasFor(any());
+        assertEquals(null, created.getCatalogueFood());
     }
 
     @Test
-    void privateIngredientIsReused() {
-        when(mockIngredient.isPublicIngredient()).thenReturn(false);
-        when(ingredientRepository.findByNameAndIsPublicIngredientAndOwner(any(), eq(false), eq(testUser)))
-                .thenReturn(mockIngredient);
+    void theOwnersIngredientOfThatNameIsReused() {
+        var existing = Ingredient.builder().id(5L).name("Mehl").owner(owner).build();
+        when(ingredientRepository.findByNameAndOwner("Mehl", owner)).thenReturn(Optional.of(existing));
 
-        cut.createOrGetIngredient(mockIngredient, testUser);
-
-        verify(ingredientRepository, times(0)).save(mockIngredient);
+        assertSame(existing, cut.createOrGetIngredient(Ingredient.builder().name("Mehl").build(), owner));
+        verify(ingredientRepository, never()).save(any());
+        verify(linker, never()).linkNew(any());
     }
 
     @Test
-    void publicIngredientIsReused() {
-        when(ingredientRepository.findByNameAndIsPublicIngredient(any(), eq(true))).thenReturn(mockIngredient);
+    void anIngredientARecipeUsesIsNotDeleted() {
+        var used = Ingredient.builder().id(5L).name("Mehl").owner(owner).build();
+        when(ingredientRepository.isUsedByARecipe(used)).thenReturn(true);
 
-        cut.createOrGetIngredient(mockIngredient, testUser);
+        var thrown = assertThrows(ApiException.class, () -> cut.deleteIngredient(used));
 
-        verify(ingredientRepository, times(0)).save(mockIngredient);
+        assertEquals(ApiErrorCode.CONFLICT, thrown.getErrorCode());
+        verify(ingredientRepository, never()).delete(any());
     }
 }

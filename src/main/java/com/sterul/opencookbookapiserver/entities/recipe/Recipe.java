@@ -19,6 +19,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.OrderColumn;
 import jakarta.persistence.SequenceGenerator;
 import lombok.AllArgsConstructor;
@@ -39,7 +40,9 @@ public class Recipe extends AuditableEntity {
 
     private String title;
 
+    // Lines are recreated in list order on every save, so id order is the written order.
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id")
     @Builder.Default
     private List<IngredientNeed> neededIngredients = new ArrayList<>();
 

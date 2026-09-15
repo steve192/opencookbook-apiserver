@@ -1,0 +1,50 @@
+# FDC writes American English, the BLS British English. For recognising that an FDC food
+# duplicates a BLS food, each FDC word on the left is read as the BLS word on the right.
+# Language data, independent of any release; extend it when the build report shows a missed duplicate.
+synonyms:
+  eggplant: aubergine
+  zucchini: courgette
+  arugula: rocket
+  beet: beetroot
+  rutabaga: swede
+  romaine: cos
+  scallion: spring
+  bell: sweet
+  garbanzo: chickpea
+  cilantro: coriander
+  ground: mince
+  kiwifruit: kiwi
+  flaxseed: linseed
+  canola: rapeseed
+  soybean: soya
+  soy: soya
+  squid: cuttlefish
+  calamari: cuttlefish
+  napa: chinese
+  squash: pumpkin
+  heavy: whipping
+  jalapeno: chilli
+  serrano: chilli
+  chili: chilli
+  crimini: button
+  portabella: button
+  cantaloupe: cantaloup
+  iodized: iodised
+  granulated: white
+  brazilnut: brazil
+  prune: plum
+  filbert: hazelnut
+  pollock: pollack
+  garbanzos: chickpea
+  potatoe: potato
+
+# An FDC word that implies a word the BLS spells out.
+implied:
+  egg: chicken
+
+# Phrases in FDC descriptions that say nothing about what the food is.
+ignoredPhrases:
+  - year round average
+  - includes skin
+  - bone and skin removed
+  - not further specified

@@ -3,23 +3,40 @@ package com.sterul.opencookbookapiserver.controllers.requests;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sterul.opencookbookapiserver.entities.recipe.Recipe.RecipeType;
+
 import jakarta.validation.Valid;
-
-import com.sterul.opencookbookapiserver.controllers.dto.RecipeBaseDTO;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
-@SuperBuilder
+/** References are resolved against what the caller owns; id and source are the server's. */
+@Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-@EqualsAndHashCode(callSuper = true)
-public class RecipeRequest extends RecipeBaseDTO {
+public class RecipeRequest {
+
+    private String title;
+
+    @Builder.Default
+    @Valid
+    private List<IngredientNeedRequest> neededIngredients = new ArrayList<>();
+
+    @Builder.Default
+    private List<String> preparationSteps = new ArrayList<>();
+
+    @Builder.Default
+    @Valid
+    private List<RecipeImageReference> images = new ArrayList<>();
+
+    private int servings;
+
+    private Long preparationTime;
+    private Long totalTime;
+
+    private RecipeType recipeType;
 
     @Builder.Default
     @Valid

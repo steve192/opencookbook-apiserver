@@ -5,8 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers.IngredientExtractor;
+import com.sterul.opencookbookapiserver.unit.services.nutrition.ShippedNutritionDataset;
 
 class IngredientExtractorTest {
+
+    private final IngredientExtractor cut = ShippedNutritionDataset.ingredientExtractor();
 
     @Test
     void amountsAreExtractedCorrectly()  {
@@ -53,15 +56,33 @@ class IngredientExtractorTest {
         assertUnit("Butter 2.5", "");
         assertUnit("Butter 1 1/2", "");
         assertUnit("1 wobbelybit Butter", "");
+        assertUnit("1,5 EL Butter", "EL");
+        assertUnit("2 Stück Ingwer", "Stück");
     }
 
+    @Test
+    void namesKeepEverythingButAmountUnitAndAdditionalInfo() {
+        assertEquals("Joghurt", cut.extractName("200 g Joghurt"));
+        assertEquals("Vollmilch", cut.extractName("1 l Vollmilch"));
+        assertEquals("Butter", cut.extractName("1,5 EL Butter, weich"));
+        assertEquals("Ingwer", cut.extractName("2 Stück Ingwer (frisch)"));
+        assertEquals("Butter", cut.extractName("Butter 1 1/2"));
+        assertEquals("Rumaroma oder EL Rum", cut.extractName("½ Flasche Rumaroma oder 2 EL Rum"));
+    }
+
+    @Test
+    void oddNumberSignsAreNoFailure() {
+        assertAmount("1/2½ Butter", 0.5F);
+        assertAmount("⅟ Butter", 0F);
+        assertAmount("2² Butter", 2F);
+    }
 
     private void assertAmount(String ingredient, float expectedAmount) {
-        assertEquals(expectedAmount, IngredientExtractor.extractAmount(ingredient));
+        assertEquals(expectedAmount, cut.extractAmount(ingredient));
     }
 
     private void assertUnit(String ingredient, String expectedUnit) {
-        assertEquals(expectedUnit, IngredientExtractor.extractUnit(ingredient));
+        assertEquals(expectedUnit, cut.extractUnit(ingredient));
     }
 
 }

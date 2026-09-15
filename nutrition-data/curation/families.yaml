@@ -1,0 +1,37 @@
+# BLS families: code characters 1-5; preparation: character 6. Where the build's family and name rules
+# (catalogue/bls_foods.py) find no unprepared food for a prepared one, it is decided here.
+#
+# attach: a prepared food -> the code of the unprepared food it is a variant of.
+attach:
+  T420132: T422100  # Forelle pochiert -> Forelle roh
+  T420152: T422100  # Forelle gedünstet
+  T420162: T422100  # Forelle gebraten ohne Fett (Ofen)
+  T420172: T422100  # Forelle gegrillt
+  T420182: T422100  # Forelle gebraten ohne Fett (Pfanne)
+  K130362: K130200  # Pommes frites tiefgefroren, gebacken, gesalzen -> Pommes frites tiefgefroren
+  K130592: K130200  # Pommes frites tiefgefroren, frittiert, gesalzen
+
+# bases: a prepared food that is a food of its own - bought or listed as such, with no unprepared
+# counterpart in the BLS. Its family's other prepared members become its variants.
+bases:
+  - D0A5000  # Hefeteig (einfacher) gebacken
+  - D0A5100  # Hefeteig (feiner) gebacken
+  - D7A6000  # Berliner/Pfannkuchen/Krapfen (Hefeteig) frittiert, ungefüllt
+  - D7A6100  # Berliner ... gefüllt mit Eierlikörcreme
+  - D7A6200  # Berliner ... gefüllt mit Konfitüre
+  - D7A6300  # Berliner ... gefüllt mit Nuss-Nougat-Creme
+  - D7A6400  # Berliner ... gefüllt mit Pflaumenmus
+  - D7A6500  # Berliner ... gefüllt mit Pudding
+  - D7A6600  # Quarkbällchen (Hefeteig) frittiert
+  - D7A6700  # Langos (Hefeteig) frittiert, ungefüllt
+  - G860192  # Röstzwiebeln (Fertigprodukt)
+  - T204582  # Dorsch/Kabeljau, paniert, gebraten ohne Fett (Pfanne)
+  - T900262  # Tintenfischringe paniert, tiefgefroren, gebacken (Ofen)
+  - U171942  # Rind Bratenfleisch (Bug) mariniert, geschmort ohne Fett
+  - U511082  # Schwein Filetmedaillon, paniert, gebraten ohne Fett (Pfanne)
+  - U532072  # Schwein Kammsteak, mariniert, gegrillt
+  - U541072  # Schwein Schnitzel (Oberschale) mariniert, gegrillt
+  - U623172  # Schwein Kotelett (Rücken/cranial) mariniert, gegrillt
+  - U632072  # Schwein Kamm, mariniert, gegrillt
+  - V422072  # Geflügel Dönerfleisch, gegrillt
+  - V466162  # Ente Brust, mit Haut, gebraten ohne Fett (Ofen); no raw entry, the other preparations are its variants

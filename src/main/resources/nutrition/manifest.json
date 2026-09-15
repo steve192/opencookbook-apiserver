@@ -1,0 +1,49 @@
+{
+ "attributions": [
+  {
+   "license": "CC BY 4.0",
+   "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+   "source": "BLS",
+   "text": "Nährwertdaten: Max Rubner-Institut (2025): Bundeslebensmittelschlüssel (BLS), Version 4.0 - Deutsche Nährstoffdatenbank. Karlsruhe. DOI: 10.25826/Data20251217-134202-0. Auszug; Werte vereinheitlicht, Bezeichnungen, Portionsgewichte und Dichten ergänzt."
+  },
+  {
+   "license": "CC0 1.0",
+   "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "source": "FDC",
+   "text": "Additional data: U.S. Department of Agriculture, Agricultural Research Service. FoodData Central (foundation 2026-04-30, sr legacy 2018-04), fdc.nal.usda.gov."
+  }
+ ],
+ "checksum": "54b72e7552f4f2cf60e267c0b37d5f6040e7e9d12311a453505070c2baca6cf5",
+ "files": [
+  "catalogue.json",
+  "units.json",
+  "states.json",
+  "lexicons.json"
+ ],
+ "foods": 5200,
+ "label": "2026.1",
+ "languages": [
+  "de",
+  "en"
+ ],
+ "sources": [
+  {
+   "file": "BLS_4_0_2025_DE.zip",
+   "release": "4.0 (2025)",
+   "sha256": "12b7a6ba62807ec9b301eb276f897dc85f99b2292311618dec3749a12d984c91",
+   "source": "BLS"
+  },
+  {
+   "file": "FoodData_Central_foundation_food_json_2026-04-30.zip",
+   "release": "foundation 2026-04-30",
+   "sha256": "186e988ec542e913f51ef62b86a47758e8cdd0d1dc3889e7b055581f3c09c77a",
+   "source": "FDC"
+  },
+  {
+   "file": "FoodData_Central_sr_legacy_food_json_2018-04.zip",
+   "release": "sr legacy 2018-04",
+   "sha256": "0fe8ae486a2c8eb42cb96413f058deb51863a46c8fb8eeb4b1fb45006dd338ef",
+   "source": "FDC"
+  }
+ ]
+}

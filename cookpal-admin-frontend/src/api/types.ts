@@ -52,38 +52,249 @@ export interface RecipeUpdate {
   preparationSteps: string[];
 }
 
-/** A type rather than an interface so it can be edited as a pairList row. */
-export type AlternativeName = {
-  id?: number;
-  languageIsoCode: string;
-  alternativeName: string;
-};
+export type LinkSource = 'AUTO' | 'USER' | 'ADMIN';
 
 export interface Ingredient {
   id: number;
   name: string;
   additionalInfo: string | null;
-  publicIngredient: boolean;
-  ownerUserId: number | null;
-  ownerEmailAddress: string | null;
-  aliasForId: number | null;
-  aliasForName: string | null;
-  alternativeNames: AlternativeName[];
-  nutrientsEnergy: number | null;
-  nutrientsFat: number | null;
-  nutrientsSaturatedFat: number | null;
-  nutrientsCarbohydrates: number | null;
-  nutrientsSugar: number | null;
-  nutrientsProtein: number | null;
-  nutrientsSalt: number | null;
+  ownerUserId: number;
+  ownerEmailAddress: string;
+  catalogueFoodId: number | null;
+  catalogueFoodKey: string | null;
+  catalogueFoodName: string | null;
+  linkSource: LinkSource | null;
+  linkConfidence: number | null;
+  linkMatcherVersion: number | null;
+  linkedAt: string | null;
+  excludedFromNutrition: boolean;
   createdOn: string;
   lastChange: string;
 }
 
-/** No id: the path says which ingredient. */
-export type IngredientDraft = Omit<Ingredient,
-  'id' | 'createdOn' | 'lastChange' | 'publicIngredient' | 'ownerUserId' | 'ownerEmailAddress' |
-  'aliasForId' | 'aliasForName'>;
+export interface NameCleanupLine {
+  recipeId: number;
+  recipeTitle: string;
+  amount: number | null;
+  unit: string | null;
+  newAmount: number | null;
+  newUnit: string | null;
+}
+
+export interface NameCleanupProposal {
+  ingredientId: number;
+  ownerEmailAddress: string;
+  lastChange: string;
+  name: string;
+  proposedName: string;
+  /** Null if the name holds none. */
+  amount: number | null;
+  unit: string | null;
+  mergesIntoIngredientId: number | null;
+  lines: NameCleanupLine[];
+}
+
+export interface NameCleanupDecision {
+  ingredientId: number;
+  name: string;
+  lastChange: string;
+}
+
+export interface NameCleanupOutcome {
+  renamed: number;
+  merged: number;
+  linesChanged: number;
+  skipped: number;
+}
+
+export type CatalogueOrigin = 'DATASET' | 'CUSTOM';
+export type CatalogueSourceType = 'BLS' | 'FDC';
+
+/** Per 100 g; null when unknown. */
+export interface Nutrients {
+  energyKcal: number | null;
+  energyKj: number | null;
+  fat: number | null;
+  saturatedFat: number | null;
+  carbohydrates: number | null;
+  sugar: number | null;
+  fibre: number | null;
+  protein: number | null;
+  salt: number | null;
+}
+
+export interface CatalogueFoodSummary {
+  id: number;
+  catalogueKey: string;
+  origin: CatalogueOrigin;
+  sourceType: CatalogueSourceType | null;
+  sourceName: string | null;
+  displayNameDe: string | null;
+  displayNameEn: string | null;
+  variantOfKey: string | null;
+  energyKcal: number | null;
+  retired: boolean;
+  nameCount: number;
+  portionCount: number;
+}
+
+export interface CatalogueFoodName {
+  languageIsoCode: string;
+  name: string;
+  display: boolean;
+  origin: 'DATASET' | 'ADMIN';
+}
+
+export interface CatalogueFoodPortion {
+  unitKey: string;
+  grams: number;
+  origin: 'SOURCE' | 'ESTIMATED' | 'ADMIN';
+}
+
+export interface CatalogueFood {
+  id: number;
+  catalogueKey: string;
+  origin: CatalogueOrigin;
+  readOnly: boolean;
+  sourceType: CatalogueSourceType | null;
+  sourceCode: string | null;
+  sourceName: string | null;
+  variantOfId: number | null;
+  variantOfKey: string | null;
+  retired: boolean;
+  negligible: boolean;
+  densityGPerMl: number | null;
+  nutrients: Nutrients;
+  names: CatalogueFoodName[];
+  states: string[];
+  portions: CatalogueFoodPortion[];
+  linkedIngredients: number;
+  createdOn: string;
+  lastChange: string;
+}
+
+export interface CustomFoodDraft {
+  names: {languageIsoCode: string, name: string, display: boolean}[];
+  nutrients: Nutrients;
+  densityGPerMl: number | null;
+  negligible: boolean;
+  portions: {unitKey: string, grams: number}[];
+}
+
+export type DatasetImportStatus = 'RUNNING' | 'DONE' | 'FAILED';
+
+export interface NutritionDataset {
+  label: string;
+  checksum: string;
+  foods: number;
+  attributions: {source: string, text: string, license: string, licenseUrl: string}[];
+  sources: {source: string, release: string, file: string, sha256: string}[];
+  imports: {
+    checksum: string;
+    label: string;
+    status: DatasetImportStatus;
+    startedAt: string;
+    finishedAt: string | null;
+    report: string | null;
+  }[];
+}
+
+export interface FoodReference {
+  id: number;
+  catalogueKey: string;
+  displayNameDe: string;
+  displayNameEn: string;
+  energyKcal: number | null;
+  retired: boolean;
+}
+
+export type ConfidenceBand = 'SILENT' | 'UNCERTAIN' | 'NONE';
+
+export type RelinkScope =
+  | 'NEVER_MATCHED_OR_UNLINKED'
+  | 'AUTOMATIC_BELOW_CONFIDENCE'
+  | 'ALL_AUTOMATIC'
+  | 'RETIRED_FOODS'
+  | 'OLDER_MATCHER';
+
+export type RelinkRunStatus = 'PREVIEWED' | 'APPLIED' | 'REVERTED' | 'DISCARDED';
+
+export interface RelinkRun {
+  id: number;
+  scope: RelinkScope;
+  belowConfidence: number | null;
+  matcherVersion: number;
+  datasetLabel: string | null;
+  status: RelinkRunStatus;
+  proposalCount: number;
+  ingredientCount: number;
+  unchangedCount: number;
+  appliedCount: number;
+  /** Changed after the preview, so left alone by apply. */
+  skippedCount: number;
+  startedByEmailAddress: string | null;
+  createdOn: string;
+  appliedAt: string | null;
+  revertedAt: string | null;
+}
+
+export type RelinkChange = 'NEW_LINK' | 'CHANGED' | 'UNLINKED' | 'CONFIDENCE';
+export type RelinkDecision = 'PENDING' | 'ACCEPTED' | 'REJECTED';
+
+export interface RelinkProposal {
+  id: number;
+  name: string;
+  language: string | null;
+  ingredientCount: number;
+  oldFood: FoodReference | null;
+  newFood: FoodReference | null;
+  newConfidence: number | null;
+  band: ConfidenceBand | null;
+  change: RelinkChange;
+  decision: RelinkDecision;
+}
+
+export type NameRuleKind = 'NEVER_LINK_TO' | 'NOT_A_FOOD';
+
+export interface NameRule {
+  id: number;
+  name: string;
+  kind: NameRuleKind;
+  food: FoodReference | null;
+  createdByEmailAddress: string | null;
+  createdOn: string;
+}
+
+export interface UnmatchedName {
+  name: string;
+  language: string | null;
+  userCount: number;
+  useCount: number;
+  ingredientIds: number[];
+  candidates: {food: FoodReference, confidence: number}[];
+}
+
+export interface UserCorrection {
+  name: string;
+  language: string | null;
+  /** Null when excluded. */
+  food: FoodReference | null;
+  userCount: number;
+  matcherFood: FoodReference | null;
+  matcherConfidence: number | null;
+}
+
+export type RecipeNutritionStatus = 'COMPLETE' | 'INCOMPLETE' | 'UNAVAILABLE';
+
+export interface Coverage {
+  recipeCount: number;
+  recipesByStatus: Record<RecipeNutritionStatus, number>;
+  lineCount: number;
+  warningLineCount: number;
+  /** A line status, or a flag of a resolved line. */
+  warningCauses: {key: string, count: number}[];
+  namesCausingWarnings: {key: string, count: number}[];
+}
 
 export interface Share {
   shareId: string;

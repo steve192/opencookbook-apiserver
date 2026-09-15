@@ -1,0 +1,42 @@
+# Which source foods become catalogue foods. See "How the build decides" in nutrition-data/README.md.
+# The rule for exceptions: exclude only what is never used as an ingredient; include when in doubt.
+bls:
+  # X and Y are household dishes and industrial preparations.
+  excludedGroups: [X, Y]
+  # Dishes that recipes do list as an ingredient.
+  include: []
+  # Ready-made products in included groups that no recipe lists.
+  exclude: []
+fdc:
+  # Foundation Foods, less these categories. SR Legacy also contributes portion weights.
+  excludedCategories: [Restaurant Foods]
+  # SR Legacy food groups neither BLS nor Foundation Foods cover; their foods are included like Foundation foods.
+  srLegacyCategories: [Spices and Herbs]
+  # Single foods, of Foundation Foods or SR Legacy, that recipes use and nothing else covers.
+  include:
+    - 168573   # Lemon grass (citronella), raw
+    - 169997   # Coriander (cilantro) leaves, raw
+    - 171579   # Sauce, pesto, ready-to-serve, refrigerated
+    - 175040   # Leavening agents, baking soda
+    - 174529   # Sauce, oyster, ready-to-serve
+    - 171610   # Sauce, worcestershire
+    - 172886   # Sauce, hoisin, ready-to-serve
+    - 174531   # Sauce, fish, ready-to-serve
+    - 171186   # Sauce, hot chile, sriracha
+    - 167723   # Alcoholic beverage, rice (sake)
+    - 171583   # Soup, vegetable broth, ready to serve: BLS has broth only as powder or canned beef broth
+    - 174536   # Soup, chicken broth, ready-to-serve
+    - 174528   # Sauce, ready-to-serve, pepper, TABASCO
+    - 174278   # Soy sauce made from soy (tamari)
+    - 171249   # Cheese, romano
+    - 174913   # Bread, Italian
+    - 172094   # Tortellini, pasta with cheese filling, fresh-refrigerated
+    - 173471   # Vanilla extract
+  exclude:
+    - 324317   # Onion rings, breaded, par fried, frozen, prepared, heated in oven
+    - 330415   # Yogurt, Greek, strawberry, nonfat
+    - 746785   # Turkey, ground, pan-broiled crumbles (the raw ground turkey is included)
+    - 746952   # Ham, sliced, restaurant
+    - 747429   # Cheese, American, restaurant
+    - 749420   # Pork, cured, bacon, cooked, restaurant
+    - 2747676  # Watermelon, seedless, rind only, raw

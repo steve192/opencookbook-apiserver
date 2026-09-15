@@ -1,0 +1,175 @@
+# Count unit weights per catalogue food key, overriding the sources: `<unit>: {grams: <g>}` (estimate)
+# or `<unit>: {grams: <g>, fdc: <id>}` (FDC household measure).
+# Estimates follow German packaging, not FDC's US sizes. Units with a typical size in units.yaml need an
+# entry only where a food differs, e.g. drained can contents.
+
+# --- baking and packets
+bls-R421100:   # Backpulver
+  pack: {grams: 15}
+bls-S114000:   # Vanillezucker: "1 Vanillezucker" is a packet
+  pack: {grams: 8}
+  piece: {grams: 8}
+bls-R452000:   # Vanillinzucker
+  pack: {grams: 8}
+  piece: {grams: 8}
+bls-R458000:   # Trockenhefe
+  pack: {grams: 7}
+bls-R459000:   # Frischhefe
+  cube: {grams: 42}
+  pack: {grams: 42}
+bls-R434000:   # Sahnesteif
+  pack: {grams: 8}
+bls-R481100:   # Puddingpulver Vanille
+  pack: {grams: 37}
+bls-R481200:   # Puddingpulver Schokolade
+  pack: {grams: 37}
+bls-R468000:   # Gelatine: a sheet, a packet of powder
+  leaf: {grams: 1.7}
+  pack: {grams: 9}
+bls-R810000:   # Brühe (Brühwürfel)
+  cube: {grams: 10}
+bls-R821000:   # Gemüsebrühe (Brühwürfel)
+  cube: {grams: 10}
+bls-R822000:   # Hühnerbrühe (Brühwürfel)
+  cube: {grams: 10}
+bls-D072000:   # Blätterteig, a rolled sheet
+  pack: {grams: 275}
+  roll: {grams: 275}
+
+# --- pasta, dairy, fats
+bls-E401000:   # Nudeln
+  pack: {grams: 500}
+bls-E432000:   # Eiernudeln
+  pack: {grams: 500}
+bls-M820600:   # Frischkäse
+  pack: {grams: 200}
+bls-M713500:   # Quark
+  pack: {grams: 250}
+  container: {grams: 250}
+bls-M032100:   # Mozzarella: one ball
+  piece: {grams: 125}
+  ball: {grams: 125}
+  pack: {grams: 125}
+bls-Q630000:   # Butter
+  pack: {grams: 250}
+bls-Q400000:   # Margarine
+  pack: {grams: 250}
+
+# --- cans, drained
+bls-H742902:   # Kidneybohnen, Konserve, abgetropft
+  can: {grams: 250}
+bls-H720902:   # Kichererbsen, Konserve, abgetropft
+  can: {grams: 240}
+bls-G570902:   # Mais, Konserve, abgetropft
+  can: {grams: 285}
+bls-G760902:   # Erbsen, Konserve, abgetropft
+  can: {grams: 280}
+bls-T121702:   # Thunfisch in Öl, abgetropft
+  can: {grams: 150}
+bls-R160000:   # Tomatenmark: the small can, the tube
+  can: {grams: 70}
+  tube: {grams: 200}
+
+# --- meat, drinks
+bls-W415000:   # Frühstücksspeck
+  pack: {grams: 100}
+  slice: {grams: 7}
+bls-U685100:   # Schinkenwürfel
+  pack: {grams: 125}
+bls-P2A3000:   # Rotwein trocken
+  bottle: {grams: 750}
+bls-P210000:   # Weißwein trocken
+  bottle: {grams: 750}
+
+# --- counted vegetables: an average piece, bunch or head
+bls-K120100:   # Kartoffel ungeschält
+  piece: {grams: 150}
+bls-G482100:   # Frühlingszwiebel
+  piece: {grams: 20}
+  stalk: {grams: 20}
+  bunch: {grams: 120}
+bls-G490100:   # Knoblauch: recipes count garlic in cloves ("2 Knoblauch", "3 Knoblauchzehen"); a bulb is a bulb
+  piece: {grams: 3}
+  bulb: {grams: 40}
+bls-G485100:   # Schalotte
+  piece: {grams: 25}
+bls-R211200:   # Ingwer: a piece as big as a thumb, a centimetre of the root
+  piece: {grams: 20}
+  centimetre: {grams: 5}
+fdc-168573:    # Zitronengras
+  piece: {grams: 20}
+  stalk: {grams: 20}
+bls-G324100:   # Pak Choi: a head of the small kind sold here
+  piece: {grams: 250}
+bls-G312100:   # Broccoli
+  piece: {grams: 500}
+  head: {grams: 500}
+bls-G660100:   # Knollensellerie
+  piece: {grams: 500}
+bls-G542100:   # Paprika gelb
+  piece: {grams: 160}
+bls-G582100:   # Zucchini
+  piece: {grams: 250}
+bls-G510100:   # Aubergine
+  piece: {grams: 300}
+bls-G520802:   # Gewürzgurke
+  piece: {grams: 35}
+bls-G342100:   # Weißkohl
+  head: {grams: 1500}
+bls-G581000:   # Hokkaido-Kürbis
+  piece: {grams: 1200}
+bls-G554100:   # Chilischote rot
+  piece: {grams: 15}
+bls-G553100:   # Chilischote grün
+  piece: {grams: 15}
+bls-G470100:   # Lauch
+  piece: {grams: 250}
+  stalk: {grams: 250}
+bls-G613100:   # Rote Bete
+  piece: {grams: 150}
+bls-G250100:   # Petersilie
+  bunch: {grams: 30}
+bls-G081100:   # Schnittlauch
+  bunch: {grams: 30}
+bls-G061000:   # Basilikum
+  bunch: {grams: 30}
+
+# --- counted fruit: an average piece
+bls-F601100:   # Zitrone
+  piece: {grams: 125}
+bls-F602100:   # Limette
+  piece: {grams: 60}
+
+# --- meat, fish: an average piece or slice
+bls-U163100:   # Rinderroulade
+  piece: {grams: 180}
+  slice: {grams: 180}
+bls-V416100:   # Hähnchenbrustfilet
+  piece: {grams: 180}
+bls-V4A5100:   # Hähnchenoberschenkel
+  piece: {grams: 150}
+bls-V4B5100:   # Hähnchenunterschenkel
+  piece: {grams: 110}
+bls-U541100:   # Schweineschnitzel
+  piece: {grams: 150}
+  slice: {grams: 150}
+bls-U611100:   # Schweinefilet, a whole fillet
+  piece: {grams: 450}
+bls-U131100:   # Rumpsteak
+  piece: {grams: 200}
+bls-W222600:   # Bratwurst
+  piece: {grams: 100}
+bls-T410100:   # Lachsfilet
+  piece: {grams: 150}
+bls-T204100:   # Kabeljaufilet
+  piece: {grams: 150}
+bls-T753100:   # Garnele
+  piece: {grams: 10}
+
+# --- bread and cheese
+bls-B314000:   # Toastbrot
+  slice: {grams: 25}
+bls-B783012:   # Weizentortilla
+  piece: {grams: 60}
+bls-M402600:   # Gouda
+  slice: {grams: 20}

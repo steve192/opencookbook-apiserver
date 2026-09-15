@@ -2,16 +2,15 @@ package com.sterul.opencookbookapiserver.services;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sterul.opencookbookapiserver.entities.Ingredient;
-import com.sterul.opencookbookapiserver.entities.IngredientAlternativeNames;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
+import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
+import com.sterul.opencookbookapiserver.errors.ApiException;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.repositories.projections.OwnerCount;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
@@ -19,129 +18,48 @@ import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
-@Transactional
+@Transactional(rollbackFor = ApiException.class)
 @Slf4j
 public class IngredientService {
+
     private final IngredientRepository ingredientRepository;
+    private final Optional<IngredientLinker> linker;
 
-    private final IngredientMatcher ingredientMatcher;
-
-    public IngredientService(IngredientRepository ingredientRepository, IngredientMatcher ingredientMatcher) {
+    public IngredientService(IngredientRepository ingredientRepository, Optional<IngredientLinker> linker) {
         this.ingredientRepository = ingredientRepository;
-        this.ingredientMatcher = ingredientMatcher;
+        this.linker = linker;
     }
 
-    public Ingredient findUserIngredientBySimilarName(String name, CookpalUser user) throws ElementNotFound {
-        var ingredients = getUserPermittedIngredients(user);
-        return populateNutrients(ingredientMatcher.findIngredientbySimilarName(ingredients, name));
+    /** By name only; the template's id is ignored. A new ingredient is linked automatically. */
+    public Ingredient createOrGetIngredient(Ingredient template, CookpalUser owner) {
+        var name = template.getName().trim();
+        return ingredientRepository.findByNameAndOwner(name, owner).orElseGet(() -> {
+            log.info("Creating ingredient {} for user {}", name, owner.getUserId());
+            var ingredient = Ingredient.builder()
+                    .name(name)
+                    .additionalInfo(template.getAdditionalInfo())
+                    .owner(owner)
+                    .build();
+            linker.ifPresent(automatic -> automatic.linkNew(ingredient));
+            return ingredientRepository.save(ingredient);
+        });
     }
 
-    public Ingredient findPublicIngredientBySimilarName(String name) throws ElementNotFound {
-        var ingredients = getPublicIngredients();
-        return populateNutrients(ingredientMatcher.findIngredientbySimilarName(ingredients, name));
+    /** Somebody else's ingredient is not found. */
+    public Ingredient getOwnIngredient(Long id, CookpalUser owner) throws ElementNotFound {
+        return ingredientRepository.findByIdAndOwner(id, owner).orElseThrow(ElementNotFound::new);
     }
 
-    private Ingredient populateNutrients(Ingredient ingredient) {
-        // Public ingredients already have nutrients assigned
-        if (ingredient == null || ingredient.isPublicIngredient()) {
-            return ingredient;
-        }
-        var aliasedIngredient = ingredient.getAliasFor();
-        if (aliasedIngredient == null) {
-            return ingredient;
-        }
-        // Get nutrients from aliased ingredient
-        ingredient.setNutrientsEnergy(aliasedIngredient.getNutrientsEnergy());
-        ingredient.setNutrientsCarbohydrates(aliasedIngredient.getNutrientsCarbohydrates());
-        ingredient.setNutrientsFat(aliasedIngredient.getNutrientsFat());
-        ingredient.setNutrientsProtein(aliasedIngredient.getNutrientsProtein());
-        ingredient.setNutrientsSalt(aliasedIngredient.getNutrientsSalt());
-        ingredient.setNutrientsSaturatedFat(aliasedIngredient.getNutrientsSaturatedFat());
-        ingredient.setNutrientsSugar(aliasedIngredient.getNutrientsSugar());
-
-        return ingredient;
-    }
-
-    public Ingredient createPublicIngredient(Ingredient ingredient) {
-        ingredient.setId(null);
-        ingredient.setPublicIngredient(true);
-        ingredient.setAliasFor(null);
-        adoptAlternativeNames(ingredient, Set.of());
-        return ingredientRepository.save(ingredient);
-    }
-
-    public Ingredient createOrGetIngredient(Ingredient ingredient, CookpalUser user) {
-
-        var publicIngredient = ingredientRepository.findByNameAndIsPublicIngredient(
-                ingredient.getName(),
-                true);
-
-        if (publicIngredient != null) {
-            return publicIngredient;
-        }
-
-        var ownIngredient = ingredientRepository.findByNameAndIsPublicIngredientAndOwner(
-                ingredient.getName(),
-                false,
-                user);
-
-        if (ownIngredient != null) {
-            return populateNutrients(ownIngredient);
-        }
-        log.info("Creating new Ingredient {} for user {}", ingredient.getName(), user.getUserId());
-
-        // Make sure a new ingredient is created
-        ingredient.setId(null);
-        ingredient.setPublicIngredient(false);
-        ingredient.setOwner(user);
-
-        try {
-            var similarPublicIngredient = findPublicIngredientBySimilarName(ingredient.getName());
-            if (similarPublicIngredient != null) {
-                ingredient.setAliasFor(similarPublicIngredient);
-            }
-        } catch (ElementNotFound e) {
-            // No public ingredient found
-        }
-
-        ingredient.getAlternativeNames().forEach(name -> name.setIngredient(ingredient));
-
-        return populateNutrients(ingredientRepository.save(ingredient));
-    }
-
-    public boolean hasPermissionForIngredient(Long id, CookpalUser user) throws ElementNotFound {
-        var ingredient = getIngredient(id);
-        if (ingredient.isPublicIngredient()) {
-            return true;
-        }
-
-        return ingredient.getOwner().equals(user);
+    public List<Ingredient> getIngredientsOfUser(CookpalUser owner) {
+        return ingredientRepository.findAllByOwner(owner);
     }
 
     public Ingredient getIngredient(Long id) throws ElementNotFound {
-        var optional = ingredientRepository.findById(id);
-        if (optional.isEmpty()) {
-            throw new ElementNotFound();
-        }
-        return populateNutrients(optional.get());
-    }
-
-    public List<Ingredient> getUserPermittedIngredients(CookpalUser user) {
-
-        var ownIngredients = ingredientRepository.findAllByIsPublicIngredientAndOwner(
-                false,
-                user);
-        var publicIngredients = ingredientRepository.findAllByIsPublicIngredient(true);
-
-        return Stream.concat(publicIngredients.stream(), ownIngredients.stream().map(this::populateNutrients)).toList();
+        return ingredientRepository.findById(id).orElseThrow(ElementNotFound::new);
     }
 
     public List<Ingredient> getAllIngredients() {
-        return ingredientRepository.findAll().stream().map(this::populateNutrients).toList();
-    }
-
-    public List<Ingredient> getPublicIngredients() {
-        return ingredientRepository.findAllByIsPublicIngredient(true);
+        return ingredientRepository.findAll();
     }
 
     public Map<Long, Long> countIngredientsPerOwner() {
@@ -153,39 +71,11 @@ public class IngredientService {
         ingredientRepository.deleteAllByOwner(user);
     }
 
-    public void deleteIngredient(Ingredient ingredient) {
+    public void deleteIngredient(Ingredient ingredient) throws ApiException {
+        if (ingredientRepository.isUsedByARecipe(ingredient)) {
+            throw new ApiException(ApiErrorCode.CONFLICT, "Ingredient " + ingredient.getId() + " is used by a recipe");
+        }
         log.info("Deleting ingredient {}", ingredient.getId());
         ingredientRepository.delete(ingredient);
-    }
-
-    public Ingredient updateIngredient(Ingredient newIngredient) throws ElementNotFound {
-        log.info("Updating ingredient {}", newIngredient.getId());
-        var existingIngredient = getIngredient(newIngredient.getId());
-        newIngredient.setId(existingIngredient.getId());
-        newIngredient.setOwner(existingIngredient.getOwner());
-        newIngredient.setPublicIngredient(existingIngredient.isPublicIngredient());
-        adoptAlternativeNames(newIngredient, idsOf(existingIngredient.getAlternativeNames()));
-        if (existingIngredient.getAliasFor() != null) {
-            newIngredient.setAliasFor(existingIngredient.getAliasFor());
-        }
-
-        return ingredientRepository.save(newIngredient);
-    }
-
-    /**
-     * Hangs the names off the ingredient. An id that is not already one of its own rows is
-     * dropped: carried in from elsewhere it would write over that other ingredient's name.
-     */
-    private void adoptAlternativeNames(Ingredient ingredient, Set<Long> ownNameIds) {
-        ingredient.getAlternativeNames().forEach(name -> {
-            if (name.getId() != null && !ownNameIds.contains(name.getId())) {
-                name.setId(null);
-            }
-            name.setIngredient(ingredient);
-        });
-    }
-
-    private Set<Long> idsOf(List<IngredientAlternativeNames> names) {
-        return names.stream().map(IngredientAlternativeNames::getId).collect(Collectors.toSet());
     }
 }

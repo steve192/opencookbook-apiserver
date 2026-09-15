@@ -68,8 +68,7 @@ class RecipeJsonBindingIntegrationTest extends IntegrationTest {
                 .andExpect(jsonPath("$.recipeGroups[0].title").value("Dinner"))
                 .andExpect(jsonPath("$.neededIngredients[0].unit").value("g"))
                 .andExpect(jsonPath("$.neededIngredients[0].ingredient.name").value("Salz"))
-                // the boolean accessor Jackson derives from `isPublicIngredient`
-                .andExpect(jsonPath("$.neededIngredients[0].ingredient.publicIngredient").value(false));
+                .andExpect(jsonPath("$.neededIngredients[0].ingredient.id").isNumber());
     }
 
     @Test

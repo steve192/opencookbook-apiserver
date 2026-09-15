@@ -1,0 +1,34 @@
+# Language-neutral states that change nutrition per 100 g (so not chopping or freshness).
+# Words live in lexicon/<language>.yaml.
+#
+# kind PREPARATION  how a food was cooked.
+# kind PROCESSING   what was done to the food before, combinable with a preparation.
+# unprepared: true  the state of a food nobody cooked; an unprepared catalogue food satisfies it.
+states:
+  RAW: { kind: PREPARATION, unprepared: true }
+  BOILED: { kind: PREPARATION }
+  STEAMED: { kind: PREPARATION }
+  STEWED: { kind: PREPARATION }
+  BAKED: { kind: PREPARATION }
+  GRILLED: { kind: PREPARATION }
+  PAN_FRIED: { kind: PREPARATION }
+  DEEP_FRIED: { kind: PREPARATION }
+
+  DRIED: { kind: PROCESSING }
+  POWDERED: { kind: PROCESSING }
+  CONCENTRATED: { kind: PROCESSING }
+  CANNED: { kind: PROCESSING }
+  PICKLED: { kind: PROCESSING }
+  SMOKED: { kind: PROCESSING }
+  REDUCED_FAT: { kind: PROCESSING }
+  SWEETENED: { kind: PROCESSING }
+
+# BLS code position 6 (see SOURCES.md). 0 is unprepared; 1 and 2 are not preparations.
+blsPreparationDigits:
+  "3": BOILED
+  "4": STEAMED
+  "5": STEWED
+  "6": BAKED
+  "7": GRILLED
+  "8": PAN_FRIED
+  "9": DEEP_FRIED

@@ -1,6 +1,6 @@
 import {useCallback, useMemo} from 'react';
 import {toast} from 'react-toastify';
-import {ApiError} from '../api';
+import {errorMessage} from '../api';
 
 export interface ActionRunner {
   /** False when it failed, so a form can stay open with what was typed still in it. */
@@ -17,7 +17,7 @@ export function useActionRunner(reload: () => void): ActionRunner {
       toast.success(what);
       return true;
     } catch (cause) {
-      toast.error(what + ' failed: ' + (cause instanceof ApiError ? cause.message : String(cause)));
+      toast.error(what + ' failed: ' + errorMessage(cause));
       return false;
     } finally {
       reload();
@@ -31,7 +31,7 @@ export function useActionRunner(reload: () => void): ActionRunner {
       try {
         await action(item);
       } catch (cause) {
-        failures.push(cause instanceof ApiError ? cause.message : String(cause));
+        failures.push(errorMessage(cause));
       }
     }
 

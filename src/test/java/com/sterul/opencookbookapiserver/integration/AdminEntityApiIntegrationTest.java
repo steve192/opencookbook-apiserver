@@ -1,6 +1,5 @@
 package com.sterul.opencookbookapiserver.integration;
 
-import static org.hamcrest.Matchers.not;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -23,12 +22,14 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
-import com.jayway.jsonpath.JsonPath;
 import com.sterul.opencookbookapiserver.entities.BringExport;
+import com.sterul.opencookbookapiserver.entities.Ingredient;
+import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.account.Role;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.repositories.BringExportRepository;
+import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.EmailService;
@@ -53,6 +54,8 @@ class AdminEntityApiIntegrationTest extends IntegrationTest {
     private RecipeRepository recipeRepository;
     @Autowired
     private BringExportRepository bringExportRepository;
+    @Autowired
+    private IngredientRepository ingredientRepository;
 
     @MockitoBean
     private EmailService emailService;
@@ -64,6 +67,7 @@ class AdminEntityApiIntegrationTest extends IntegrationTest {
     void setup() {
         bringExportRepository.deleteAll();
         recipeRepository.deleteAll();
+        ingredientRepository.deleteAll();
 
         // The last-administrator guard counts what is in the shared database.
         var everybody = userRepository.findAll();
@@ -250,84 +254,52 @@ class AdminEntityApiIntegrationTest extends IntegrationTest {
     }
 
     @Test
-    void anOperatorCanAddCorrectAndDeleteAPublicIngredient() throws Exception {
-        var created = mockMvc.perform(post("/api/v1/admin/ingredients").with(operator())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                        {"name":"Potato","additionalInfo":"floury","nutrientsEnergy":77,
-                         "alternativeNames":[{"languageIsoCode":"de","alternativeName":"Kartoffel"}]}
-                        """))
+    void anOperatorSeesWhoseIngredientItIsAndWhatItIsLinkedTo() throws Exception {
+        var potato = ingredientRepository.save(Ingredient.builder().name("Potato").owner(owner).build());
+
+        mockMvc.perform(get("/api/v1/admin/ingredients").with(operator()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.name=='Potato')].ownerEmailAddress").value(OWNER));
+
+        mockMvc.perform(get("/api/v1/admin/ingredients/" + potato.getId()).with(operator()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Potato"))
-                // Public and ownerless, whatever the request said.
-                .andExpect(jsonPath("$.publicIngredient").value(true))
-                .andExpect(jsonPath("$.ownerUserId").doesNotExist())
-                .andExpect(jsonPath("$.alternativeNames[0].alternativeName").value("Kartoffel"))
-                .andReturn();
-        var id = JsonPath.read(created.getResponse().getContentAsString(), "$.id").toString();
+                .andExpect(jsonPath("$.ownerUserId").value(owner.getUserId()))
+                .andExpect(jsonPath("$.catalogueFoodId").doesNotExist())
+                .andExpect(jsonPath("$.linkSource").doesNotExist());
+    }
 
-        mockMvc.perform(put("/api/v1/admin/ingredients/" + id).with(operator())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                        {"id":9999,"name":"Potatoes","nutrientsEnergy":80,"alternativeNames":[]}
-                        """))
-                .andExpect(status().isOk())
-                // The path decides, not the body.
-                .andExpect(jsonPath("$.id").value(Integer.parseInt(id)))
-                .andExpect(jsonPath("$.name").value("Potatoes"))
-                .andExpect(jsonPath("$.publicIngredient").value(true))
-                .andExpect(jsonPath("$.alternativeNames.length()").value(0));
+    @Test
+    void anOperatorCanDeleteAnIngredientNoRecipeUses() throws Exception {
+        var unused = ingredientRepository.save(Ingredient.builder().name("Parsnip").owner(owner).build());
 
-        mockMvc.perform(delete("/api/v1/admin/ingredients/" + id).with(operator()))
+        mockMvc.perform(delete("/api/v1/admin/ingredients/" + unused.getId()).with(operator()))
                 .andExpect(status().isNoContent());
 
-        mockMvc.perform(get("/api/v1/admin/ingredients/" + id).with(operator()))
+        mockMvc.perform(get("/api/v1/admin/ingredients/" + unused.getId()).with(operator()))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    void anAlternativeNameIdFromAnotherIngredientBecomesANewNameInsteadOfOverwritingIt()
-            throws Exception {
-        var borrowedFrom = createPublicIngredient("Carrot", "Karotte");
-        var borrowedNameId = JsonPath.read(borrowedFrom, "$.alternativeNames[0].id").toString();
-        var target = JsonPath.read(createPublicIngredient("Parsnip", "Pastinake"), "$.id")
-                .toString();
+    void anIngredientARecipeUsesIsNotDeleted() throws Exception {
+        var carrot = ingredientRepository.save(Ingredient.builder().name("Carrot").owner(owner).build());
+        recipe.getNeededIngredients().add(IngredientNeed.builder().ingredient(carrot).amount(2f).build());
+        recipe = recipeRepository.save(recipe);
 
-        mockMvc.perform(put("/api/v1/admin/ingredients/" + target).with(operator())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                        {"name":"Parsnip","alternativeNames":[
-                          {"id":%s,"languageIsoCode":"de","alternativeName":"Stolen"}]}
-                        """.formatted(borrowedNameId)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.alternativeNames[0].alternativeName").value("Stolen"))
-                .andExpect(jsonPath("$.alternativeNames[0].id")
-                        .value(not(Integer.parseInt(borrowedNameId))));
+        mockMvc.perform(delete("/api/v1/admin/ingredients/" + carrot.getId()).with(operator()))
+                .andExpect(status().isConflict());
 
-        // The other ingredient still says what it said.
-        mockMvc.perform(get("/api/v1/admin/ingredients/"
-                + JsonPath.read(borrowedFrom, "$.id").toString()).with(operator()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.alternativeNames[0].alternativeName").value("Karotte"));
-    }
-
-    private String createPublicIngredient(String name, String alternativeName) throws Exception {
-        return mockMvc.perform(post("/api/v1/admin/ingredients").with(operator())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                        {"name":"%s","alternativeNames":[
-                          {"languageIsoCode":"de","alternativeName":"%s"}]}
-                        """.formatted(name, alternativeName)))
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
+        mockMvc.perform(get("/api/v1/admin/ingredients/" + carrot.getId()).with(operator()))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void anIngredientWithoutANameIsRefused() throws Exception {
+    void ingredientsCannotBeCreatedOrChangedByAnOperator() throws Exception {
+        // They are the users' own names; reference foods are administered in the catalogue.
         mockMvc.perform(post("/api/v1/admin/ingredients").with(operator())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"name\":\"\"}"))
-                .andExpect(status().isBadRequest());
+                .content("{\"name\":\"Potato\"}"))
+                .andExpect(status().isMethodNotAllowed());
     }
 
     @Test

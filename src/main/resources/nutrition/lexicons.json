@@ -1,0 +1,819 @@
+{
+ "lexicons": [
+  {
+   "language": "de",
+   "preparationContext": [
+    "ohne Fett",
+    "mit Fett",
+    "Pfanne",
+    "Ofen",
+    "Mikrowelle",
+    "in Fett"
+   ],
+   "sparingUses": [
+    "für die Form",
+    "für die Formen",
+    "zum Einfetten",
+    "zum Bestäuben",
+    "zum Bestreuen",
+    "zum Garnieren",
+    "zum Dekorieren",
+    "zur Deko",
+    "für die Arbeitsfläche",
+    "zum Ausrollen",
+    "zur Teigverarbeitung"
+   ],
+   "states": {
+    "BAKED": [
+     "gebacken",
+     "überbacken",
+     "geröstet"
+    ],
+    "BOILED": [
+     "gekocht",
+     "pochiert",
+     "blanchiert",
+     "abgekocht",
+     "hartgekocht",
+     "weichgekocht"
+    ],
+    "CANNED": [
+     "Konserve",
+     "eingedost",
+     "Dose",
+     "Dosen"
+    ],
+    "CONCENTRATED": [
+     "konzentriert",
+     "Konzentrat"
+    ],
+    "DEEP_FRIED": [
+     "frittiert",
+     "ausgebacken"
+    ],
+    "DRIED": [
+     "getrocknet",
+     "gedörrt",
+     "Trockenprodukt"
+    ],
+    "GRILLED": [
+     "gegrillt",
+     "getoastet"
+    ],
+    "PAN_FRIED": [
+     "gebraten",
+     "angebraten"
+    ],
+    "PICKLED": [
+     "eingelegt"
+    ],
+    "POWDERED": [
+     "Pulver",
+     "pulverisiert"
+    ],
+    "RAW": [
+     "roh"
+    ],
+    "REDUCED_FAT": [
+     "fettarm",
+     "fettreduziert",
+     "entrahmt",
+     "light"
+    ],
+    "SMOKED": [
+     "geräuchert"
+    ],
+    "STEAMED": [
+     "gedämpft",
+     "druckgedämpft",
+     "geschmort"
+    ],
+    "STEWED": [
+     "gedünstet"
+    ],
+    "SWEETENED": [
+     "gezuckert",
+     "gesüßt"
+    ]
+   },
+   "units": {
+    "bag": [
+     "Beutel",
+     "Tüte/n"
+    ],
+    "ball": [
+     "Kugel",
+     "Kugel/n",
+     "Kugeln"
+    ],
+    "bar": [
+     "Tafel",
+     "Tafeln",
+     "Riegel"
+    ],
+    "bottle": [
+     "Flasche",
+     "Flaschen"
+    ],
+    "bottle-large": [
+     "gr. Flasche(n)"
+    ],
+    "bottle-small": [
+     "kl. Flasche/n",
+     "Fläschchen"
+    ],
+    "bulb": [
+     "Knolle",
+     "Knolle/n"
+    ],
+    "bunch": [
+     "Bund",
+     "Bündel",
+     "Rispe(n)"
+    ],
+    "bunch-small": [
+     "kl. Bund"
+    ],
+    "can": [
+     "Dose",
+     "Dose/n",
+     "Dosen"
+    ],
+    "can-large": [
+     "gr. Dose/n"
+    ],
+    "can-small": [
+     "kl. Dose/n"
+    ],
+    "centilitre": [
+     "cl",
+     "Zentiliter"
+    ],
+    "centimetre": [
+     "cm"
+    ],
+    "clove": [
+     "Zehe",
+     "Zehe/n",
+     "Zehen"
+    ],
+    "container": [
+     "Becher",
+     "Schälchen",
+     "Eimer",
+     "Fässchen"
+    ],
+    "cube": [
+     "Würfel"
+    ],
+    "cup-metric": [
+     "Tasse",
+     "Tasse/n",
+     "Tassen"
+    ],
+    "decilitre": [
+     "dl",
+     "Deziliter"
+    ],
+    "drop": [
+     "Tropfen"
+    ],
+    "grains": [
+     "Körner"
+    ],
+    "gram": [
+     "g",
+     "gr",
+     "gr.",
+     "Gramm"
+    ],
+    "handful": [
+     "Handvoll",
+     "Hand voll"
+    ],
+    "head": [
+     "Kopf",
+     "Köpfe",
+     "Staude(n)"
+    ],
+    "head-large": [
+     "gr. Kopf"
+    ],
+    "head-small": [
+     "kl. Kopf"
+    ],
+    "jar": [
+     "Glas",
+     "Gläser"
+    ],
+    "jar-large": [
+     "gr. Glas",
+     "gr. Gläser"
+    ],
+    "jar-small": [
+     "kl. Glas",
+     "kl. Gläser"
+    ],
+    "kilogram": [
+     "kg",
+     "Kilo",
+     "Kilogramm"
+    ],
+    "knife-tip": [
+     "Msp.",
+     "Messerspitze"
+    ],
+    "leaf": [
+     "Blatt",
+     "Blätter"
+    ],
+    "litre": [
+     "l",
+     "Liter"
+    ],
+    "milligram": [
+     "mg",
+     "Milligramm"
+    ],
+    "millilitre": [
+     "ml",
+     "Milliliter"
+    ],
+    "pack": [
+     "Pck.",
+     "Pkt.",
+     "Paket",
+     "Päckchen",
+     "Packung",
+     "Kästchen",
+     "Beet/e"
+    ],
+    "pair": [
+     "Paar"
+    ],
+    "piece": [
+     "Stück",
+     "Stück(e)",
+     "Stücke",
+     "Stk",
+     "Stk.",
+     "St.",
+     "Teil/e",
+     "Stick(s)"
+    ],
+    "piece-half": [
+     "halbe"
+    ],
+    "piece-large": [
+     "gr. Stück(e)",
+     "große",
+     "großen",
+     "großer",
+     "großes",
+     "dicke"
+    ],
+    "piece-medium": [
+     "m.-große",
+     "m.-großer",
+     "m.-großes",
+     "mittelgroße",
+     "mittelgroßer",
+     "mittelgroßes"
+    ],
+    "piece-small": [
+     "kl. Stück(e)",
+     "kleine",
+     "kleiner",
+     "kleines",
+     "kleinen",
+     "dünne"
+    ],
+    "pinch": [
+     "Prise",
+     "Prise(n)",
+     "Prisen"
+    ],
+    "portion": [
+     "Port.",
+     "Portion",
+     "Portionen"
+    ],
+    "pot": [
+     "Topf"
+    ],
+    "rib": [
+     "Rippe/n"
+    ],
+    "ring": [
+     "Ring/e"
+    ],
+    "roll": [
+     "Rolle(n)"
+    ],
+    "root": [
+     "Wurzel",
+     "Wurzel/n"
+    ],
+    "sheet": [
+     "Platte/n",
+     "Blatt Teig"
+    ],
+    "shot": [
+     "Schuss"
+    ],
+    "slice": [
+     "Scheibe",
+     "Scheibe/n",
+     "Scheiben"
+    ],
+    "slice-thick": [
+     "gr. Scheibe(n)"
+    ],
+    "slice-thin": [
+     "kl. Scheibe(n)"
+    ],
+    "splash": [
+     "Spritzer"
+    ],
+    "sprig": [
+     "Zweig",
+     "Zweig/e",
+     "Zweige",
+     "Stängel",
+     "Stiel/e",
+     "Stiele",
+     "einige Stiele"
+    ],
+    "stalk": [
+     "Stange",
+     "Stange/n",
+     "Stangen",
+     "kl. Stange(n)",
+     "Halm(e)"
+    ],
+    "strip": [
+     "Streifen"
+    ],
+    "tablespoon": [
+     "EL",
+     "Essl.",
+     "Esslöffel"
+    ],
+    "tablespoon-heaped": [
+     "EL gehäuft",
+     "gehäufter EL"
+    ],
+    "tablespoon-level": [
+     "EL gestr.",
+     "EL gestrichen",
+     "gestr. EL"
+    ],
+    "tablet": [
+     "Tablette(n)"
+    ],
+    "teaspoon": [
+     "TL",
+     "Teel.",
+     "Teelöffel"
+    ],
+    "teaspoon-heaped": [
+     "TL gehäuft",
+     "gehäufter TL"
+    ],
+    "teaspoon-level": [
+     "TL gestr.",
+     "TL gestrichen",
+     "gestr. TL"
+    ],
+    "to-taste": [
+     "etwas",
+     "n. B.",
+     "nach Belieben",
+     "nach Geschmack",
+     "einige",
+     "viel",
+     "wenig",
+     "evtl.",
+     "extra",
+     "mehr",
+     "Prozent %"
+    ],
+    "tube": [
+     "Tube/n"
+    ],
+    "wedge": [
+     "Ecke(n)"
+    ]
+   }
+  },
+  {
+   "language": "en",
+   "preparationContext": [
+    "without fat",
+    "with fat",
+    "pan",
+    "oven",
+    "microwave",
+    "in fat"
+   ],
+   "sparingUses": [
+    "for the pan",
+    "for the tin",
+    "for greasing",
+    "for dusting",
+    "for sprinkling",
+    "for garnish",
+    "to garnish",
+    "for decoration",
+    "for the work surface",
+    "for rolling out"
+   ],
+   "states": {
+    "BAKED": [
+     "baked",
+     "roasted",
+     "oven-baked"
+    ],
+    "BOILED": [
+     "boiled",
+     "cooked",
+     "poached",
+     "blanched",
+     "simmered"
+    ],
+    "CANNED": [
+     "canned",
+     "tinned"
+    ],
+    "CONCENTRATED": [
+     "concentrate",
+     "concentrated"
+    ],
+    "DEEP_FRIED": [
+     "deep-fried"
+    ],
+    "DRIED": [
+     "dried",
+     "dehydrated",
+     "sun-dried"
+    ],
+    "GRILLED": [
+     "grilled",
+     "broiled",
+     "toasted"
+    ],
+    "PAN_FRIED": [
+     "fried",
+     "pan-fried",
+     "sauteed",
+     "sautéed"
+    ],
+    "PICKLED": [
+     "pickled"
+    ],
+    "POWDERED": [
+     "powder",
+     "powdered"
+    ],
+    "RAW": [
+     "raw",
+     "uncooked"
+    ],
+    "REDUCED_FAT": [
+     "low-fat",
+     "lowfat",
+     "reduced-fat",
+     "skim",
+     "skimmed",
+     "light",
+     "lite",
+     "nonfat"
+    ],
+    "SMOKED": [
+     "smoked"
+    ],
+    "STEAMED": [
+     "steamed",
+     "braised",
+     "pressure-steamed"
+    ],
+    "STEWED": [
+     "stewed"
+    ],
+    "SWEETENED": [
+     "sweetened",
+     "sugared"
+    ]
+   },
+   "units": {
+    "bag": [
+     "bag",
+     "bags"
+    ],
+    "ball": [
+     "ball",
+     "balls"
+    ],
+    "bar": [
+     "bar",
+     "bars",
+     "stick",
+     "sticks"
+    ],
+    "bottle": [
+     "bottle",
+     "bottles"
+    ],
+    "bulb": [
+     "bulb",
+     "bulbs"
+    ],
+    "bunch": [
+     "bunch",
+     "bunches"
+    ],
+    "can": [
+     "can",
+     "cans",
+     "tin",
+     "tins"
+    ],
+    "centilitre": [
+     "cl",
+     "centilitre",
+     "centiliter"
+    ],
+    "centimetre": [
+     "cm",
+     "centimetre",
+     "centimetres",
+     "centimeter",
+     "centimeters"
+    ],
+    "clove": [
+     "clove",
+     "cloves"
+    ],
+    "container": [
+     "container",
+     "containers",
+     "tub",
+     "tubs",
+     "carton",
+     "cartons"
+    ],
+    "cube": [
+     "cube",
+     "cubes"
+    ],
+    "cup-us": [
+     "cup",
+     "cups",
+     "c."
+    ],
+    "dash": [
+     "dash",
+     "dashes"
+    ],
+    "decilitre": [
+     "dl",
+     "decilitre",
+     "deciliter"
+    ],
+    "drop": [
+     "drop",
+     "drops"
+    ],
+    "fluid-ounce": [
+     "fl oz",
+     "fl. oz.",
+     "fluid ounce",
+     "fluid ounces"
+    ],
+    "grains": [
+     "grains"
+    ],
+    "gram": [
+     "g",
+     "gram",
+     "grams",
+     "gramme",
+     "grammes"
+    ],
+    "handful": [
+     "handful",
+     "handfuls"
+    ],
+    "head": [
+     "head",
+     "heads"
+    ],
+    "inch": [
+     "inch",
+     "inches",
+     "in."
+    ],
+    "jar": [
+     "jar",
+     "jars"
+    ],
+    "kilogram": [
+     "kg",
+     "kilo",
+     "kilos",
+     "kilogram",
+     "kilograms"
+    ],
+    "leaf": [
+     "leaf",
+     "leaves"
+    ],
+    "litre": [
+     "l",
+     "litre",
+     "litres",
+     "liter",
+     "liters"
+    ],
+    "milligram": [
+     "mg",
+     "milligram",
+     "milligrams"
+    ],
+    "millilitre": [
+     "ml",
+     "millilitre",
+     "millilitres",
+     "milliliter",
+     "milliliters"
+    ],
+    "ounce": [
+     "oz",
+     "oz.",
+     "ounce",
+     "ounces"
+    ],
+    "pack": [
+     "pack",
+     "packs",
+     "package",
+     "packages",
+     "packet",
+     "packets"
+    ],
+    "pair": [
+     "pair",
+     "pairs"
+    ],
+    "piece": [
+     "piece",
+     "pieces",
+     "pc",
+     "pcs",
+     "whole"
+    ],
+    "piece-half": [
+     "half"
+    ],
+    "piece-large": [
+     "large",
+     "big"
+    ],
+    "piece-medium": [
+     "medium"
+    ],
+    "piece-small": [
+     "small"
+    ],
+    "pinch": [
+     "pinch",
+     "pinches"
+    ],
+    "pint-us": [
+     "pint",
+     "pints",
+     "pt"
+    ],
+    "portion": [
+     "portion",
+     "portions",
+     "serving",
+     "servings"
+    ],
+    "pot": [
+     "pot",
+     "pots"
+    ],
+    "pound": [
+     "lb",
+     "lb.",
+     "lbs",
+     "pound",
+     "pounds"
+    ],
+    "rib": [
+     "rib",
+     "ribs"
+    ],
+    "ring": [
+     "ring",
+     "rings"
+    ],
+    "roll": [
+     "roll",
+     "rolls"
+    ],
+    "root": [
+     "root",
+     "roots"
+    ],
+    "sheet": [
+     "sheet",
+     "sheets"
+    ],
+    "shot": [
+     "shot",
+     "shots"
+    ],
+    "slice": [
+     "slice",
+     "slices"
+    ],
+    "slice-thick": [
+     "thick slice",
+     "thick slices"
+    ],
+    "slice-thin": [
+     "thin slice",
+     "thin slices"
+    ],
+    "splash": [
+     "splash",
+     "splashes"
+    ],
+    "sprig": [
+     "sprig",
+     "sprigs"
+    ],
+    "stalk": [
+     "stalk",
+     "stalks",
+     "stick of celery"
+    ],
+    "strip": [
+     "strip",
+     "strips"
+    ],
+    "tablespoon": [
+     "tbsp",
+     "tbsp.",
+     "tbs",
+     "tablespoon",
+     "tablespoons"
+    ],
+    "tablespoon-heaped": [
+     "heaped tablespoon",
+     "heaping tablespoon",
+     "heaped tbsp"
+    ],
+    "tablespoon-level": [
+     "level tablespoon",
+     "level tbsp"
+    ],
+    "tablet": [
+     "tablet",
+     "tablets"
+    ],
+    "teaspoon": [
+     "tsp",
+     "tsp.",
+     "teaspoon",
+     "teaspoons"
+    ],
+    "teaspoon-heaped": [
+     "heaped teaspoon",
+     "heaping teaspoon",
+     "heaped tsp"
+    ],
+    "teaspoon-level": [
+     "level teaspoon",
+     "level tsp"
+    ],
+    "to-taste": [
+     "to taste",
+     "some",
+     "as needed",
+     "optional"
+    ],
+    "tube": [
+     "tube",
+     "tubes"
+    ],
+    "wedge": [
+     "wedge",
+     "wedges"
+    ]
+   }
+  }
+ ]
+}

@@ -27,9 +27,12 @@ import lombok.extern.slf4j.Slf4j;
 public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
 
     private final RecipeScraperServiceProxy recipeScraperServiceProxy;
+    private final IngredientExtractor ingredientExtractor;
 
-    public RecipeScrapersWebserviceImporter(RecipeScraperServiceProxy recipeScraperServiceProxy) {
+    public RecipeScrapersWebserviceImporter(RecipeScraperServiceProxy recipeScraperServiceProxy,
+            IngredientExtractor ingredientExtractor) {
         this.recipeScraperServiceProxy = recipeScraperServiceProxy;
+        this.ingredientExtractor = ingredientExtractor;
     }
 
     @Override
@@ -92,10 +95,10 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
 
     private void extractIngredients(ScrapedRecipe scrapedRecipe, Recipe importRecipe, CookpalUser owner) {
         var needs = scrapedRecipe.ingredients.stream().map(ingredient -> {
-            var unit = IngredientExtractor.extractUnit(ingredient);
-            var amount = IngredientExtractor.extractAmount(ingredient);
-            var name = IngredientExtractor.extractName(ingredient);
-            var additionalInfo = IngredientExtractor.extractAdditionalInfo(ingredient);
+            var unit = ingredientExtractor.extractUnit(ingredient);
+            var amount = ingredientExtractor.extractAmount(ingredient);
+            var name = ingredientExtractor.extractName(ingredient);
+            var additionalInfo = ingredientExtractor.extractAdditionalInfo(ingredient);
 
             var newIngredient = Ingredient.builder()
                     .name(name)

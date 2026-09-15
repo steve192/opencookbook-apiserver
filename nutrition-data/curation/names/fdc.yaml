@@ -1,0 +1,350 @@
+# Names for FDC Foundation foods that entered the catalogue as new foods. FDC describes foods in
+# English only, so German names are always curated. The first name per language is the display name.
+
+fdc-330137:
+  de: ["Griechischer Joghurt, fettfrei", Griechischer Joghurt 0 %]
+  en: ["Greek yogurt, nonfat", nonfat Greek yogurt, fat-free Greek yogurt]
+fdc-2259794:
+  de: [Griechischer Joghurt, Joghurt griechischer Art, Griechischer Sahnejoghurt]
+  en: [Greek yogurt, Greek-style yogurt, whole milk Greek yogurt]
+fdc-332282:
+  de: [Pastasauce Marinara, Marinara-Sauce, Tomaten-Pastasauce]
+  en: [Marinara sauce, pasta sauce, spaghetti sauce]
+fdc-2685579:
+  de: [Tomatensauce aus der Dose, Tomatensoße aus der Dose, Tomatensoße, Tomatensauce]
+  en: [Tomato sauce, canned tomato sauce]
+fdc-746777:
+  de: [Salsa, Tomatensalsa, Salsa-Dip]
+  en: [Salsa, tomato salsa]
+fdc-746765:
+  de: [Queso seco]
+  en: [Queso seco, dry white cheese]
+fdc-2647442:
+  de: [Queso fresco]
+  en: [Queso fresco]
+fdc-2647443:
+  de: [Cotija, Cotija-Käse]
+  en: [Cotija, cotija cheese]
+fdc-746779:
+  de: [Frühstückswürstchen vom Rind, Breakfast Sausage vom Rind]
+  en: [Beef breakfast sausage]
+fdc-746783:
+  de: [Frühstückswürstchen von der Pute, Breakfast Sausage von der Pute]
+  en: [Turkey breakfast sausage]
+fdc-746780:
+  de: [Salsiccia, Italienische Bratwurst]
+  en: [Italian sausage, Italian pork sausage]
+fdc-746781:
+  de: [Chorizo]
+  en: [Chorizo, pork chorizo]
+fdc-2514746:
+  de: [Hähnchenhackfleisch, Hähnchenhack, Hühnerhackfleisch]
+  en: [Ground chicken, chicken mince, minced chicken]
+fdc-2514747:
+  de: [Putenhackfleisch, Putenhack, Truthahnhackfleisch]
+  en: [Ground turkey, turkey mince, minced turkey]
+fdc-2727570:
+  de: [Lammhackfleisch, Lammhack, Hackfleisch vom Lamm]
+  en: [Ground lamb, lamb mince, minced lamb]
+fdc-2727571:
+  de: [Bisonhackfleisch, Bisonhack]
+  en: [Ground bison, bison mince]
+fdc-2644285:
+  de: [Schwarze Bohnen aus der Dose, Schwarze Bohnen, Black Beans]
+  en: [Black beans, canned black beans]
+fdc-1104705:
+  de: [Sojamehl entfettet, entöltes Sojamehl]
+  en: [Defatted soy flour]
+fdc-2512372:
+  de: [Quinoamehl]
+  en: [Quinoa flour]
+fdc-2512373:
+  de: [Sorghummehl, Hirsemehl aus Sorghum]
+  en: [Sorghum flour]
+fdc-2710840:
+  de: ["Sorghummehl, geschält"]
+  en: [Pearled sorghum flour]
+fdc-2710841:
+  de: ["Sorghum, geschält", Sorghumhirse geschält]
+  en: [Pearled sorghum]
+fdc-2710842:
+  de: [Sorghum, Sorghumhirse, Mohrenhirse]
+  en: [Sorghum, whole grain sorghum]
+fdc-2710839:
+  de: [Sorghumkleie]
+  en: [Sorghum bran]
+fdc-2512377:
+  de: [Maniokmehl, Cassavamehl]
+  en: [Cassava flour, manioc flour]
+fdc-2515382:
+  de: [Kokosmehl]
+  en: [Coconut flour]
+fdc-2710835:
+  de: [Masa Harina, Maismehl für Tortillas]
+  en: [Masa harina, corn masa flour]
+fdc-2710825:
+  de: [Schwarzer Reis, Venere-Reis]
+  en: [Black rice, forbidden rice]
+fdc-2710838:
+  de: [Roter Reis]
+  en: [Red rice]
+fdc-2710829:
+  de: [Fonio]
+  en: [Fonio]
+fdc-2710830:
+  de: [Khorasan-Weizen, Kamut]
+  en: [Khorasan wheat, Kamut]
+fdc-1999626:
+  de: [Igelstachelbart, Pom-Pom-Pilz]
+  en: [Lion's mane mushroom]
+fdc-2003599:
+  de: [Kräuterseitling, Königsausternpilz]
+  en: [King oyster mushroom, king trumpet mushroom]
+fdc-2003600:
+  de: [Enoki, Enokipilz, Samtfußrübling]
+  en: [Enoki mushroom, enokitake]
+fdc-2003602:
+  de: [Maitake, Klapperschwamm]
+  en: [Maitake mushroom, hen of the woods]
+fdc-2003603:
+  de: [Buchenpilz, Shimeji]
+  en: [Beech mushroom, shimeji]
+fdc-2003604:
+  de: [Pioppino, Südlicher Ackerling]
+  en: [Pioppini mushroom, pioppino]
+fdc-2685574:
+  de: [Blattkohl, Collard Greens]
+  en: [Collard greens, collards]
+fdc-2747653:
+  de: [Rübenblätter, Rote-Bete-Blätter]
+  en: [Beet greens, beet leaves]
+fdc-2747660:
+  de: [Pfefferoni, Bananenpaprika, Wachspaprika]
+  en: [Banana pepper, Hungarian wax pepper]
+fdc-2747662:
+  de: [Poblano, Poblano-Chili]
+  en: [Poblano pepper, poblano]
+fdc-2346414:
+  de: [Apfelmus ungesüßt, Apfelmark ungesüßt]
+  en: [Unsweetened applesauce, applesauce]
+fdc-2003594:
+  de: [Cranberrysaft, Cranberry-Saft]
+  en: [Cranberry juice]
+fdc-2684442:
+  de: [Tilapia, Buntbarsch]
+  en: [Tilapia]
+fdc-2684446:
+  de: [Krabbenfleisch, Blaukrabbenfleisch]
+  en: [Crab meat, lump crab meat, blue crab]
+fdc-2747658:
+  de: [Mahi-Mahi, Goldmakrele]
+  en: [Mahi mahi, dolphinfish]
+fdc-2747668:
+  de: [Schwarzer Seehecht, Chilenischer Seebarsch]
+  en: [Chilean sea bass, Patagonian toothfish]
+fdc-2747669:
+  de: [Schnapper, Red Snapper]
+  en: [Snapper, red snapper]
+fdc-2747670:
+  de: [Schneekrabbe, Schneekrabbenbeine]
+  en: [Snow crab, snow crab legs]
+
+# SR Legacy herbs, spices and baking ingredients BLS lacks (inclusion.yaml).
+fdc-168573:
+  de: [Zitronengras]
+  en: [Lemongrass, lemon grass]
+fdc-169997:
+  de: [Koriandergrün, Koriander frisch, Koriander, frischer Koriander, Korianderblätter]
+  en: [Cilantro, fresh coriander, coriander leaves]
+fdc-170917:
+  de: [Lorbeerblatt, Lorbeerblätter, Lorbeer]
+  en: [Bay leaf, bay leaves]
+fdc-170918:
+  de: [Kümmel, Kümmelsamen, Kümmel ganz]
+  en: [Caraway seed, caraway]
+fdc-170919:
+  de: [Kardamom, Kardamom gemahlen]
+  en: [Cardamom]
+fdc-170920:
+  de: [Selleriesamen, Selleriesaat]
+  en: [Celery seed]
+fdc-170921:
+  de: [Koriandergrün getrocknet, Koriander getrocknet]
+  en: ["Coriander leaf, dried", dried cilantro]
+fdc-170922:
+  de: [Koriandersamen, Koriander gemahlen, Korianderpulver]
+  en: [Coriander seed, ground coriander]
+fdc-170923:
+  de: [Kreuzkümmel, Cumin, Kreuzkümmel gemahlen]
+  en: [Cumin, cumin seed, ground cumin]
+fdc-170924:
+  de: [Currypulver, Curry]
+  en: [Curry powder]
+fdc-170925:
+  de: [Dillsamen]
+  en: [Dill seed]
+fdc-170926:
+  de: [Ingwer gemahlen, Ingwerpulver]
+  en: ["Ginger, ground", ground ginger, ginger powder]
+fdc-170927:
+  de: [Muskatblüte, Macis]
+  en: [Mace]
+fdc-170928:
+  de: [Majoran getrocknet, Majoran]
+  en: ["Marjoram, dried", marjoram]
+fdc-170929:
+  de: [Senfsaat gemahlen, Senfmehl, Senfpulver]
+  en: ["Mustard seed, ground", mustard powder]
+fdc-170932:
+  de: [Cayennepfeffer, Chilipulver scharf, Cayenne, Chiliflocken, Chili geschrotet]
+  en: [Cayenne pepper, cayenne, red pepper flakes, chili flakes]
+fdc-170933:
+  de: [Pfeffer weiß, weißer Pfeffer]
+  en: ["Pepper, white", white pepper]
+fdc-170934:
+  de: [Safran]
+  en: [Saffron]
+fdc-170935:
+  de: [Salbei getrocknet, Salbei gemahlen, Salbei]
+  en: ["Sage, ground", sage]
+fdc-170936:
+  de: [Bohnenkraut getrocknet, Bohnenkraut]
+  en: ["Savory, ground", savory]
+fdc-170937:
+  de: [Estragon getrocknet, Estragon]
+  en: ["Tarragon, dried", tarragon]
+fdc-170938:
+  de: [Thymian getrocknet, getrockneter Thymian]
+  en: ["Thyme, dried", dried thyme]
+fdc-171315:
+  de: [Piment, Piment gemahlen, Nelkenpfeffer]
+  en: [Allspice, ground allspice]
+fdc-171316:
+  de: [Anis, Anissamen]
+  en: [Anise seed, aniseed]
+fdc-171318:
+  de: [Kerbel getrocknet, Kerbel]
+  en: ["Chervil, dried", chervil]
+fdc-171319:
+  de: [Chilipulver, Chiligewürz]
+  en: [Chili powder]
+fdc-171320:
+  de: [Zimt, Zimt gemahlen, Zimtpulver]
+  en: [Cinnamon, ground cinnamon]
+fdc-171321:
+  de: [Gewürznelken gemahlen, Nelken gemahlen, Gewürznelken, Nelken]
+  en: ["Cloves, ground", cloves]
+fdc-171322:
+  de: [Dill getrocknet, Dillspitzen getrocknet]
+  en: ["Dill weed, dried", dried dill]
+fdc-171323:
+  de: [Fenchelsamen, Fenchelsaat]
+  en: [Fennel seed]
+fdc-171324:
+  de: [Bockshornklee, Bockshornkleesamen]
+  en: [Fenugreek seed, fenugreek]
+fdc-171326:
+  de: [Muskatnuss, Muskat, Muskatnuss gemahlen]
+  en: [Nutmeg, ground nutmeg]
+fdc-171328:
+  de: [Oregano getrocknet, Oregano]
+  en: ["Oregano, dried", oregano]
+fdc-171329:
+  de: [Paprikapulver, Paprika edelsüß, Paprika rosenscharf, Paprikagewürz]
+  en: [Paprika, paprika powder]
+fdc-171331:
+  de: [Geflügelgewürz]
+  en: [Poultry seasoning]
+fdc-171332:
+  de: [Pumpkin-Pie-Gewürz, Kürbiskuchengewürz]
+  en: [Pumpkin pie spice]
+fdc-171333:
+  de: [Rosmarin getrocknet, getrockneter Rosmarin]
+  en: ["Rosemary, dried", dried rosemary]
+fdc-171579:
+  de: [Pesto, Basilikumpesto, Pesto alla Genovese, grünes Pesto]
+  en: [Pesto, basil pesto, pesto sauce]
+fdc-172231:
+  de: [Kurkuma, Kurkuma gemahlen, Gelbwurz]
+  en: [Turmeric, ground turmeric]
+fdc-172233:
+  de: [Dill, Dill frisch, frischer Dill, Dillspitzen]
+  en: [Dill, fresh dill, dill weed]
+fdc-172235:
+  de: ["Vanilleextrakt, künstlich, mit Alkohol"]
+  en: ["Vanilla extract, imitation, alcohol"]
+fdc-172236:
+  de: ["Vanilleextrakt, künstlich, ohne Alkohol"]
+  en: ["Vanilla extract, imitation, no alcohol"]
+fdc-172239:
+  de: [Minze getrocknet, Grüne Minze getrocknet]
+  en: ["Spearmint, dried", dried mint]
+fdc-172242:
+  de: [Sazón-Gewürzmischung]
+  en: ["Seasoning mix, sazon", sazon seasoning]
+fdc-172243:
+  de: [Taco-Gewürzmischung, Tacogewürz]
+  en: [Taco seasoning, taco seasoning mix]
+fdc-173471:
+  de: [Vanilleextrakt, Vanille-Extrakt]
+  en: [Vanilla extract]
+fdc-173470:
+  de: [Thymian, Thymian frisch, frischer Thymian]
+  en: [Thyme, fresh thyme]
+fdc-173473:
+  de: [Rosmarin, Rosmarin frisch, frischer Rosmarin]
+  en: [Rosemary, fresh rosemary]
+fdc-173474:
+  de: [Pfefferminze, Pfefferminze frisch]
+  en: [Peppermint, fresh peppermint]
+fdc-173475:
+  de: [Minze, Minze frisch, frische Minze, Grüne Minze]
+  en: [Mint, spearmint, fresh mint]
+fdc-173476:
+  de: [Chili-Gewürzmischung]
+  en: [Chili seasoning mix]
+fdc-175040:
+  de: [Natron, Backnatron, Speisenatron]
+  en: [Baking soda, bicarbonate of soda]
+fdc-174529:
+  de: [Austernsauce, Austernsoße]
+  en: [Oyster sauce]
+fdc-171610:
+  de: [Worcestersauce, Worcestershiresauce, Worcestersoße]
+  en: [Worcestershire sauce]
+fdc-172886:
+  de: [Hoisinsauce, Hoisin-Sauce, Hoisinsoße]
+  en: [Hoisin sauce]
+fdc-174531:
+  de: [Fischsauce, Fischsoße]
+  en: [Fish sauce]
+fdc-171186:
+  de: [Sriracha, Srirachasauce, Sriracha-Sauce]
+  en: [Sriracha, sriracha sauce]
+fdc-167723:
+  de: [Sake, Reiswein]
+  en: [Sake, rice wine]
+fdc-171583:
+  de: [Gemüsebrühe, Gemüsefond]
+  en: [Vegetable broth, vegetable stock]
+fdc-174536:
+  de: [Hühnerbrühe, Hühnerfond, Geflügelbrühe, Hühnersuppe]
+  en: [Chicken broth, chicken stock]
+fdc-174528:
+  de: [Tabasco, Tabascosauce]
+  en: [Tabasco, Tabasco sauce]
+fdc-174278:
+  de: [Tamari, Tamari-Sojasauce]
+  en: [Tamari]
+fdc-171249:
+  de: [Pecorino, Pecorino Romano]
+  en: [Pecorino, Romano cheese]
+fdc-174913:
+  de: [Ciabatta, italienisches Weißbrot]
+  en: [Ciabatta, Italian bread]
+fdc-172094:
+  de: [Tortellini, Käsetortellini]
+  en: [Tortellini, cheese tortellini]
+fdc-173471:
+  de: [Vanilleextrakt]
+  en: [Vanilla extract]

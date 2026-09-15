@@ -1,0 +1,90 @@
+# Language-neutral units. Words for them live in lexicon/<language>.yaml.
+#
+# kind:
+#   MASS    grams = amount * grams
+#   VOLUME  millilitres = amount * millilitres; grams need the food's density
+#   COUNT   grams from the food's portion for this unit; `sizeOf` scales another unit's portion.
+#           `typicalGrams`/`typicalMillilitres`: fallback for foods without a portion, flagged. Only for
+#           containers of stable size; packs, bags and cubes get per-food weights in portions.yaml.
+#   PINCH   a small, fixed amount of grams regardless of the food
+#   VAGUE   no quantity at all ("to taste")
+units:
+  gram: { kind: MASS, grams: 1 }
+  kilogram: { kind: MASS, grams: 1000 }
+  milligram: { kind: MASS, grams: 0.001 }
+  ounce: { kind: MASS, grams: 28.3495 }
+  pound: { kind: MASS, grams: 453.592 }
+
+  millilitre: { kind: VOLUME, millilitres: 1 }
+  centilitre: { kind: VOLUME, millilitres: 10 }
+  decilitre: { kind: VOLUME, millilitres: 100 }
+  litre: { kind: VOLUME, millilitres: 1000 }
+  tablespoon: { kind: VOLUME, millilitres: 15 }
+  tablespoon-level: { kind: VOLUME, millilitres: 12 }
+  tablespoon-heaped: { kind: VOLUME, millilitres: 20 }
+  teaspoon: { kind: VOLUME, millilitres: 5 }
+  teaspoon-level: { kind: VOLUME, millilitres: 4 }
+  teaspoon-heaped: { kind: VOLUME, millilitres: 7 }
+  cup-metric: { kind: VOLUME, millilitres: 250 }
+  cup-us: { kind: VOLUME, millilitres: 240 }
+  fluid-ounce: { kind: VOLUME, millilitres: 29.5735 }
+  pint-us: { kind: VOLUME, millilitres: 473.176 }
+  shot: { kind: VOLUME, millilitres: 20 }
+
+  piece: { kind: COUNT }
+  piece-small: { kind: COUNT, sizeOf: piece, factor: 0.7 }
+  piece-medium: { kind: COUNT, sizeOf: piece, factor: 1.0 }
+  piece-large: { kind: COUNT, sizeOf: piece, factor: 1.3 }
+  piece-half: { kind: COUNT, sizeOf: piece, factor: 0.5 }
+  clove: { kind: COUNT }
+  bunch: { kind: COUNT }
+  bunch-small: { kind: COUNT, sizeOf: bunch, factor: 0.7 }
+  slice: { kind: COUNT }
+  slice-thick: { kind: COUNT, sizeOf: slice, factor: 1.5 }
+  slice-thin: { kind: COUNT, sizeOf: slice, factor: 0.6 }
+  leaf: { kind: COUNT }
+  sprig: { kind: COUNT }
+  stalk: { kind: COUNT }
+  head: { kind: COUNT }
+  head-small: { kind: COUNT, sizeOf: head, factor: 0.7 }
+  head-large: { kind: COUNT, sizeOf: head, factor: 1.3 }
+  bulb: { kind: COUNT }
+  root: { kind: COUNT }
+  can: { kind: COUNT, typicalGrams: 400 }
+  can-small: { kind: COUNT, sizeOf: can, factor: 0.5 }
+  can-large: { kind: COUNT, sizeOf: can, factor: 2.0 }
+  jar: { kind: COUNT, typicalGrams: 350 }
+  jar-small: { kind: COUNT, sizeOf: jar, factor: 0.5 }
+  jar-large: { kind: COUNT, sizeOf: jar, factor: 2.0 }
+  bottle: { kind: COUNT, typicalMillilitres: 700 }
+  bottle-small: { kind: COUNT, sizeOf: bottle, factor: 0.5 }
+  bottle-large: { kind: COUNT, sizeOf: bottle, factor: 2.0 }
+  container: { kind: COUNT, typicalGrams: 200 }
+  pack: { kind: COUNT }
+  bag: { kind: COUNT }
+  cube: { kind: COUNT }
+  bar: { kind: COUNT, typicalGrams: 100 }
+  roll: { kind: COUNT }
+  sheet: { kind: COUNT }
+  tube: { kind: COUNT, typicalGrams: 150 }
+  pot: { kind: COUNT }
+  wedge: { kind: COUNT }
+  ball: { kind: COUNT }
+  ring: { kind: COUNT }
+  rib: { kind: COUNT }
+  strip: { kind: COUNT }
+  tablet: { kind: COUNT }
+  portion: { kind: COUNT }
+  pair: { kind: COUNT, sizeOf: piece, factor: 2.0 }
+  handful: { kind: COUNT }
+  grains: { kind: COUNT }
+  centimetre: { kind: COUNT }
+  inch: { kind: COUNT, sizeOf: centimetre, factor: 2.54 }
+
+  pinch: { kind: PINCH, grams: 0.4 }
+  knife-tip: { kind: PINCH, grams: 0.5 }
+  dash: { kind: PINCH, grams: 0.6 }
+  splash: { kind: PINCH, grams: 1 }
+  drop: { kind: PINCH, grams: 0.05 }
+
+  to-taste: { kind: VAGUE }

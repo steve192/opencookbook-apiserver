@@ -1,0 +1,20 @@
+[
+ {
+  "source": "BLS",
+  "release": "4.0 (2025)",
+  "file": "BLS_4_0_2025_DE.zip",
+  "sha256": "12b7a6ba62807ec9b301eb276f897dc85f99b2292311618dec3749a12d984c91"
+ },
+ {
+  "source": "FDC",
+  "release": "foundation 2026-04-30",
+  "file": "FoodData_Central_foundation_food_json_2026-04-30.zip",
+  "sha256": "186e988ec542e913f51ef62b86a47758e8cdd0d1dc3889e7b055581f3c09c77a"
+ },
+ {
+  "source": "FDC",
+  "release": "sr legacy 2018-04",
+  "file": "FoodData_Central_sr_legacy_food_json_2018-04.zip",
+  "sha256": "0fe8ae486a2c8eb42cb96413f058deb51863a46c8fb8eeb4b1fb45006dd338ef"
+ }
+]
