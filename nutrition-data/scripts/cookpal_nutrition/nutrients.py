@@ -112,7 +112,8 @@ def _fdc_available_carbohydrates(row: dict[str, str], fibre: float | None) -> fl
     by_difference = number(row["carbohydrate_by_difference"])
     if by_difference is None:
         return None
-    return max(0.0, by_difference - (fibre or 0.0))
+    # Rounded like protein: the subtraction would otherwise ship float noise such as 2.5999999999999943.
+    return round(max(0.0, by_difference - (fibre or 0.0)), 3)
 
 
 def _composition(protein, carbohydrates, fat, food, **optional) -> Composition:

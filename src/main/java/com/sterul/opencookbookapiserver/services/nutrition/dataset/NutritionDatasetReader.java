@@ -24,8 +24,11 @@ public class NutritionDatasetReader {
             .disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
             .build();
 
+    /** Read once: every nutrition sheet carries its attributions. */
+    private final NutritionDataset.Manifest manifest = read("manifest.json", NutritionDataset.Manifest.class);
+
     public NutritionDataset.Manifest manifest() {
-        return read("manifest.json", NutritionDataset.Manifest.class);
+        return manifest;
     }
 
     public NutritionDataset.Catalogue catalogue() {

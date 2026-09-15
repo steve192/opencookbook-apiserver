@@ -1,6 +1,5 @@
 package com.sterul.opencookbookapiserver.services.nutrition.calculation;
 
-import java.util.EnumSet;
 import java.util.Set;
 
 /**
@@ -10,7 +9,7 @@ import java.util.Set;
 public record AmountInGrams(LineStatus status, Double grams, Set<LineFlag> flags, boolean ownPortion) {
 
     public AmountInGrams {
-        flags = flags.isEmpty() ? Set.of() : Set.copyOf(EnumSet.copyOf(flags));
+        flags = Set.copyOf(flags);
     }
 
     static AmountInGrams resolved(double grams, Set<LineFlag> flags) {

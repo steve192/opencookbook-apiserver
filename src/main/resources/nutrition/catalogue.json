@@ -155852,7 +155852,7 @@
     }
    ],
    "nutrients": {
-    "carbohydrates": 0.8700000000000001,
+    "carbohydrates": 0.87,
     "energyKcal": 22.3,
     "energyKj": 92.6,
     "fat": 0.52,
@@ -155954,7 +155954,7 @@
    ],
    "negligible": true,
    "nutrients": {
-    "carbohydrates": 11.899999999999999,
+    "carbohydrates": 11.9,
     "energyKcal": 334.2,
     "energyKj": 1383.1,
     "fat": 14.6,
@@ -156030,7 +156030,7 @@
    ],
    "negligible": true,
    "nutrients": {
-    "carbohydrates": 29.599999999999998,
+    "carbohydrates": 29.6,
     "energyKcal": 442.1,
     "energyKj": 1841.4,
     "fat": 25.3,
@@ -156123,7 +156123,7 @@
    ],
    "negligible": true,
    "nutrients": {
-    "carbohydrates": 13.100000000000001,
+    "carbohydrates": 13.1,
     "energyKcal": 346.0,
     "energyKj": 1427.3,
     "fat": 17.8,
@@ -156214,7 +156214,7 @@
    ],
    "negligible": true,
    "nutrients": {
-    "carbohydrates": 2.5999999999999943,
+    "carbohydrates": 2.6,
     "energyKcal": 300.6,
     "energyKj": 1233.7,
     "fat": 14.0,
@@ -156222,7 +156222,7 @@
     "protein": 14.462,
     "salt": 0.13,
     "saturatedFat": 1.65,
-    "sugar": 2.5999999999999943
+    "sugar": 2.6
    },
    "source": {
     "code": "170924",
@@ -156298,7 +156298,7 @@
    ],
    "negligible": true,
    "nutrients": {
-    "carbohydrates": 57.49999999999999,
+    "carbohydrates": 57.5,
     "energyKcal": 332.3,
     "energyKj": 1399.8,
     "fat": 4.24,
@@ -156378,7 +156378,7 @@
    ],
    "negligible": true,
    "nutrients": {
-    "carbohydrates": 20.300000000000004,
+    "carbohydrates": 20.3,
     "energyKcal": 276.0,
     "energyKj": 1143.9,
     "fat": 7.04,
@@ -156429,7 +156429,7 @@
    ],
    "negligible": true,
    "nutrients": {
-    "carbohydrates": 15.900000000000002,
+    "carbohydrates": 15.9,
     "energyKcal": 534.6,
     "energyKj": 2220.8,
     "fat": 36.2,
@@ -156497,7 +156497,7 @@
    ],
    "negligible": true,
    "nutrients": {
-    "carbohydrates": 29.400000000000002,
+    "carbohydrates": 29.4,
     "energyKcal": 375.7,
     "energyKj": 1561.5,
     "fat": 17.3,
@@ -156540,7 +156540,7 @@
    ],
    "negligible": true,
    "nutrients": {
-    "carbohydrates": 42.39999999999999,
+    "carbohydrates": 42.4,
     "energyKcal": 289.7,
     "energyKj": 1215.4,
     "fat": 2.12,
@@ -156572,7 +156572,7 @@
    ],
    "negligible": true,
    "nutrients": {
-    "carbohydrates": 61.50000000000001,
+    "carbohydrates": 61.5,
     "energyKcal": 352.1,
     "energyKj": 1487.0,
     "fat": 5.85,
@@ -156619,7 +156619,7 @@
    ],
    "negligible": true,
    "nutrients": {
-    "carbohydrates": 20.400000000000006,
+    "carbohydrates": 20.4,
     "energyKcal": 319.8,
     "energyKj": 1323.0,
     "fat": 12.8,
@@ -156705,7 +156705,7 @@
    ],
    "negligible": true,
    "nutrients": {
-    "carbohydrates": 42.800000000000004,
+    "carbohydrates": 42.8,
     "energyKcal": 342.4,
     "energyKj": 1442.3,
     "fat": 7.24,
@@ -156897,7 +156897,7 @@
    ],
    "negligible": true,
    "nutrients": {
-    "carbohydrates": 50.49999999999999,
+    "carbohydrates": 50.5,
     "energyKcal": 347.8,
     "energyKj": 1456.4,
     "fat": 8.69,
@@ -157028,7 +157028,7 @@
    ],
    "negligible": true,
    "nutrients": {
-    "carbohydrates": 14.900000000000006,
+    "carbohydrates": 14.9,
     "energyKcal": 311.9,
     "energyKj": 1290.3,
     "fat": 14.3,
@@ -157079,7 +157079,7 @@
    ],
    "negligible": true,
    "nutrients": {
-    "carbohydrates": 27.499999999999993,
+    "carbohydrates": 27.5,
     "energyKcal": 243.3,
     "energyKj": 1006.0,
     "fat": 1.24,
@@ -157175,7 +157175,7 @@
    ],
    "negligible": true,
    "nutrients": {
-    "carbohydrates": 42.199999999999996,
+    "carbohydrates": 42.2,
     "energyKcal": 315.2,
     "energyKj": 1327.5,
     "fat": 4.36,
@@ -157307,7 +157307,7 @@
    ],
    "negligible": true,
    "nutrients": {
-    "carbohydrates": 28.499999999999996,
+    "carbohydrates": 28.5,
     "energyKcal": 509.8,
     "energyKj": 2111.1,
     "fat": 36.3,
@@ -157350,7 +157350,7 @@
    ],
    "negligible": true,
    "nutrients": {
-    "carbohydrates": 26.400000000000006,
+    "carbohydrates": 26.4,
     "energyKcal": 265.1,
     "energyKj": 1100.2,
     "fat": 4.28,
@@ -157520,7 +157520,7 @@
    ],
    "negligible": true,
    "nutrients": {
-    "carbohydrates": 21.499999999999993,
+    "carbohydrates": 21.5,
     "energyKcal": 327.5,
     "energyKj": 1351.7,
     "fat": 15.2,
@@ -157580,7 +157580,7 @@
     }
    ],
    "nutrients": {
-    "carbohydrates": 8.299999999999999,
+    "carbohydrates": 8.3,
     "energyKcal": 414.5,
     "energyKj": 1713.8,
     "fat": 37.6,
@@ -157766,7 +157766,7 @@
    ],
    "negligible": true,
    "nutrients": {
-    "carbohydrates": 44.39999999999999,
+    "carbohydrates": 44.4,
     "energyKcal": 291.0,
     "energyKj": 1221.2,
     "fat": 3.25,
@@ -158064,8 +158064,8 @@
     }
    ],
    "nutrients": {
-    "carbohydrates": 41.300000000000004,
-    "energyKcal": 214.6,
+    "carbohydrates": 41.3,
+    "energyKcal": 214.5,
     "energyKj": 906.2,
     "fat": 3.39,
     "fibre": 2.8,
@@ -158111,7 +158111,7 @@
    ],
    "negligible": true,
    "nutrients": {
-    "carbohydrates": 10.399999999999999,
+    "carbohydrates": 10.4,
     "energyKcal": 107.0,
     "energyKj": 445.5,
     "fat": 1.68,
@@ -158298,7 +158298,7 @@
    ],
    "negligible": true,
    "nutrients": {
-    "carbohydrates": 1.6100000000000003,
+    "carbohydrates": 1.61,
     "energyKcal": 39.8,
     "energyKj": 164.7,
     "fat": 0.73,
@@ -158380,7 +158380,7 @@
     }
    ],
    "nutrients": {
-    "carbohydrates": 0.20000000000000007,
+    "carbohydrates": 0.2,
     "energyKcal": 14.0,
     "energyKj": 58.2,
     "fat": 0.76,
@@ -158764,7 +158764,7 @@
     }
    ],
    "nutrients": {
-    "carbohydrates": 5.200000000000001,
+    "carbohydrates": 5.2,
     "energyKcal": 38.6,
     "energyKj": 162.1,
     "fat": 0.245,
@@ -158846,7 +158846,7 @@
     }
    ],
    "nutrients": {
-    "carbohydrates": 3.6199999999999997,
+    "carbohydrates": 3.62,
     "energyKcal": 33.5,
     "energyKj": 140.4,
     "fat": 0.449,
@@ -159046,7 +159046,7 @@
     }
    ],
    "nutrients": {
-    "carbohydrates": 71.38000000000001,
+    "carbohydrates": 71.38,
     "energyKcal": 365.4,
     "energyKj": 1545.3,
     "fat": 3.59,
@@ -159220,7 +159220,7 @@
     }
    ],
    "nutrients": {
-    "carbohydrates": 24.699999999999996,
+    "carbohydrates": 24.7,
     "energyKcal": 380.9,
     "energyKj": 1582.6,
     "fat": 15.3,
@@ -159464,7 +159464,7 @@
     }
    ],
    "nutrients": {
-    "carbohydrates": 3.1999999999999997,
+    "carbohydrates": 3.2,
     "energyKcal": 39.2,
     "energyKj": 163.9,
     "fat": 0.77,
@@ -159559,8 +159559,8 @@
     }
    ],
    "nutrients": {
-    "carbohydrates": 73.02000000000001,
-    "energyKcal": 361.7,
+    "carbohydrates": 73.02,
+    "energyKcal": 361.6,
     "energyKj": 1530.6,
     "fat": 3.44,
     "fibre": 4.18,
@@ -160067,7 +160067,7 @@
     }
    ],
    "nutrients": {
-    "carbohydrates": 3.1799999999999997,
+    "carbohydrates": 3.18,
     "energyKcal": 20.4,
     "energyKj": 85.6,
     "fat": 0.131,

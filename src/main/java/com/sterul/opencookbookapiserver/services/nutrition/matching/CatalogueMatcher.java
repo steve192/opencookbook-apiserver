@@ -3,12 +3,12 @@ package com.sterul.opencookbookapiserver.services.nutrition.matching;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -31,10 +31,11 @@ public class CatalogueMatcher {
     public static final int VERSION = 2;
 
     private static final int CANDIDATE_NAMES = 30;
-    private static final String UNPREPARED = "RAW";
 
     private final NutritionDataset.Lexicons lexicons;
     private final List<String> languages;
+    /** States that say a food is as it comes ("roh"), which asking for or leaving out changes nothing. */
+    private final Set<String> unpreparedStates;
     private final MatcherWeights weights;
     private final AtomicReference<CatalogueIndex> index = new AtomicReference<>();
 
@@ -47,6 +48,10 @@ public class CatalogueMatcher {
     public CatalogueMatcher(NutritionDatasetReader reader, MatcherWeights weights) {
         this.lexicons = reader.lexicons();
         this.languages = reader.manifest().languages();
+        this.unpreparedStates = reader.states().states().stream()
+                .filter(NutritionDataset.State::unprepared)
+                .map(NutritionDataset.State::key)
+                .collect(Collectors.toUnmodifiableSet());
         this.weights = weights;
     }
 
@@ -109,11 +114,11 @@ public class CatalogueMatcher {
                 difference(has, wanted),
                 language == null || language.equals(entry.language()) ? 0 : 1,
                 0);
-        return new Scored(food, entry.name().name(), features, weights.logOddsWithoutMargin(features));
+        return new Scored(food, features, weights.logOddsWithoutMargin(features));
     }
 
     /** The base or variant whose states fit best; the base on a tie. */
-    private static MatchableFood stateFitting(Set<String> typedStates, MatchableFood base, CatalogueIndex current) {
+    private MatchableFood stateFitting(Set<String> typedStates, MatchableFood base, CatalogueIndex current) {
         var wanted = withoutUnprepared(typedStates);
         var options = new ArrayList<MatchableFood>();
         options.add(base);
@@ -133,7 +138,7 @@ public class CatalogueMatcher {
             var scored = ranked.get(position);
             var margin = MatcherWeights.logistic(scored.logOdds()) - rivalProbability(ranked, position);
             var features = scored.features().withMargin(margin);
-            candidates.add(new MatchCandidate(scored.food().key(), scored.matchedName(), weights.confidence(features), features));
+            candidates.add(new MatchCandidate(scored.food().key(), weights.confidence(features), features));
         }
         return candidates;
     }
@@ -144,16 +149,14 @@ public class CatalogueMatcher {
         return rival < ranked.size() ? MatcherWeights.logistic(ranked.get(rival).logOdds()) : 0;
     }
 
-    private static Set<String> withoutUnprepared(Set<String> states) {
-        var result = new HashSet<>(states);
-        result.remove(UNPREPARED);
-        return result;
+    private Set<String> withoutUnprepared(Set<String> states) {
+        return states.stream().filter(state -> !unpreparedStates.contains(state)).collect(Collectors.toSet());
     }
 
     private static int difference(Set<String> from, Set<String> without) {
         return (int) from.stream().filter(state -> !without.contains(state)).count();
     }
 
-    private record Scored(MatchableFood food, String matchedName, MatchFeatures features, double logOdds) {
+    private record Scored(MatchableFood food, MatchFeatures features, double logOdds) {
     }
 }

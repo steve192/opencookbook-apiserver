@@ -1,5 +1,8 @@
 package com.sterul.opencookbookapiserver.unit.services.nutrition.matching;
 
+import java.util.Set;
+
+import com.sterul.opencookbookapiserver.services.nutrition.dataset.NutritionDataset;
 import com.sterul.opencookbookapiserver.services.nutrition.matching.CatalogueMatcher;
 import com.sterul.opencookbookapiserver.services.nutrition.matching.MatchableFood;
 import com.sterul.opencookbookapiserver.services.nutrition.matching.MatcherWeights;
@@ -16,7 +19,12 @@ public final class ShippedCatalogueMatcher {
 
     public static CatalogueMatcher withWeights(MatcherWeights weights) {
         var matcher = new CatalogueMatcher(ShippedNutritionDataset.READER, weights);
-        matcher.rebuild(ShippedNutritionDataset.READER.catalogue().foods().stream().map(MatchableFood::of).toList());
+        matcher.rebuild(ShippedNutritionDataset.READER.catalogue().foods().stream().map(ShippedCatalogueMatcher::matchable).toList());
         return matcher;
+    }
+
+    private static MatchableFood matchable(NutritionDataset.Food food) {
+        return new MatchableFood(food.key(), food.variantOf(), Set.copyOf(food.states()),
+                food.names().stream().map(name -> new MatchableFood.Name(name.language(), name.name())).toList());
     }
 }
