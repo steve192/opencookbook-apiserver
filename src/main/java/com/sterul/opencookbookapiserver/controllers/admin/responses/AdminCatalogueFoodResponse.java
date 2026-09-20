@@ -8,6 +8,7 @@ import com.sterul.opencookbookapiserver.controllers.responses.Nutrients;
 import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
 import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFoodName;
 import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFoodPortion;
+import com.sterul.opencookbookapiserver.entities.recipe.Diet;
 
 public record AdminCatalogueFoodResponse(
         Long id,
@@ -21,6 +22,8 @@ public record AdminCatalogueFoodResponse(
         String variantOfKey,
         boolean retired,
         boolean negligible,
+        Diet dietClass,
+        CatalogueFood.DietClassOrigin dietClassOrigin,
         Float densityGPerMl,
         Nutrients nutrients,
         List<Name> names,
@@ -41,7 +44,8 @@ public record AdminCatalogueFoodResponse(
         return new AdminCatalogueFoodResponse(food.getId(), food.getCatalogueKey(), food.getOrigin(), food.isReadOnly(),
                 food.getSourceType(), food.getSourceCode(), food.getSourceName(),
                 variantOf == null ? null : variantOf.getId(), variantOf == null ? null : variantOf.getCatalogueKey(),
-                food.isRetired(), food.isNegligible(), food.getDensityGPerMl(), Nutrients.of(food.getNutrients()),
+                food.isRetired(), food.isNegligible(), food.getDietClass(), food.getDietClassOrigin(),
+                food.getDensityGPerMl(), Nutrients.of(food.getNutrients()),
                 food.getNames().stream()
                         .map(name -> new Name(name.getLanguageIsoCode(), name.getName(), name.isDisplay(), name.getOrigin()))
                         .toList(),

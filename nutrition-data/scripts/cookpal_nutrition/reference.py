@@ -38,6 +38,8 @@ class Lexicon:
     preparation_context: tuple[str, ...] = ()
     # Phrases saying an ingredient is only used a little, for greasing, dusting or garnish ("für die Form").
     sparing_uses: tuple[str, ...] = ()
+    # Words saying how a food is cut, served or used ("gehackt", "lauwarm"), not what it is.
+    descriptions: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -67,6 +69,7 @@ def load(curation: Path) -> Reference:
         lexicon = _lexicon(_read(path))
         _require_known(lexicon.units, units, f"unit in {path.name}")
         _require_known(lexicon.states, states, f"state in {path.name}")
+        _require_plain_descriptions(lexicon, path.name)
         lexicons[lexicon.language] = lexicon
     reference = Reference(units=units, states=states, bls_preparation_digits=digits, lexicons=lexicons)
     _require_unambiguous_words(reference)
@@ -110,6 +113,7 @@ def _lexicon(document: dict) -> Lexicon:
         states={key: tuple(str(word) for word in words) for key, words in document["states"].items()},
         preparation_context=tuple(str(phrase) for phrase in document.get("preparationContext") or ()),
         sparing_uses=tuple(str(phrase) for phrase in document.get("sparingUses") or ()),
+        descriptions=tuple(str(word) for word in document.get("descriptions") or ()),
     )
 
 
@@ -117,6 +121,14 @@ def _require_known(keys, known: dict, what: str) -> None:
     unknown = sorted(set(keys) - known.keys())
     if unknown:
         raise InvalidReference(f"unknown {what}: {unknown}")
+
+
+def _require_plain_descriptions(lexicon: Lexicon, file: str) -> None:
+    """A description is neither a unit nor a state: those change the amount or the food, a description does not."""
+    vocabulary = {word.lower() for words in (*lexicon.units.values(), *lexicon.states.values()) for word in words}
+    clashes = sorted(word for word in lexicon.descriptions if word.lower() in vocabulary)
+    if clashes:
+        raise InvalidReference(f"descriptions in {file} that are also unit or state words: {clashes}")
 
 
 def _require_unambiguous_words(reference: Reference) -> None:

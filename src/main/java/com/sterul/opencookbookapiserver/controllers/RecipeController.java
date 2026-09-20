@@ -1,6 +1,7 @@
 package com.sterul.opencookbookapiserver.controllers;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,12 +22,13 @@ import com.sterul.opencookbookapiserver.controllers.support.RecipeResponses;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
+import com.sterul.opencookbookapiserver.entities.recipe.Diet;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
+import com.sterul.opencookbookapiserver.errors.ApiException;
 import com.sterul.opencookbookapiserver.services.RecipeImportService;
 import com.sterul.opencookbookapiserver.services.RecipeService;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
-import com.sterul.opencookbookapiserver.errors.ApiException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -50,7 +52,7 @@ public class RecipeController extends BaseController {
     @Operation(summary = "Search or get recipes")
     @GetMapping("")
     public List<RecipeResponse> searchRecipe(@RequestParam(required = false) String searchString,
-            @RequestParam(required = false) List<Recipe.RecipeType> categories) {
+            @RequestParam(required = false) List<Diet> categories) {
         var user = getLoggedInUser();
         return recipeService.searchUserRecipes(user, searchString, categories).stream()
                 .map(recipeResponses::of)
@@ -138,6 +140,8 @@ public class RecipeController extends BaseController {
                 .preparationTime(recipe.getPreparationTime())
                 .totalTime(recipe.getTotalTime())
                 .recipeType(recipe.getRecipeType())
+                .mealTypes(new HashSet<>(recipe.getMealTypes()))
+                .dishRole(recipe.getDishRole())
                 .build();
     }
 

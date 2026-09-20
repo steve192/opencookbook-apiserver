@@ -23,7 +23,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -33,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/v1/admin/shares")
 @Tag(name = "Recipe shares", description = "Moderating what this instance publishes")
 @Slf4j
+@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminShareController {
 
     /** How far ahead the overview counts a share as expiring soon. */
@@ -50,7 +50,6 @@ public class AdminShareController {
 
     @Operation(summary = "Every share on this instance")
     @GetMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
     public List<AdminShareResponse> getAll() {
         log.info("Admin: Accessing all shares");
         var now = clock.instant();
@@ -61,7 +60,6 @@ public class AdminShareController {
 
     @Operation(summary = "Sharing totals")
     @GetMapping("/statistics")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public AdminShareStatisticsResponse getStatistics() {
         var statistics = shareService.getStatistics(EXPIRING_SOON);
         return new AdminShareStatisticsResponse(
@@ -72,7 +70,6 @@ public class AdminShareController {
 
     @Operation(summary = "Take a share down", description = "Revokes any share regardless of who owns it. The link stops working immediately.")
     @DeleteMapping("/{shareId}")
-    @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void revokeShare(@Valid @NotBlank @PathVariable String shareId) throws ElementNotFound {
         log.info("Admin: Revoking share {}", shareId);

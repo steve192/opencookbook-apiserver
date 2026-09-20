@@ -101,3 +101,15 @@ preparationContext: [ohne Fett, mit Fett, Pfanne, Ofen, Mikrowelle, in Fett]
 # "Mehl für die Form", "Puderzucker zum Bestäuben". Not "zum Braten": frying fat counts.
 sparingUses: [für die Form, für die Formen, zum Einfetten, zum Bestäuben, zum Bestreuen, zum Garnieren, zum Dekorieren,
   zur Deko, für die Arbeitsfläche, zum Ausrollen, zur Teigverarbeitung]
+
+# Words saying how a food is cut, served or used, not what it is: "gehackte Petersilie" is parsley. A food whose
+# name shares the word ("Mandel gehackt") is still preferred; one that lacks it is not held back by it. Only words
+# that never tell two catalogue foods apart belong here - not "frisch", "tiefgefroren", "geschält" or "gemahlen".
+descriptions: [gehackt, fein, grob, gewürfelt, geschnitten, kleingeschnitten, gerieben, geraspelt, gepresst,
+  durchgepresst, zerdrückt, zerkleinert, verquirlt, halbiert, geviertelt, gehobelt, gezupft, gestiftelt, entkernt,
+  entsteint, Stein, aufgetaut, ausgepresst, Ringe, Spalten, klein, daumengroß, reif, zart, ganz, lauwarm, warm, kalt,
+  kühl, eiskalt, heiß, zimmerwarm, gehäuft, gestrichen, gestr., optional, gewachst, unbehandelt, Bio, servieren,
+  garnieren, bestäuben, bestreuen, bestreichen, dekorieren, Deko, anbraten, braten, frittieren, einfetten,
+  einweichen, verfeinern, Mühle, Form, Formen, Auflaufform, Arbeitsfläche, arbeiten, ausrollen, Teigverarbeitung,
+  # "nach Wahl", "ca. 200 g", "alternativ Dinkelmehl": the cook is told to choose, not which food it is.
+  Wahl, Wunsch, Geschmack, Bedarf, alternativ, ersatzweise, ggf., ca., etwa, küchenfertig, Abtropfgewicht]

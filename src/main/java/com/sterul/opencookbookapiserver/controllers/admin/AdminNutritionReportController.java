@@ -30,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @Tag(name = "Nutrition reports", description = "Unmatched names, user corrections, the production names export and coverage")
 @ConditionalOnNutritionEnabled
 @Slf4j
+@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminNutritionReportController {
 
     private static final MediaType TAB_SEPARATED_VALUES = MediaType.parseMediaType("text/tab-separated-values;charset=UTF-8");
@@ -47,7 +48,6 @@ public class AdminNutritionReportController {
 
     @Operation(summary = "Names the catalogue does not answer silently", description = "The names most users wrote first.")
     @GetMapping("/unmatched-names")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public List<AdminUnmatchedNameResponse> getUnmatchedNames(@RequestParam(defaultValue = "200") @Min(1) @Max(1000) int limit)
             throws ApiException {
         return nameReport.unmatchedNames(limit).stream().map(AdminUnmatchedNameResponse::of).toList();
@@ -56,7 +56,6 @@ public class AdminNutritionReportController {
     @Operation(summary = "Where users linked a name otherwise than the matcher would",
             description = "The corrections the most users made first; each is a candidate name for a food, or a name that is no food.")
     @GetMapping("/user-corrections")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public List<AdminUserCorrectionResponse> getUserCorrections(@RequestParam(defaultValue = "200") @Min(1) @Max(1000) int limit)
             throws ApiException {
         return correctionReport.corrections(limit).stream().map(AdminUserCorrectionResponse::of).toList();
@@ -65,7 +64,6 @@ public class AdminNutritionReportController {
     @Operation(summary = "Every ingredient name used, as a draft of the production gold set",
             description = "Tab-separated, for nutrition-data/local/names-production.tsv. Contains what users wrote: never commit it.")
     @GetMapping("/names-export")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> exportNames() {
         log.info("Admin: Exporting the ingredient names of all users");
         return ResponseEntity.ok()
@@ -76,7 +74,6 @@ public class AdminNutritionReportController {
 
     @Operation(summary = "The nutrition calculator run over every recipe")
     @GetMapping("/coverage")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public CoverageReport.Coverage getCoverage() {
         return coverageReport.coverage();
     }

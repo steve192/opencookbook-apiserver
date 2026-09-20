@@ -19,6 +19,7 @@ import jakarta.validation.Valid;
 @RestController
 @Tag(name = "Ingredients", description = "Admin ingredient api")
 @ConditionalOnNutritionEnabled
+@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminIngredientLinkController {
 
     private final IngredientLinkService linkService;
@@ -29,7 +30,6 @@ public class AdminIngredientLinkController {
 
     @Operation(summary = "Say what an ingredient is", description = "Automatic matching never overrides it.")
     @PutMapping("/api/v1/admin/ingredients/{id}/link")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public AdminIngredientResponse link(@PathVariable Long id, @Valid @RequestBody IngredientLinkRequest request) throws ElementNotFound {
         var ingredient = request.isExcluded()
                 ? linkService.excludeByAdmin(id)

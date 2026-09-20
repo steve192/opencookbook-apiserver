@@ -27,7 +27,20 @@ final class NameAnalyzer {
         this.foodWordStems = Set.copyOf(foodWordStems);
     }
 
+    /** For finding candidates, in every language: the name's language is unknown. */
     AnalyzedName typed(String name) {
+        return typed(name, analysis::stems);
+    }
+
+    /**
+     * For comparing with a catalogue name of one language, stemmed in that language only: a German plural must not
+     * meet an English word of the same stem ("Beeren", "beer").
+     */
+    AnalyzedName typed(String name, String language) {
+        return typed(name, word -> analysis.stems(word, language));
+    }
+
+    private AnalyzedName typed(String name, Function<String, Set<String>> stemsOf) {
         var words = new ArrayList<AnalyzedWord>();
         var states = new HashSet<String>();
         for (var word : analysis.typedWords(name)) {
@@ -38,7 +51,7 @@ final class NameAnalyzer {
                 if (state.isPresent()) {
                     states.add(state.get());
                 } else if (!lexicon.isUnit(word)) {
-                    words.add(typedWord(word, states));
+                    words.add(typedWord(word, states, stemsOf));
                 }
             }
         }
@@ -68,25 +81,28 @@ final class NameAnalyzer {
         return new AnalyzedName(name, words, qualifiers, states);
     }
 
-    /** State parts of a compound add to {@code states}. */
-    private AnalyzedWord typedWord(String word, Set<String> states) {
-        var stems = analysis.stems(word);
+    /** State parts of a compound add to {@code states}. Whether a word names a food is judged in every language. */
+    private AnalyzedWord typedWord(String word, Set<String> states, Function<String, Set<String>> stemsOf) {
         var parts = splitter.split(word).stream().flatMap(List::stream)
-                .map(part -> typedPart(part, splitter.isKnown(word), states))
+                .map(part -> typedPart(part, splitter.isKnown(word), states, stemsOf))
                 .toList();
-        return new AnalyzedWord(word, stems, parts, isFoodWord(stems));
+        return new AnalyzedWord(word, stemsOf.apply(word), parts, isFoodWord(analysis.stems(word)), lexicon.isDescription(word));
     }
 
     private AnalyzedWord cataloguedWord(String word, Function<String, Set<String>> stemsOf) {
         var stems = stemsOf.apply(word);
         var parts = splitter.splitNamingPart(word).stream().flatMap(List::stream)
-                .map(part -> namePart(part, stemsOf.apply(part)))
+                .map(part -> {
+                    var partStems = stemsOf.apply(part);
+                    return namePart(part, partStems, isFoodWord(partStems));
+                })
                 .toList();
         return new AnalyzedWord(word, stems, parts, isFoodWord(stems));
     }
 
-    private AnalyzedWord.Part typedPart(String text, boolean wordIsKnown, Set<String> states) {
-        var stems = analysis.stems(text);
+    private AnalyzedWord.Part typedPart(String text, boolean wordIsKnown, Set<String> states,
+            Function<String, Set<String>> stemsOf) {
+        var stems = stemsOf.apply(text);
         if (!wordIsKnown) {
             var state = lexicon.state(text);
             if (state.isPresent()) {
@@ -97,11 +113,11 @@ final class NameAnalyzer {
                 return new AnalyzedWord.Part(text, stems, AnalyzedWord.Kind.UNIT, false);
             }
         }
-        return namePart(text, stems);
+        return namePart(text, stems, isFoodWord(analysis.stems(text)));
     }
 
-    private AnalyzedWord.Part namePart(String text, Set<String> stems) {
-        return new AnalyzedWord.Part(text, stems, AnalyzedWord.Kind.NAME, isFoodWord(stems));
+    private static AnalyzedWord.Part namePart(String text, Set<String> stems, boolean foodWord) {
+        return new AnalyzedWord.Part(text, stems, AnalyzedWord.Kind.NAME, foodWord);
     }
 
     private boolean isFoodWord(Set<String> stems) {

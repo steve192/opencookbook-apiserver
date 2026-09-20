@@ -56,3 +56,7 @@ bls-G569902:
 bls-C341000:
   de: [Körnermais, Maiskörner getrocknet]
   en: [Maize grain, dried corn kernels]
+bls-T822900:
+  # The description "Heringsfilet in Tomatencreme/Tomatensauce" otherwise yields the name "Tomatensauce, Konserve".
+  de: ["Heringsfilet in Tomatencreme, Konserve", Heringsfilet in Tomatensauce, Heringsfilet in Tomatensoße]
+  en: ["Herring fillet in tomato sauce, canned"]

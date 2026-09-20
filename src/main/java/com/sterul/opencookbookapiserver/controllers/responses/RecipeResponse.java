@@ -1,12 +1,16 @@
 package com.sterul.opencookbookapiserver.controllers.responses;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
+import com.sterul.opencookbookapiserver.entities.recipe.Diet;
+import com.sterul.opencookbookapiserver.entities.recipe.DishRole;
+import com.sterul.opencookbookapiserver.entities.recipe.MealType;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
-import com.sterul.opencookbookapiserver.entities.recipe.Recipe.RecipeType;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,7 +41,14 @@ public class RecipeResponse {
     private Long preparationTime;
     private Long totalTime;
 
-    private RecipeType recipeType;
+    private Diet recipeType;
+
+    /** Empty while unknown. */
+    @Builder.Default
+    private Set<MealType> mealTypes = new HashSet<>();
+
+    /** Null for a dish. */
+    private DishRole dishRole;
 
     private String recipeSource;
 
@@ -86,6 +97,8 @@ public class RecipeResponse {
                 .preparationTime(recipe.getPreparationTime())
                 .totalTime(recipe.getTotalTime())
                 .recipeType(recipe.getRecipeType())
+                .mealTypes(new HashSet<>(recipe.getMealTypes()))
+                .dishRole(recipe.getDishRole())
                 .recipeSource(recipe.getRecipeSource())
                 .build();
     }

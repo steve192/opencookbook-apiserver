@@ -176,17 +176,29 @@ public class RecipeImageService {
         return image.get().getOwner().getUserId().equals(user.getUserId());
     }
 
-    public byte[] getImage(String uuid) throws IOException {
-        var path = imageUploadPath.resolve(uuid);
-        return Files.readAllBytes(path);
+    /** @throws ElementNotFound where the record outlived its file, which is nobody's fault to report */
+    public byte[] getImage(String uuid) throws IOException, ElementNotFound {
+        return Files.readAllBytes(storedImage(uuid));
     }
 
-    public byte[] getThumbnailImage(String uuid) throws IOException {
-        var path = thumbnailUploadPath.resolve(uuid);
-        if (!Files.exists(path)) {
+    public byte[] getThumbnailImage(String uuid) throws IOException, ElementNotFound {
+        var thumbnail = thumbnailUploadPath.resolve(uuid);
+        if (!Files.exists(thumbnail)) {
+            // Only reachable for an image stored before thumbnails were written on upload
+            storedImage(uuid);
             generateThumbnail(uuid);
         }
-        return Files.readAllBytes(path);
+        return Files.readAllBytes(thumbnail);
+    }
+
+    /** The stored file of an image, which an image known to the database need not still have. */
+    private Path storedImage(String uuid) throws ElementNotFound {
+        var path = imageUploadPath.resolve(uuid);
+        if (!Files.exists(path)) {
+            log.info("Image {} is known but no longer stored", uuid);
+            throw new ElementNotFound();
+        }
+        return path;
     }
 
     /**

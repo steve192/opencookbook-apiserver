@@ -1,9 +1,13 @@
 package com.sterul.opencookbookapiserver.controllers.requests;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import com.sterul.opencookbookapiserver.entities.recipe.Recipe.RecipeType;
+import com.sterul.opencookbookapiserver.entities.recipe.Diet;
+import com.sterul.opencookbookapiserver.entities.recipe.DishRole;
+import com.sterul.opencookbookapiserver.entities.recipe.MealType;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -21,24 +25,28 @@ public class RecipeRequest {
     private String title;
 
     @Builder.Default
-    @Valid
-    private List<IngredientNeedRequest> neededIngredients = new ArrayList<>();
+    private List<@Valid IngredientNeedRequest> neededIngredients = new ArrayList<>();
 
     @Builder.Default
     private List<String> preparationSteps = new ArrayList<>();
 
     @Builder.Default
-    @Valid
-    private List<RecipeImageReference> images = new ArrayList<>();
+    private List<@Valid RecipeImageReference> images = new ArrayList<>();
 
     private int servings;
 
     private Long preparationTime;
     private Long totalTime;
 
-    private RecipeType recipeType;
+    private Diet recipeType;
+
+    /** Empty leaves the recipe's meal unknown, which keeps it eligible for every meal but breakfast. */
+    @Builder.Default
+    private Set<MealType> mealTypes = new HashSet<>();
+
+    /** Null for a dish. */
+    private DishRole dishRole;
 
     @Builder.Default
-    @Valid
-    private List<RecipeGroupRequest> recipeGroups = new ArrayList<>();
+    private List<@Valid RecipeGroupRequest> recipeGroups = new ArrayList<>();
 }

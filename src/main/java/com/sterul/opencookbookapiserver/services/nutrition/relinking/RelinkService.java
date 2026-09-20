@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sterul.opencookbookapiserver.configurations.nutrition.ConditionalOnNutritionEnabled;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
+import com.sterul.opencookbookapiserver.entities.ReviewedRun;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
 import com.sterul.opencookbookapiserver.entities.nutrition.IngredientRelinkMember;
@@ -30,6 +31,7 @@ import com.sterul.opencookbookapiserver.repositories.IngredientRelinkProposalRep
 import com.sterul.opencookbookapiserver.repositories.IngredientRelinkRunRepository;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
+import com.sterul.opencookbookapiserver.services.ReviewedRuns;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.nutrition.IngredientNames;
 import com.sterul.opencookbookapiserver.services.nutrition.dataset.NutritionDatasetReader;
@@ -100,8 +102,8 @@ public class RelinkService {
         var run = IngredientRelinkRun.builder()
                 .scope(scope.kind()).belowConfidence(scope.belowConfidence())
                 .matcherVersion(CatalogueMatcher.VERSION).datasetLabel(datasetReader.manifest().label())
-                .status(IngredientRelinkRun.Status.PREVIEWED).startedBy(startedBy)
                 .build();
+        run.setStartedBy(startedBy);
         var proposals = new ArrayList<IngredientRelinkProposal>();
         var unchanged = 0;
         for (var entry : groups.entrySet()) {
@@ -139,10 +141,8 @@ public class RelinkService {
     /** Skips ingredients changed since the preview. */
     public IngredientRelinkRun apply(Long runId) throws ApiException {
         var run = previewed(runId);
-        var accepted = proposalRepository.findAllByRunAndDecision(run, IngredientRelinkProposal.Decision.ACCEPTED);
-        if (accepted.isEmpty()) {
-            throw new ApiException(ApiErrorCode.CONFLICT, "Accept the proposals to apply first: relink run " + runId + " has none accepted");
-        }
+        var accepted = ReviewedRuns.requireAnyAccepted(run,
+                proposalRepository.findAllByRunAndDecision(run, IngredientRelinkProposal.Decision.ACCEPTED));
         var now = clock.instant();
         var applied = 0;
         var skipped = 0;
@@ -159,20 +159,14 @@ public class RelinkService {
                 applied++;
             }
         }
-        run.setStatus(IngredientRelinkRun.Status.APPLIED);
-        run.setAppliedAt(now);
-        run.setAppliedCount(applied);
-        run.setSkippedCount(skipped);
+        run.markApplied(now, applied, skipped);
         log.info("Relink run {} applied to {} ingredients, {} skipped as changed since the preview", run.getId(), applied, skipped);
         return run;
     }
 
     /** Restores only ingredients this run was the last to link. */
     public IngredientRelinkRun revert(Long runId) throws ApiException {
-        var run = run(runId);
-        if (run.getStatus() != IngredientRelinkRun.Status.APPLIED) {
-            throw new ApiException(ApiErrorCode.CONFLICT, "Only an applied run can be reverted");
-        }
+        var run = ReviewedRuns.require(run(runId), ReviewedRun.Status.APPLIED);
         var reverted = 0;
         for (var proposal : proposalRepository.findAllByRunAndDecision(run, IngredientRelinkProposal.Decision.ACCEPTED)) {
             var ingredients = ingredientsOf(proposal.getMembers());
@@ -189,15 +183,14 @@ public class RelinkService {
                 }
             }
         }
-        run.setStatus(IngredientRelinkRun.Status.REVERTED);
-        run.setRevertedAt(clock.instant());
+        run.markReverted(clock.instant());
         log.info("Relink run {} reverted for {} ingredients", runId, reverted);
         return run;
     }
 
     public IngredientRelinkRun discard(Long runId) throws ApiException {
         var run = previewed(runId);
-        run.setStatus(IngredientRelinkRun.Status.DISCARDED);
+        run.discard();
         return run;
     }
 
@@ -268,11 +261,7 @@ public class RelinkService {
     }
 
     private IngredientRelinkRun previewed(Long runId) throws ApiException {
-        var run = run(runId);
-        if (run.getStatus() != IngredientRelinkRun.Status.PREVIEWED) {
-            throw new ApiException(ApiErrorCode.CONFLICT, "Relink run " + runId + " is " + run.getStatus() + ", not previewed");
-        }
-        return run;
+        return ReviewedRuns.require(run(runId), ReviewedRun.Status.PREVIEWED);
     }
 
     private Map<Long, Ingredient> ingredientsOf(Collection<IngredientRelinkMember> members) {

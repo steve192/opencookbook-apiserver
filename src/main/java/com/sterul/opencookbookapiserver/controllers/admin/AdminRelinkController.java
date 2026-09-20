@@ -33,6 +33,7 @@ import jakarta.validation.constraints.NotNull;
 @RequestMapping("/api/v1/admin/nutrition/relink-runs")
 @Tag(name = "Nutrition relinking", description = "Relink runs: preview, decide, apply, revert")
 @ConditionalOnNutritionEnabled
+@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminRelinkController extends BaseController {
 
     private final RelinkService relinkService;
@@ -52,14 +53,12 @@ public class AdminRelinkController extends BaseController {
 
     @Operation(summary = "Every relink run, the latest first")
     @GetMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
     public List<AdminRelinkRunResponse> getRuns() {
         return relinkService.getRuns().stream().map(AdminRelinkRunResponse::fromEntity).toList();
     }
 
     @Operation(summary = "Preview a relink run", description = "Proposes links for every name in scope; changes no ingredient.")
     @PostMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
     public AdminRelinkRunResponse preview(@Valid @RequestBody PreviewRequest request) throws ApiException {
         return AdminRelinkRunResponse.fromEntity(relinkService.preview(
                 new RelinkService.Scope(request.scope(), request.belowConfidence()), getLoggedInUser()));
@@ -67,21 +66,18 @@ public class AdminRelinkController extends BaseController {
 
     @Operation(summary = "One relink run")
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public AdminRelinkRunResponse getRun(@PathVariable Long id) throws ElementNotFound {
         return AdminRelinkRunResponse.fromEntity(relinkService.getRun(id));
     }
 
     @Operation(summary = "The proposals of a relink run")
     @GetMapping("/{id}/proposals")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public List<AdminRelinkProposalResponse> getProposals(@PathVariable Long id) throws ElementNotFound {
         return relinkService.getProposals(id).stream().map(AdminRelinkProposalResponse::fromEntity).toList();
     }
 
     @Operation(summary = "Decide proposals of a previewed run", description = "A remembered rejection becomes a name rule.")
     @PostMapping("/{id}/decisions")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public List<AdminRelinkProposalResponse> decide(@PathVariable Long id, @Valid @RequestBody DecisionRequest request)
             throws ApiException {
         return relinkService.decide(id, request.proposalIds(), request.decision(), request.remember(), getLoggedInUser()).stream()
@@ -90,28 +86,24 @@ public class AdminRelinkController extends BaseController {
 
     @Operation(summary = "Some recipes a proposal affects")
     @GetMapping("/{id}/proposals/{proposalId}/recipes")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public List<AdminRecipeResponse> getSampleRecipes(@PathVariable Long id, @PathVariable Long proposalId) throws ElementNotFound {
         return relinkService.sampleRecipes(id, proposalId).stream().map(AdminRecipeResponse::fromEntity).toList();
     }
 
     @Operation(summary = "Apply the accepted proposals", description = "Ingredients changed since the preview are skipped.")
     @PostMapping("/{id}/apply")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public AdminRelinkRunResponse apply(@PathVariable Long id) throws ApiException {
         return AdminRelinkRunResponse.fromEntity(relinkService.apply(id));
     }
 
     @Operation(summary = "Revert an applied run", description = "Only ingredients the run was the last to link are restored.")
     @PostMapping("/{id}/revert")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public AdminRelinkRunResponse revert(@PathVariable Long id) throws ApiException {
         return AdminRelinkRunResponse.fromEntity(relinkService.revert(id));
     }
 
     @Operation(summary = "Discard a previewed run")
     @PostMapping("/{id}/discard")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public AdminRelinkRunResponse discard(@PathVariable Long id) throws ApiException {
         return AdminRelinkRunResponse.fromEntity(relinkService.discard(id));
     }

@@ -18,11 +18,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.entities.WeekplanDay;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
+import com.sterul.opencookbookapiserver.entities.recipe.Diet;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
@@ -30,13 +31,19 @@ import com.sterul.opencookbookapiserver.services.RecipeImageService;
 import com.sterul.opencookbookapiserver.services.RecipeReferenceResolver;
 import com.sterul.opencookbookapiserver.services.RecipeService;
 import com.sterul.opencookbookapiserver.services.WeekplanService;
+import com.sterul.opencookbookapiserver.services.classification.ClassificationProvenance;
+import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.sharing.ShareService;
 
 @ExtendWith(MockitoExtension.class)
 class RecipeServiceTest {
 
-    private static final List<Recipe.RecipeType> MEAT_ONLY = List.of(Recipe.RecipeType.MEAT);
+    private static final List<Diet> MEAT_ONLY = List.of(Diet.MEAT);
 
+    @Mock
+    private ApplicationEventPublisher events;
+    @Mock
+    private ClassificationProvenance provenance;
     @Mock
     private RecipeRepository recipeRepository;
     @Mock

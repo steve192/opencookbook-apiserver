@@ -146,6 +146,12 @@ The build runs these steps (`scripts/cookpal_nutrition/catalogue/`):
 6. **Portions and densities** from FDC household measures of the food or its FDC duplicate, then
    `portions.yaml` and `properties.yaml` on top. **Negligible** when energy ≤ 5 kcal/100 g, unless
    `properties.yaml` says otherwise.
+7. **Diet class** (`VEGAN`, `VEGETARIAN`, `MEAT`) from the BLS group letter in `diet-classes.yaml`
+   `groupDefaults`; variants take their base's. A name matching a `reviewPatterns` entry stricter
+   than its group is **nominated**, never classified, and an unanswered nomination **fails the
+   build** — patterns misfire too often to decide ("Wildreis", "Collards", "Erdnussbutter",
+   "Honigmelone", "alkoholfrei", "Vegetarische Bratwurst"). `overrides` is the only thing that
+   settles a food; groups without a default (`Q`) and all FDC foods are listed there in full.
 
 ## Curation files
 
@@ -161,7 +167,7 @@ of foods.
 |---|---|---|
 | `units.yaml` | Language-neutral units and how to turn them into grams | `key: {kind: MASS, grams: 1}`; `VOLUME` with `millilitres`; `COUNT` (weight from the food's portion; `sizeOf` + `factor` for a scaled variant: `piece-small: {kind: COUNT, sizeOf: piece, factor: 0.7}`; containers whose size hardly varies may state `typicalGrams` or `typicalMillilitres`, used for foods without a portion of their own: `can: {kind: COUNT, typicalGrams: 400}`); `PINCH` with fixed `grams`; `VAGUE` |
 | `states.yaml` | States and their kind | `BOILED: {kind: PREPARATION}`; `unprepared: true` for `RAW` |
-| `lexicon/<lang>.yaml` | Words per language for every unit and state, and `preparationContext` phrases ("ohne Fett") that describe a preparation without being one | `units: {tablespoon: [EL, Esslöffel]}`, `states: {DRIED: [getrocknet]}`. Unit words cover every unit string the app and the recipe importers produce. State words need base forms only; the matcher stems them. |
+| `lexicon/<lang>.yaml` | Words per language for every unit and state, `preparationContext` phrases ("ohne Fett") that describe a preparation without being one, and `descriptions`: words saying how a food is cut, served or used ("gehackt", "lauwarm", "Form") | `units: {tablespoon: [EL, Esslöffel]}`, `states: {DRIED: [getrocknet]}`, `descriptions: [gehackt]`. Unit words cover every unit string the app and the recipe importers produce. State and description words need base forms only; the matcher stems them. A description a food's name lacks is not held against it; one it shares still counts for it. List only words that never tell two catalogue foods apart - not "frisch" or "gemahlen". |
 | `fdc-vocabulary.yaml` | American → British words (`eggplant: aubergine`), implied words (`egg: chicken`), phrases that name nothing (`year round average`) | used by the FDC duplicate rule |
 
 A new language needs a lexicon file, names for it in `names/` and `synonyms/` where derived names
@@ -178,6 +184,7 @@ are missing, and enabling it in the build (`LANGUAGES` in `scripts/cookpal_nutri
 | `synonyms/*.yaml` | People write a food differently than its name ("Butter" for "Süßrahmbutter", "Möhre" for "Karotte") | same format; added, never shown first. List a form only if it is irregular (`Eier`) or another word - plurals, inflections and typos are the matcher's job. A synonym belongs to the food most recipes mean by it. |
 | `portions.yaml` | A food recipes count in pieces, slices, packs or cubes has no weight for that unit; a container holds something else than its typical size (a drained can); an FDC weight follows US packaging where German recipes assume another | `bls-G480100: {piece: {grams: 150}}` (estimated) or `{piece: {grams: 110, fdc: 123456}}` (taken from an FDC measure) |
 | `properties.yaml` | A food measured by spoon or cup has no density (a volume is then weighed as water), or density or negligibility is wrong | `bls-C133000: {density: 0.37}`, `bls-R111000: {negligible: true}` |
+| `diet-classes.yaml` | The build stopped on a food nobody has classified, or a class is wrong | `overrides: {bls-R468000: MEAT}` with a comment naming the food. Answer **every** food the build listed; it will not ship a guess |
 | `dataset.yaml` | Every release of this dataset | `label: "2026.2"` |
 
 To find keys, search the built catalogue:
@@ -207,6 +214,9 @@ where to correct it.
 | `synonyms of a variant ignored` | Names belong to bases; the food became a variant. | move the synonyms to its base |
 | `excluded, incomplete nutrients` | Informational. Include only if a later release fills the values. | - |
 | `implausible density from FDC portions (ignored)` | Densities outside 0.2–2.0 g/ml; leafy herbs are legitimately light. | `properties.yaml` if a real density is known |
+| `food without a diet class (no group default, no override)` | **Stops the build.** A food of a group with no default (`Q`), or an FDC food. Classify each in `overrides`. | `diet-classes.yaml` |
+| `diet class nominated for review (name disagrees with group)` | **Stops the build.** The name reads stricter than the group. Decide whether the name or the group is right — both happen — and write the answer down, even when it only confirms the group. | `diet-classes.yaml` |
+| `diet class overridden against its group` | Informational: every food curation classifies away from its group. A jump in these after a release means the group defaults no longer fit. | `diet-classes.yaml` |
 | `names alike to the matcher, differing in energy` | Foods whose names differ only in numbers or bracketed words ("Gouda 30 % Fett", "Gouda 48 % Fett"). The matcher tells them apart when a typed name says the detail; a name that does not ("Gouda") gets one of them arbitrarily. Where recipes commonly write the plain name, give it to the food most recipes mean. | `synonyms/` |
 
 After the build report, check the names that matter most in practice: search the everyday

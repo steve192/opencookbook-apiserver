@@ -32,16 +32,21 @@ public class IngredientService {
 
     /** By name only; the template's id is ignored. A new ingredient is linked automatically. */
     public Ingredient createOrGetIngredient(Ingredient template, CookpalUser owner) {
-        var name = template.getName().trim();
-        return ingredientRepository.findByNameAndOwner(name, owner).orElseGet(() -> {
-            log.info("Creating ingredient {} for user {}", name, owner.getUserId());
-            var ingredient = Ingredient.builder()
-                    .name(name)
-                    .additionalInfo(template.getAdditionalInfo())
-                    .owner(owner)
-                    .build();
+        var ingredient = existingOrUnsaved(template.getName(), template.getAdditionalInfo(), owner);
+        if (ingredient.getId() != null) {
+            return ingredient;
+        }
+        log.info("Creating ingredient {} for user {}", ingredient.getName(), owner.getUserId());
+        return ingredientRepository.save(ingredient);
+    }
+
+    /** The owner's ingredient of this name, or a new one not yet saved, linked as it would be when it is. */
+    public Ingredient existingOrUnsaved(String name, String additionalInfo, CookpalUser owner) {
+        var tidy = name.trim();
+        return ingredientRepository.findByNameAndOwner(tidy, owner).orElseGet(() -> {
+            var ingredient = Ingredient.builder().name(tidy).additionalInfo(additionalInfo).owner(owner).build();
             linker.ifPresent(automatic -> automatic.linkNew(ingredient));
-            return ingredientRepository.save(ingredient);
+            return ingredient;
         });
     }
 

@@ -1,6 +1,7 @@
 package com.sterul.opencookbookapiserver.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
@@ -13,6 +14,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import javax.imageio.ImageIO;
 
@@ -24,10 +27,12 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
 import com.sterul.opencookbookapiserver.services.RecipeImageService;
+import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 @SpringBootTest
 @ActiveProfiles("integration-test")
@@ -38,6 +43,9 @@ class RecipeImageServiceTest extends IntegrationTest{
 
     @Autowired
     private ResourceLoader resourceLoader;
+
+    @Autowired
+    private OpencookbookConfiguration configuration;
 
     private File jpgFile;
     private File pngFile;
@@ -54,14 +62,14 @@ class RecipeImageServiceTest extends IntegrationTest{
 
     @Test
     @Transactional
-    void jpegCanBeUploaded() throws IOException, IllegalFiletypeException {
+    void jpegCanBeUploaded() throws IOException, IllegalFiletypeException, ElementNotFound {
         var image = cut.saveNewImage(new FileInputStream(jpgFile), 100, testUser);
         assertFileWasWritten(image);
     }
 
     @Test
     @Transactional
-    void pngCanBeUploaded() throws IOException, IllegalFiletypeException {
+    void pngCanBeUploaded() throws IOException, IllegalFiletypeException, ElementNotFound {
         var image = cut.saveNewImage(new FileInputStream(pngFile), 100, testUser);
         assertFileWasWritten(image);
     }
@@ -80,9 +88,20 @@ class RecipeImageServiceTest extends IntegrationTest{
         fail();
     }
 
+    /** Storage and database can come apart, and a record without its file is not a server fault. */
     @Test
     @Transactional
-    void thumbnailIsGeneratedAndSmaller() throws IOException, IllegalFiletypeException {
+    void anImageWithoutItsStoredFileIsNotFound() throws IOException, IllegalFiletypeException {
+        var image = cut.saveNewImage(new FileInputStream(pngFile), 100, testUser);
+        deleteStoredFiles(image.getUuid());
+
+        assertThrows(ElementNotFound.class, () -> cut.getImage(image.getUuid()));
+        assertThrows(ElementNotFound.class, () -> cut.getThumbnailImage(image.getUuid()));
+    }
+
+    @Test
+    @Transactional
+    void thumbnailIsGeneratedAndSmaller() throws IOException, IllegalFiletypeException, ElementNotFound {
         var image = cut.saveNewImage(new FileInputStream(pngFile), 100, testUser);
         assertFileWasWritten(image);
         assertThumbnailFileIsSmaller(image);
@@ -112,7 +131,7 @@ class RecipeImageServiceTest extends IntegrationTest{
      */
     @Test
     @Transactional
-    void largeImageIsNotDecodedAtFullResolution() throws IOException, IllegalFiletypeException {
+    void largeImageIsNotDecodedAtFullResolution() throws IOException, IllegalFiletypeException, ElementNotFound {
         var threads = (com.sun.management.ThreadMXBean) ManagementFactory.getThreadMXBean();
         assumeTrue(threads.isThreadAllocatedMemorySupported());
         var largePhoto = jpegOf(4000, 3000);
@@ -129,7 +148,7 @@ class RecipeImageServiceTest extends IntegrationTest{
 
     @Test
     @Transactional
-    void largeImageIsStoredAtTheConfiguredSizes() throws IOException, IllegalFiletypeException {
+    void largeImageIsStoredAtTheConfiguredSizes() throws IOException, IllegalFiletypeException, ElementNotFound {
         var largePhoto = jpegOf(4000, 3000);
 
         var image = cut.saveNewImage(new ByteArrayInputStream(largePhoto), largePhoto.length, testUser);
@@ -138,12 +157,17 @@ class RecipeImageServiceTest extends IntegrationTest{
         assertEquals(512, widthOf(cut.getThumbnailImage(image.getUuid())));
     }
 
-    private void assertThumbnailFileIsSmaller(RecipeImage image) throws IOException {
+    private void assertThumbnailFileIsSmaller(RecipeImage image) throws IOException, ElementNotFound {
         assertTrue(cut.getImage(image.getUuid()).length
                 > cut.getThumbnailImage(image.getUuid()).length);
     }
 
-    void assertFileWasWritten(RecipeImage recipeImage) throws IOException {
+    private void deleteStoredFiles(String uuid) throws IOException {
+        Files.deleteIfExists(Path.of(configuration.getUploadDir(), uuid));
+        Files.deleteIfExists(Path.of(configuration.getThumbnailDir(), uuid));
+    }
+
+    void assertFileWasWritten(RecipeImage recipeImage) throws IOException, ElementNotFound {
         assertTrue(cut.getImage(recipeImage.getUuid()).length > 0);
     }
 

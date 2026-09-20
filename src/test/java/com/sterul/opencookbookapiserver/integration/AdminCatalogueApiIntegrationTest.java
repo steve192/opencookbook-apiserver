@@ -218,6 +218,28 @@ class AdminCatalogueApiIntegrationTest extends IntegrationTest {
                 .andExpect(jsonPath("$.attributions[?(@.source=='BLS')].license").value("CC BY 4.0"));
     }
 
+    /**
+     * Allowed on a dataset food, unlike its names and nutrients: the shipped class is a reading of
+     * a description, so an operator who knows the food better outranks it. The mark is what makes
+     * the next dataset import leave the correction alone.
+     */
+    @Test
+    void anOperatorCorrectsTheDietOfADatasetFood() throws Exception {
+        mockMvc.perform(put("/api/v1/admin/catalogue/foods/" + potato.getId() + "/diet-class").with(operator())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"dietClass\": \"VEGETARIAN\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.dietClass").value("VEGETARIAN"))
+                .andExpect(jsonPath("$.dietClassOrigin").value("ADMIN"));
+
+        mockMvc.perform(put("/api/v1/admin/catalogue/foods/" + potato.getId() + "/diet-class").with(operator())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"dietClass\": null}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.dietClass").doesNotExist())
+                .andExpect(jsonPath("$.dietClassOrigin").doesNotExist());
+    }
+
     @Test
     void anOrdinaryUserCannotTouchTheCatalogue() throws Exception {
         mockMvc.perform(get("/api/v1/admin/catalogue/foods").with(user(COOK)))

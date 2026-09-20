@@ -9,13 +9,14 @@ import java.util.Set;
 
 import com.sterul.opencookbookapiserver.services.nutrition.dataset.NutritionDataset;
 
-/** Single-word unit ("Zehe") and state ("getrocknet") words of the lexicons. */
+/** Single-word unit ("Zehe"), state ("getrocknet") and description ("gehackt") words of the lexicons. */
 final class LexiconWords {
 
     private final TextAnalysis analysis;
     private final Set<String> unitWords = new HashSet<>();
     private final Set<String> stateWords = new HashSet<>();
     private final Map<String, String> statesByStem = new HashMap<>();
+    private final Set<String> descriptionStems = new HashSet<>();
 
     LexiconWords(NutritionDataset.Lexicons lexicons, TextAnalysis analysis) {
         this.analysis = analysis;
@@ -27,11 +28,17 @@ final class LexiconWords {
                         stateWords.add(single);
                         analysis.stems(single, lexicon.language()).forEach(stem -> statesByStem.put(stem, state));
                     })));
+            lexicon.descriptions().forEach(word -> singleWord(word)
+                    .ifPresent(single -> descriptionStems.addAll(analysis.stems(single, lexicon.language()))));
         }
     }
 
     boolean isUnit(String word) {
         return unitWords.contains(word);
+    }
+
+    boolean isDescription(String word) {
+        return analysis.stems(word).stream().anyMatch(descriptionStems::contains);
     }
 
     Optional<String> state(String word) {

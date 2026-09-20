@@ -24,6 +24,7 @@ import jakarta.validation.constraints.NotNull;
 @RestController
 @RequestMapping("/api/v1/admin/ingredients/name-cleanup")
 @Tag(name = "Ingredients", description = "Admin ingredient api")
+@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminIngredientCleanupController {
 
     private final IngredientNameCleanupService cleanupService;
@@ -52,7 +53,6 @@ public class AdminIngredientCleanupController {
 
     @Operation(summary = "Preview: ingredient names holding an amount or unit, and what cleaning them would change")
     @GetMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
     public List<ProposalResponse> preview() {
         return cleanupService.preview().stream().map(ProposalResponse::of).toList();
     }
@@ -61,7 +61,6 @@ public class AdminIngredientCleanupController {
             description = "Moves amount and unit into the recipe lines, renames or merges the ingredient. Not revertible. "
                     + "Ingredients changed since the preview are skipped.")
     @PostMapping("/apply")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public IngredientNameCleanupService.Outcome apply(@Valid @RequestBody ApplyRequest request) throws ApiException {
         return cleanupService.apply(request.decisions().stream()
                 .map(decision -> new IngredientNameCleanupService.Decision(decision.ingredientId(), decision.name(),

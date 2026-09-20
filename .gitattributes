@@ -1,0 +1,5 @@
+# The shipped nutrition dataset is hashed byte for byte: the build records a checksum over these
+# files in manifest.json, and the apiserver re-hashes them to decide whether to re-import. A
+# checkout that rewrites their line endings (core.autocrlf on Windows and WSL) changes those bytes,
+# so the checksum stops matching and the dataset no longer imports. Keep them as the build wrote them.
+src/main/resources/nutrition/*.json text eol=lf

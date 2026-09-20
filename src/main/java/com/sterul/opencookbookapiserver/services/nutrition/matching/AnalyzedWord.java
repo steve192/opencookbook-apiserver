@@ -8,13 +8,18 @@ import java.util.Set;
  *
  * @param stems    one per language for typed names, whose language is unknown
  * @param parts    compound parts; empty for a simple word
- * @param foodWord whether the word alone names a catalogue food
+ * @param foodWord    whether the word alone names a catalogue food
+ * @param description a typed word saying how the food is cut or served ("gehackt"), not what it is
  */
-record AnalyzedWord(String text, Set<String> stems, List<Part> parts, boolean foodWord) {
+record AnalyzedWord(String text, Set<String> stems, List<Part> parts, boolean foodWord, boolean description) {
 
     AnalyzedWord {
         stems = Set.copyOf(stems);
         parts = List.copyOf(parts);
+    }
+
+    AnalyzedWord(String text, Set<String> stems, List<Part> parts, boolean foodWord) {
+        this(text, stems, parts, foodWord, false);
     }
 
     /** Unit and state parts of a typed name ("knoblauch-zehe") need no explaining. */

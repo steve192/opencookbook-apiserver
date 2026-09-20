@@ -94,3 +94,7 @@ preparationContext: [without fat, with fat, pan, oven, microwave, in fat]
 # Phrases saying an ingredient is used only a little, so that a missing amount changes next to nothing.
 sparingUses: [for the pan, for the tin, for greasing, for dusting, for sprinkling, for garnish, to garnish, for decoration,
   for the work surface, for rolling out]
+
+# As in de.yaml: how a food is cut, served or used, not what it is.
+descriptions: [chopped, minced, diced, sliced, grated, crushed, finely, roughly, halved, seeded, deseeded, ripe,
+  lukewarm, warm, cold, garnish]

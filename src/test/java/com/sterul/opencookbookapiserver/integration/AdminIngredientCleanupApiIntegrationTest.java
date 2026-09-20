@@ -64,8 +64,8 @@ class AdminIngredientCleanupApiIntegrationTest extends IntegrationTest {
         shareRepository.deleteAll();
         recipeRepository.deleteAll();
         ingredientRepository.deleteAll();
-        account(OPERATOR);
-        account(COOK);
+        TestAccounts.ensure(userRepository, OPERATOR);
+        TestAccounts.ensure(userRepository, COOK);
         var body = mockMvc.perform(post("/api/v1/recipes").with(user(COOK)).contentType(MediaType.APPLICATION_JSON).content(RECIPE))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -156,16 +156,5 @@ class AdminIngredientCleanupApiIntegrationTest extends IntegrationTest {
 
     private static RequestPostProcessor operator() {
         return user(OPERATOR).authorities(new SimpleGrantedAuthority("ADMIN"));
-    }
-
-    private void account(String emailAddress) {
-        if (userRepository.findByEmailAddress(emailAddress) == null) {
-            var user = new CookpalUser();
-            user.setEmailAddress(emailAddress);
-            user.setPasswordHash("irrelevant");
-            user.setActivated(true);
-            user.setLanguage("de");
-            userRepository.save(user);
-        }
     }
 }

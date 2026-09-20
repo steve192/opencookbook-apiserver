@@ -32,7 +32,10 @@ final class NameComparison {
     private record CataloguedSide(double coverage, int otherFoodWords, boolean exact) {
     }
 
-    /** A typed word naming nothing known is unexplained; one naming another food conflicts, and counts. */
+    /**
+     * A typed word naming nothing known is unexplained; one naming another food conflicts, and counts. A description
+     * the candidate does not share is not held against it: "gehackte Petersilie" is still just parsley.
+     */
     private static TypedSide explainTyped(List<AnalyzedWord> typedWords, List<AnalyzedWord> explaining) {
         var explained = 0.0;
         var counted = 0;
@@ -42,6 +45,11 @@ final class NameComparison {
         var exact = true;
         for (var word : typedWords) {
             var best = best(word, explaining);
+            if (word.description() && (best.fraction() == 0 || best.fuzzy())) {
+                // Not exact, though: a food whose name shares the description stays ahead.
+                exact = false;
+                continue;
+            }
             if (best.fraction() == 0) {
                 exact = false;
                 if (word.foodWord() || word.parts().stream().anyMatch(AnalyzedWord.Part::foodWord)) {

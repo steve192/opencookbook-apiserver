@@ -1,6 +1,7 @@
 package com.sterul.opencookbookapiserver.repositories;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +21,9 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
     Optional<Ingredient> findByNameAndOwner(String name, CookpalUser owner);
 
     Optional<Ingredient> findByIdAndOwner(Long id, CookpalUser owner);
+
+    /** Ids belonging to somebody else are simply absent from the result. */
+    List<Ingredient> findAllByIdInAndOwner(Collection<Long> ids, CookpalUser owner);
 
     List<Ingredient> findAllByOwner(CookpalUser owner);
 

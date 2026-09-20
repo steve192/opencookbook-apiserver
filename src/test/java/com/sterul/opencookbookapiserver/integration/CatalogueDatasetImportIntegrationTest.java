@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,6 +29,7 @@ import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
 import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFoodName;
 import com.sterul.opencookbookapiserver.entities.nutrition.NutritionDatasetImport;
+import com.sterul.opencookbookapiserver.entities.recipe.Diet;
 import com.sterul.opencookbookapiserver.repositories.CatalogueFoodRepository;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.repositories.NutritionDatasetImportRepository;
@@ -37,9 +38,9 @@ import com.sterul.opencookbookapiserver.services.nutrition.catalogue.CatalogueDa
 import com.sterul.opencookbookapiserver.services.nutrition.catalogue.DatasetImportLedger;
 import com.sterul.opencookbookapiserver.services.nutrition.catalogue.NutritionDatasetImporter;
 import com.sterul.opencookbookapiserver.services.nutrition.dataset.NutritionDataset;
+import com.sterul.opencookbookapiserver.services.nutrition.dataset.NutritionDatasetReader;
 import com.sterul.opencookbookapiserver.services.nutrition.matching.CatalogueIndexUpdater;
 import com.sterul.opencookbookapiserver.services.nutrition.matching.CatalogueMatcher;
-import com.sterul.opencookbookapiserver.services.nutrition.dataset.NutritionDatasetReader;
 
 /** On the migrated schema, whose case-insensitive name constraint must hold while names move between foods. */
 @SpringBootTest(properties = {
@@ -210,6 +211,26 @@ class CatalogueDatasetImportIntegrationTest {
         });
     }
 
+    @Test
+    void aDietClassComesFromTheDatasetAndAnAdministratorsCorrectionOutlivesIt() {
+        applier.apply(new NutritionDataset.Catalogue(List.of(food("bls-1", null, name("de", "Tofu", true)))));
+        read(() -> {
+            var imported = foodRepository.findByCatalogueKey("bls-1").orElseThrow();
+            assertEquals(Diet.VEGAN, imported.getDietClass());
+            assertEquals(CatalogueFood.DietClassOrigin.DATASET, imported.getDietClassOrigin());
+        });
+
+        transactionTemplate.executeWithoutResult(status -> foodRepository.findByCatalogueKey("bls-1").orElseThrow()
+                .classifyByAdmin(Diet.VEGETARIAN));
+        applier.apply(new NutritionDataset.Catalogue(List.of(food("bls-1", null, name("de", "Tofu", true)))));
+
+        read(() -> {
+            var corrected = foodRepository.findByCatalogueKey("bls-1").orElseThrow();
+            assertEquals(Diet.VEGETARIAN, corrected.getDietClass());
+            assertEquals(CatalogueFood.DietClassOrigin.ADMIN, corrected.getDietClassOrigin());
+        });
+    }
+
     /** Names are loaded lazily, so assertions on them run inside a transaction. */
     private void read(Runnable assertions) {
         transactionTemplate.executeWithoutResult(status -> assertions.run());
@@ -226,7 +247,7 @@ class CatalogueDatasetImportIntegrationTest {
     private static NutritionDataset.Food food(String key, String variantOf, NutritionDataset.Name... names) {
         var nutrients = new NutritionDataset.Nutrients(77f, 322f, 0.1f, 0f, 15f, 0.7f, 2f, 2f, 0f);
         return new NutritionDataset.Food(key, variantOf, new NutritionDataset.Source("BLS", key.substring(4), key),
-                List.of(), false, null, nutrients, List.of(names), List.of());
+                List.of(), false, "VEGAN", null, nutrients, List.of(names), List.of());
     }
 
     private static NutritionDataset.Name name(String language, String name, boolean display) {

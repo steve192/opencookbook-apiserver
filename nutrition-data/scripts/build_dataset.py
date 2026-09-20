@@ -21,6 +21,10 @@ def main() -> int:
         )
         foods, report = catalogue.build(references, curated, sources)
     except (InvalidCuration, reference.InvalidReference) as invalid:
+        # A build that stopped to ask something still owes the report that says what to decide.
+        if isinstance(invalid, catalogue.UndecidedFoods):
+            _write_report(invalid.report)
+            print(f"Report: {paths.BUILD_REPORT.relative_to(paths.NUTRITION_DATA)}", file=sys.stderr)
         print(f"Dataset not built: {invalid}", file=sys.stderr)
         return 1
 

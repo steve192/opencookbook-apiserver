@@ -14,7 +14,7 @@ import com.sterul.opencookbookapiserver.unit.services.nutrition.ShippedNutrition
 /** Regression floors on the reference gold set; they only move up. */
 class CatalogueMatcherReferenceSetTest {
 
-    // Measured with matcher version 2 on the reference set of 595 names: 0.991 and 0.971.
+    // Measured with matcher version 3 on the reference set of 618 names: 0.993 and 0.979.
     private static final double SILENT_PRECISION_FLOOR = 0.99;
     private static final double COVERAGE_FLOOR = 0.97;
 

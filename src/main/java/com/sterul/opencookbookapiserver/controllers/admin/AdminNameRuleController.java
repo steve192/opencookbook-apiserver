@@ -34,6 +34,7 @@ import jakarta.validation.constraints.NotNull;
 @RequestMapping("/api/v1/admin/nutrition/name-rules")
 @Tag(name = "Nutrition name rules", description = "Names never to link, or never to link to a food")
 @ConditionalOnNutritionEnabled
+@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminNameRuleController extends BaseController {
 
     private final NameRuleService nameRules;
@@ -56,14 +57,12 @@ public class AdminNameRuleController extends BaseController {
 
     @Operation(summary = "Every name rule, by name")
     @GetMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
     public List<AdminNameRuleResponse> getRules() {
         return nameRules.getRules().stream().map(AdminNameRuleResponse::fromEntity).toList();
     }
 
     @Operation(summary = "Add a name rule")
     @PostMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
     public AdminNameRuleResponse addRule(@Valid @RequestBody NameRuleRequest request) throws ApiException {
         var admin = getLoggedInUser();
         var rule = request.kind() == CatalogueNameRule.Kind.NOT_A_FOOD
@@ -74,7 +73,6 @@ public class AdminNameRuleController extends BaseController {
 
     @Operation(summary = "Delete a name rule", description = "Links made while it held stay as they are.")
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteRule(@PathVariable Long id) throws ElementNotFound {
         nameRules.deleteRule(id);

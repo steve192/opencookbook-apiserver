@@ -26,7 +26,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.jayway.jsonpath.JsonPath;
-import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
 import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFoodName;
 import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFoodPortion;
@@ -87,8 +86,8 @@ class NutritionApiIntegrationTest extends IntegrationTest {
                 name("de", "Hühnerei"), name("de", "Eier"), name("en", "Egg"));
         sugar = food("custom-sugar", 400, null, name("de", "Zucker"), name("en", "Sugar"));
         indexUpdater.rebuild();
-        account(COOK);
-        account(STRANGER);
+        TestAccounts.ensure(userRepository, COOK);
+        TestAccounts.ensure(userRepository, STRANGER);
     }
 
     @Test
@@ -268,16 +267,5 @@ class NutritionApiIntegrationTest extends IntegrationTest {
     private static CatalogueFoodName name(String language, String name) {
         return CatalogueFoodName.builder().languageIsoCode(language).name(name).display(true)
                 .origin(CatalogueFoodName.Origin.ADMIN).build();
-    }
-
-    private void account(String emailAddress) {
-        if (userRepository.findByEmailAddress(emailAddress) == null) {
-            var user = new CookpalUser();
-            user.setEmailAddress(emailAddress);
-            user.setPasswordHash("irrelevant");
-            user.setActivated(true);
-            user.setLanguage("de");
-            userRepository.save(user);
-        }
     }
 }
