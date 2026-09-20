@@ -17,6 +17,12 @@ import {
   NutritionDataset,
   Recipe,
   RecipeUpdate,
+  ClassificationDecision,
+  ClassificationKind,
+  ClassificationProposal,
+  ClassificationRun,
+  ClassificationScope,
+  RecipeDiet,
   RelinkDecision,
   RelinkProposal,
   RelinkRun,
@@ -73,7 +79,24 @@ export const CatalogueApi = {
     http.delete<CatalogueFood>(`/admin/catalogue/foods/${id}/names`, {languageIsoCode, name}),
   merge: (id: number, targetId: number) =>
     http.post<CatalogueFood>(`/admin/catalogue/foods/${id}/merge`, {targetId}),
+  classify: (id: number, dietClass: RecipeDiet | null) =>
+    http.put<CatalogueFood>(`/admin/catalogue/foods/${id}/diet-class`, {dietClass}),
   dataset: () => http.get<NutritionDataset>('/admin/catalogue/dataset'),
+};
+
+export const ClassificationApi = {
+  getRuns: () => http.get<ClassificationRun[]>('/admin/recipes/classification-runs'),
+  preview: (kind: ClassificationKind, scope: ClassificationScope) =>
+    http.post<ClassificationRun>('/admin/recipes/classification-runs', {kind, scope}),
+  getRun: (id: number) => http.get<ClassificationRun>(`/admin/recipes/classification-runs/${id}`),
+  getProposals: (id: number) =>
+    http.get<ClassificationProposal[]>(`/admin/recipes/classification-runs/${id}/proposals`),
+  decide: (id: number, proposalIds: number[], decision: ClassificationDecision) =>
+    http.post<ClassificationProposal[]>(`/admin/recipes/classification-runs/${id}/decisions`,
+        {proposalIds, decision}),
+  apply: (id: number) => http.post<ClassificationRun>(`/admin/recipes/classification-runs/${id}/apply`),
+  revert: (id: number) => http.post<ClassificationRun>(`/admin/recipes/classification-runs/${id}/revert`),
+  discard: (id: number) => http.post<ClassificationRun>(`/admin/recipes/classification-runs/${id}/discard`),
 };
 
 export const RelinkApi = {

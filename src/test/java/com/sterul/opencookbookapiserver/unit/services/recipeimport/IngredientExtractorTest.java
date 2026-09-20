@@ -71,6 +71,13 @@ class IngredientExtractorTest {
     }
 
     @Test
+    void aNonBreakingOrThinSpaceSeparatesLikeAnyOther() {
+        assertUnit("80\u00A0g gehackte Mandeln", "g");
+        assertEquals("gehackte Mandeln", cut.extractName("80\u00A0g gehackte Mandeln"));
+        assertEquals("Joghurt", cut.extractName("200\u202Fg Joghurt"));
+    }
+
+    @Test
     void oddNumberSignsAreNoFailure() {
         assertAmount("1/2½ Butter", 0.5F);
         assertAmount("⅟ Butter", 0F);

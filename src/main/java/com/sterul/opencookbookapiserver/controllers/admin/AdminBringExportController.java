@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/v1/admin/bringexports")
 @Tag(name = "Bring exports", description = "Bring exports admin api")
 @Slf4j
+@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminBringExportController {
 
     private final BringExportService bringExportService;
@@ -36,7 +37,6 @@ public class AdminBringExportController {
 
     @Operation(summary = "Every shopping list handed to Bring, with who exported it")
     @GetMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
     public List<AdminBringExportResponse> getAll() {
         log.info("Admin: Accessing all bring exports");
         var now = clock.instant();
@@ -47,7 +47,6 @@ public class AdminBringExportController {
 
     @Operation(summary = "Delete an export before it lapses on its own")
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteExport(@PathVariable String id) throws ElementNotFound {
         log.info("Admin: Deleting bring export {}", id);

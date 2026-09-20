@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
+import com.sterul.opencookbookapiserver.entities.recipe.Diet;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 
@@ -16,7 +17,7 @@ public record AdminRecipeResponse(
         int servings,
         Long preparationTime,
         Long totalTime,
-        Recipe.RecipeType recipeType,
+        Diet recipeType,
         String recipeSource,
         int ingredientCount,
         int stepCount,

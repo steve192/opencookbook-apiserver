@@ -6,6 +6,7 @@ import java.util.Map;
 import jakarta.mail.MessagingException;
 
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -82,7 +83,13 @@ public class EmailService {
         messageHelper.addInline(MailRenderer.LOGO_CONTENT_ID, new ClassPathResource(MailRenderer.LOGO_RESOURCE),
                 "image/png");
 
-        javaMailSender.send(message);
+        try {
+            javaMailSender.send(message);
+        } catch (MailException e) {
+            // Spring reports an unreachable server unchecked; every caller is written against the
+            // declared failure, and signing up or deleting an account must survive it.
+            throw new MessagingException("Sending the " + kind + " mail failed", e);
+        }
     }
 
 }

@@ -2,15 +2,17 @@ import CallMergeIcon from '@mui/icons-material/CallMerge';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import EnergySavingsLeafIcon from '@mui/icons-material/EnergySavingsLeaf';
 import TranslateIcon from '@mui/icons-material/Translate';
 import {Accordion, AccordionDetails, AccordionSummary, Box, Button, Chip, Dialog, DialogActions,
   DialogContent, DialogTitle, MenuItem, Paper, Stack, TextField, Typography} from '@mui/material';
 import {useCallback, useMemo, useState} from 'react';
 import {toast} from 'react-toastify';
 import {CatalogueApi, CatalogueFood, CatalogueFoodSummary, CustomFoodDraft, errorMessage, NutritionDataset,
-  Nutrients} from '../api';
+  Nutrients, RecipeDiet} from '../api';
 import {CollectionScreen} from '../components/collection/CollectionScreen';
 import {FieldDefinition, RowAction} from '../components/collection/types';
+import {DIET_COLORS, DIET_LABELS, DIETS} from '../components/diets';
 import {EntityFormDialog} from '../components/form/EntityFormDialog';
 import {FormFieldDefinition, PairListEntry} from '../components/form/types';
 import {NutritionTurnedOff} from '../components/NutritionTurnedOff';
@@ -65,12 +67,43 @@ const fields: FieldDefinition<CatalogueFoodSummary>[] = [
     render: (food) => <Chip size="small" color={ORIGIN_COLORS[originLabel(food)] ?? 'default'} label={originLabel(food)} />,
   },
   {key: 'energyKcal', label: 'Energy (kcal)', kind: 'number', width: 130},
+  {
+    key: 'dietClass',
+    label: 'Diet',
+    width: 150,
+    // Outlined where an administrator corrected it
+    render: (food) => food.dietClass ?
+      <Chip
+        size="small"
+        color={DIET_COLORS[food.dietClass]}
+        variant={food.dietClassOrigin === 'ADMIN' ? 'outlined' : 'filled'}
+        label={food.dietClass + (food.dietClassOrigin === 'ADMIN' ? ' (corrected)' : '')}
+      /> :
+      <Chip size="small" label="unclassified" />,
+  },
   {key: 'variantOfKey', label: 'Variant of', width: 150, importance: 'secondary'},
   {key: 'nameCount', label: 'Names', kind: 'number', width: 100, importance: 'secondary'},
   {key: 'portionCount', label: 'Portions', kind: 'number', width: 100, importance: 'secondary'},
   {key: 'catalogueKey', label: 'Key', importance: 'reference'},
   {key: 'sourceName', label: 'Source name', importance: 'reference'},
   {key: 'id', label: 'Id', kind: 'number', importance: 'reference'},
+];
+
+interface DietClassForm {
+  dietClass: RecipeDiet | '';
+}
+
+const dietClassFormFields: FormFieldDefinition<DietClassForm>[] = [
+  {
+    name: 'dietClass',
+    label: 'Counts as',
+    type: 'select',
+    options: [
+      {value: '', label: 'Unclassified'},
+      ...DIETS.map((diet) => ({value: diet, label: DIET_LABELS[diet]})),
+    ],
+    helperText: 'Fish counts as meat. Kept when the next dataset release is imported, unlike the shipped class',
+  },
 ];
 
 interface CustomFoodForm extends Record<keyof Nutrients, number | null> {
@@ -169,6 +202,7 @@ export const CatalogueScreen = () => {
   const [adding, setAdding] = useState(false);
   const [naming, setNaming] = useState<CatalogueFood>();
   const [merging, setMerging] = useState<CatalogueFoodSummary>();
+  const [classifying, setClassifying] = useState<CatalogueFoodSummary>();
 
   // The list carries summaries; editing and naming need the whole food.
   const openWithFood = useCallback((open: (food: CatalogueFood) => void) =>
@@ -204,6 +238,14 @@ export const CatalogueScreen = () => {
     }
   };
 
+  const classify = async (form: DietClassForm) => {
+    if (classifying &&
+      await runner.run('Classified ' + classifying.catalogueKey,
+          () => CatalogueApi.classify(classifying.id, form.dietClass === '' ? null : form.dietClass))) {
+      setClassifying(undefined);
+    }
+  };
+
   const merge = async (form: MergeForm) => {
     if (merging && form.targetId !== null &&
       await runner.run('Merged ' + merging.catalogueKey, () => CatalogueApi.merge(merging.id, Number(form.targetId)))) {
@@ -216,6 +258,7 @@ export const CatalogueScreen = () => {
     const isDataset = (food: CatalogueFoodSummary) => food.origin !== 'CUSTOM';
     return [
       {label: 'Names', icon: <TranslateIcon fontSize="small" />, onRun: openWithFood(setNaming)},
+      {label: 'Diet', icon: <EnergySavingsLeafIcon fontSize="small" />, onRun: setClassifying},
       {label: 'Edit', icon: <EditIcon fontSize="small" />, hidden: isDataset, onRun: openWithFood(setEditing)},
       {label: 'Merge into', icon: <CallMergeIcon fontSize="small" />, hidden: isDataset, onRun: setMerging},
       {
@@ -252,6 +295,16 @@ export const CatalogueScreen = () => {
         onCreate={() => setAdding(true)}
         createLabel="Add custom food"
         rowActions={rowActions}
+      />
+
+      <EntityFormDialog<DietClassForm>
+        open={!!classifying}
+        title={classifying ? 'Diet of ' + (classifying.displayNameDe ?? classifying.catalogueKey) : ''}
+        fields={dietClassFormFields}
+        initialValues={{dietClass: classifying?.dietClass ?? ''}}
+        submitLabel="Save"
+        onClose={() => setClassifying(undefined)}
+        onSubmit={classify}
       />
 
       <EntityFormDialog<CustomFoodForm>

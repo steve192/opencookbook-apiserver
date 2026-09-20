@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
+import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
 import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFoodPortion;
 import com.sterul.opencookbookapiserver.services.nutrition.UnitLexicon;
@@ -40,6 +41,19 @@ public class GramsResolver {
             case VOLUME -> amount == null ? AmountInGrams.unresolved(LineStatus.NO_AMOUNT) : volume(amount, unit.get(), food);
             case COUNT -> amount == null ? AmountInGrams.unresolved(LineStatus.NO_AMOUNT) : pieces(amount, unit.get(), food, ownPortions);
         };
+    }
+
+    /** An amount of an ingredient in grams, through its food where it is linked; empty where it cannot be weighed. */
+    public Optional<Double> gramsOf(Float amount, String unitWord, Ingredient ingredient) {
+        if (amount == null || ingredient == null) {
+            return Optional.empty();
+        }
+        var food = ingredient.getCatalogueFood();
+        if (food == null) {
+            return weightWithoutFood(amount, unitWord);
+        }
+        var resolved = resolve(amount, unitWord, food, ingredient.getPortionOverrides());
+        return resolved.status() == LineStatus.RESOLVED ? Optional.ofNullable(resolved.grams()) : Optional.empty();
     }
 
     /** Grams independent of the food (mass, volume as water, pinch); empty otherwise. */

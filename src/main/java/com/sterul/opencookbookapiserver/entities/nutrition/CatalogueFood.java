@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.sterul.opencookbookapiserver.entities.AuditableEntity;
+import com.sterul.opencookbookapiserver.entities.recipe.Diet;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -73,6 +74,14 @@ public class CatalogueFood extends AuditableEntity {
     /** Contributes next to nothing (water, salt, spices): a missing amount does not matter. */
     private boolean negligible;
 
+    /** On the recipe's scale, since a recipe's diet is its strictest food's. Null only for unclassified custom foods. */
+    @Enumerated(EnumType.STRING)
+    private Diet dietClass;
+
+    /** An administrator's correction survives the next dataset release; the dataset's own does not. */
+    @Enumerated(EnumType.STRING)
+    private DietClassOrigin dietClassOrigin;
+
     @Column(name = "density_g_per_ml")
     private Float densityGPerMl;
 
@@ -112,6 +121,26 @@ public class CatalogueFood extends AuditableEntity {
 
     public enum Origin {
         DATASET, CUSTOM
+    }
+
+    public enum DietClassOrigin {
+        DATASET, ADMIN
+    }
+
+    /** Leaves an administrator's decision alone, the way an import leaves their names alone. */
+    public void applyDatasetDietClass(Diet shipped) {
+        if (dietClassOrigin != DietClassOrigin.ADMIN) {
+            classify(shipped, DietClassOrigin.DATASET);
+        }
+    }
+
+    public void classifyByAdmin(Diet corrected) {
+        classify(corrected, DietClassOrigin.ADMIN);
+    }
+
+    private void classify(Diet diet, DietClassOrigin origin) {
+        dietClass = diet;
+        dietClassOrigin = diet == null ? null : origin;
     }
 
     public enum SourceType {

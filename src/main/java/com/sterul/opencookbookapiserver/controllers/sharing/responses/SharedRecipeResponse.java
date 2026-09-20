@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sterul.opencookbookapiserver.controllers.responses.NutritionSummaryResponse;
+import com.sterul.opencookbookapiserver.entities.recipe.Diet;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
-import com.sterul.opencookbookapiserver.entities.recipe.Recipe.RecipeType;
 
 /**
  * A recipe as it is published to anybody holding a share link.
@@ -22,7 +22,7 @@ public record SharedRecipeResponse(
         int servings,
         Long preparationTime,
         Long totalTime,
-        RecipeType recipeType,
+        Diet recipeType,
         String recipeSource,
         NutritionSummaryResponse nutrition) {
 

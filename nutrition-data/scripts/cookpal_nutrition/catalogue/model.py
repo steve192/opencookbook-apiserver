@@ -4,6 +4,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import Iterable
 
+from cookpal_nutrition.curation import InvalidCuration
 from cookpal_nutrition.nutrients import Nutrients
 
 LANGUAGES = ("de", "en")
@@ -38,6 +39,8 @@ class Food:
     portions: list[Portion] = field(default_factory=list)
     density_g_per_ml: float | None = None
     negligible: bool = False
+    # VEGAN, VEGETARIAN or MEAT; see catalogue/diets.py.
+    diet_class: str | None = None
 
 
 @dataclass(frozen=True)
@@ -58,6 +61,14 @@ class Report:
     def stale(self, file: str, references: Iterable[object]) -> None:
         for reference in sorted(str(reference) for reference in references):
             self.add(f"stale curation in {file} (ignored)", reference)
+
+
+class UndecidedFoods(InvalidCuration):
+    """Stops a build that would ship a guess; carries the report listing what to decide."""
+
+    def __init__(self, message: str, report: Report) -> None:
+        super().__init__(message)
+        self.report = report
 
 
 def bls_key(code: str) -> str:

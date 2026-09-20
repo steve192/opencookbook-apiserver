@@ -37,6 +37,9 @@ class CatalogueMatcherTest {
                 food("pasta", "Nudeln", "Pasta"),
                 food("glass-noodles", "Glasnudeln", "Glass noodles"),
                 food("salt", "Salz", "Salt"),
+                food("almond", "Mandel", "Almond"),
+                food("beer", "Bier", "Beer"),
+                food("almond-chopped", "Mandel gehackt", "Almond chopped"),
                 food("pepper", "Pfeffer", "Pepper"),
                 food("bell-pepper", Set.of(), new MatchableFood.Name("de", "Paprika")),
                 food("paprika-powder", Set.of(), new MatchableFood.Name("en", "Paprika"))));
@@ -100,6 +103,31 @@ class CatalogueMatcherTest {
     @Test
     void aNameOfTwoFoodsIsNotLinkedSilently() {
         assertNotEquals(ConfidenceBand.SILENT, linked("Salz und Pfeffer").map(MatchCandidate::band).orElse(ConfidenceBand.NONE));
+    }
+
+    @Test
+    void aDescriptionIsNotHeldAgainstAFoodWithoutIt() {
+        assertEquals("garlic", silentlyLinked("Knoblauch, fein gehackt"));
+        assertEquals("butter", silentlyLinked("Butter für die Form"));
+    }
+
+    @Test
+    void aFoodWhoseNameSharesTheDescriptionStaysAhead() {
+        assertEquals("almond-chopped", silentlyLinked("gehackte Mandeln"));
+        assertEquals("almond", silentlyLinked("Mandeln"));
+    }
+
+    @Test
+    void aWordMeetsANameOnlyWhereItIsTheSameWordInThatNamesLanguage() {
+        // German "Beeren" stems to "beer", which is English for Bier
+        assertNotEquals("beer", linked("Beeren").map(MatchCandidate::foodKey).orElse(""));
+        assertEquals("beer", silentlyLinked("Bier"));
+        assertEquals("potato", silentlyLinked("potatoes"));
+    }
+
+    @Test
+    void aDescriptionAloneNamesNothing() {
+        assertEquals(Optional.empty(), linked("fein gehackt"));
     }
 
     @Test

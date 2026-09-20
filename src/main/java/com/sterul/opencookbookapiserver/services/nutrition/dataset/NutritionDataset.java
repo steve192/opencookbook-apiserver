@@ -22,8 +22,9 @@ public final class NutritionDataset {
     public record Catalogue(List<Food> foods) {
     }
 
+    /** @param dietClass VEGAN, VEGETARIAN or MEAT; see nutrition-data/curation/diet-classes.yaml */
     public record Food(String key, String variantOf, Source source, List<String> states, boolean negligible,
-            Float densityGPerMl, Nutrients nutrients, List<Name> names, List<Portion> portions) {
+            String dietClass, Float densityGPerMl, Nutrients nutrients, List<Name> names, List<Portion> portions) {
 
         public Food {
             states = states == null ? List.of() : states;
@@ -66,15 +67,19 @@ public final class NutritionDataset {
     public record Lexicons(List<Lexicon> lexicons) {
     }
 
-    /** @param sparingUses phrases for ingredients used only a little ("für die Form") */
+    /**
+     * @param sparingUses  phrases for ingredients used only a little ("für die Form")
+     * @param descriptions words saying how a food is cut or served ("gehackt"), not what it is
+     */
     public record Lexicon(String language, Map<String, List<String>> units, Map<String, List<String>> states,
-            List<String> preparationContext, List<String> sparingUses) {
+            List<String> preparationContext, List<String> sparingUses, List<String> descriptions) {
 
         public Lexicon {
             units = units == null ? Map.of() : units;
             states = states == null ? Map.of() : states;
             preparationContext = preparationContext == null ? List.of() : preparationContext;
             sparingUses = sparingUses == null ? List.of() : sparingUses;
+            descriptions = descriptions == null ? List.of() : descriptions;
         }
     }
 }

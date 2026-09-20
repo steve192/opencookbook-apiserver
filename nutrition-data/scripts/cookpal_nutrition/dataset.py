@@ -87,6 +87,7 @@ def _food(food: Food) -> dict:
         "variantOf": food.variant_of,
         "source": {"type": food.source_type, "code": food.source_code, "name": food.source_name},
         "states": list(food.states),
+        "dietClass": food.diet_class,
         "negligible": food.negligible,
         "densityGPerMl": food.density_g_per_ml,
         "nutrients": _camel(food.nutrients.as_dict()),

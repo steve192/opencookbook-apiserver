@@ -46,6 +46,8 @@ final class TextAnalysis {
     private static final Map<String, List<Analyzer>> STEMMERS = Map.of(
             "de", List.of(stemmer(GermanLightStemFilter::new), stemmer(GermanMinimalStemFilter::new)),
             "en", List.of(stemmer(EnglishMinimalStemFilter::new)));
+    /** The minimal English stemmer leaves "potatoes" as "potatoe"; food plurals in -oes drop the -es. */
+    private static final String ENGLISH_OES_PLURAL = "oes";
 
     private static final Map<String, CharArraySet> STOPWORDS_BY_LANGUAGE = Map.of(
             "de", GermanAnalyzer.getDefaultStopSet(),
@@ -123,6 +125,9 @@ final class TextAnalysis {
         }
         var stems = new LinkedHashSet<String>();
         stemmers.forEach(stemmer -> stems.add(stem(word, stemmer)));
+        if (language.equals("en") && word.endsWith(ENGLISH_OES_PLURAL)) {
+            stems.add(word.substring(0, word.length() - 2));
+        }
         return stems;
     }
 

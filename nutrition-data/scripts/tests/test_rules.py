@@ -143,3 +143,16 @@ class TestUnits:
     def test_a_typical_size_belongs_to_a_plain_count_unit_in_one_measure(self, spec):
         with pytest.raises(reference.InvalidReference):
             reference._units(spec)
+
+
+class TestLexicon:
+
+    def test_a_description_may_not_also_be_a_unit_or_state_word(self):
+        lexicon = reference.Lexicon(language="de", units={"pinch": ("Prise",)}, states={"BOILED": ("gekocht",)},
+                                    descriptions=("gehackt", "gekocht"))
+        with pytest.raises(reference.InvalidReference, match="gekocht"):
+            reference._require_plain_descriptions(lexicon, "de.yaml")
+
+    def test_descriptions_are_read_from_the_lexicon(self):
+        lexicon = reference._lexicon({"language": "de", "units": {}, "states": {}, "descriptions": ["gehackt"]})
+        assert lexicon.descriptions == ("gehackt",)

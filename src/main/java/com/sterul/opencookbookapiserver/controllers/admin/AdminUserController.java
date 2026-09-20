@@ -32,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/v1/admin/users")
 @Tag(name = "Users", description = "Users admin api")
 @Slf4j
+@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminUserController {
 
     private final UserService userService;
@@ -42,7 +43,6 @@ public class AdminUserController {
 
     @Operation(summary = "Every account on this instance, with how much each one holds")
     @GetMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
     public List<AdminUserOverviewResponse> getAll() {
         log.info("Admin: Accessing all users");
         return userService.getAllUserHoldings().stream()
@@ -52,7 +52,6 @@ public class AdminUserController {
 
     @Operation(summary = "One account")
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public AdminUserResponse getOne(@PathVariable Long id) throws ElementNotFound {
         return AdminUserResponse.fromEntity(userService.getUserById(id));
     }
@@ -62,7 +61,6 @@ public class AdminUserController {
                     + "takes it away. The last administrator who can sign in cannot be changed "
                     + "into somebody who cannot.")
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public AdminUserResponse updateUser(@PathVariable Long id, @Valid @RequestBody AdminUserRequest request)
             throws ElementNotFound, UserAlreadyExistsException, LastAdministratorException {
         log.info("Admin: Updating user {}", id);
@@ -72,7 +70,6 @@ public class AdminUserController {
 
     @Operation(summary = "Delete an account and everything it holds")
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@PathVariable Long id) throws ElementNotFound, LastAdministratorException {
         log.info("Admin: Deleting user {}", id);
@@ -81,7 +78,6 @@ public class AdminUserController {
 
     @Operation(summary = "Let somebody sign in again")
     @PostMapping("/{id}/activate")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public AdminUserResponse activateUser(@PathVariable Long id)
             throws ElementNotFound, LastAdministratorException {
         log.info("Admin: Activating user {}", id);
@@ -90,7 +86,6 @@ public class AdminUserController {
 
     @Operation(summary = "Lock an account", description = "The account and its data stay; nobody can sign in to it.")
     @PostMapping("/{id}/deactivate")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public AdminUserResponse deactivateUser(@PathVariable Long id)
             throws ElementNotFound, LastAdministratorException {
         log.info("Admin: Deactivating user {}", id);
@@ -99,7 +94,6 @@ public class AdminUserController {
 
     @Operation(summary = "Send somebody a password reset mail")
     @PostMapping("/{id}/password-reset")
-    @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void sendPasswordReset(@PathVariable Long id) throws ElementNotFound, MessagingException {
         var user = userService.getUserById(id);

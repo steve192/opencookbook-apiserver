@@ -15,11 +15,11 @@ import jakarta.validation.constraints.Positive;
 
 /** Nutrients per 100 g. */
 public record AdminCustomFoodRequest(
-        @NotEmpty @Valid List<Name> names,
+        @NotEmpty List<@Valid Name> names,
         @NotNull @Valid Nutrients nutrients,
         @Positive Float densityGPerMl,
         boolean negligible,
-        @Valid List<Portion> portions) {
+        List<@Valid Portion> portions) {
 
     public record Name(@NotBlank String languageIsoCode, @NotBlank String name, boolean display) {
     }

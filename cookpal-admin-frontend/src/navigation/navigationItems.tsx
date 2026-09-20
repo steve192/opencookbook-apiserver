@@ -2,6 +2,7 @@ import BlockIcon from '@mui/icons-material/Block';
 import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
 import DocumentScannerIcon from '@mui/icons-material/DocumentScanner';
 import EggIcon from '@mui/icons-material/Egg';
+import EnergySavingsLeafIcon from '@mui/icons-material/EnergySavingsLeaf';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import LocalDiningIcon from '@mui/icons-material/LocalDining';
 import LocalPizzaIcon from '@mui/icons-material/LocalPizza';
@@ -13,6 +14,7 @@ import ShareIcon from '@mui/icons-material/Share';
 import {ReactNode} from 'react';
 import {BringExportsScreen} from '../screens/BringExportsScreen';
 import {CatalogueScreen} from '../screens/CatalogueScreen';
+import {ClassificationScreen} from '../screens/ClassificationScreen';
 import {IngredientCleanupScreen} from '../screens/IngredientCleanupScreen';
 import {IngredientsScreen} from '../screens/IngredientsScreen';
 import {NameRulesScreen} from '../screens/NameRulesScreen';
@@ -45,6 +47,8 @@ export const navigationItems: NavigationItem[] = [
     element: <IngredientCleanupScreen />},
   {route: 'catalogue', label: 'Nutrition catalogue', icon: <EggIcon />, element: <CatalogueScreen />},
   {route: 'relinking', label: 'Relinking', icon: <PlaylistAddCheckIcon />, element: <RelinkScreen />},
+  {route: 'diet-classification', label: 'Diet classification', icon: <EnergySavingsLeafIcon />,
+    element: <ClassificationScreen />},
   {route: 'unmatched-names', label: 'Unmatched names', icon: <QuestionMarkIcon />,
     element: <UnmatchedNamesScreen />},
   {route: 'user-corrections', label: 'User corrections', icon: <RuleIcon />,

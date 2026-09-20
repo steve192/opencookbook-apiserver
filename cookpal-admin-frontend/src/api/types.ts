@@ -133,6 +133,8 @@ export interface CatalogueFoodSummary {
   displayNameEn: string | null;
   variantOfKey: string | null;
   energyKcal: number | null;
+  dietClass: RecipeDiet | null;
+  dietClassOrigin: DietClassOrigin | null;
   retired: boolean;
   nameCount: number;
   portionCount: number;
@@ -217,20 +219,17 @@ export type RelinkScope =
   | 'RETIRED_FOODS'
   | 'OLDER_MATCHER';
 
-export type RelinkRunStatus = 'PREVIEWED' | 'APPLIED' | 'REVERTED' | 'DISCARDED';
+export type ReviewedRunStatus = 'PREVIEWED' | 'APPLIED' | 'REVERTED' | 'DISCARDED';
+/** SKIPPED is the run's own decision, never a reviewer's. */
+export type ReviewDecision = 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'SKIPPED';
 
-export interface RelinkRun {
+/** What every run changing many rows under review shares: preview, decide, apply, revert. */
+export interface ReviewedRun {
   id: number;
-  scope: RelinkScope;
-  belowConfidence: number | null;
-  matcherVersion: number;
-  datasetLabel: string | null;
-  status: RelinkRunStatus;
+  status: ReviewedRunStatus;
   proposalCount: number;
-  ingredientCount: number;
-  unchangedCount: number;
   appliedCount: number;
-  /** Changed after the preview, so left alone by apply. */
+  /** Accepted, but changed since the preview and so left alone by apply. */
   skippedCount: number;
   startedByEmailAddress: string | null;
   createdOn: string;
@@ -238,8 +237,17 @@ export interface RelinkRun {
   revertedAt: string | null;
 }
 
+export interface RelinkRun extends ReviewedRun {
+  scope: RelinkScope;
+  belowConfidence: number | null;
+  matcherVersion: number;
+  datasetLabel: string | null;
+  ingredientCount: number;
+  unchangedCount: number;
+}
+
 export type RelinkChange = 'NEW_LINK' | 'CHANGED' | 'UNLINKED' | 'CONFIDENCE';
-export type RelinkDecision = 'PENDING' | 'ACCEPTED' | 'REJECTED';
+export type RelinkDecision = Exclude<ReviewDecision, 'SKIPPED'>;
 
 export interface RelinkProposal {
   id: number;
@@ -252,6 +260,38 @@ export interface RelinkProposal {
   band: ConfidenceBand | null;
   change: RelinkChange;
   decision: RelinkDecision;
+}
+
+export type RecipeDiet = 'VEGAN' | 'VEGETARIAN' | 'MEAT';
+/** ADMIN survives the next dataset release; DATASET is replaced by it. */
+export type DietClassOrigin = 'DATASET' | 'ADMIN';
+export type ClassificationSource = 'USER' | 'DERIVED';
+
+export type ClassificationScope = 'NEVER_CLASSIFIED' | 'DERIVED_ONLY';
+export type ClassificationKind = 'DIET';
+/** SKIPPED: a person had decided it, or its ingredients cannot be read. */
+export type ClassificationDecision = ReviewDecision;
+
+export interface ClassificationRun extends ReviewedRun {
+  kind: ClassificationKind;
+  scope: ClassificationScope;
+  /** What the values were read from; for diets, the dataset release. */
+  basis: string | null;
+  /** Left alone at the preview because they cannot be read. */
+  unreadableCount: number;
+}
+
+export interface ClassificationProposal {
+  id: number;
+  recipeId: number;
+  recipeTitle: string;
+  /** Encoded by the run's kind; for a diet run, a RecipeDiet. */
+  proposedValue: string | null;
+  previousValue: string | null;
+  previousSource: ClassificationSource | null;
+  decision: ClassificationDecision;
+  /** Why the run reached this: the ingredient that decided it, or the one that blocked it. */
+  reason: string | null;
 }
 
 export type NameRuleKind = 'NEVER_LINK_TO' | 'NOT_A_FOOD';

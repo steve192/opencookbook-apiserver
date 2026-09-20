@@ -6,6 +6,7 @@ import java.util.HashSet;
 import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
 import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFoodPortion;
 import com.sterul.opencookbookapiserver.entities.nutrition.NutrientValues;
+import com.sterul.opencookbookapiserver.entities.recipe.Diet;
 import com.sterul.opencookbookapiserver.services.nutrition.dataset.NutritionDataset;
 
 /** Maps dataset foods onto catalogue food entities. */
@@ -21,6 +22,7 @@ public final class DatasetFoods {
         entity.setSourceCode(food.source().code());
         entity.setSourceName(food.source().name());
         entity.setNegligible(food.negligible());
+        entity.applyDatasetDietClass(dietClass(food));
         entity.setDensityGPerMl(food.densityGPerMl());
         entity.setNutrients(nutrients(food.nutrients()));
         replaceIfChanged(entity.getStates(), new HashSet<>(food.states()));
@@ -31,6 +33,11 @@ public final class DatasetFoods {
                         .origin(CatalogueFoodPortion.Origin.valueOf(portion.origin()))
                         .build())
                 .toList());
+    }
+
+    /** Absent only for a dataset built before diet classes; such a food stays unclassified. */
+    private static Diet dietClass(NutritionDataset.Food food) {
+        return food.dietClass() == null ? null : Diet.valueOf(food.dietClass());
     }
 
     private static NutrientValues nutrients(NutritionDataset.Nutrients nutrients) {

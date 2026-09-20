@@ -7,6 +7,9 @@ import yaml
 
 FDC_NEW = "new"
 
+# Ordered from least to most restrictive; a recipe takes the class of its strictest ingredient.
+DIET_CLASSES = ("VEGAN", "VEGETARIAN", "MEAT")
+
 
 class InvalidCuration(ValueError):
     pass
@@ -45,6 +48,22 @@ class Properties:
 
 
 @dataclass(frozen=True)
+class DietClasses:
+    """
+    Which foods are animal.
+
+    The BLS group letter decides; `review_patterns` only nominate a food whose name disagrees with
+    its group, and `overrides` are the only thing that settles one. See catalogue/diets.py for why
+    a pattern is never allowed to decide on its own.
+    """
+    # BLS group letter -> class. A group left out has no default, so each of its foods needs an override.
+    group_defaults: dict[str, str]
+    # Class -> regular expression over the source description.
+    review_patterns: dict[str, str]
+    overrides: dict[str, str]
+
+
+@dataclass(frozen=True)
 class FdcVocabulary:
     """How the FDC duplicate rule reads FDC's American English in the BLS's British English."""
     synonyms: dict[str, str]
@@ -66,6 +85,7 @@ class Curation:
     # Names that replace a food's derived names; the first per language is shown.
     names: dict[str, dict[str, list[str]]]
     portions: dict[str, list[CuratedPortion]]
+    diet_classes: DietClasses
     properties: dict[str, Properties] = field(default_factory=dict)
     # Everyday names added to a food's other names ("Kartoffel" for "Kartoffel geschält"), never shown first.
     synonyms: dict[str, dict[str, list[str]]] = field(default_factory=dict)
@@ -81,6 +101,7 @@ def load(curation: Path) -> Curation:
         fdc_duplicates=_fdc_duplicates(_read(curation / "fdc-duplicates.yaml")),
         fdc_vocabulary=_fdc_vocabulary(_read(curation / "fdc-vocabulary.yaml")),
         names=_names(sorted((curation / "names").glob("*.yaml"))),
+        diet_classes=_diet_classes(_read(curation / "diet-classes.yaml")),
         portions=_portions(_read(curation / "portions.yaml")),
         properties=_properties(_read(curation / "properties.yaml")),
         synonyms=_names(sorted((curation / "synonyms").glob("*.yaml"))),
@@ -144,6 +165,24 @@ def _portions(document: dict) -> dict[str, list[CuratedPortion]]:
                 raise InvalidCuration(f"portion {unit} of {key} must weigh more than nothing")
             portions[key].append(portion)
     return portions
+
+
+def _diet_classes(document: dict) -> DietClasses:
+    return DietClasses(
+        group_defaults={str(group): _diet_class(value, f"groupDefaults {group}")
+                        for group, value in (document.get("groupDefaults") or {}).items()},
+        review_patterns={_diet_class(name, f"reviewPatterns key '{name}'"): str(pattern)
+                         for name, pattern in (document.get("reviewPatterns") or {}).items()},
+        overrides={str(key): _diet_class(value, f"override {key}")
+                   for key, value in (document.get("overrides") or {}).items()},
+    )
+
+
+def _diet_class(value: object, where: str) -> str:
+    name = str(value).upper()
+    if name not in DIET_CLASSES:
+        raise InvalidCuration(f"diet-classes.yaml: {where} is '{value}', not one of {', '.join(DIET_CLASSES)}")
+    return name
 
 
 def _properties(document: dict) -> dict[str, Properties]:

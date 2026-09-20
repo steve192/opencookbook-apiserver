@@ -29,6 +29,20 @@ public record NutrientAmounts(double energyKcal, double energyKj, double fat, do
                 carbohydrates / divisor, sugar / divisor, fibre / divisor, protein / divisor, salt / divisor);
     }
 
+    public NutrientValues toValues() {
+        return NutrientValues.builder()
+                .energyKcal((float) energyKcal)
+                .energyKj((float) energyKj)
+                .fat((float) fat)
+                .saturatedFat((float) saturatedFat)
+                .carbohydrates((float) carbohydrates)
+                .sugar((float) sugar)
+                .fibre((float) fibre)
+                .protein((float) protein)
+                .salt((float) salt)
+                .build();
+    }
+
     private static double times(Float value, double factor) {
         return value == null ? 0 : value * factor;
     }

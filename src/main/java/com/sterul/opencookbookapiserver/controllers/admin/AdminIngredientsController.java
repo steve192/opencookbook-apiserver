@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/v1/admin/ingredients")
 @Tag(name = "Ingredients", description = "Admin ingredient api")
 @Slf4j
+@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminIngredientsController {
 
     private final IngredientService ingredientService;
@@ -34,7 +35,6 @@ public class AdminIngredientsController {
 
     @Operation(summary = "Every user's ingredients")
     @GetMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
     public List<AdminIngredientResponse> getAll() {
         log.info("Admin: Accessing all ingredients");
         return ingredientService.getAllIngredients().stream().map(AdminIngredientResponse::fromEntity).toList();
@@ -42,14 +42,12 @@ public class AdminIngredientsController {
 
     @Operation(summary = "One ingredient")
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public AdminIngredientResponse getOne(@PathVariable Long id) throws ElementNotFound {
         return AdminIngredientResponse.fromEntity(ingredientService.getIngredient(id));
     }
 
     @Operation(summary = "Delete an ingredient no recipe uses")
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteIngredient(@PathVariable Long id) throws ApiException {
         log.info("Admin: Deleting ingredient {}", id);

@@ -34,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/v1/admin/ml")
 @Tag(name = "Machine learning", description = "Admin view of this instance's ml usage")
 @Slf4j
+@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminMlController {
 
     private final MlAvailabilityService availability;
@@ -48,7 +49,6 @@ public class AdminMlController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
     public AdminMlStatisticsResponse getStatistics() {
         log.info("Admin: Accessing machine learning statistics");
 
@@ -72,7 +72,6 @@ public class AdminMlController {
     @Operation(summary = "Every scan on this instance, newest first",
             description = "Optionally narrowed to one person or one state.")
     @GetMapping("/jobs")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public List<AdminMlJobResponse> getJobs(
             @RequestParam(required = false) Long userId,
             @RequestParam(required = false) MlJobStatus status) {
@@ -86,14 +85,12 @@ public class AdminMlController {
             description = "A scan still running is stopped, and it stops counting against its "
                     + "owner's daily allowance.")
     @PostMapping("/jobs/{id}/reset")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public AdminMlJobResponse resetJob(@PathVariable String id) throws ElementNotFound {
         return AdminMlJobResponse.fromEntity(mlJobService.resetJob(id));
     }
 
     @Operation(summary = "Delete a scan", description = "Stops it first if it is still running.")
     @DeleteMapping("/jobs/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteJob(@PathVariable String id) throws ElementNotFound {
         mlJobService.deleteJob(id);
@@ -103,7 +100,6 @@ public class AdminMlController {
             description = "Only people who have run a scan today are listed; everyone else has "
                     + "used nothing. A daily limit of 0 means there is no limit.")
     @GetMapping("/quota")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public AdminMlQuotaResponse getQuotaUsage() {
         var limit = mlJobService.dailyQuota();
         return AdminMlQuotaResponse.builder()
@@ -125,7 +121,6 @@ public class AdminMlController {
             description = "The scans themselves are kept and stop counting, so the record of "
                     + "what was run survives the exception being granted.")
     @PostMapping("/quota/{userId}/reset")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public AdminMlQuotaResponse resetQuota(@PathVariable Long userId) throws ElementNotFound {
         mlJobService.resetQuota(userService.getUserById(userId));
         return getQuotaUsage();

@@ -43,7 +43,7 @@ bls-M820600:
   de: [Frischkäse]
   en: [cream cheese]
 bls-M710800:
-  de: [Doppelrahmfrischkäse]
+  de: [Doppelrahmfrischkäse, Frischkäse Doppelrahmstufe]
   en: [full-fat cream cheese]
 bls-M711100:
   de: [Hüttenkäse, körniger Frischkäse]
@@ -67,7 +67,7 @@ bls-M304600:
   de: [Emmentaler, Emmentaler Käse]
   en: [emmental, swiss cheese]
 bls-M012200:
-  de: [Feta, Fetakäse]
+  de: [Feta, Fetakäse, Feta-Käse]
   en: [feta, feta cheese]
 bls-M6A6800:
   de: [Schafskäse, Schafkäse]
@@ -79,8 +79,9 @@ bls-M303600:
   de: [Cheddar, Cheddarkäse]
   en: [cheddar, cheddar cheese]
 bls-Q630000:
-  # How soft the butter should be says how to handle it, not which butter it is.
-  de: [Butter, ungesalzene Butter, weiche Butter, zimmerwarme Butter, kalte Butter]
+  # How soft the butter should be says how to handle it, not which butter it is. A bare "Fett" is for
+  # greasing the tin, which in German recipes is butter.
+  de: [Butter, ungesalzene Butter, weiche Butter, zimmerwarme Butter, kalte Butter, Fett]
   en: [butter, unsalted butter]
 bls-Q6A4000:
   de: [gesalzene Butter, Salzbutter]
@@ -100,6 +101,13 @@ bls-E112100:
 bls-E113100:
   de: [Eiweiß, Eiklar]
   en: [egg white]
+bls-M810600:
+  de: [Schmelzkäse, Kräuterschmelzkäse]
+  en: [processed cheese]
+bls-M206300:
+  # Hot chocolate as a recipe means the drink, not the bar.
+  de: [heiße Schokolade, heißer Kakao]
+  en: [hot chocolate]
 
 # --- Flour, starch, grains, pasta, pulses ----------------------------------------------------------
 bls-C214100:
@@ -112,26 +120,26 @@ bls-C234000:
   de: [Dinkelmehl, Dinkelmehl Type 630]
   en: [spelt flour]
 bls-C211000:
-  de: [Vollkornmehl, Weizenvollkornmehl]
+  de: [Vollkornmehl, Weizenvollkornmehl, Vollkorn-Weizenmehl]
   en: [wholemeal flour, whole wheat flour]
 bls-C223200:
   de: [Roggenmehl]
   en: [rye flour]
 bls-C446000:
-  de: [Speisestärke, Maisstärke, Stärke]
+  de: [Speisestärke, Maisstärke, Stärke, Stärkemehl]
   en: [cornstarch, cornflour, corn starch]
 bls-C133000:
   de: [Haferflocken, zarte Haferflocken, kernige Haferflocken]
   en: [oats, rolled oats, oat flakes, porridge oats]
 bls-C352000:
-  de: [Reis, weißer Reis, Langkornreis, Basmatireis, Jasminreis, Risottoreis, Rundkornreis, Milchreis]
+  de: [Reis, weißer Reis, Langkornreis, Basmatireis, Jasminreis, Risottoreis, Rundkornreis, Milchreis, Basmati]
   en: [rice, white rice, long grain rice, basmati rice, jasmine rice, risotto rice, arborio rice]
 bls-C351000:
   de: [Naturreis, Vollkornreis]
   en: [brown rice]
 bls-E401000:
-  de: [Nudeln, Pasta, Spaghetti, Penne, Fusilli, Farfalle, Makkaroni, Rigatoni, Linguine, Hartweizennudeln, Woknudeln, Ramennudeln]
-  en: [pasta, spaghetti, penne, noodles, macaroni, fusilli, farfalle, rigatoni, linguine]
+  de: [Nudeln, Pasta, Spaghetti, Penne, Fusilli, Farfalle, Makkaroni, Rigatoni, Linguine, Hartweizennudeln, Woknudeln, Ramennudeln, Spirelli, Kritharaki, Udon-Nudeln, Lasagneplatten]
+  en: [pasta, spaghetti, penne, noodles, macaroni, fusilli, farfalle, rigatoni, linguine, udon noodles, ramen noodles, lasagne sheets]
 bls-E432000:
   de: [Eiernudeln, Bandnudeln, Tagliatelle, Suppennudeln, Mie-Nudeln, Mienudeln]
   en: [egg noodles, egg pasta, tagliatelle]
@@ -142,8 +150,8 @@ bls-H030400:
   de: [Glasnudeln]
   en: [glass noodles]
 bls-E438000:
-  de: [frische Nudeln, frische Pasta]
-  en: [fresh pasta]
+  de: [frische Nudeln, frische Pasta, Spätzle, Eierspätzle, Knöpfle]
+  en: [fresh pasta, spaetzle]
 bls-C119200:
   de: [Couscous]
   en: [couscous]
@@ -184,6 +192,22 @@ bls-G760200:
 bls-G570100:
   de: [Mais, Maiskörner]
   en: [sweetcorn, corn]
+bls-C453000:
+  de: [Reismehl]
+  en: [rice flour]
+bls-C219300:
+  de: [Hartweizenmehl, Semola, Semola rimacinata]
+  en: [semolina flour]
+bls-B271000:
+  de: [Bauernbrot]
+bls-E605000:
+  de: [Schupfnudeln]
+bls-H765000:
+  de: [Sojaschnetzel]
+  en: [textured soy protein]
+bls-H861000:
+  de: [Räuchertofu]
+  en: [smoked tofu]
 
 # --- Sugar, sweeteners, oils -----------------------------------------------------------------------
 bls-S111000:
@@ -196,7 +220,7 @@ bls-S111100:
   de: [Staubzucker]
   en: [confectioners' sugar]
 bls-S114000:
-  de: [Vanillezucker]
+  de: [Vanillezucker, Bourbon-Vanillezucker]
   en: [vanilla sugar]
 bls-Q180000:
   de: [Öl, Speiseöl, Pflanzenöl, neutrales Öl, Rapskernöl]
@@ -204,6 +228,9 @@ bls-Q180000:
 bls-Q120000:
   de: [natives Olivenöl extra, Olivenöl extra vergine]
   en: [extra virgin olive oil]
+bls-Q940000:
+  de: [Frittieröl]
+  en: [frying oil]
 
 # --- Vegetables, herbs -----------------------------------------------------------------------------
 bls-K110100:
@@ -226,13 +253,13 @@ bls-G220100:
   de: [Staudensellerie, Stangensellerie]
   en: [celery, celery stalks]
 bls-G543100:
-  de: [Paprika, rote Paprika, Paprikaschote]
+  de: [Paprika, rote Paprika, Paprikaschote, Spitzpaprika]
   en: [red pepper, red bell pepper, bell pepper]
 bls-G541100:
-  de: [grüne Paprika]
+  de: [grüne Paprika, grüne Paprikaschote]
   en: [green pepper, green bell pepper]
 bls-G542100:
-  de: [gelbe Paprika]
+  de: [gelbe Paprika, gelbe Paprikaschote]
   en: [yellow pepper, yellow bell pepper]
 bls-G582100:
   de: [Zucchino]
@@ -281,7 +308,7 @@ bls-G322100:
   en: [kale]
 bls-K701100:
   de: [Champignons, Pilze, braune Champignons, Egerlinge]
-  en: [mushrooms, button mushrooms, white mushrooms]
+  en: [mushrooms, button mushrooms, white mushrooms, chestnut mushrooms, cremini mushrooms]
 bls-G581000:
   de: [Kürbis, Hokkaido, Hokkaidokürbis]
   en: [pumpkin, squash]
@@ -298,8 +325,8 @@ bls-R211200:
   de: [frischer Ingwer]
   en: [ginger, fresh ginger]
 bls-G554100:
-  de: [Chili, Chilischote, rote Chili, Peperoni, Habanero, Vogelaugenchili]
-  en: [chili, chilli, red chili, chili pepper]
+  de: [Chili, Chilischote, rote Chili, Peperoni, Habanero, Vogelaugenchili, Thai-Chili]
+  en: [chili, chilli, red chili, chili pepper, bird's eye chili]
 bls-K120100:
   de: [Pellkartoffeln]
   en: [jacket potatoes]
@@ -310,8 +337,8 @@ bls-G250100:
   de: [Petersilie, glatte Petersilie, krause Petersilie]
   en: [parsley, flat-leaf parsley]
 bls-G061000:
-  de: [Basilikumblätter]
-  en: [basil leaves]
+  de: [Basilikumblätter, Thai-Basilikum, Thaibasilikum]
+  en: [basil leaves, thai basil]
 bls-H510802:
   de: [Oliven, grüne Oliven]
   en: [olives, green olives]
@@ -332,6 +359,12 @@ bls-G750100:
 bls-G490500:
   de: [Knoblauchgranulat, Knoblauchpulver]
   en: [garlic granules, garlic powder]
+bls-G992100:
+  de: [Erbsen und Karotten, Erbsen-Möhren]
+  en: [peas and carrots]
+bls-G107100:
+  de: [Romanasalat, Römersalat, Salatherz]
+  en: [romaine lettuce]
 
 # --- Fruit -----------------------------------------------------------------------------------------
 bls-F840100:
@@ -408,7 +441,8 @@ bls-U685100:
   de: [Schinkenwürfel]
   en: [diced ham]
 bls-W222600:
-  de: [Bratwurst, Rostbratwürstchen, Nürnberger Würstchen]
+  de: [Bratwurst, Rostbratwürstchen, Nürnberger Würstchen, Nürnberger Bratwürstchen, Nürnberger Rostbratwürste,
+    Bratwürstchen]
   en: [bratwurst]
 bls-W424000:
   de: [Kochschinken, gekochter Schinken]
@@ -436,16 +470,32 @@ bls-U255100:
   de: [Suppenfleisch, Rinderbrust]
   en: [beef brisket]
 bls-W411300:
-  de: [Bauchspeck, Räucherspeck, Pancetta]
+  de: [Bauchspeck, Räucherspeck, Pancetta, Wammerl]
   en: [pancetta, smoked pork belly]
+bls-U601000:
+  de: [Schweinefleisch]
+  en: [pork]
+bls-U201000:
+  de: [Rindfleisch]
+  en: [beef]
+bls-U681700:
+  de: [Räucherschinken, Schwarzwälder Schinken]
+  en: [smoked ham]
 
 # --- Nuts and seeds --------------------------------------------------------------------------------
 bls-H210100:
   de: [Mandeln]
   en: [almonds]
 bls-H210400:
-  de: [gemahlene Mandeln, Mandeln gemahlen, Mandelmehl]
+  # Nuts are grated for baking only ever ground.
+  de: [gemahlene Mandeln, Mandeln gemahlen, Mandelmehl, geriebene Mandeln]
   en: [ground almonds, almond flour]
+bls-H130400:
+  de: [gemahlene Haselnüsse, geriebene Haselnüsse]
+  en: [ground hazelnuts]
+bls-H120400:
+  de: [gemahlene Walnüsse, geriebene Walnüsse]
+  en: [ground walnuts]
 bls-H130100:
   de: [Haselnusskerne]
   en: [hazelnuts]
@@ -467,8 +517,11 @@ bls-H310100:
 bls-H110600:
   de: [Erdnusskerne]
   en: [peanuts]
+bls-H150100:
+  de: [Kokosnuss, Kokosnussfleisch]
+  en: [coconut, coconut meat]
 bls-H150400:
-  de: [Kokosraspeln, Kokosflocken]
+  de: [Kokosraspeln, Kokosflocken, geraspelte Kokosnuss, Kokosnuss geraspelt]
   en: [desiccated coconut, shredded coconut, coconut flakes]
 
 bls-M182400:
@@ -492,7 +545,7 @@ bls-R434000:
   de: [Sahnesteif]
   en: [whipped cream stabilizer]
 bls-R481100:
-  de: [Vanillepuddingpulver, Vanillepudding-Pulver, Puddingpulver Vanille, Vanillepudding]
+  de: [Vanillepuddingpulver, Vanillepudding-Pulver, Puddingpulver Vanille, Vanillepudding, Vanillesaucenpulver, Vanillesoßenpulver]
   en: [vanilla pudding powder, vanilla custard powder]
 bls-S171000:
   # Recipes rarely say which kind; both add next to no energy.
@@ -510,14 +563,14 @@ bls-S560000:
 bls-S570000:
   de: [dunkle Schokolade]
 bls-S132000:
-  de: [Marmelade, Konfitüre]
-  en: [jam]
+  de: [Marmelade, Konfitüre, Aprikosenkonfitüre, Aprikosenmarmelade]
+  en: [jam, apricot jam]
 bls-D072000:
   de: [Blätterteig]
   en: [puff pastry]
 bls-B821000:
-  de: [Paniermehl]
-  en: [breadcrumbs]
+  de: [Paniermehl, Panko, Pankomehl]
+  en: [breadcrumbs, panko]
 
 bls-D651700:
   de: [Oblaten, Backoblaten]
@@ -525,6 +578,15 @@ bls-D651700:
 bls-S660000:
   de: [Schokostreusel, Schokoraspel, Schokoladenraspel]
   en: [chocolate sprinkles]
+fdc-173471:
+  de: [Vanilleessenz]
+  en: [vanilla essence]
+bls-S145000:
+  de: [Nutella, Nuss-Nougat-Aufstrich]
+  en: [chocolate hazelnut spread]
+bls-K762400:
+  de: [Hefeflocken, Nährhefeflocken]
+  en: [nutritional yeast]
 
 # --- Condiments, liquids ---------------------------------------------------------------------------
 bls-R121000:
@@ -622,3 +684,39 @@ bls-M141100:
   de: [Magerjoghurt]
 bls-G710200:
   de: [TK-Bohnen, grüne Bohnen TK, grüne Bohnen tiefgefroren]
+bls-P752100:
+  de: [Kirschwasser, Obstler]
+  en: [kirsch]
+bls-P540100:
+  de: [Amaretto]
+  en: [amaretto]
+bls-P620000:
+  de: [Metaxa]
+bls-N410100:
+  de: [Kaffee, Filterkaffee]
+  en: [coffee]
+bls-N330000:
+  de: [Cola]
+  en: [cola]
+bls-P165000:
+  de: [dunkles Bier, Dunkelbier]
+  en: [dark beer]
+bls-P461000:
+  de: [Sherry]
+  en: [sherry]
+bls-P741000:
+  de: [brauner Rum]
+  en: [dark rum]
+bls-Q998000:
+  de: [Miracel Whip]
+fdc-171329:
+  de: [scharfes Paprikapulver, Paprikapulver scharf, süßes Paprikapulver, geräuchertes Paprikapulver, Pimentón]
+  en: [smoked paprika, hot paprika]
+fdc-170918:
+  de: [Kümmelpulver, gemahlener Kümmel]
+  en: [ground caraway]
+fdc-171321:
+  de: [Nelkenpulver]
+fdc-171323:
+  de: [Fenchel gemahlen]
+  en: [ground fennel]

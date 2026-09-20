@@ -14,4 +14,9 @@ record AnalyzedName(String name, List<AnalyzedWord> words, List<AnalyzedWord> qu
         qualifiers = List.copyOf(qualifiers);
         states = Set.copyOf(states);
     }
+
+    /** Nothing but descriptions ("fein gehackt") says how to prepare a food, not which one. */
+    boolean namesNothing() {
+        return words.stream().allMatch(AnalyzedWord::description);
+    }
 }

@@ -3,6 +3,7 @@ package com.sterul.opencookbookapiserver.services.nutrition.matching;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CatalogueMatcher {
 
     /** Bump on every change to matching logic or weights; stored with automatic links. */
-    public static final int VERSION = 2;
+    public static final int VERSION = 3;
 
     private static final int CANDIDATE_NAMES = 30;
 
@@ -83,14 +84,16 @@ public class CatalogueMatcher {
             return List.of();
         }
         var typed = current.analyzer().typed(typedName);
-        if (typed.words().isEmpty()) {
+        if (typed.namesNothing()) {
             return List.of();
         }
 
-        // Best-scoring name per food.
+        // Best-scoring name per food, each compared with the typed name as stemmed in its own language.
+        var typedIn = new HashMap<String, AnalyzedName>();
         var byFood = new LinkedHashMap<String, Scored>();
         for (var entry : current.search(typed, CANDIDATE_NAMES)) {
-            var scored = score(typed, language, entry, current);
+            var inLanguage = typedIn.computeIfAbsent(entry.language(), nameLanguage -> current.analyzer().typed(typedName, nameLanguage));
+            var scored = score(inLanguage, language, entry, current);
             byFood.merge(scored.food().key(), scored, (first, second) -> first.logOdds() >= second.logOdds() ? first : second);
         }
         var ranked = byFood.values().stream().sorted(Comparator.comparingDouble(Scored::logOdds).reversed()).toList();

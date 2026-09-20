@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +16,12 @@ import com.intuit.fuzzymatcher.component.MatchService;
 import com.intuit.fuzzymatcher.domain.Document;
 import com.intuit.fuzzymatcher.domain.Element;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
+import com.sterul.opencookbookapiserver.entities.recipe.Diet;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 import com.sterul.opencookbookapiserver.repositories.projections.OwnerCount;
+import com.sterul.opencookbookapiserver.services.classification.ClassificationProvenance;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.sharing.ShareService;
 
@@ -37,18 +40,22 @@ public class RecipeService {
     private final RecipeImageService recipeImageService;
     private final WeekplanService weekplanService;
     private final ShareService shareService;
+    private final ApplicationEventPublisher events;
+    private final ClassificationProvenance provenance;
 
     public RecipeService(RecipeReferenceResolver recipeReferenceResolver, RecipeRepository recipeRepository,
             RecipeImageService recipeImageService,
             WeekplanService weekplanService,
             // ShareService depends on RecipeService in turn: sharing is about recipes, and the
             // only thing pointing the other way is withdrawing a share when its recipe goes.
-            @Lazy ShareService shareService) {
+            @Lazy ShareService shareService, ApplicationEventPublisher events, ClassificationProvenance provenance) {
         this.recipeReferenceResolver = recipeReferenceResolver;
         this.recipeRepository = recipeRepository;
         this.recipeImageService = recipeImageService;
         this.weekplanService = weekplanService;
         this.shareService = shareService;
+        this.events = events;
+        this.provenance = provenance;
     }
 
     public Recipe createNewRecipe(Recipe newRecipe) throws ElementNotFound {
@@ -121,12 +128,15 @@ public class RecipeService {
 
         recipeReferenceResolver.resolve(recipeUpdate, existingRecipe.getOwner());
 
-        return recipeRepository.save(recipeUpdate);
+        provenance.acceptPersonChanges(provenance.snapshot(existingRecipe), recipeUpdate);
+        var saved = recipeRepository.save(recipeUpdate);
+        changed(recipeUpdate.getId());
+        return saved;
     }
 
     /** The details an operator may correct; ingredients, images and groups are untouched. */
     public record RecipeDetails(String title, int servings, Long preparationTime, Long totalTime,
-            Recipe.RecipeType recipeType, List<String> preparationSteps) {
+            Diet recipeType, List<String> preparationSteps) {
 
         public RecipeDetails {
             preparationSteps = preparationSteps == null ? List.of() : List.copyOf(preparationSteps);
@@ -137,6 +147,7 @@ public class RecipeService {
     public Recipe updateRecipeDetails(Long id, RecipeDetails details) throws ElementNotFound {
         log.info("Updating the details of recipe {}", id);
         var recipe = getRecipeById(id);
+        var before = provenance.snapshot(recipe);
 
         recipe.setTitle(details.title());
         recipe.setServings(details.servings());
@@ -144,8 +155,15 @@ public class RecipeService {
         recipe.setTotalTime(details.totalTime());
         recipe.setRecipeType(details.recipeType());
         recipe.setPreparationSteps(new ArrayList<>(details.preparationSteps()));
+        provenance.acceptPersonChanges(before, recipe);
 
-        return recipeRepository.save(recipe);
+        var saved = recipeRepository.save(recipe);
+        changed(id);
+        return saved;
+    }
+
+    private void changed(Long recipeId) {
+        events.publishEvent(new RecipeChangedEvent(recipeId));
     }
 
     public Recipe getRecipeById(Long id) throws ElementNotFound {
@@ -165,7 +183,7 @@ public class RecipeService {
         return recipeRepository.findForUpdateById(id).orElseThrow(ElementNotFound::new);
     }
 
-    public List<Recipe> searchUserRecipes(CookpalUser user, String searchString, List<Recipe.RecipeType> categories) {
+    public List<Recipe> searchUserRecipes(CookpalUser user, String searchString, List<Diet> categories) {
         if ((searchString == null || searchString.equals("")) && (categories == null || categories.isEmpty())) {
             return getRecipesByOwner(user);
         }
@@ -176,7 +194,7 @@ public class RecipeService {
         return searchByStringAndType(user, searchString, categories);
     }
 
-    private List<Recipe> searchByStringAndType(CookpalUser user, String searchString, List<Recipe.RecipeType> categories) {
+    private List<Recipe> searchByStringAndType(CookpalUser user, String searchString, List<Diet> categories) {
         List<Recipe> allRecipes;
         if (categories == null || categories.isEmpty()) {
             allRecipes = recipeRepository.findByOwner(user);

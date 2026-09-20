@@ -31,7 +31,6 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 import com.jayway.jsonpath.JsonPath;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
-import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
 import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFoodName;
 import com.sterul.opencookbookapiserver.entities.nutrition.NutrientValues;
@@ -98,8 +97,8 @@ class AdminRelinkApiIntegrationTest extends IntegrationTest {
                 .names(new ArrayList<>(List.of(name("de", "Zucker"), name("en", "Sugar"))))
                 .build());
         indexUpdater.rebuild();
-        account(OPERATOR);
-        account(COOK);
+        TestAccounts.ensure(userRepository, OPERATOR);
+        TestAccounts.ensure(userRepository, COOK);
         mockMvc.perform(post("/api/v1/recipes").with(user(COOK)).contentType(MediaType.APPLICATION_JSON).content(RECIPE))
                 .andExpect(status().isOk());
     }
@@ -355,16 +354,5 @@ class AdminRelinkApiIntegrationTest extends IntegrationTest {
 
     private static RequestPostProcessor operator() {
         return user(OPERATOR).authorities(new SimpleGrantedAuthority("ADMIN"));
-    }
-
-    private void account(String emailAddress) {
-        if (userRepository.findByEmailAddress(emailAddress) == null) {
-            var user = new CookpalUser();
-            user.setEmailAddress(emailAddress);
-            user.setPasswordHash("irrelevant");
-            user.setActivated(true);
-            user.setLanguage("de");
-            userRepository.save(user);
-        }
     }
 }

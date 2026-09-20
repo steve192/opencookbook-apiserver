@@ -6,14 +6,15 @@ import java.util.regex.Pattern;
 /** Normalises names and phrases for lookup. */
 public final class IngredientNames {
 
-    private static final Pattern WHITESPACE = Pattern.compile("\\s+");
+    /** Websites put non-breaking and thin spaces between an amount and its unit. */
+    private static final Pattern WHITESPACE = Pattern.compile("[\\s\\p{Zs}]+");
 
     private IngredientNames() {
     }
 
     /** Trimmed and single-spaced. */
     public static String tidy(String name) {
-        return WHITESPACE.matcher(name.trim()).replaceAll(" ");
+        return WHITESPACE.matcher(name).replaceAll(" ").trim();
     }
 
     /** Tidy and lower case. */

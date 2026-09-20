@@ -1,7 +1,9 @@
+from string import ascii_uppercase
+
 import pytest
 
 from cookpal_nutrition import catalogue, paths, reference
-from cookpal_nutrition.curation import Curation, Families, FdcVocabulary, SourceInclusion
+from cookpal_nutrition.curation import Curation, DietClasses, Families, FdcVocabulary, SourceInclusion
 from cookpal_nutrition.sources import bls, fdc
 
 REFERENCE = reference.load(paths.CURATION)
@@ -26,12 +28,25 @@ def curation(**overrides) -> Curation:
     fields = dict(label="test", bls=SourceInclusion(frozenset({"X", "Y"}), frozenset(), frozenset()), fdc=empty,
                   families=Families(attach={}, bases=frozenset()), fdc_duplicates={},
                   fdc_vocabulary=FdcVocabulary(synonyms={}, implied={}, ignored_phrases=()), names={},
-                  portions={}, properties={})
+                  portions={}, properties={}, diet_classes=_settled_diets())
     fields.update(overrides)
     return Curation(**fields)
 
 
+def _settled_diets(fdc_rows=()) -> DietClasses:
+    """
+    Classifies whatever a test happens to build, so that the diet step never stops it.
+
+    The step refuses to ship a food nobody decided on, which is its whole point and is covered in
+    test_diets.py. These tests are about names, families and amounts, so they answer it up front.
+    """
+    return DietClasses(group_defaults={letter: "VEGAN" for letter in ascii_uppercase},
+                       review_patterns={},
+                       overrides={f"fdc-{row['fdc_id']}": "VEGAN" for row in fdc_rows})
+
+
 def build(bls_rows, fdc_rows=(), **curation_overrides):
+    curation_overrides.setdefault("diet_classes", _settled_diets(fdc_rows))
     foods, report = catalogue.build(REFERENCE, curation(**curation_overrides),
                                     catalogue.Sources(list(bls_rows), list(fdc_rows), []))
     return {food.key: food for food in foods}, report

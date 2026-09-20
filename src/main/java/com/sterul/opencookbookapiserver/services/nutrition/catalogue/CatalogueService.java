@@ -14,6 +14,7 @@ import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFoodName;
 import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFoodPortion;
 import com.sterul.opencookbookapiserver.entities.nutrition.NutrientValues;
 import com.sterul.opencookbookapiserver.entities.nutrition.NutritionDatasetImport;
+import com.sterul.opencookbookapiserver.entities.recipe.Diet;
 import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
 import com.sterul.opencookbookapiserver.errors.ApiException;
 import com.sterul.opencookbookapiserver.repositories.CatalogueFoodRepository;
@@ -125,6 +126,18 @@ public class CatalogueService {
         }
         changed("unnamed " + food.getCatalogueKey());
         return food;
+    }
+
+    /**
+     * Corrects what a food counts as for a diet. Unlike names and nutrients, this may be corrected
+     * on a dataset food too: the shipped class is a reading of a description, and an operator who
+     * knows the food better outranks it. The correction is marked and survives later releases.
+     */
+    public CatalogueFood classifyByAdmin(Long id, Diet dietClass) throws ElementNotFound {
+        var food = getFood(id);
+        log.info("Classifying catalogue food {} as {}", food.getCatalogueKey(), dietClass);
+        food.classifyByAdmin(dietClass);
+        return foodRepository.save(food);
     }
 
     public CatalogueFood mergeCustomFood(Long sourceId, Long targetId) throws ApiException {

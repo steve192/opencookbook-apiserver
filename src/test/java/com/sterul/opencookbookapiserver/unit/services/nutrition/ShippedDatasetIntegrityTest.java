@@ -3,6 +3,7 @@ package com.sterul.opencookbookapiserver.unit.services.nutrition;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
+import com.sterul.opencookbookapiserver.entities.recipe.Diet;
 import com.sterul.opencookbookapiserver.services.nutrition.dataset.NutritionDataset;
 import com.sterul.opencookbookapiserver.services.nutrition.dataset.NutritionDatasetReader;
 
@@ -35,6 +37,9 @@ class ShippedDatasetIntegrityTest {
 
     /** Grams of fat, carbohydrates, protein and fibre per 100 g; above it a value is misread, not dry. */
     private static final float MOST_MACRONUTRIENTS = 110;
+
+    private static final Set<String> DIET_CLASSES = Arrays.stream(Diet.values())
+            .map(Enum::name).collect(Collectors.toSet());
 
     @Test
     void theFilesAreTheOnesTheManifestDescribes() {
@@ -122,6 +127,25 @@ class ShippedDatasetIntegrityTest {
         assertTrue(bls.text().contains("Max Rubner-Institut"), bls.text());
         assertEquals("CC BY 4.0", bls.license());
         assertEquals("https://creativecommons.org/licenses/by/4.0/", bls.licenseUrl());
+    }
+
+    /**
+     * A food without a diet class would be a hole in the diet filter: a recipe using it could not
+     * be classified, so it would vanish from every vegan and vegetarian search. The build refuses
+     * to ship one, and this is that promise checked against what actually shipped.
+     */
+    @Test
+    void everyFoodSaysWhetherItIsAnimal() {
+        assertNone(FOODS, food -> food.dietClass() == null, "foods without a diet class");
+        assertNone(FOODS, food -> !DIET_CLASSES.contains(food.dietClass()), "foods with an unknown diet class");
+    }
+
+    /** A preparation of a food cannot be of another diet than the food it is a preparation of. */
+    @Test
+    void aVariantIsOfTheSameDietAsItsBase() {
+        assertNone(FOODS.stream().filter(food -> food.variantOf() != null).toList(),
+                food -> !food.dietClass().equals(BY_KEY.get(food.variantOf()).dietClass()),
+                "variants of another diet than their base");
     }
 
     private static <T> void assertNone(Collection<T> items, Predicate<T> violation, String description) {

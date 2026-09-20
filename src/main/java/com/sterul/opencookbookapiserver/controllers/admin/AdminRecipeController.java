@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/v1/admin/recipes")
 @Tag(name = "Recipes", description = "Admin recipe api")
 @Slf4j
+@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminRecipeController {
 
     private final RecipeService recipeService;
@@ -38,7 +39,6 @@ public class AdminRecipeController {
 
     @Operation(summary = "Every recipe on this instance, with who owns it")
     @GetMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
     public List<AdminRecipeResponse> getAll() {
         log.info("Admin: Accessing all recipes");
         return recipeService.getAllRecipes().stream().map(AdminRecipeResponse::fromEntity).toList();
@@ -46,7 +46,6 @@ public class AdminRecipeController {
 
     @Operation(summary = "One recipe")
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public AdminRecipeResponse getOne(@PathVariable Long id) throws ElementNotFound {
         return AdminRecipeResponse.fromEntity(recipeService.getRecipeById(id));
     }
@@ -55,7 +54,6 @@ public class AdminRecipeController {
             description = "Every detail given replaces the one that was there, so leaving one "
                     + "out clears it. Ingredients and images are left alone.")
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public AdminRecipeResponse updateRecipe(@PathVariable Long id, @Valid @RequestBody AdminRecipeRequest request)
             throws ElementNotFound {
         log.info("Admin: Updating recipe {}", id);
@@ -71,7 +69,6 @@ public class AdminRecipeController {
 
     @Operation(summary = "Delete a recipe", description = "Takes its images and any share of it with it.")
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteRecipe(@PathVariable Long id) throws ElementNotFound {
         log.info("Admin: Deleting recipe {}", id);

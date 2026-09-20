@@ -1,10 +1,9 @@
 package com.sterul.opencookbookapiserver.services;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
-
-import jakarta.transaction.Transactional;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +12,7 @@ import com.sterul.opencookbookapiserver.entities.WeekplanDay;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.repositories.WeekplanDayRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -27,21 +27,19 @@ public class WeekplanService {
         return weekplanDayRepository.findAllByPlanDateBetweenAndOwner(startTime, endTime, owner);
     }
 
-    public WeekplanDay getWeekplanDayByDate(LocalDate date, CookpalUser owner) throws NoSuchElementException {
-        var weekplanDay = weekplanDayRepository.findSingleByPlanDateAndOwner(date, owner);
-        if (weekplanDay == null) {
-            throw new NoSuchElementException();
-        }
-        return weekplanDay;
-    }
-
-    public WeekplanDay createWeekplanDay(WeekplanDay weekplanDay) {
-        log.info("Creating weekplan day {} of user {}", weekplanDay.getPlanDate(), weekplanDay.getOwner());
-        return weekplanDayRepository.save(weekplanDay);
+    /** The stored day, or a new empty one that is saved only once something is planned on it. */
+    public WeekplanDay dayOf(LocalDate date, CookpalUser owner) {
+        return Optional.ofNullable(weekplanDayRepository.findSingleByPlanDateAndOwner(date, owner)).orElseGet(() -> {
+            var day = new WeekplanDay();
+            day.setOwner(owner);
+            day.setPlanDate(date);
+            day.setRecipes(new ArrayList<>());
+            return day;
+        });
     }
 
     public WeekplanDay updateWeekplanDay(WeekplanDay weekplanDay) {
-        log.info("Updating weekplan day {} of user {}", weekplanDay.getPlanDate(), weekplanDay.getOwner());
+        log.info("Saving weekplan day {} of user {}", weekplanDay.getPlanDate(), weekplanDay.getOwner());
         return weekplanDayRepository.save(weekplanDay);
     }
 

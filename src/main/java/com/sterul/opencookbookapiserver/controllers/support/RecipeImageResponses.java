@@ -44,6 +44,7 @@ public final class RecipeImageResponses {
         try {
             imageData = source.read();
         } catch (IOException e) {
+            // An image that is stored but unreadable is a real fault, unlike one that is simply gone
             log.warn("Exception while loading image {}", imageUuid, e);
             throw new ElementNotFound();
         }
@@ -62,6 +63,6 @@ public final class RecipeImageResponses {
 
     @FunctionalInterface
     public interface ImageSource {
-        byte[] read() throws IOException;
+        byte[] read() throws IOException, ElementNotFound;
     }
 }

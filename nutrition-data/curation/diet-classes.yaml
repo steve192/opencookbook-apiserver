@@ -1,0 +1,348 @@
+# Which foods are animal: VEGAN, VEGETARIAN or MEAT. See scripts/cookpal_nutrition/catalogue/diets.py.
+#
+# The group letter decides. A name that disagrees with its group is only nominated for review, and
+# an unanswered nomination fails the build - patterns are wrong too often to be allowed to decide
+# ("Wildreis", "Fondant", "Erdnussbutter", "Honigmelone", "alkoholfrei", "Vegetarische Bratwurst").
+# Variants inherit from their base; list one here only where a preparation really differs.
+
+# BLS group letters. A group left out has no default, so every one of its foods needs an override.
+groupDefaults:
+  U: MEAT          # Fleisch
+  V: MEAT          # Geflügel, Wild, Innereien
+  W: MEAT          # Wurst- und Fleischerzeugnisse
+  T: MEAT          # Fisch und Meerestiere - counted as meat, see diets.py
+  M: VEGETARIAN    # Milch, Milchprodukte, Käse
+  E: VEGETARIAN    # Eier, Eiprodukte, Teigwaren
+  D: VEGETARIAN    # Backwaren, Kuchen, Kekse - egg and milk far more often than not
+  S: VEGETARIAN    # Zucker, Süßwaren, Speiseeis
+  B: VEGAN         # Brot und Brötchen
+  C: VEGAN         # Getreide, Mehl, Reis, Teigwaren
+  F: VEGAN         # Obst und Fruchtsäfte
+  G: VEGAN         # Gemüse, Kräuter, Pilze
+  H: VEGAN         # Hülsenfrüchte, Nüsse, Ölsaaten, Pflanzendrinks
+  K: VEGAN         # Kartoffeln und Stärkeerzeugnisse
+  N: VEGAN         # Alkoholfreie Getränke
+  P: VEGAN         # Alkoholische Getränke
+  R: VEGAN         # Gewürze, Würzmittel, Backzutaten
+  # Q (Fette und Öle) has no default on purpose: it holds Rinderfett, Entenfett and Fischleberöl
+  # next to olive and linseed oil, so all of its foods are decided below.
+
+# Names that disagree with their group. These produce questions, never answers.
+reviewPatterns:
+  MEAT: "speck|schinken|fleisch|wurst|gelatine|schmalz|talg|brühe|bouillon|fond\\b|anchovis|sardell|lachs|fisch|krebs|hummer|garnele|muschel|aspik|leber|blut|geflügel|hühner|rinder|schweine|kalbs|lamm"
+  VEGETARIAN: "butter|sahne|rahm|milch|käse|quark|joghurt|jogurt|molke|honig|kasein|laktose|\\bei(er|gelb|klar|weiß)?\\b|eihaltig"
+
+# The only thing that settles a food. Every nomination above, every food of a group without a
+# default, and every FDC food appears here with the description it was decided from.
+overrides:
+  bls-B107300: VEGETARIAN  # Vollkornbrot mit Buttermilch
+  bls-B107900: VEGETARIAN  # Vollkornbrot mit Quark
+  bls-B111700: VEGETARIAN  # Weizenvollkornbrot mit Buttermilch
+  bls-B111800: VEGETARIAN  # Weizenvollkornbrot mit Quark
+  bls-B121500: VEGETARIAN  # Roggenvollkornbrot mit Buttermilch
+  bls-B121600: VEGETARIAN  # Roggenvollkornbrot mit Quark
+  bls-B227300: VEGETARIAN  # Roggenbrot mit Buttermilch
+  bls-B227700: VEGETARIAN  # Roggenbrot mit Quark
+  bls-B257300: VEGETARIAN  # Weizenmischbrot mit Buttermilch
+  bls-B257700: VEGETARIAN  # Weizenmischbrot mit Quark
+  bls-B277300: VEGETARIAN  # Roggenmischbrot mit Buttermilch
+  bls-B277700: VEGETARIAN  # Roggenmischbrot mit Quark
+  bls-B314000: VEGETARIAN  # Weizentoastbrot/Buttertoastbrot
+  bls-B511200: MEAT        # Weizenbrötchen mit Schinkenspeck
+  bls-B517700: VEGETARIAN  # Weizenbrötchen mit Quark
+  bls-B521200: MEAT        # Roggenbrötchen mit Schinkenspeck
+  bls-B551700: MEAT        # Weizenmischbrötchen mit Schinkenspeck
+  bls-B6A1100: VEGETARIAN  # Weizenvollkornknäckebrot mit Käse, Ölsamen und Tomaten
+  bls-B6A1400: VEGETARIAN  # Weizenvollkornknäckebrot mit Ölsamen und Hartkäse
+  bls-B6A1500: VEGETARIAN  # Weizenvollkornknäckebrot mit Ölsamen, Hartkäse und Möhre
+  bls-B6A1600: VEGETARIAN  # Weizenvollkornknäckebrot mit Ölsamen, Hartkäse und Zwiebeln
+  bls-B6A2200: VEGETARIAN  # Roggenvollkornknäckebrot mit Buttermilch
+  bls-B6A2300: VEGETARIAN  # Roggenvollkornknäckebrot mit Milch
+  bls-B6A5200: VEGETARIAN  # Dinkelvollkornknäckebrot mit Ölsamen und Hartkäse
+  bls-B6A6000: VEGAN       # Knäckebrot glutenfrei, laktosefrei
+  bls-B723500: VEGETARIAN  # Laugengebäck mit Käse
+  bls-B723600: MEAT        # Laugengebäck mit Käse und Schinkenspeck
+  bls-B8B5000: VEGETARIAN  # Weizenknusperbrot (mit Butter)
+  bls-C532100: VEGETARIAN  # Vollmilchschokolade mit Puffreis und Crispies
+  bls-C534300: VEGETARIAN  # Cerealien extrudiert, gesüßt, ungefüllt, mit Frucht-/Honig-/Karamell-/Schokogeschmack
+  bls-C534400: VEGETARIAN  # Cerealien extrudiert, gesüßt, ungefüllt, mit Frucht-/Honig-/Karamell-/Schokogeschmack, angereichert mit Vitaminen und Mineralstoffen
+  bls-C551000: VEGAN       # Weizenkleber/Weizengluten
+  bls-C557000: VEGETARIAN  # Fleischersatz gluten-, milch- und sojahaltig
+  bls-C558000: VEGAN       # Fleischersatz glutenhaltig (Seitan)
+  bls-D096000: MEAT        # Zwiebelkuchen mit Speck (Hefeteig)
+  bls-D477100: MEAT        # Schinkenhörnchen (Quark-Öl-Teig)
+  bls-D4A7000: MEAT        # Käse-Schinken-Hörnchen (Quark-Öl-Teig)
+  bls-D623400: MEAT        # Schinkenwaffeln (Rührmasse)
+  bls-D770300: VEGETARIAN  # Schweineohren/Schweinsohren (Blätterteig)
+  bls-D772100: MEAT        # Schinkenhörnchen (Quarkblätterteig)
+  bls-E111100: VEGETARIAN  # Hühnerei roh
+  bls-E111500: VEGETARIAN  # Hühnerei Pulver
+  bls-E112100: VEGETARIAN  # Hühnerei Eigelb, roh
+  bls-E112400: VEGETARIAN  # Hühnerei Eigelb, getrocknet
+  bls-E112500: VEGETARIAN  # Hühnerei Eigelb, Pulver
+  bls-E113100: VEGETARIAN  # Hühnerei Eiklar, roh
+  bls-E113400: VEGETARIAN  # Hühnerei Eiklar, getrocknet
+  bls-E113500: VEGETARIAN  # Hühnerei Eiklar, Pulver
+  bls-E603000: MEAT        # Eier-Frischteigwaren Ravioli (Fleischfüllung) roh
+  bls-E609200: MEAT        # Eierteigwaren Tortellini (Fleischfüllung) getrocknet
+  bls-E901000: MEAT        # Teigwaren eifrei, Ravioli (Fleischfüllung) in Tomatensoße, Konserve
+  bls-F533100: VEGAN       # Honigmelone roh
+  bls-F533600: VEGAN       # Honigmelonensaft
+  bls-G622600: VEGETARIAN  # Gemüsesaft aus Karotte/Möhre, mit Honig
+  bls-G780400: VEGAN       # Limabohne (Butterbohne Mondbohne) reif
+  bls-G880402: VEGAN       # Bohne grün, milchsauer fermentiert, abgetropft
+  bls-G890702: VEGAN       # Salzgurke/Salzdillgurke, milchsauer fermentiert, abgetropft
+  bls-G891102: VEGETARIAN  # Honiggurke gesäuert, abgetropft
+  bls-G898200: VEGETARIAN  # Sahne-Meerrettich Konserve
+  bls-H150100: VEGAN       # Kokos Fruchtfleisch, roh
+  bls-H150400: VEGAN       # Kokos Fruchtfleisch, geraspelt, getrocknet
+  bls-H154000: VEGAN       # Kokosmilch/Kokosnussmilch
+  bls-H844000: VEGAN       # Soja-Joghurtalternative ungesüßt
+  bls-H844100: VEGAN       # Soja-Joghurtalternative ungesüßt, angereichert mit Vitaminen und Calcium
+  bls-H844400: VEGAN       # Soja-Joghurtalternative gesüßt, aromatisiert
+  bls-H844500: VEGAN       # Soja-Joghurtalternative gesüßt, aromatisiert, angereichert mit Vitaminen und Calcium
+  bls-H880200: VEGAN       # Erdnussbutter/Erdnusscreme
+  bls-H882000: VEGAN       # Käsealternative, Basis Cashewkerne, vegan
+  bls-H910300: VEGETARIAN  # Vegetarische Bratwurst (aus Tofu und Weizenprotein)
+  bls-H930000: VEGAN       # Veganer Aufschnitt (Wurstalternative)
+  bls-H930100: VEGAN       # Soja-Streichwurstalternative, vegan
+  bls-H930200: VEGETARIAN  # Vegetarischer Aufschnitt (Wurstalternative, mit Ei)
+  bls-K311200: VEGETARIAN  # Kartoffeltaschen mit Frischkäsefüllung, tiefgefroren
+  bls-K392200: MEAT        # Kartoffel-Speck-Rösti tiefgefroren
+  bls-K706100: VEGAN       # Butterpilz roh
+  bls-K706400: VEGAN       # Butterpilz getrocknet
+  bls-M813700: MEAT        # Schmelzkäsezubereitung 45 - 52 % Fett i. Tr., mit Schinken
+  bls-N410200: VEGETARIAN  # Kaffee (Getränk) mit Milch 3,5 % Fett
+  bls-N410300: VEGETARIAN  # Kaffee (Getränk) mit Milch 3,5 % Fett und Zucker
+  bls-N410400: VEGETARIAN  # Kaffee (Getränk) mit Kondensmilch 7,5 % Fett
+  bls-N410500: VEGETARIAN  # Kaffee (Getränk) mit Kondensmilch 7,5 % Fett und Zucker
+  bls-N414000: VEGETARIAN  # Cappuccino (Getränk) mit Milch 3,5 % Fett
+  bls-N414100: VEGETARIAN  # Kaffee (Getränk) entkoffeiniert, mit Milch 3,5 % Fett
+  bls-N414200: VEGETARIAN  # Kaffee (Getränk) entkoffeiniert, mit Kondensmilch 7,5 % Fett
+  bls-N418000: VEGETARIAN  # Latte macchiato (Getränk) mit Milch 3,5 % Fett
+  bls-N491000: VEGETARIAN  # Kaffee (Getränk) halb und halb, mit Milch 3,5 % Fett
+  bls-N4A3300: VEGETARIAN  # Cappuccino (Getränk) mit Milch 3,5 % Fett und Zucker
+  bls-N500200: VEGETARIAN  # Kaffeeersatz (Getränk) mit Milch 3,5 % Fett
+  bls-N500300: VEGETARIAN  # Kaffeeersatz (Getränk) mit Milch 3,5 % Fett und Zucker
+  bls-N500400: VEGETARIAN  # Kaffeeersatz (Getränk) mit Kondensmilch 7,5 % Fett
+  bls-N500500: VEGETARIAN  # Kaffeeersatz (Getränk) mit Kondensmilch 7,5 % Fett und Zucker
+  bls-N630200: VEGETARIAN  # Schwarztee (Getränk) mit Milch 3,5 % Fett
+  bls-N630300: VEGETARIAN  # Schwarztee (Getränk) mit Milch 3,5 % Fett und Zucker
+  bls-N630400: VEGETARIAN  # Schwarztee (Getränk) mit Sahne 30 % Fett
+  bls-N630500: VEGETARIAN  # Schwarztee (Getränk) mit Sahne 30 % Fett und Zucker
+  bls-N720200: VEGETARIAN  # Kräutertee (Getränk) mit Milch 3,5 % Fett
+  bls-N720300: VEGETARIAN  # Kräutertee (Getränk) mit Milch 3,5 % Fett und Zucker
+  bls-N720400: VEGETARIAN  # Kräutertee (Getränk) mit Sahne 30 % Fett
+  bls-N720500: VEGETARIAN  # Kräutertee (Getränk) mit Sahne 30 % Fett und Zucker
+  bls-P5A1000: VEGETARIAN  # Sahnelikör
+  bls-P5A2000: VEGETARIAN  # Fruchtsahnelikör
+  bls-P5A5000: VEGETARIAN  # Kaffeelikör/Schokoladenlikör, cremig, mit Milch/Sahne
+  bls-Q120000: VEGAN       # Olivenöl
+  bls-Q140000: VEGAN       # Haselnussöl
+  bls-Q150000: VEGAN       # Palmfett/Palmöl, raffiniert
+  bls-Q150100: VEGAN       # Palmfett gehärtet
+  bls-Q160000: VEGAN       # Leinöl
+  bls-Q170000: VEGAN       # Hanföl
+  bls-Q180000: VEGAN       # Rapsöl/Rüböl
+  bls-Q190000: VEGAN       # Mandelöl
+  bls-Q210000: VEGAN       # Erdnussöl
+  bls-Q220000: VEGAN       # Weizenkeimöl
+  bls-Q230000: VEGAN       # Sesamöl
+  bls-Q250000: VEGAN       # Kürbiskernöl
+  bls-Q260000: VEGAN       # Maiskeimöl
+  bls-Q270000: VEGAN       # Sojaöl
+  bls-Q310000: VEGAN       # Walnussöl
+  bls-Q320000: VEGAN       # Sonnenblumenöl
+  bls-Q330000: VEGAN       # Traubenkernöl
+  bls-Q340000: VEGAN       # Distelöl/Safloröl
+  bls-Q350000: VEGAN       # Mohnöl
+  bls-Q400000: VEGAN       # Pflanzenmargarine Vollfett, angereichert mit Vitaminen
+  bls-Q440000: VEGAN       # Pflanzenmargarine Halbfett, angereichert mit Vitaminen
+  bls-Q481000: VEGETARIAN  # Backmargarine
+  bls-Q482000: VEGETARIAN  # Ziehmargarine
+  bls-Q4A1000: VEGAN       # Pflanzenmargarine Dreiviertelfett, angereichert mit Vitaminen
+  bls-Q4A4000: VEGAN       # Sonnenblumenmargarine Vollfett, angereichert mit Vitamin D
+  bls-Q4B1000: VEGAN       # Pflanzencreme zum Braten und Kochen
+  bls-Q4C1000: VEGAN       # Pflanzliches Streichfett mit > 62 - < 80 % Fett, angereichert mit Vitaminen
+  bls-Q4C2000: VEGAN       # Pflanzliches Streichfett mit > 41 % und < 60 % Fett, angereichert mit Vitaminen
+  bls-Q4C3000: VEGAN       # Pflanzliches Streichfett mit < 39 % Fett, angereichert mit Vitaminen
+  bls-Q4C4000: VEGAN       # Rapsölmargarine Vollfett, angereichert mit Vitaminen
+  bls-Q4C5000: VEGETARIAN  # Mischfett mit überwiegend Pflanzenfett, ungesalzen, angereichert mit Vitaminen
+  bls-Q4C5100: VEGETARIAN  # Mischfett mit überwiegend Pflanzenfett, gesalzen, angereichert mit Vitaminen
+  bls-Q520000: VEGAN       # Sheabutter
+  bls-Q530000: VEGAN       # Kakaobutter
+  bls-Q550000: VEGAN       # Kokosöl
+  bls-Q550100: VEGAN       # Kokosöl desodoriert
+  bls-Q550200: VEGAN       # Kokosfett gehärtet
+  bls-Q570000: VEGAN       # Palmkernfett/Palmkernöl
+  bls-Q590000: VEGAN       # Käsealternative, Basis Pflanzenfett, vegan
+  bls-Q590100: VEGAN       # Käsealternative, Basis Pflanzenfett, vegan, angereichert mit Vitamin B12 und Calcium
+  bls-Q611000: VEGETARIAN  # Butter mild gesäuert
+  bls-Q620000: VEGETARIAN  # Sauerrahmbutter
+  bls-Q630000: VEGETARIAN  # Süßrahmbutter
+  bls-Q640000: VEGETARIAN  # Halbfettbutter
+  bls-Q656000: VEGETARIAN  # Knoblauchbutter/Kräuterbutter
+  bls-Q683000: VEGETARIAN  # Butterschmalz
+  bls-Q6A4000: VEGETARIAN  # Butter gesalzen
+  bls-Q6A6000: VEGETARIAN  # Joghurtbutter
+  bls-Q6A7000: VEGETARIAN  # Mischfett mit überwiegend Milchfett, ungesalzen
+  bls-Q6A7100: VEGETARIAN  # Mischfett mit überwiegend Milchfett, gesalzen
+  bls-Q730000: MEAT        # Fischleberöl/Lebertran
+  bls-Q810000: MEAT        # Entenfett
+  bls-Q820000: MEAT        # Gänsefett/Gänseschmalz
+  bls-Q830000: MEAT        # Hühnerfett
+  bls-Q860000: MEAT        # Schweinefett/Schweineschmalz
+  bls-Q880000: MEAT        # Hammelfett/Hammeltalg
+  bls-Q890000: MEAT        # Rinderfett/Rindertalg
+  bls-Q901000: VEGAN       # Tahin (Sesammus)
+  bls-Q902000: VEGAN       # Schmalz/Schmelz, Basis Pflanzenfett, vegan
+  bls-Q940000: VEGAN       # Bratöl/Frittieröl, pflanzlich
+  bls-Q960000: VEGAN       # Pflanzenfett/Frittierfett, pflanzlich
+  bls-Q991000: VEGETARIAN  # Mayonnaise (Fertigprodukt)
+  bls-Q993000: VEGETARIAN  # Salatmayonnaise (Fertigprodukt)
+  bls-Q998000: VEGETARIAN  # Salatcreme (Fertigprodukt)
+  bls-Q999000: VEGETARIAN  # Remoulade (Fertigprodukt)
+  bls-R434000: VEGETARIAN  # Sahnestandmittel
+  bls-R468000: MEAT        # Gelatine/Speisegelatine
+  bls-R551000: VEGAN       # Milchsäure 80 % (E 270)
+  bls-R810000: MEAT        # Bouillon/Brühe/Suppe (Brühwürfel, Pulver)
+  bls-R811000: MEAT        # Fleisch Bouillon/Brühe/Suppe (Brühwürfel, Pulver)
+  bls-R821000: VEGAN       # Gemüse Bouillon/Brühe/Suppe (Brühwürfel, Pulver)
+  bls-R822000: MEAT        # Hühner Bouillon/Brühe/Suppe (Brühwürfel, Pulver)
+  bls-R921000: MEAT        # Schlagsahne gesüßt, mit Gelatine gebunden, für Gebäck/Torten
+  bls-R922000: VEGETARIAN  # Joghurtsahne für Gebäck/Torten
+  bls-R923000: VEGETARIAN  # Zitronensahne für Gebäck/Torten
+  bls-R924000: VEGETARIAN  # Mokkasahne für Gebäck/Torten
+  bls-R930000: VEGETARIAN  # Vanillebuttercreme eihaltig, gestreckt, für Gebäck/Torten
+  bls-R931000: VEGETARIAN  # Schokoladenbuttercreme eihaltig, gestreckt, für Gebäck/Torten
+  bls-R940000: VEGETARIAN  # Vanillecreme/Vanilleflammeri, eihaltig, für Gebäck/Torten
+  bls-R963000: VEGETARIAN  # Brotaufstrich Ei-Kräuter
+  bls-R9A1000: VEGETARIAN  # Erdbeersahnecreme für Gebäck/Torten
+  bls-R9A1100: VEGETARIAN  # Himbeersahnecreme für Gebäck/Torten
+  bls-R9A1200: VEGETARIAN  # Käsesahnecreme für Gebäck/Torten
+  bls-R9A1300: VEGETARIAN  # Mandarinensahnecreme für Gebäck/Torten
+  bls-R9A1400: VEGETARIAN  # Zitronensahnecreme für Gebäck/Torten
+  bls-R9A2000: VEGETARIAN  # Ananas-Joghurtsahne für Gebäck/Torten
+  bls-R9A2100: VEGETARIAN  # Nusssahne für Gebäck/Torten
+  bls-R9A2200: VEGETARIAN  # Schokoladensahne für Gebäck/Torten
+  bls-R9A3400: VEGETARIAN  # Quarkfüllung für Gebäck/Torten
+  bls-R9A3500: VEGETARIAN  # Zucker-Butter-Zimt-Füllung für Gebäck/Torten
+  bls-R9A4000: VEGETARIAN  # Mokkabuttercreme gestreckt, für Gebäck/Torten
+  bls-R9A4100: VEGETARIAN  # Schokobuttercreme gestreckt, für Gebäck/Torten
+  bls-R9A4200: VEGETARIAN  # Vanillebuttercreme gestreckt, für Gebäck/Torten
+  bls-R9A6000: VEGETARIAN  # Apfel-Weincreme eihaltig, für Gebäck/Torten
+  bls-R9A6100: VEGETARIAN  # Mokkaflammeri mit Likör, für Gebäck/Torten
+  bls-R9A6200: VEGETARIAN  # Orangenflammeri mit Likör, für Gebäck/Torten
+  fdc-1104705: VEGAN       # Flour, soy, defatted
+  fdc-167723:  VEGAN       # Alcoholic beverage, rice (sake)
+  fdc-168573:  VEGAN       # Lemon grass (citronella), raw
+  fdc-169997:  VEGAN       # Coriander (cilantro) leaves, raw
+  fdc-170917:  VEGAN       # Spices, bay leaf
+  fdc-170918:  VEGAN       # Spices, caraway seed
+  fdc-170919:  VEGAN       # Spices, cardamom
+  fdc-170920:  VEGAN       # Spices, celery seed
+  fdc-170921:  VEGAN       # Spices, coriander leaf, dried
+  fdc-170922:  VEGAN       # Spices, coriander seed
+  fdc-170923:  VEGAN       # Spices, cumin seed
+  fdc-170924:  VEGAN       # Spices, curry powder
+  fdc-170925:  VEGAN       # Spices, dill seed
+  fdc-170926:  VEGAN       # Spices, ginger, ground
+  fdc-170927:  VEGAN       # Spices, mace, ground
+  fdc-170928:  VEGAN       # Spices, marjoram, dried
+  fdc-170929:  VEGAN       # Spices, mustard seed, ground
+  fdc-170932:  VEGAN       # Spices, pepper, red or cayenne
+  fdc-170933:  VEGAN       # Spices, pepper, white
+  fdc-170934:  VEGAN       # Spices, saffron
+  fdc-170935:  VEGAN       # Spices, sage, ground
+  fdc-170936:  VEGAN       # Spices, savory, ground
+  fdc-170937:  VEGAN       # Spices, tarragon, dried
+  fdc-170938:  VEGAN       # Spices, thyme, dried
+  fdc-171186:  VEGAN       # Sauce, hot chile, sriracha
+  fdc-171249:  VEGETARIAN  # Cheese, romano
+  fdc-171315:  VEGAN       # Spices, allspice, ground
+  fdc-171316:  VEGAN       # Spices, anise seed
+  fdc-171318:  VEGAN       # Spices, chervil, dried
+  fdc-171319:  VEGAN       # Spices, chili powder
+  fdc-171320:  VEGAN       # Spices, cinnamon, ground
+  fdc-171321:  VEGAN       # Spices, cloves, ground
+  fdc-171322:  VEGAN       # Spices, dill weed, dried
+  fdc-171323:  VEGAN       # Spices, fennel seed
+  fdc-171324:  VEGAN       # Spices, fenugreek seed
+  fdc-171326:  VEGAN       # Spices, nutmeg, ground
+  fdc-171328:  VEGAN       # Spices, oregano, dried
+  fdc-171329:  VEGAN       # Spices, paprika
+  fdc-171331:  VEGAN       # Spices, poultry seasoning
+  fdc-171332:  VEGAN       # Spices, pumpkin pie spice
+  fdc-171333:  VEGAN       # Spices, rosemary, dried
+  fdc-171579:  VEGETARIAN  # Sauce, pesto, ready-to-serve, refrigerated
+  fdc-171583:  VEGAN       # Soup, vegetable broth, ready to serve
+  fdc-171610:  MEAT        # Sauce, worcestershire
+  fdc-172094:  VEGETARIAN  # Tortellini, pasta with cheese filling, fresh-refrigerated, as purchased
+  fdc-172231:  VEGAN       # Spices, turmeric, ground
+  fdc-172233:  VEGAN       # Dill weed, fresh
+  fdc-172235:  VEGAN       # Vanilla extract, imitation, alcohol
+  fdc-172236:  VEGAN       # Vanilla extract, imitation, no alcohol
+  fdc-172239:  VEGAN       # Spearmint, dried
+  fdc-172242:  VEGAN       # Seasoning mix, dry, sazon, coriander & annatto
+  fdc-172243:  VEGAN       # Seasoning mix, dry, taco, original
+  fdc-172886:  VEGAN       # Sauce, hoisin, ready-to-serve
+  fdc-173470:  VEGAN       # Thyme, fresh
+  fdc-173471:  VEGAN       # Vanilla extract
+  fdc-173473:  VEGAN       # Rosemary, fresh
+  fdc-173474:  VEGAN       # Peppermint, fresh
+  fdc-173475:  VEGAN       # Spearmint, fresh
+  fdc-173476:  VEGAN       # Seasoning mix, dry, chili, original
+  fdc-174528:  VEGAN       # Sauce, ready-to-serve, pepper, TABASCO
+  fdc-174529:  MEAT        # Sauce, oyster, ready-to-serve
+  fdc-174531:  MEAT        # Sauce, fish, ready-to-serve
+  fdc-174536:  MEAT        # Soup, chicken broth, ready-to-serve
+  fdc-174913:  VEGAN       # Bread, Italian
+  fdc-175040:  VEGAN       # Leavening agents, baking soda
+  fdc-1999626: VEGAN       # Mushroom, lion's mane
+  fdc-2003594: VEGAN       # Cranberry juice, not fortified, from concentrate, shelf stable
+  fdc-2003599: VEGAN       # Mushroom, king oyster
+  fdc-2003600: VEGAN       # Mushroom, enoki
+  fdc-2003602: VEGAN       # Mushroom, maitake
+  fdc-2003603: VEGAN       # Mushroom, beech
+  fdc-2003604: VEGAN       # Mushroom, pioppini
+  fdc-2259794: VEGETARIAN  # Yogurt, Greek, plain, whole milk
+  fdc-2346414: VEGAN       # Applesauce, unsweetened, with added vitamin C
+  fdc-2512372: VEGAN       # Flour, quinoa
+  fdc-2512373: VEGAN       # Flour, sorghum
+  fdc-2512377: VEGAN       # Flour, cassava
+  fdc-2514746: MEAT        # Chicken, ground, with additives, raw
+  fdc-2514747: MEAT        # Turkey, ground, 93% lean/ 7% fat, raw
+  fdc-2515382: VEGAN       # Flour, coconut
+  fdc-2644285: VEGAN       # Beans, black, canned, sodium added, drained and rinsed
+  fdc-2647442: VEGETARIAN  # Cheese, queso fresco, solid
+  fdc-2647443: VEGETARIAN  # Cheese, cotija, solid
+  fdc-2684442: MEAT        # Fish, tilapia, farm raised, raw
+  fdc-2684446: MEAT        # Crustaceans, crab, blue swimming, lump, pasteurized, refrigerated
+  fdc-2685574: VEGAN       # Collards, raw
+  fdc-2685579: VEGAN       # Tomato, sauce, canned, with salt added
+  fdc-2710825: VEGAN       # Rice, black, unenriched, raw
+  fdc-2710829: VEGAN       # Fonio, grain, dry, raw
+  fdc-2710830: VEGAN       # Khorasan, grain, dry, raw
+  fdc-2710835: VEGAN       # Corn flour, masa harina, white or yellow, dry, raw
+  fdc-2710838: VEGAN       # Rice, red, unenriched, dry, raw
+  fdc-2710839: VEGAN       # Sorghum bran, white, unenriched, dry, raw
+  fdc-2710840: VEGAN       # Sorghum flour, white, pearled, unenriched, dry, raw
+  fdc-2710841: VEGAN       # Sorghum grain, white, pearled, unenriched, dry, raw
+  fdc-2710842: VEGAN       # Sorghum, whole grain, white, dry, raw
+  fdc-2727570: MEAT        # Lamb, ground, raw
+  fdc-2727571: MEAT        # Bison, ground, raw
+  fdc-2747653: VEGAN       # Beet greens, raw
+  fdc-2747658: MEAT        # Mahi mahi, frozen, wild caught
+  fdc-2747660: VEGAN       # Peppers, banana or Hungarian wax, seeded, raw
+  fdc-2747662: VEGAN       # Peppers, poblano, seeded, raw
+  fdc-2747668: MEAT        # Sea bass, Chilean, frozen, wild caught
+  fdc-2747669: MEAT        # Snapper, frozen, wild caught
+  fdc-2747670: MEAT        # Snow crab, legs only, frozen  
+  fdc-330137:  VEGETARIAN  # Yogurt, Greek, plain, nonfat
+  fdc-332282:  VEGAN       # Sauce, pasta, spaghetti/marinara, ready-to-serve
+  fdc-746765:  VEGETARIAN  # Cheese, dry white, queso seco
+  fdc-746777:  VEGAN       # Sauce, salsa, ready-to-serve
+  fdc-746779:  MEAT        # Sausage, breakfast sausage, beef, pre-cooked, unprepared
+  fdc-746780:  MEAT        # Sausage, Italian, pork, mild, cooked, pan-fried
+  fdc-746781:  MEAT        # Sausage, pork, chorizo, link or ground, cooked, pan-fried
+  fdc-746783:  MEAT        # Sausage, turkey, breakfast links, mild, raw

@@ -22,6 +22,8 @@ public interface CatalogueFoodRepository extends JpaRepository<CatalogueFood, Lo
 
     boolean existsByVariantOf(CatalogueFood base);
 
+    List<CatalogueFood> findAllByVariantOfIn(Collection<CatalogueFood> bases);
+
     /** With what matching needs loaded at once. */
     @EntityGraph(attributePaths = {"names", "states", "variantOf"})
     List<CatalogueFood> findAllByRetiredFalse();
