@@ -319,7 +319,8 @@ class ShareApiIntegrationTest extends IntegrationTest {
     void deletingTheRecipeTakesItsSharesWithIt() throws Exception {
         var shareId = shareRecipeAs(OWNER, recipeId);
 
-        recipeService.deleteRecipe(recipeId);
+        mockMvc.perform(delete("/api/v1/recipes/" + recipeId).with(user(OWNER)))
+                .andExpect(status().isOk());
 
         assertFalse(shareRepository.existsById(shareId),
                 "A share pointing at a deleted recipe would resolve to nothing");

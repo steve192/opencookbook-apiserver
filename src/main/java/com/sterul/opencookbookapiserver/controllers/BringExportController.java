@@ -50,17 +50,16 @@ public class BringExportController extends BaseController {
         return ResponseEntity.ok(stringBuilder.toString());
     }
 
-    @Operation(summary = "Create a bring export", description = "Creates a bring export for the given recipe. The logged in user must be owner. Exports are valid for 5 minutes")
+    @Operation(summary = "Create a bring export", description = "Creates a bring export for a recipe "
+            + "the caller may read - their own, or one a household makes readable. Exports are valid "
+            + "for 5 minutes and are fetched without authentication, so they carry ingredient lines only.")
     @PostMapping
     public ResponseEntity<ExportCreationResponse> createBringExport(
             @RequestBody ExportCreationRequest request)
             throws ElementNotFound {
         var user = this.getLoggedInUser();
-        if (!recipeService.hasAccessPermissionToRecipe(request.recipeId(), user)) {
-            // "Not found" rather than "not allowed": see RecipeController.requireOwnRecipe.
-            throw new ElementNotFound();
-        }
-        var createdExport = bringExportService.createBringExport(request.recipeId(), user);
+        var recipe = recipeService.getRecipeFor(request.recipeId(), user);
+        var createdExport = bringExportService.createBringExport(recipe, user);
         return ResponseEntity.ok(new ExportCreationResponse(createdExport.getId()));
     }
 

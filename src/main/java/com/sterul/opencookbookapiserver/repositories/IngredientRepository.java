@@ -23,13 +23,20 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
     Optional<Ingredient> findByIdAndOwner(Long id, CookpalUser owner);
 
     /** Ids belonging to somebody else are simply absent from the result. */
-    List<Ingredient> findAllByIdInAndOwner(Collection<Long> ids, CookpalUser owner);
+    List<Ingredient> findAllByIdInAndOwnerUserIdIn(Collection<Long> ids, Collection<Long> ownerIds);
 
     List<Ingredient> findAllByOwner(CookpalUser owner);
 
-    /** Ingredients created before a moment that no recipe uses. */
+    /**
+     * Ingredients created before a moment that nothing uses. Planning profiles count: an avoided
+     * ingredient is usually in no recipe, and deleting it would cascade it out of the profile.
+     */
     @Query("select ingredient from Ingredient ingredient where ingredient.createdOn < :createdBefore "
-            + "and not exists (select need from IngredientNeed need where need.ingredient = ingredient)")
+            + "and not exists (select need from IngredientNeed need where need.ingredient = ingredient) "
+            + "and ingredient.id not in (select avoided from PlanningProfile profile "
+            + "join profile.avoidedIngredientIds avoided) "
+            + "and ingredient.id not in (select pantryItem.ingredientId from PlanningProfile profile "
+            + "join profile.pantry pantryItem)")
     List<Ingredient> findUnusedCreatedBefore(@Param("createdBefore") Instant createdBefore);
 
     long countByCatalogueFood(CatalogueFood catalogueFood);

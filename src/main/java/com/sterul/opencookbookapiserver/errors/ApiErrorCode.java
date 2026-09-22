@@ -42,6 +42,13 @@ public enum ApiErrorCode {
     RATE_LIMITED(HttpStatus.TOO_MANY_REQUESTS, "Too many requests, please try again later", true),
     MAIL_DELIVERY_FAILED(HttpStatus.BAD_GATEWAY, "The e-mail could not be sent", true),
 
+    HOUSEHOLD_FULL(HttpStatus.CONFLICT, "That household has no room for another member"),
+    TOO_MANY_HOUSEHOLDS(HttpStatus.CONFLICT, "You are in as many households as this server allows"),
+    TOO_MANY_INVITES(HttpStatus.CONFLICT, "That household has as many open invites as this server allows"),
+    /** One code for expired, revoked and never-existed, so a token cannot be probed. */
+    INVITE_INVALID(HttpStatus.NOT_FOUND, "That invitation is not valid any more"),
+    ALREADY_A_MEMBER(HttpStatus.CONFLICT, "You are already in that household"),
+
     IMPORT_URL_INVALID(HttpStatus.BAD_REQUEST, "That is not a link this server can read"),
     IMPORT_NOT_SUPPORTED(HttpStatus.NOT_IMPLEMENTED,
             "Recipes cannot be imported from that website"),

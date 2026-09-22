@@ -36,6 +36,7 @@ import jakarta.validation.constraints.Size;
  * @param meatMealsPerWeek null means no limit; fish counts as meat
  * @param cooldownWeeks    weeks before a planned recipe may come round again
  * @param spreadVariety    keep the same main food off neighbouring days
+ * @param includeHouseholdRecipes a personal plan also draws on household cookbooks; ignored for a household
  * @param meals            one entry per meal of the day that is planned at all
  */
 public record PlanningProfileRequest(
@@ -49,6 +50,7 @@ public record PlanningProfileRequest(
         @Min(0) @Max(12) Integer cooldownWeeks,
         Boolean leftoversAllowed,
         Boolean spreadVariety,
+        Boolean includeHouseholdRecipes,
         @NotEmpty List<@Valid Meal> meals,
         List<@Valid Pantry> pantry,
         @Size(max = 50) Set<Long> avoidedIngredientIds) {
@@ -98,6 +100,7 @@ public record PlanningProfileRequest(
         Optional.ofNullable(cooldownWeeks).ifPresent(profile::setCooldownWeeks);
         Optional.ofNullable(leftoversAllowed).ifPresent(profile::setLeftoversAllowed);
         Optional.ofNullable(spreadVariety).ifPresent(profile::setSpreadVariety);
+        Optional.ofNullable(includeHouseholdRecipes).ifPresent(profile::setIncludeHouseholdRecipes);
         return profile;
     }
 

@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sterul.opencookbookapiserver.entities.BringExport;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
+import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.repositories.BringExportRepository;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
@@ -20,11 +21,9 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 public class BringExportService {
 
-    private RecipeService recipeService;
     private BringExportRepository bringExportRepository;
 
-    public BringExportService(RecipeService recipeService, BringExportRepository bringExportRepository) {
-        this.recipeService = recipeService;
+    public BringExportService(BringExportRepository bringExportRepository) {
         this.bringExportRepository = bringExportRepository;
     }
 
@@ -45,9 +44,8 @@ public class BringExportService {
         bringExportRepository.delete(export);
     }
 
-    public BringExport createBringExport(Long recipeId, CookpalUser user) throws ElementNotFound {
-        var recipe = recipeService.getRecipeById(recipeId);
-
+    /** Takes the recipe rather than its id, so that whoever asked has already been let in. */
+    public BringExport createBringExport(Recipe recipe, CookpalUser user) {
         var bringExport = BringExport.builder().baseAmount(recipe.getServings()).owner(user)
                 .ingredients(recipe.getNeededIngredients().stream()
                         .map(IngredientNeed::describe)

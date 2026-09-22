@@ -64,7 +64,7 @@ class ShareServiceTest {
         var recipeAsTheRecipeServiceHandsItOut = recipeWithId(RECIPE_ID);
         when(shareRepository.findById(SHARE_ID))
                 .thenReturn(Optional.of(liveShareOf(recipeAsTheShareRefersToIt)));
-        when(recipeService.getRecipeById(RECIPE_ID)).thenReturn(recipeAsTheRecipeServiceHandsItOut);
+        when(recipeService.getRecipeIgnoringAccess(RECIPE_ID)).thenReturn(recipeAsTheRecipeServiceHandsItOut);
 
         var resolved = cut().resolveSharedRecipe(SHARE_ID);
 
@@ -84,7 +84,7 @@ class ShareServiceTest {
         // An unlocked read would let two requests arriving together both decide that the recipe
         // is not shared yet, and hand out two public links for it.
         verify(recipeService, times(1)).getRecipeForUpdate(RECIPE_ID);
-        verify(recipeService, never()).getRecipeById(RECIPE_ID);
+        verify(recipeService, never()).getRecipeIgnoringAccess(RECIPE_ID);
     }
 
     @Test
@@ -130,7 +130,7 @@ class ShareServiceTest {
     void openingASharedRecipeCountsTheView() throws ElementNotFound {
         when(shareRepository.findById(SHARE_ID))
                 .thenReturn(Optional.of(liveShareOf(recipeWithId(RECIPE_ID))));
-        when(recipeService.getRecipeById(RECIPE_ID)).thenReturn(recipeWithId(RECIPE_ID));
+        when(recipeService.getRecipeIgnoringAccess(RECIPE_ID)).thenReturn(recipeWithId(RECIPE_ID));
 
         cut().openSharedRecipe(SHARE_ID);
 
@@ -141,7 +141,7 @@ class ShareServiceTest {
     void anImageOfAnotherRecipeIsNotReachableThroughAShare() throws ElementNotFound {
         when(shareRepository.findById(SHARE_ID))
                 .thenReturn(Optional.of(liveShareOf(recipeWithId(RECIPE_ID))));
-        when(recipeService.getRecipeById(RECIPE_ID)).thenReturn(recipeWithId(RECIPE_ID));
+        when(recipeService.getRecipeIgnoringAccess(RECIPE_ID)).thenReturn(recipeWithId(RECIPE_ID));
 
         assertThrows(ElementNotFound.class,
                 () -> cut().requireSharedImage(SHARE_ID, "an-image-of-some-other-recipe"));

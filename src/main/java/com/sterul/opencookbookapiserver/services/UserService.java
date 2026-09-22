@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +26,7 @@ import com.sterul.opencookbookapiserver.services.exceptions.LastAdministratorExc
 import com.sterul.opencookbookapiserver.services.exceptions.PasswordResetLinkNotExistingException;
 import com.sterul.opencookbookapiserver.services.exceptions.SignupDisabledException;
 import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
+import com.sterul.opencookbookapiserver.services.households.HouseholdService;
 import com.sterul.opencookbookapiserver.services.mail.MailLanguages;
 
 import jakarta.mail.MessagingException;
@@ -56,6 +58,9 @@ public class UserService {
 
     @Autowired
     private WeekplanService weekplanService;
+
+    @Autowired
+    private HouseholdService households;
 
     @Autowired
     private RefreshTokenService refreshTokenService;
@@ -195,9 +200,25 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    /** Blank clears it; the account then falls back to a masked address. */
+    public CookpalUser setDisplayName(CookpalUser user, String displayName) {
+        var tidied = displayName == null || displayName.isBlank() ? null : displayName.strip();
+        log.info("Changing the display name of user {}", user.getUserId());
+        user.setDisplayName(tidied);
+        return userRepository.save(user);
+    }
+
+    public CookpalUser completeOnboarding(CookpalUser user, String displayName) {
+        user.setOnboarded(true);
+        return setDisplayName(user, displayName);
+    }
+
     public void deleteUser(CookpalUser user) throws LastAdministratorException {
         requireAnAdministratorRemains(user, false);
         log.info("Deleting user {}", user);
+        // Explicitly rather than by cascade, so the households hear of it.
+        households.leaveAll(user);
+
         var recipes = recipeService.getRecipesByOwner(user);
         recipes.forEach(recipeService::deleteRecipe);
 
@@ -320,6 +341,10 @@ public class UserService {
     }
 
     public CookpalUser getUserById(Long id) throws ElementNotFound {
-        return userRepository.findById(id).orElseThrow(ElementNotFound::new);
+        return findUserById(id).orElseThrow(ElementNotFound::new);
+    }
+
+    public Optional<CookpalUser> findUserById(Long id) {
+        return userRepository.findById(id);
     }
 }

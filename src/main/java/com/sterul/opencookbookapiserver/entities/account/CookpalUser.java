@@ -43,6 +43,12 @@ public class CookpalUser extends AuditableEntity {
      */
     private String language;
 
+    /** Shown to fellow household members instead of the address; null falls back to a masked one. */
+    private String displayName;
+
+    /** Whether the first-run screen was completed; clearing the name later does not undo it. */
+    private boolean onboarded;
+
     @Override
     public String toString() {
         return getUserId() + " " + getEmailAddress();

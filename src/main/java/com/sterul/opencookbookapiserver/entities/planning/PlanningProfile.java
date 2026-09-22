@@ -10,7 +10,9 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import com.sterul.opencookbookapiserver.entities.AuditableEntity;
+import com.sterul.opencookbookapiserver.entities.ScopedEntity;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
+import com.sterul.opencookbookapiserver.entities.household.Household;
 import com.sterul.opencookbookapiserver.entities.recipe.Diet;
 import com.sterul.opencookbookapiserver.entities.recipe.MacroStyle;
 import com.sterul.opencookbookapiserver.entities.recipe.MealType;
@@ -42,7 +44,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
-public class PlanningProfile extends AuditableEntity {
+public class PlanningProfile extends AuditableEntity implements ScopedEntity {
 
     @Id
     @SequenceGenerator(name = "planning_profile_seq", sequenceName = "planning_profile_seq", allocationSize = 1)
@@ -50,9 +52,14 @@ public class PlanningProfile extends AuditableEntity {
     @EqualsAndHashCode.Include
     private Long id;
 
-    @ManyToOne(optional = false)
+    /** Exactly one of these is set: a profile is a person's own or a household's. */
+    @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
     private CookpalUser owner;
+
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Household household;
 
     @Column(nullable = false)
     private String name;
@@ -89,6 +96,9 @@ public class PlanningProfile extends AuditableEntity {
     /** Keep the same main food and recipe group off neighbouring days. */
     @Builder.Default
     private boolean spreadVariety = true;
+
+    /** A personal plan also draws on the household cookbooks its owner may read. */
+    private boolean includeHouseholdRecipes;
 
     @ElementCollection
     @CollectionTable(name = "planning_profile_meal", joinColumns = @JoinColumn(name = "profile_id"))

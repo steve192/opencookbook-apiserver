@@ -30,8 +30,9 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 public class Share extends AuditableEntity {
 
+    /** Pinned random: AUTO resolves to it today, and a time-ordered token would be guessable. */
     @Id
-    @UuidGenerator
+    @UuidGenerator(style = UuidGenerator.Style.RANDOM)
     private String id;
 
     @JsonIgnore

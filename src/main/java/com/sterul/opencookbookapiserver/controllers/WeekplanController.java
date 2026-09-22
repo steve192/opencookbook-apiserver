@@ -3,6 +3,7 @@ package com.sterul.opencookbookapiserver.controllers;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 import com.sterul.opencookbookapiserver.controllers.requests.WeekplanDayPut;
 import com.sterul.opencookbookapiserver.controllers.responses.WeekplanDayResponse;
+import com.sterul.opencookbookapiserver.controllers.support.PlanScopes;
+import com.sterul.opencookbookapiserver.entities.PlanScope;
 import com.sterul.opencookbookapiserver.entities.WeekplanDay;
 import com.sterul.opencookbookapiserver.entities.WeekplanDayRecipe;
 import com.sterul.opencookbookapiserver.services.RecipeService;
@@ -30,41 +33,65 @@ public class WeekplanController extends BaseController {
     WeekplanService weekplanService;
     @Autowired
     RecipeService recipeService;
+    @Autowired
+    PlanScopes planScopes;
 
-    @Operation(summary = "Fetch weekplan days in timerange")
+    @Operation(summary = "Fetch weekplan days in timerange",
+            description = "Your own plan, or the household's given. With allPlans, the week across every "
+                    + "plan you can see, each day saying which plan it is from.")
     @GetMapping("/{from}/to/{to}")
     public List<WeekplanDayResponse> getBetweenDates(@PathVariable @DateTimeFormat(iso = ISO.DATE) LocalDate from,
-                                                     @PathVariable @DateTimeFormat(iso = ISO.DATE) LocalDate to) {
-        return weekplanService.getWeekplanDaysBetweenTime(from, to, getLoggedInUser()).stream()
-                .map(this::entityToResponse).toList();
+                                                     @PathVariable @DateTimeFormat(iso = ISO.DATE) LocalDate to,
+                                                     @RequestParam(required = false) String household,
+                                                     // Opt-in, so apps that predate households see their own plan only.
+                                                     @RequestParam(defaultValue = "false") boolean allPlans)
+            throws ElementNotFound {
+        var user = getLoggedInUser();
+        if (!allPlans) {
+            return daysOf(planScopes.of(user, household), from, to);
+        }
+        var days = new ArrayList<WeekplanDayResponse>();
+        planScopes.allVisibleTo(user).forEach(scope -> days.addAll(daysOf(scope, from, to)));
+        return days;
     }
 
-    @Operation(summary = "Change a single weekplan day")
+    @Operation(summary = "Change a single weekplan day",
+            description = "Always one plan at a time: reading merges, writing does not.")
     @PutMapping("/{date}")
     public WeekplanDayResponse createAndUpdate(@PathVariable @DateTimeFormat(iso = ISO.DATE) LocalDate date,
+                                               @RequestParam(required = false) String household,
                                                @RequestBody WeekplanDayPut weekplanDayPut) throws ElementNotFound {
 
-        var weekplanDayEntity = weekplanService.dayOf(date, getLoggedInUser());
-        populateWeekplanDayWithRecipes(weekplanDayPut, weekplanDayEntity);
+        var scope = planScopes.of(getLoggedInUser(), household);
+        var weekplanDayEntity = weekplanService.dayOf(date, scope);
+        populateWeekplanDayWithRecipes(weekplanDayPut, weekplanDayEntity, scope);
         weekplanDayEntity = weekplanService.updateWeekplanDay(weekplanDayEntity);
 
-        return entityToResponse(weekplanDayEntity);
+        return entityToResponse(weekplanDayEntity, weekplanService.shownIn(scope));
     }
 
-    private WeekplanDayResponse entityToResponse(WeekplanDay weekplanDayEntity) {
+    private List<WeekplanDayResponse> daysOf(PlanScope scope, LocalDate from, LocalDate to) {
+        var shown = weekplanService.shownIn(scope);
+        return weekplanService.getWeekplanDaysBetweenTime(from, to, scope).stream()
+                .map(day -> entityToResponse(day, shown)).toList();
+    }
+
+    /** Only meals the plan's readers may open; a stored meal is never proof of access. */
+    private WeekplanDayResponse entityToResponse(WeekplanDay weekplanDayEntity, Predicate<WeekplanDayRecipe> shown) {
         var response = new WeekplanDayResponse();
         response.setDay(weekplanDayEntity.getPlanDate());
-        for (var recipe : weekplanDayEntity.getRecipes()) {
+        var household = weekplanDayEntity.getHousehold();
+        if (household != null) {
+            response.setHouseholdId(household.getId());
+            response.setHouseholdName(household.getName());
+        }
+        for (var recipe : weekplanDayEntity.getRecipes().stream().filter(shown).toList()) {
             if (recipe.isSimpleRecipe()) {
                 var simpleRecipe = new WeekplanDayResponse.SimpleRecipe();
                 simpleRecipe.setId(recipe.getId());
                 simpleRecipe.setTitle(recipe.getSimpleRecipeText());
                 response.getRecipes().add(simpleRecipe);
             } else {
-                if (recipe.getRecipe() == null) {
-                    // Something is wrong with the data, ignore this entry
-                    continue;
-                }
                 var normalRecipe = new WeekplanDayResponse.NormalRecipe();
                 normalRecipe.setId(recipe.getRecipe().getId());
                 normalRecipe.setTitle(recipe.getRecipe().getTitle());
@@ -77,7 +104,8 @@ public class WeekplanController extends BaseController {
         return response;
     }
 
-    private void populateWeekplanDayWithRecipes(WeekplanDayPut weekplanDayPut, final WeekplanDay newWeekplanDay)
+    private void populateWeekplanDayWithRecipes(WeekplanDayPut weekplanDayPut, final WeekplanDay newWeekplanDay,
+            PlanScope scope)
             throws ElementNotFound {
 
         // Built up separately and only swapped in at the end. RecipeService is transactional,
@@ -91,12 +119,7 @@ public class WeekplanController extends BaseController {
                 case NORMAL_RECIPE -> {
                     var recipeId = ((WeekplanDayPut.NormalRecipe) recipe).getId();
 
-                    if (!recipeService.hasAccessPermissionToRecipe(recipeId, getLoggedInUser())) {
-                        // "Not found" rather than "not allowed", so that planning a meal cannot
-                        // be used to find out which recipe ids exist.
-                        throw new ElementNotFound();
-                    }
-                    var recipeEntity = recipeService.getRecipeById(recipeId);
+                    var recipeEntity = recipeService.getPlannableRecipe(recipeId, scope);
                     meals.add(WeekplanDayRecipe.builder()
                             .isSimpleRecipe(false)
                             .recipe(recipeEntity)

@@ -12,6 +12,7 @@ import com.sterul.opencookbookapiserver.entities.recipe.MealType;
  * valid "surprise me".
  *
  * @param seed makes a result set reproducible, so asking again is a deliberate new draw
+ * @param includeHouseholdRecipes also draw on the household cookbooks the cook may read
  */
 public record SuggestionCriteria(
         MatchMode mode,
@@ -21,6 +22,7 @@ public record SuggestionCriteria(
         Set<MealType> mealTypes,
         Integer targetKcalPerServing,
         MacroStyle macroStyle,
+        boolean includeHouseholdRecipes,
         int limit,
         long seed) {
 

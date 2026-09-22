@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sterul.opencookbookapiserver.controllers.exceptions.NotAuthorizedException;
 import com.sterul.opencookbookapiserver.controllers.exceptions.UnauthorizedException;
 import com.sterul.opencookbookapiserver.controllers.exceptions.UserNotActiveException;
+import com.sterul.opencookbookapiserver.controllers.requests.DisplayNameRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.PasswordChangeRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.PasswordResetExecutionRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.PasswordResetRequest;
@@ -31,7 +33,6 @@ import com.sterul.opencookbookapiserver.controllers.responses.RefreshTokenRespon
 import com.sterul.opencookbookapiserver.controllers.responses.UserInfoResponse;
 import com.sterul.opencookbookapiserver.controllers.responses.UserLoginResponse;
 import com.sterul.opencookbookapiserver.entities.RefreshToken;
-import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.account.Role;
 import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
 import com.sterul.opencookbookapiserver.errors.ApiException;
@@ -88,7 +89,7 @@ public class UserController extends BaseController {
     @Operation(summary = "Creates a new user")
     @PostMapping("/signup")
     @Transactional
-    public CookpalUser signup(@Valid @RequestBody UserCreationRequest userCreationRequest)
+    public void signup(@Valid @RequestBody UserCreationRequest userCreationRequest)
             throws UserAlreadyExistsException, SignupDisabledException {
         // Whatever the client asked for in Accept-Language, which is the only thing known about
         // a person who does not have an account yet.
@@ -102,7 +103,6 @@ public class UserController extends BaseController {
             // screen, so a mail server that is down must not undo a signup.
             log.error("Error sending activation mail", e);
         }
-        return createdUser;
     }
 
     @Operation(summary = "Logs a user in", description = "Logs in and generates tokens for authentication")
@@ -148,7 +148,7 @@ public class UserController extends BaseController {
                     + "exception is a mail server that will not accept the message, which is "
                     + "reported rather than silently swallowed.")
     @PostMapping("/requestPasswordReset")
-    public ResponseEntity<String> requestPasswordReset(
+    public ResponseEntity<Void> requestPasswordReset(
             @Valid @RequestBody PasswordResetRequest passwordResetRequest)
             throws MessagingException {
         var emailAddress = passwordResetRequest.getEmailAddress();
@@ -160,7 +160,7 @@ public class UserController extends BaseController {
 
     @Operation(summary = "Executes a password reset")
     @PostMapping("/resetPassword")
-    public ResponseEntity<String> resetPassword(@Valid @RequestBody PasswordResetExecutionRequest request)
+    public ResponseEntity<Void> resetPassword(@Valid @RequestBody PasswordResetExecutionRequest request)
             throws PasswordResetLinkNotExistingException {
         userService.resetPassword(request.getNewPassword(), request.getPasswordResetId());
         return ResponseEntity.ok().build();
@@ -168,7 +168,7 @@ public class UserController extends BaseController {
 
     @Operation(summary = "Sets a new password")
     @PostMapping("/changePassword")
-    public ResponseEntity<String> changePassword(@Valid @RequestBody PasswordChangeRequest request)
+    public ResponseEntity<Void> changePassword(@Valid @RequestBody PasswordChangeRequest request)
             throws UnauthorizedException {
         var loggedInUser = this.getLoggedInUser();
         if (!userService.isPasswordCorrect(loggedInUser.getEmailAddress(), request.getOldPassword())) {
@@ -202,7 +202,7 @@ public class UserController extends BaseController {
 
     @Operation(summary = "Resends an activation link to the users email address. Ignores requests for when users are already active or users do not exist")
     @PostMapping("/resendActivationLink")
-    public ResponseEntity<String> resendActivationLink(
+    public ResponseEntity<Void> resendActivationLink(
             @Valid @RequestBody ResendActivationLinkRequest request) throws MessagingException {
         resendActivationLinkWithinBudget(request.getEmailAddress());
         return ResponseEntity.ok().build();
@@ -214,16 +214,35 @@ public class UserController extends BaseController {
         var user = getLoggedInUser();
         var response = new UserInfoResponse();
         response.setEmail(user.getEmailAddress());
+        response.setDisplayName(user.getDisplayName());
+        response.setOnboarded(user.isOnboarded());
         response.setRoles(SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
                 .map(authority -> authority.getAuthority()).toList());
         return response;
+    }
+
+    @Operation(summary = "Set the name fellow household members see",
+            description = "A blank name clears it; the account then falls back to a masked address.")
+    @PutMapping("/self/displayName")
+    public UserInfoResponse setDisplayName(@Valid @RequestBody DisplayNameRequest request) {
+        userService.setDisplayName(getLoggedInUser(), request.displayName());
+        return getOwnUserInfo();
+    }
+
+    @Operation(summary = "Finish the first-run setup",
+            description = "Takes the display name the setup screen asked for and marks the account "
+                    + "as set up, so it is only ever asked once.")
+    @PostMapping("/self/onboarding")
+    public UserInfoResponse completeOnboarding(@Valid @RequestBody DisplayNameRequest request) {
+        userService.completeOnboarding(getLoggedInUser(), request.displayName());
+        return getOwnUserInfo();
     }
 
     @Operation(summary = "Delete authenticated user account",
             description = "The last administrator who can sign in cannot delete themselves; the "
                     + "instance would be left with nobody able to administer it.")
     @DeleteMapping("/self")
-    public ResponseEntity deleteOwnUser() throws LastAdministratorException, NotAuthorizedException {
+    public ResponseEntity<Void> deleteOwnUser() throws LastAdministratorException, NotAuthorizedException {
         var user = getLoggedInUser();
         if (Role.DEMO.equals(user.getRoles())) {
             throw new NotAuthorizedException();

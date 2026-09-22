@@ -9,6 +9,8 @@ public class InstanceInfoResponse {
     private String termsOfService;
     private boolean sharingEnabled;
 
+    private boolean householdsEnabled;
+
     private boolean nutritionEnabled;
 
     /**

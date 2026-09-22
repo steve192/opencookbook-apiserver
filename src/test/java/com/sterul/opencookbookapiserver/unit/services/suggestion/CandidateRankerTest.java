@@ -41,7 +41,7 @@ class CandidateRankerTest {
             new MatchTarget(2L, "Feta", Set.of(FETA.getId())));
 
     private static SuggestionCriteria criteria(long seed) {
-        return new SuggestionCriteria(MatchMode.ANY_RANKED, List.of(1L, 2L), null, null, null, null, null, 10, seed);
+        return new SuggestionCriteria(MatchMode.ANY_RANKED, List.of(1L, 2L), null, null, null, null, null, true, 10, seed);
     }
 
     private List<String> rank(long seed, Recipe... recipes) {

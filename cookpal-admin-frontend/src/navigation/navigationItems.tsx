@@ -10,11 +10,13 @@ import PersonIcon from '@mui/icons-material/Person';
 import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import RuleIcon from '@mui/icons-material/Rule';
+import GroupsIcon from '@mui/icons-material/Groups';
 import ShareIcon from '@mui/icons-material/Share';
 import {ReactNode} from 'react';
 import {BringExportsScreen} from '../screens/BringExportsScreen';
 import {CatalogueScreen} from '../screens/CatalogueScreen';
 import {ClassificationScreen} from '../screens/ClassificationScreen';
+import {HouseholdsScreen} from '../screens/HouseholdsScreen';
 import {IngredientCleanupScreen} from '../screens/IngredientCleanupScreen';
 import {IngredientsScreen} from '../screens/IngredientsScreen';
 import {NameRulesScreen} from '../screens/NameRulesScreen';
@@ -55,6 +57,7 @@ export const navigationItems: NavigationItem[] = [
     element: <UserCorrectionsScreen />},
   {route: 'name-rules', label: 'Name rules', icon: <BlockIcon />, element: <NameRulesScreen />},
   {route: 'shares', label: 'Shared recipes', icon: <ShareIcon />, element: <SharesScreen />},
+  {route: 'households', label: 'Households', icon: <GroupsIcon />, element: <HouseholdsScreen />},
   {route: 'ocr-jobs', label: 'Recipe scans', icon: <DocumentScannerIcon />,
     element: <OcrJobsScreen />},
   {route: 'bringexports', label: 'Bring exports', icon: <FileUploadIcon />,

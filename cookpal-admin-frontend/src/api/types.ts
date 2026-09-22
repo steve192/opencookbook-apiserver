@@ -349,6 +349,20 @@ export interface Share {
   accessCount: number;
 }
 
+export interface HouseholdMember {
+  userId: number;
+  emailAddress: string;
+  shareRecipes: boolean;
+}
+
+export interface Household {
+  id: string;
+  name: string;
+  createdOn: string;
+  memberCount: number;
+  members: HouseholdMember[];
+}
+
 export interface ShareStatistics {
   totalShares: number;
   totalAccesses: number;

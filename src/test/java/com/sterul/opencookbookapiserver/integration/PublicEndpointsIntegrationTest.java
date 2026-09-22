@@ -86,9 +86,31 @@ class PublicEndpointsIntegrationTest extends IntegrationTest {
             // Managing shares is not reading them. The whitelist matches on path alone, so this
             // is what stops a wider pattern from publishing revoking and importing as well.
             "/api/v1/shares",
+            // Households are private throughout, and unlike a share link even resolving an
+            // invitation needs an account: a signed out client has no reason to learn that a
+            // household exists.
+            "/api/v1/households",
+            "/api/v1/households/any-household",
+            "/api/v1/households/any-household/recipes",
+            "/api/v1/households/any-household/invites",
+            "/api/v1/household-invites/any-token",
     })
     void everythingElseStillRequiresAuthentication(String path) throws Exception {
         mockMvc.perform(get(path)).andExpect(status().isUnauthorized());
+    }
+
+    @ParameterizedTest(name = "{0} {1} -> 401")
+    @CsvSource({
+            "POST,   /api/v1/households",
+            "PUT,    /api/v1/households/any-household/sharing",
+            "POST,   /api/v1/households/any-household/invites",
+            "DELETE, /api/v1/households/any-household/members/1",
+            "POST,   /api/v1/household-invites/any-token/accept",
+    })
+    void joiningAndChangingAHouseholdAlwaysRequiresAuthentication(String method, String path)
+            throws Exception {
+        mockMvc.perform(request(HttpMethod.valueOf(method), path))
+                .andExpect(status().isUnauthorized());
     }
 
     @ParameterizedTest(name = "{0} {1} -> 401")

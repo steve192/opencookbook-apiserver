@@ -114,6 +114,9 @@ public class OpencookbookConfiguration {
      */
     private Sharing sharing = new Sharing();
 
+    /** Shared cookbooks and shared weekplans. */
+    private Households households = new Households();
+
     /**
      * What may be done by somebody who is not signed in yet.
      */
@@ -285,6 +288,30 @@ public class OpencookbookConfiguration {
          * recipe happens to be.
          */
         private int imageViewsPerHourPerIp = 120;
+    }
+
+    /** Households: small private groups sharing a cookbook and a weekplan. The caps keep them small. */
+    @Getter
+    @Setter
+    public static class Households {
+
+        /** Off removes the endpoints and stops members reading each other's cookbooks; rows are kept. */
+        private boolean enabled = true;
+
+        /** How many people one household may hold. */
+        private int maxMembers = 10;
+
+        /** How many households one account may be in. */
+        private int maxPerUser = 5;
+
+        /** How many unexpired invites one household may have outstanding. */
+        private int maxLiveInvites = 5;
+
+        /** How many days an invite link stays valid. */
+        private int inviteValidityDays = 14;
+
+        /** How often one client may resolve invite tokens per hour. */
+        private int inviteLookupsPerHourPerIp = 30;
     }
 
     /**

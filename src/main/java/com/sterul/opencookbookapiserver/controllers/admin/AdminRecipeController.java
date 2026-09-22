@@ -47,7 +47,7 @@ public class AdminRecipeController {
     @Operation(summary = "One recipe")
     @GetMapping("/{id}")
     public AdminRecipeResponse getOne(@PathVariable Long id) throws ElementNotFound {
-        return AdminRecipeResponse.fromEntity(recipeService.getRecipeById(id));
+        return AdminRecipeResponse.fromEntity(recipeService.getRecipeIgnoringAccess(id));
     }
 
     @Operation(summary = "Correct a recipe",
@@ -57,7 +57,8 @@ public class AdminRecipeController {
     public AdminRecipeResponse updateRecipe(@PathVariable Long id, @Valid @RequestBody AdminRecipeRequest request)
             throws ElementNotFound {
         log.info("Admin: Updating recipe {}", id);
-        var updated = recipeService.updateRecipeDetails(id, new RecipeDetails(
+        var recipe = recipeService.getRecipeIgnoringAccess(id);
+        var updated = recipeService.updateRecipeDetails(recipe, new RecipeDetails(
                 request.getTitle(),
                 request.getServings() == null ? 0 : request.getServings(),
                 request.getPreparationTime(),
@@ -72,6 +73,6 @@ public class AdminRecipeController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteRecipe(@PathVariable Long id) throws ElementNotFound {
         log.info("Admin: Deleting recipe {}", id);
-        recipeService.deleteRecipe(id);
+        recipeService.deleteRecipe(recipeService.getRecipeIgnoringAccess(id));
     }
 }

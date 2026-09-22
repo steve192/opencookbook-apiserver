@@ -4,6 +4,7 @@ import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration
 import com.sterul.opencookbookapiserver.controllers.responses.InstanceInfoResponse;
 import com.sterul.opencookbookapiserver.services.InstanceInfoService;
 import com.sterul.opencookbookapiserver.services.ml.MlAvailabilityService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +30,14 @@ public class InstanceInfoController extends BaseController {
     @Autowired(required = false)
     private MlAvailabilityService mlAvailabilityService;
 
+    @Operation(summary = "What this instance offers",
+            description = "Read before signing in, so the app only offers what the server can do.")
     @GetMapping("")
     public InstanceInfoResponse getInstanceInfo() {
         return InstanceInfoResponse.builder()
                 .termsOfService(instanceInfoService.getTermsOfSerivice())
                 .sharingEnabled(opencookbookConfiguration.getSharing().isEnabled())
+                .householdsEnabled(opencookbookConfiguration.getHouseholds().isEnabled())
                 .nutritionEnabled(opencookbookConfiguration.getNutrition().isEnabled())
                 .ocrImportEnabled(isOcrImportEnabled())
                 .build();

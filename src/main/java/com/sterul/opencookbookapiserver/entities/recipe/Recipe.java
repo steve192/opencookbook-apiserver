@@ -106,4 +106,8 @@ public class Recipe extends AuditableEntity {
         return totalTime != null ? totalTime : preparationTime;
     }
 
+    public boolean isOwnedBy(CookpalUser user) {
+        return owner.getUserId().equals(user.getUserId());
+    }
+
 }

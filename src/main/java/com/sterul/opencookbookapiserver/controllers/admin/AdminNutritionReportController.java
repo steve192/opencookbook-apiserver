@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sterul.opencookbookapiserver.configurations.nutrition.ConditionalOnNutritionEnabled;
+import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminCoverageResponse;
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminUnmatchedNameResponse;
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminUserCorrectionResponse;
 import com.sterul.opencookbookapiserver.errors.ApiException;
@@ -74,7 +75,7 @@ public class AdminNutritionReportController {
 
     @Operation(summary = "The nutrition calculator run over every recipe")
     @GetMapping("/coverage")
-    public CoverageReport.Coverage getCoverage() {
-        return coverageReport.coverage();
+    public AdminCoverageResponse getCoverage() {
+        return AdminCoverageResponse.fromResult(coverageReport.coverage());
     }
 }

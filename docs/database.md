@@ -1,7 +1,7 @@
 # Database: recipe classification, diets and weekplan generation
 
-What the migrations `V21`–`V25` added, and why each column is there. This is not a full schema
-reference — it covers the tables and columns behind recipe suggestion, recipe diets, the
+What the migrations `V21`-`V25` added, and why each column is there. This is not a full schema
+reference; it covers the tables and columns behind recipe suggestion, recipe diets, the
 catalogue's diet classes and generated weekplans. For the nutrition catalogue itself see [`nutrition.md`](nutrition.md).
 
 Schema changes are Flyway migrations in `src/main/resources/db/migration/`, applied at startup and
@@ -34,11 +34,11 @@ what each recipe had before it touched it.
 
 | Column | Type | Meaning |
 |---|---|---|
-| `recipe_type` | smallint | `VEGAN`, `VEGETARIAN` or `MEAT`, stored as the enum's **ordinal** (0, 1, 2 — it predates the rest of this work). Null means unknown, which is not the same as vegan |
+| `recipe_type` | smallint | `VEGAN`, `VEGETARIAN` or `MEAT`, stored as the enum's **ordinal** (0, 1, 2; it predates the rest of this work). Null means unknown, which is not the same as vegan |
 
 The ordering is load-bearing: the scale runs from least to most restrictive, and a recipe's diet is
 the **strictest** of its ingredients'. Because it is stored as an ordinal, a new level may only ever
-be appended, never inserted — and `V3` pins the range with `CHECK (recipe_type >= 0 AND
+be appended, never inserted, and `V3` pins the range with `CHECK (recipe_type >= 0 AND
 recipe_type <= 2)`, so adding one means widening that constraint, re-deriving every classified
 recipe, and rebuilding the shipped dataset. **Fish counts as `MEAT`**; there is no pescatarian level.
 
@@ -57,7 +57,7 @@ recipe's owner, in the app as one question with the meal types.
 
 ### Meal types (`recipe_meal_type`)
 
-Which meals a recipe suits, as a set — most dishes are honestly both lunch and dinner.
+Which meals a recipe suits, as a set: most dishes are honestly both lunch and dinner.
 
 | Column | Type | Meaning |
 |---|---|---|
@@ -79,7 +79,7 @@ new classification kind (below), not new columns.
 
 | Column | Type | Meaning |
 |---|---|---|
-| `catalogue_food.diet_class` | varchar(16) | `VEGAN`, `VEGETARIAN` or `MEAT` — the same three-level scale a recipe carries, deliberately, so a recipe's diet is simply the strictest of its foods'. **Fish counts as `MEAT`** |
+| `catalogue_food.diet_class` | varchar(16) | `VEGAN`, `VEGETARIAN` or `MEAT`: the same three-level scale a recipe carries, deliberately, so a recipe's diet is simply the strictest of its foods'. **Fish counts as `MEAT`** |
 | `catalogue_food.diet_class_origin` | varchar(16) | `DATASET` where the shipped dataset said so, `ADMIN` where an operator corrected it |
 
 A `CHECK` keeps the two columns in step: a class without an origin would be a decision nobody can
@@ -90,7 +90,7 @@ leaves `ADMIN` ones alone, so an operator's correction survives every later rele
 and nutrients, the diet class **may be corrected on a dataset food**: the shipped value is a reading
 of a text description, not a measurement, so an operator who knows the food outranks it.
 
-Where the shipped values come from — BLS food-group letters, with a curated exception list — is
+Where the shipped values come from (BLS food-group letters, with a curated exception list) is
 described in `nutrition-data/README.md` under *How the build decides*.
 
 ---
@@ -109,7 +109,7 @@ nothing accepted) is refused with `409 CONFLICT` for both.
 
 The run machinery does not know what it classifies. Each *kind* (`DIET` today) supplies where its
 value lives on a recipe and how to read it; runs, proposals and provenance store values as the kind
-encodes them. Adding a kind adds no columns — only a value to the `kind` checks below.
+encodes them. Adding a kind adds no columns, only a value to the `kind` checks below.
 
 ### `recipe_classification_run`
 
@@ -119,7 +119,7 @@ encodes them. Adding a kind adds no columns — only a value to the `kind` check
 | `kind` | varchar(16) | What the run classifies. `DIET` is the only kind today |
 | `scope` | varchar(32) | Which recipes it looked at: `NEVER_CLASSIFIED` (the normal backfill: no value yet) or `DERIVED_ONLY` (re-read what earlier runs derived, e.g. after a dataset release). A person's value is in neither |
 | `status` | varchar(16) | `PREVIEWED` → `APPLIED` → `REVERTED`, or `DISCARDED` |
-| `basis` | varchar(64) | What the values were read from — for diets, the dataset release — so a later run explains a different outcome |
+| `basis` | varchar(64) | What the values were read from (for diets, the dataset release), so a later run explains a different outcome |
 | `proposal_count` | integer | Recipes the run could decide about |
 | `unreadable_count` | integer | Recipes it looked at and could not read |
 | `skipped_count` | integer | Accepted, but changed since the preview and so left alone by apply |
@@ -140,7 +140,7 @@ One row per recipe the run looked at.
 | `proposed_value` | varchar(64) | What the run would make of it, encoded by the kind (`MEAT`); null when it could not be read |
 | `previous_value` | varchar(64) | What the recipe had, so a revert restores exactly that |
 | `previous_run_id` | bigint → `recipe_classification_run` | The run that derived the previous value; null where a person chose it or there was none. A revert hands the value back to that run rather than to nobody |
-| `decision` | varchar(16) | `PENDING`, `ACCEPTED`, `REJECTED`, or `SKIPPED` — the run's own decision, meaning it looked and deliberately left the recipe alone |
+| `decision` | varchar(16) | `PENDING`, `ACCEPTED`, `REJECTED`, or `SKIPPED`: the run's own decision, meaning it looked and deliberately left the recipe alone |
 | `reason` | varchar(512) | **Why**, in words a reviewer can check: `MEAT because of Hackfleisch`, or `not linked to the catalogue: Suppengrün` |
 
 `reason` is not decoration. A bare "this recipe is MEAT" cannot be reviewed, and the column that
@@ -160,11 +160,11 @@ review.
 | `kind` | varchar(16) | Which of the recipe's values is meant |
 | `run_id` | bigint → `recipe_classification_run` | The run that derived it; indexed. A revert restores only recipes still marked with that run, so it cannot undo a later run's work |
 
-**A value without a row is a person's.** That covers every diet set before runs existed — no
-backfill needed — and any code path that knows nothing about classification: forgetting to record
+**A value without a row is a person's.** That covers every diet set before runs existed (no
+backfill needed) and any code path that knows nothing about classification: forgetting to record
 provenance can never hand a person's choice to a run, it can only protect a derived one.
 
-When a person *changes* a derived value — the owner in the app or an operator in the admin panel —
+When a person *changes* a derived value (the owner in the app or an operator in the admin panel),
 the row is deleted and the value is theirs from then on. Saving a recipe without changing it (to fix
 its title, say) keeps the row: that is not a decision about its diet.
 
@@ -186,19 +186,19 @@ row: anything that could move the numbers deletes it, and the next read computes
 | `energy_kcal` … `salt` | real | The nine nutrient values, in the same columns `catalogue_food` uses |
 | `quality` | varchar(16) | `COMPLETE`, `INCOMPLETE` (shown with a warning) or `UNAVAILABLE` (too uncertain to show, or to rank on) |
 | `warning_count` | integer | Lines that may move the values noticeably |
-| `main_food_id` | bigint → `catalogue_food` | The ingredient contributing the most grams — what "another pasta dish" means when a week is spread over different foods. Set null if that food is deleted, rather than losing the row |
+| `main_food_id` | bigint → `catalogue_food` | The ingredient contributing the most grams: what "another pasta dish" means when a week is spread over different foods. Set null if that food is deleted, rather than losing the row |
 | `main_food_gram_share` | real | Its share of the weighed grams, 0 to 1 |
 | `computed_at` | timestamptz | |
 | `dataset_label` | varchar(64) | The dataset release the values were read from. A row from an older release is treated as missing |
 
 When a row is dropped:
 
-- **The recipe is saved** — through the app or the admin panel. `RecipeService` publishes a
+- **The recipe is saved** through the app or the admin panel. `RecipeService` publishes a
   `RecipeChangedEvent`; it does not know the cache exists.
-- **The catalogue changes** — a dataset import, a corrected custom food, a relink, a merge. Every
+- **The catalogue changes**: a dataset import, a corrected custom food, a relink, a merge. Every
   row is dropped: working out which recipes a changed food affects costs more than recomputing the
   ones anybody actually asks for.
-- **A new dataset ships** — rows carrying an older `dataset_label` are ignored on read, which also
+- **A new dataset ships**: rows carrying an older `dataset_label` are ignored on read, which also
   covers a row written before a restart onto a new release.
 
 **A missing row therefore means "not computed yet", never "this recipe has no nutrition".**
@@ -240,7 +240,7 @@ One row per meal of the day that is planned at all; a meal without a row is neve
 |---|---|---|
 | `profile_id` | bigint → `planning_profile` | Cascades on delete |
 | `meal_type` | varchar(16) | As in `recipe_meal_type` |
-| `schedule` | varchar(160) | The weekdays it is cooked, each with its effort — `SIMPLE`, `ANY` or `ELABORATE`, judged against the cook's own cookbook — e.g. `MONDAY:SIMPLE,SATURDAY:ELABORATE`. On the other days the meal is a **gap** the cook fills themselves (a Butterbrot, the canteen, takeaway). The app fills the days from a weekly count, weekend first, unless the cook picks them |
+| `schedule` | varchar(160) | The weekdays it is cooked, each with its effort (`SIMPLE`, `ANY` or `ELABORATE`, judged against the cook's own cookbook), e.g. `MONDAY:SIMPLE,SATURDAY:ELABORATE`. On the other days the meal is a **gap** the cook fills themselves (a Butterbrot, the canteen, takeaway). The app fills the days from a weekly count, weekend first, unless the cook picks them |
 | `target_kcal` | integer | Per serving. Null takes an even share of what `kcal_per_day` leaves after the meals with a target of their own |
 
 ### `planning_profile_pantry` and `planning_profile_avoided`
@@ -248,7 +248,7 @@ One row per meal of the day that is planned at all; a meal without a row is neve
 | Column | Type | Meaning |
 |---|---|---|
 | `planning_profile_pantry.ingredient_id` | bigint → `ingredient` | Something the cook has and wants used up |
-| `planning_profile_pantry.amount`, `unit` | real, varchar(32) | How much. Where it resolves to grams, the plan spends it as a budget; without an amount it is worth one recipe. Once used up, further recipes using it are mildly penalised — the plan uses it up rather than serving it all week |
+| `planning_profile_pantry.amount`, `unit` | real, varchar(32) | How much. Where it resolves to grams, the plan spends it as a budget; without an amount it is worth one recipe. Once used up, further recipes using it are mildly penalised, so the plan uses it up rather than serving it all week |
 | `planning_profile_avoided.ingredient_id` | bigint → `ingredient` | **Hard filter**: never planned, variants included. Where any ingredient is avoided, a recipe with an unlinked ingredient is excluded too, because it cannot be shown to be free of it |
 
 Both cascade when the ingredient or the profile is deleted.
@@ -259,8 +259,8 @@ Both cascade when the ingredient or the profile is deleted.
 |---|---|---|
 | `id` | bigint | From `plan_draft_seq` |
 | `owner_user_id` | bigint → `cookpal_user` | Cascades on delete |
-| `profile_id` | bigint → `planning_profile` | The answers it was made from. Set null when the profile is deleted — the service first discards the profile's open drafts, so only closed ones outlive it |
-| `start_date`, `days` | date, integer | The period; 1–14 days |
+| `profile_id` | bigint → `planning_profile` | The answers it was made from. Set null when the profile is deleted; the service first discards the profile's open drafts, so only closed ones outlive it |
+| `start_date`, `days` | date, integer | The period; 1 to 14 days |
 | `seed` | bigint | Makes the draft reproducible; drawing everything again is a new seed |
 | `status` | varchar(16) | `DRAFT` (open), `ACCEPTED` or `DISCARDED`. Only an open draft can be changed |
 
@@ -296,8 +296,8 @@ explain itself. The key is stable and the client writes the sentence in the read
 
 ## Cascades in the mapping as well
 
-Every foreign key added in `V21`–`V25` declares its `ON DELETE` rule twice: in the migration, and as
+Every foreign key added in `V21`-`V25` declares its `ON DELETE` rule twice: in the migration, and as
 `@OnDelete` on the entity. Integration tests build their schema from the entities (`ddl-auto:
-create`), so without the annotation a deletion that relies on a cascade — deleting a recipe that
-was passed over, deleting an account with planning profiles — would work in production and fail in
+create`), so without the annotation a deletion that relies on a cascade (deleting a recipe that
+was passed over, deleting an account with planning profiles) would work in production and fail in
 tests, or the other way round.
