@@ -11,7 +11,8 @@ import com.sterul.opencookbookapiserver.entities.recipe.MacroStyle;
 /** The answers in the same shape they are sent in, so the wizard can open a profile as it saved it. */
 public record PlanningProfileResponse(Long id, String name, boolean defaultProfile, int householdSize,
         Diet diet, Integer meatMealsPerWeek, Integer kcalPerDay, MacroStyle macroStyle, int cooldownWeeks,
-        boolean leftoversAllowed, boolean spreadVariety, List<PlanningProfileRequest.Meal> meals,
+        boolean leftoversAllowed, boolean spreadVariety, boolean includeHouseholdRecipes,
+        List<PlanningProfileRequest.Meal> meals,
         List<PlanningProfileRequest.Pantry> pantry,
         Set<Long> avoidedIngredientIds) {
 
@@ -19,7 +20,8 @@ public record PlanningProfileResponse(Long id, String name, boolean defaultProfi
         return new PlanningProfileResponse(profile.getId(), profile.getName(), profile.isDefaultProfile(),
                 profile.getHouseholdSize(), profile.getDiet(), profile.getMeatMealsPerWeek(), profile.getKcalPerDay(),
                 profile.getMacroStyle(), profile.getCooldownWeeks(), profile.isLeftoversAllowed(),
-                profile.isSpreadVariety(), profile.getMeals().stream().map(PlanningProfileRequest.Meal::of).toList(),
+                profile.isSpreadVariety(), profile.isIncludeHouseholdRecipes(),
+                profile.getMeals().stream().map(PlanningProfileRequest.Meal::of).toList(),
                 profile.getPantry().stream().map(PlanningProfileRequest.Pantry::of).toList(),
                 Set.copyOf(profile.getAvoidedIngredientIds()));
     }

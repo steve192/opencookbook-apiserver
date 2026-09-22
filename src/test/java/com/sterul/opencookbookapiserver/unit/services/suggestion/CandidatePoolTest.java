@@ -22,6 +22,7 @@ import com.sterul.opencookbookapiserver.entities.recipe.DishRole;
 import com.sterul.opencookbookapiserver.entities.recipe.MealType;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
+import com.sterul.opencookbookapiserver.services.access.PersonalCookbookAccess;
 import com.sterul.opencookbookapiserver.services.selection.MatchTarget;
 import com.sterul.opencookbookapiserver.services.selection.RecipeMatcher;
 import com.sterul.opencookbookapiserver.services.suggestion.CandidatePool;
@@ -34,15 +35,24 @@ import com.sterul.opencookbookapiserver.services.suggestion.SuggestionCriteria;
  */
 class CandidatePoolTest {
 
-    private static final CookpalUser OWNER = new CookpalUser();
+    private static final CookpalUser OWNER = ownerWithId();
     private static final CatalogueFood TOMATO = food(100, "bls-G123456");
     private static final CatalogueFood FETA = food(101, "bls-M234567");
 
     private final RecipeRepository recipeRepository = mock(RecipeRepository.class);
-    private final CandidatePool cut = new CandidatePool(recipeRepository, new RecipeMatcher());
+    // The personal rule, so the pool under test is the cook own cookbook and nothing else.
+    private final CandidatePool cut = new CandidatePool(recipeRepository, new RecipeMatcher(),
+            new PersonalCookbookAccess());
+
+    /** Needs an id: the personal access rule answers with the viewer own. */
+    private static CookpalUser ownerWithId() {
+        var owner = new CookpalUser();
+        owner.setUserId(1L);
+        return owner;
+    }
 
     private void cookbook(Recipe... recipes) {
-        when(recipeRepository.findByOwnerWithIngredients(any())).thenReturn(Arrays.asList(recipes));
+        when(recipeRepository.findByOwnersWithIngredients(any())).thenReturn(Arrays.asList(recipes));
     }
 
     private List<String> titlesOf(CandidatePool.Pool pool) {
@@ -50,7 +60,7 @@ class CandidatePoolTest {
     }
 
     private static SuggestionCriteria criteria(MatchMode mode, List<Long> ingredientIds) {
-        return new SuggestionCriteria(mode, ingredientIds, null, null, null, null, null, 10, 1L);
+        return new SuggestionCriteria(mode, ingredientIds, null, null, null, null, null, true, 10, 1L);
     }
 
     /** A sauce or a side is not something to cook for dinner; a recipe nobody marked still is. */
@@ -78,7 +88,7 @@ class CandidatePoolTest {
         cookbook(unclassified, vegan);
 
         var pool = cut.of(OWNER, List.of(), new SuggestionCriteria(MatchMode.ANY_RANKED, List.of(), null,
-                Diet.VEGETARIAN, null, null, null, 10, 1L));
+                Diet.VEGETARIAN, null, null, null, true, 10, 1L));
 
         assertEquals(List.of("Ofengemüse"), titlesOf(pool));
     }
@@ -94,7 +104,7 @@ class CandidatePoolTest {
         cookbook(vegan, vegetarian, meat);
 
         var pool = cut.of(OWNER, List.of(), new SuggestionCriteria(MatchMode.ANY_RANKED, List.of(), null,
-                Diet.VEGETARIAN, null, null, null, 10, 1L));
+                Diet.VEGETARIAN, null, null, null, true, 10, 1L));
 
         assertEquals(List.of("Ofengemüse", "Käsespätzle"), titlesOf(pool));
     }
@@ -109,7 +119,7 @@ class CandidatePoolTest {
         cookbook(timed, slow, unknown);
 
         var pool = cut.of(OWNER, List.of(), new SuggestionCriteria(MatchMode.ANY_RANKED, List.of(), 30L,
-                null, null, null, null, 10, 1L));
+                null, null, null, null, true, 10, 1L));
 
         assertEquals(List.of("Schnell", "Importiert"), titlesOf(pool));
     }
@@ -121,7 +131,7 @@ class CandidatePoolTest {
         cookbook(recipe);
 
         var pool = cut.of(OWNER, List.of(), new SuggestionCriteria(MatchMode.ANY_RANKED, List.of(), 30L,
-                null, null, null, null, 10, 1L));
+                null, null, null, null, true, 10, 1L));
 
         assertEquals(List.of("Salat"), titlesOf(pool));
     }
@@ -131,7 +141,7 @@ class CandidatePoolTest {
         cookbook(recipe(1, "Irgendwas"));
 
         var pool = cut.of(OWNER, List.of(), new SuggestionCriteria(MatchMode.ANY_RANKED, List.of(), null,
-                null, Set.of(MealType.DINNER), null, null, 10, 1L));
+                null, Set.of(MealType.DINNER), null, null, true, 10, 1L));
 
         assertEquals(List.of("Irgendwas"), titlesOf(pool));
     }
@@ -144,7 +154,7 @@ class CandidatePoolTest {
         cookbook(unknown, stated);
 
         var pool = cut.of(OWNER, List.of(), new SuggestionCriteria(MatchMode.ANY_RANKED, List.of(), null,
-                null, Set.of(MealType.BREAKFAST), null, null, 10, 1L));
+                null, Set.of(MealType.BREAKFAST), null, null, true, 10, 1L));
 
         assertEquals(List.of("Porridge"), titlesOf(pool));
     }
@@ -196,7 +206,7 @@ class CandidatePoolTest {
         cookbook(slow, recipe(2, "Tomatensuppe", linked(10, "Tomate", TOMATO)), recipe(3, "Pfannkuchen"));
 
         var pool = cut.of(OWNER, targets(), new SuggestionCriteria(MatchMode.ANY_RANKED, List.of(1L, 2L), 30L,
-                null, null, null, null, 10, 1L));
+                null, null, null, null, true, 10, 1L));
 
         assertEquals(3, pool.owned());
         assertEquals(2, pool.afterFilters());

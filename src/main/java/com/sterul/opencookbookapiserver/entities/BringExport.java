@@ -30,8 +30,9 @@ public class BringExport extends AuditableEntity {
     /** How long an export stays fetchable. */
     public static final Duration LIFETIME = Duration.ofMinutes(5);
 
+    /** Pinned random: AUTO resolves to it today, and a time-ordered token would be guessable. */
     @Id
-    @UuidGenerator
+    @UuidGenerator(style = UuidGenerator.Style.RANDOM)
     private String id;
 
     @JsonIgnore

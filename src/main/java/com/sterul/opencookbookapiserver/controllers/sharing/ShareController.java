@@ -92,9 +92,7 @@ public class ShareController extends BaseController {
      * on this server by walking the ids.
      */
     private void requireOwnershipOfRecipe(Long recipeId) throws ElementNotFound {
-        if (!recipeService.hasAccessPermissionToRecipe(recipeId, getLoggedInUser())) {
-            throw new ElementNotFound();
-        }
+        recipeService.getOwnRecipe(recipeId, getLoggedInUser());
     }
 
 }

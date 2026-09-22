@@ -8,7 +8,9 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import com.sterul.opencookbookapiserver.entities.AuditableEntity;
+import com.sterul.opencookbookapiserver.entities.ScopedEntity;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
+import com.sterul.opencookbookapiserver.entities.household.Household;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -37,7 +39,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
-public class PlanDraft extends AuditableEntity {
+public class PlanDraft extends AuditableEntity implements ScopedEntity {
 
     @Id
     @SequenceGenerator(name = "plan_draft_seq", sequenceName = "plan_draft_seq", allocationSize = 1)
@@ -45,9 +47,14 @@ public class PlanDraft extends AuditableEntity {
     @EqualsAndHashCode.Include
     private Long id;
 
-    @ManyToOne(optional = false)
+    /** Exactly one of these is set: a draft is a person's own or a household's. */
+    @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
     private CookpalUser owner;
+
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Household household;
 
     /** The answers it was generated from; null once that profile is deleted, by which time the draft is closed. */
     @ManyToOne

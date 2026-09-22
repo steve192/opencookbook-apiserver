@@ -187,7 +187,7 @@ class RecipeAPIIntegrationTest extends IntegrationTest {
 
         var response = cut.getAvilableImportHosts();
 
-        assertTrue(response.contains(testhost));
+        assertTrue(response.hosts().contains(testhost));
     }
 
     private void assertListsEqual(List<?> list1, List<?> list2) {

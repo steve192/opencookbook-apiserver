@@ -69,7 +69,7 @@ public class ShareService {
 
     @Transactional(readOnly = true)
     public Optional<Share> findPublicRecipeShare(Long recipeId) throws ElementNotFound {
-        return livePublicShareOf(recipeService.getRecipeById(recipeId));
+        return livePublicShareOf(recipeService.getRecipeIgnoringAccess(recipeId));
     }
 
     @Transactional(readOnly = true)
@@ -81,7 +81,7 @@ public class ShareService {
 
     @Transactional(readOnly = true)
     public Recipe resolveSharedRecipe(String shareId) throws ElementNotFound {
-        return recipeService.getRecipeById(resolveLiveShare(shareId).getRecipe().getId());
+        return recipeService.getRecipeIgnoringAccess(resolveLiveShare(shareId).getRecipe().getId());
     }
 
     public Recipe openSharedRecipe(String shareId) throws ElementNotFound {

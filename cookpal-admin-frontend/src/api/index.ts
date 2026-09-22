@@ -28,6 +28,7 @@ import {
   RelinkRun,
   RelinkScope,
   SelfInfo,
+  Household,
   Share,
   ShareStatistics,
   User,
@@ -132,6 +133,11 @@ export const SharesApi = {
   getAll: () => http.get<Share[]>('/admin/shares'),
   statistics: () => http.get<ShareStatistics>('/admin/shares/statistics'),
   revoke: (shareId: string) => http.delete<void>(`/admin/shares/${shareId}`),
+};
+
+export const HouseholdsApi = {
+  getAll: () => http.get<Household[]>('/admin/households'),
+  dissolve: (householdId: string) => http.delete<void>(`/admin/households/${householdId}`),
 };
 
 export const BringExportsApi = {

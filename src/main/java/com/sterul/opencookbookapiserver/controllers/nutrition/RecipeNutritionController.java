@@ -40,11 +40,7 @@ public class RecipeNutritionController extends BaseController {
     @GetMapping("/{id}/nutrition")
     public RecipeNutritionResponse nutrition(@PathVariable Long id) throws ElementNotFound {
         var user = getLoggedInUser();
-        // Not found rather than forbidden, so foreign recipe ids stay unknown.
-        if (!recipeService.hasAccessPermissionToRecipe(id, user)) {
-            throw new ElementNotFound();
-        }
-        return RecipeNutritionResponse.forOwner(calculator.calculate(recipeService.getRecipeById(id)),
+        return RecipeNutritionResponse.forOwner(calculator.calculate(recipeService.getRecipeFor(id, user)),
                 languages.forUser(user).getLanguage(), datasetReader.manifest());
     }
 }

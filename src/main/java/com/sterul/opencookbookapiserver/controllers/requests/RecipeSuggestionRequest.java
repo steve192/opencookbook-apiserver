@@ -19,6 +19,7 @@ import jakarta.validation.constraints.Size;
  * Everything is optional: a request answering nothing is a valid "surprise me".
  *
  * @param seed repeat a previous seed to get that result set back; leave it out for a new draw
+ * @param includeHouseholdRecipes also draw on the household cookbooks you may read; left out means no
  */
 public record RecipeSuggestionRequest(
         MatchMode mode,
@@ -28,6 +29,7 @@ public record RecipeSuggestionRequest(
         Set<MealType> mealTypes,
         @Positive Integer targetKcalPerServing,
         MacroStyle macroStyle,
+        boolean includeHouseholdRecipes,
         @Min(1) @Max(MAX_LIMIT) Integer limit,
         Long seed) {
 
@@ -38,6 +40,7 @@ public record RecipeSuggestionRequest(
     public SuggestionCriteria toCriteria() {
         return new SuggestionCriteria(mode, ingredientIds, maxTotalTimeMinutes, diet, mealTypes,
                 targetKcalPerServing, macroStyle,
+                includeHouseholdRecipes,
                 limit == null ? DEFAULT_LIMIT : limit,
                 seed == null ? Jitter.newSeed() : seed);
     }

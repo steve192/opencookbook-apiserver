@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.jayway.jsonpath.JsonPath;
+import com.sterul.opencookbookapiserver.entities.PlanScope;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.repositories.PlanDraftRepository;
 import com.sterul.opencookbookapiserver.repositories.PlanningProfileRepository;
@@ -155,11 +156,11 @@ class PlanningApiIntegrationTest extends IntegrationTest {
                 .andExpect(jsonPath("$.status").value("ACCEPTED"));
 
         transactionTemplate.executeWithoutResult(status -> {
-            var saturday = weekplanDayRepository.findSingleByPlanDateAndOwner(MONDAY.plusDays(5), cook());
+            var saturday = weekplanDayRepository.findSingleDay(MONDAY.plusDays(5), PlanScope.of(cook()));
             assertThat(saturday.getRecipes()).hasSize(2);
             assertThat(saturday.getRecipes().get(0).getSimpleRecipeText()).isEqualTo("Brunch bei Oma");
             assertThat(saturday.getRecipes().get(1).getRecipe()).isNotNull();
-            assertThat(weekplanDayRepository.findSingleByPlanDateAndOwner(MONDAY, cook())).isNull();
+            assertThat(weekplanDayRepository.findSingleDay(MONDAY, PlanScope.of(cook()))).isNull();
         });
     }
 

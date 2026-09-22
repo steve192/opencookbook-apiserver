@@ -89,7 +89,7 @@ class RecipeServiceTest {
         whenRecipeIsLoadableById(existing);
         var update = recipe("Changed", 7L);
 
-        cut.updateSingleRecipe(update);
+        cut.updateSingleRecipe(update, testUser);
 
         assertEquals(testUser, update.getOwner());
         assertEquals("https://example.com/recipe", update.getRecipeSource());
@@ -112,21 +112,18 @@ class RecipeServiceTest {
     }
 
     @Test
-    void recipeDeleted() throws IOException, ElementNotFound {
-        whenRecipeIsLoadableById(recipe("test", 1L));
-
-        cut.deleteRecipe(1L);
+    void recipeDeleted() throws IOException {
+        cut.deleteRecipe(recipe("test", 1L));
 
         verify(recipeRepository, times(1)).deleteById(1L);
         verify(recipeImageService, times(1)).deleteImage(testRecipeImageUUID);
     }
 
     @Test
-    void recipeDeletionWithdrawsItsShares() throws ElementNotFound {
+    void recipeDeletionWithdrawsItsShares() {
         var deletedRecipe = recipe("test", 1L);
-        whenRecipeIsLoadableById(deletedRecipe);
 
-        cut.deleteRecipe(1L);
+        cut.deleteRecipe(deletedRecipe);
 
         // A share outliving what it points at resolves to nothing, which looks to whoever holds
         // the link like the app is broken rather than like the recipe is gone.
@@ -134,11 +131,10 @@ class RecipeServiceTest {
     }
 
     @Test
-    void recipeDeletionTriggersWeekplanChange() throws ElementNotFound {
+    void recipeDeletionTriggersWeekplanChange() {
         when(weekplanService.getWeekplanDaysByRecipe(1L)).thenReturn(List.of(mockWeekplanDay));
-        whenRecipeIsLoadableById(recipe("Test", 1L));
 
-        cut.deleteRecipe(1L);
+        cut.deleteRecipe(recipe("Test", 1L));
 
         verify(weekplanService, times(1)).updateWeekplanDay(mockWeekplanDay);
     }

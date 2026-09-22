@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.sterul.opencookbookapiserver.controllers.responses.RecipeImageResponse;
 import com.sterul.opencookbookapiserver.controllers.support.RecipeImageResponses;
-import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
 import com.sterul.opencookbookapiserver.services.RecipeImageService;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
@@ -55,16 +55,16 @@ public class RecipeImagesController extends BaseController {
 
     @Operation(summary = "Upload a new image", description = "Upload an image as multipart file. The images uuid can later on be assigned to a recipe. If they are not assigned they will be deleted after a while")
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public RecipeImage uploadRecipeImage(@Valid @RequestParam("image") MultipartFile multipartFile)
+    public RecipeImageResponse uploadRecipeImage(@Valid @RequestParam("image") MultipartFile multipartFile)
             throws IOException, IllegalFiletypeException {
-        return recipeImageService.saveNewImage(multipartFile.getInputStream(), multipartFile.getSize(),
-                getLoggedInUser());
+        return RecipeImageResponse.fromEntity(recipeImageService.saveNewImage(multipartFile.getInputStream(),
+                multipartFile.getSize(), getLoggedInUser()));
     }
 
     @Operation(summary = "Delete an image")
     @DeleteMapping("/{uuid}")
     public void deleteImage(@Valid @NotBlank @PathVariable String uuid) throws ElementNotFound {
-        requireAccessTo(uuid);
+        requireOwnershipOf(uuid);
 
         try {
             recipeImageService.deleteImage(uuid);
@@ -81,6 +81,12 @@ public class RecipeImagesController extends BaseController {
      */
     private void requireAccessTo(String uuid) throws ElementNotFound {
         if (!recipeImageService.hasAccessPermissionToRecipeImage(uuid, getLoggedInUser())) {
+            throw new ElementNotFound();
+        }
+    }
+
+    private void requireOwnershipOf(String uuid) throws ElementNotFound {
+        if (!recipeImageService.ownsImage(uuid, getLoggedInUser())) {
             throw new ElementNotFound();
         }
     }

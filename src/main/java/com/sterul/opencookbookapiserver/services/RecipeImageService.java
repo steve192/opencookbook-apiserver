@@ -22,6 +22,7 @@ import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.repositories.RecipeImageRepository;
+import com.sterul.opencookbookapiserver.services.access.CookbookAccess;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +37,8 @@ public class RecipeImageService {
     private final OpencookbookConfiguration opencookbookConfiguration;
     @Autowired
     private RecipeImageRepository recipeImageRepository;
+    @Autowired
+    private CookbookAccess cookbookAccess;
 
     public RecipeImageService(OpencookbookConfiguration opencookbookConfiguration) {
         this.opencookbookConfiguration = opencookbookConfiguration;
@@ -168,12 +171,20 @@ public class RecipeImageService {
         }
     }
 
+    /** The owner, or anyone who may read its recipe; a fresh upload has no recipe yet. */
     public boolean hasAccessPermissionToRecipeImage(String imageUUID, CookpalUser user) throws ElementNotFound {
-        var image = recipeImageRepository.findById(imageUUID);
-        if (image.isEmpty()) {
-            throw new ElementNotFound();
+        if (ownsImage(imageUUID, user)) {
+            return true;
         }
-        return image.get().getOwner().getUserId().equals(user.getUserId());
+        return recipeImageRepository.findRecipeOwnerOf(imageUUID)
+                .map(recipeOwnerId -> cookbookAccess.visibleOwnerIds(user).contains(recipeOwnerId))
+                .orElse(false);
+    }
+
+    /** Deleting stays with the owner. */
+    public boolean ownsImage(String imageUUID, CookpalUser user) throws ElementNotFound {
+        var image = recipeImageRepository.findById(imageUUID).orElseThrow(ElementNotFound::new);
+        return image.getOwner().getUserId().equals(user.getUserId());
     }
 
     /** @throws ElementNotFound where the record outlived its file, which is nobody's fault to report */

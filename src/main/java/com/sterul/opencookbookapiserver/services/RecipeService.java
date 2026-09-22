@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
@@ -15,12 +16,14 @@ import org.springframework.stereotype.Service;
 import com.intuit.fuzzymatcher.component.MatchService;
 import com.intuit.fuzzymatcher.domain.Document;
 import com.intuit.fuzzymatcher.domain.Element;
+import com.sterul.opencookbookapiserver.entities.PlanScope;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Diet;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 import com.sterul.opencookbookapiserver.repositories.projections.OwnerCount;
+import com.sterul.opencookbookapiserver.services.access.CookbookAccess;
 import com.sterul.opencookbookapiserver.services.classification.ClassificationProvenance;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.sharing.ShareService;
@@ -42,13 +45,15 @@ public class RecipeService {
     private final ShareService shareService;
     private final ApplicationEventPublisher events;
     private final ClassificationProvenance provenance;
+    private final CookbookAccess cookbookAccess;
 
     public RecipeService(RecipeReferenceResolver recipeReferenceResolver, RecipeRepository recipeRepository,
             RecipeImageService recipeImageService,
             WeekplanService weekplanService,
             // ShareService depends on RecipeService in turn: sharing is about recipes, and the
             // only thing pointing the other way is withdrawing a share when its recipe goes.
-            @Lazy ShareService shareService, ApplicationEventPublisher events, ClassificationProvenance provenance) {
+            @Lazy ShareService shareService, ApplicationEventPublisher events, ClassificationProvenance provenance,
+            CookbookAccess cookbookAccess) {
         this.recipeReferenceResolver = recipeReferenceResolver;
         this.recipeRepository = recipeRepository;
         this.recipeImageService = recipeImageService;
@@ -56,6 +61,7 @@ public class RecipeService {
         this.shareService = shareService;
         this.events = events;
         this.provenance = provenance;
+        this.cookbookAccess = cookbookAccess;
     }
 
     public Recipe createNewRecipe(Recipe newRecipe) throws ElementNotFound {
@@ -71,10 +77,6 @@ public class RecipeService {
 
     public Map<Long, Long> countRecipesPerOwner() {
         return OwnerCount.asMap(recipeRepository.countGroupedByOwner());
-    }
-
-    public void deleteRecipe(Long id) throws ElementNotFound {
-        deleteRecipe(getRecipeById(id));
     }
 
     public void deleteRecipe(Recipe recipe) {
@@ -104,12 +106,39 @@ public class RecipeService {
         recipeRepository.deleteById(id);
     }
 
-    public boolean hasAccessPermissionToRecipe(Long recipeId, CookpalUser user) throws ElementNotFound {
-        var recipe = recipeRepository.findById(recipeId);
-        if (!recipe.isPresent()) {
-            throw new ElementNotFound();
-        }
-        return recipe.get().getOwner().getUserId().equals(user.getUserId());
+    /** Own or household-readable. "Not found" rather than "not allowed", so ids cannot be walked. */
+    public Recipe getRecipeFor(Long recipeId, CookpalUser viewer) throws ElementNotFound {
+        return getRecipeIf(recipeId,
+                recipe -> cookbookAccess.visibleOwnerIds(viewer).contains(recipe.getOwner().getUserId()));
+    }
+
+    /** For a household plan only its cookbook, so every member can open what is planned. */
+    public Recipe getPlannableRecipe(Long recipeId, PlanScope plan) throws ElementNotFound {
+        return getRecipeIf(recipeId,
+                recipe -> cookbookAccess.plannableOwnerIds(plan).contains(recipe.getOwner().getUserId()));
+    }
+
+    /** Editing, deleting and publishing stay with the owner. */
+    public Recipe getOwnRecipe(Long recipeId, CookpalUser owner) throws ElementNotFound {
+        return getRecipeIf(recipeId, recipe -> recipe.isOwnedBy(owner));
+    }
+
+    private Recipe getRecipeIf(Long recipeId, Predicate<Recipe> allowed) throws ElementNotFound {
+        return recipeRepository.findById(recipeId).filter(allowed).orElseThrow(ElementNotFound::new);
+    }
+
+    /**
+     * @param households how many households it would leave
+     * @param plannedMeals how many planned meals it would remove, in any plan
+     */
+    public record DeletionImpact(long households, long plannedMeals) {
+    }
+
+    public DeletionImpact impactOfDeleting(Long recipeId, CookpalUser owner) throws ElementNotFound {
+        var recipe = getOwnRecipe(recipeId, owner);
+        return new DeletionImpact(
+                cookbookAccess.householdsShowing(recipe.getOwner()),
+                weekplanService.countPlannedUses(recipeId));
     }
 
     public void removeRecipeGroupFromRecipes(RecipeGroup recipeGroup) {
@@ -120,8 +149,8 @@ public class RecipeService {
         }
     }
 
-    public Recipe updateSingleRecipe(Recipe recipeUpdate) throws ElementNotFound {
-        var existingRecipe = getRecipeById(recipeUpdate.getId());
+    public Recipe updateSingleRecipe(Recipe recipeUpdate, CookpalUser owner) throws ElementNotFound {
+        var existingRecipe = getOwnRecipe(recipeUpdate.getId(), owner);
         log.info("Updating recipe {} of user {}", existingRecipe.getId(), existingRecipe.getOwner());
         recipeUpdate.setOwner(existingRecipe.getOwner());
         recipeUpdate.setRecipeSource(existingRecipe.getRecipeSource());
@@ -144,9 +173,8 @@ public class RecipeService {
     }
 
     /** Every detail given replaces the one that was there, so leaving one out clears it. */
-    public Recipe updateRecipeDetails(Long id, RecipeDetails details) throws ElementNotFound {
-        log.info("Updating the details of recipe {}", id);
-        var recipe = getRecipeById(id);
+    public Recipe updateRecipeDetails(Recipe recipe, RecipeDetails details) {
+        log.info("Updating the details of recipe {}", recipe.getId());
         var before = provenance.snapshot(recipe);
 
         recipe.setTitle(details.title());
@@ -158,7 +186,7 @@ public class RecipeService {
         provenance.acceptPersonChanges(before, recipe);
 
         var saved = recipeRepository.save(recipe);
-        changed(id);
+        changed(saved.getId());
         return saved;
     }
 
@@ -166,12 +194,9 @@ public class RecipeService {
         events.publishEvent(new RecipeChangedEvent(recipeId));
     }
 
-    public Recipe getRecipeById(Long id) throws ElementNotFound {
-        var recipe = recipeRepository.findById(id);
-        if (!recipe.isPresent()) {
-            throw new ElementNotFound();
-        }
-        return recipe.get();
+    /** For administration and share resolution only, which are authorised by a role and a token. */
+    public Recipe getRecipeIgnoringAccess(Long id) throws ElementNotFound {
+        return recipeRepository.findById(id).orElseThrow(ElementNotFound::new);
     }
 
     /**

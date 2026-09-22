@@ -149,7 +149,7 @@ The build runs these steps (`scripts/cookpal_nutrition/catalogue/`):
 7. **Diet class** (`VEGAN`, `VEGETARIAN`, `MEAT`) from the BLS group letter in `diet-classes.yaml`
    `groupDefaults`; variants take their base's. A name matching a `reviewPatterns` entry stricter
    than its group is **nominated**, never classified, and an unanswered nomination **fails the
-   build** — patterns misfire too often to decide ("Wildreis", "Collards", "Erdnussbutter",
+   build**: patterns misfire too often to decide ("Wildreis", "Collards", "Erdnussbutter",
    "Honigmelone", "alkoholfrei", "Vegetarische Bratwurst"). `overrides` is the only thing that
    settles a food; groups without a default (`Q`) and all FDC foods are listed there in full.
 
@@ -213,9 +213,9 @@ where to correct it.
 | `no de name, other language used` | A new FDC food without German names. **Every one should get German names.** | `names/fdc.yaml` |
 | `synonyms of a variant ignored` | Names belong to bases; the food became a variant. | move the synonyms to its base |
 | `excluded, incomplete nutrients` | Informational. Include only if a later release fills the values. | - |
-| `implausible density from FDC portions (ignored)` | Densities outside 0.2–2.0 g/ml; leafy herbs are legitimately light. | `properties.yaml` if a real density is known |
+| `implausible density from FDC portions (ignored)` | Densities outside 0.2 to 2.0 g/ml; leafy herbs are legitimately light. | `properties.yaml` if a real density is known |
 | `food without a diet class (no group default, no override)` | **Stops the build.** A food of a group with no default (`Q`), or an FDC food. Classify each in `overrides`. | `diet-classes.yaml` |
-| `diet class nominated for review (name disagrees with group)` | **Stops the build.** The name reads stricter than the group. Decide whether the name or the group is right — both happen — and write the answer down, even when it only confirms the group. | `diet-classes.yaml` |
+| `diet class nominated for review (name disagrees with group)` | **Stops the build.** The name reads stricter than the group. Decide whether the name or the group is right (both happen) and write the answer down, even when it only confirms the group. | `diet-classes.yaml` |
 | `diet class overridden against its group` | Informational: every food curation classifies away from its group. A jump in these after a release means the group defaults no longer fit. | `diet-classes.yaml` |
 | `names alike to the matcher, differing in energy` | Foods whose names differ only in numbers or bracketed words ("Gouda 30 % Fett", "Gouda 48 % Fett"). The matcher tells them apart when a typed name says the detail; a name that does not ("Gouda") gets one of them arbitrarily. Where recipes commonly write the plain name, give it to the food most recipes mean. | `synonyms/` |
 

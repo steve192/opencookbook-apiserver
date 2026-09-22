@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
+import com.sterul.opencookbookapiserver.entities.PlanScope;
 import com.sterul.opencookbookapiserver.entities.planning.PlanDraft;
 import com.sterul.opencookbookapiserver.entities.planning.PlanningProfile;
 import com.sterul.opencookbookapiserver.repositories.PlanDraftRepository;
@@ -30,43 +30,44 @@ public class PlanningProfileService {
         this.draftRepository = draftRepository;
     }
 
-    public List<PlanningProfile> getProfiles(CookpalUser owner) {
-        return profileRepository.findAllByOwnerOrderByName(owner);
+    public List<PlanningProfile> getProfiles(PlanScope scope) {
+        return profileRepository.findAllIn(scope);
     }
 
     /** Somebody else's profile is not found. */
-    public PlanningProfile getProfile(Long id, CookpalUser owner) throws ElementNotFound {
-        return profileRepository.findByIdAndOwner(id, owner).orElseThrow(ElementNotFound::new);
+    public PlanningProfile getProfile(Long id, PlanScope scope) throws ElementNotFound {
+        return profileRepository.findIn(id, scope).orElseThrow(ElementNotFound::new);
     }
 
-    public PlanningProfile create(CookpalUser owner, PlanningProfile answers) {
-        var profile = PlanningProfile.builder().owner(owner).build();
+    public PlanningProfile create(PlanScope scope, PlanningProfile answers) {
+        var profile = PlanningProfile.builder().build();
+        scope.assignTo(profile);
         copyAnswers(answers, profile);
         // The first profile is the one the wizard opens with, whatever the cook said.
-        profile.setDefaultProfile(answers.isDefaultProfile() || profileRepository.findAllByOwnerOrderByName(owner).isEmpty());
-        log.info("Creating planning profile '{}' for user {}", profile.getName(), owner.getUserId());
-        return keepSingleDefault(profileRepository.save(profile));
+        profile.setDefaultProfile(answers.isDefaultProfile() || profileRepository.findAllIn(scope).isEmpty());
+        log.info("Creating planning profile '{}'", profile.getName());
+        return keepSingleDefault(profileRepository.save(profile), scope);
     }
 
-    public PlanningProfile update(Long id, CookpalUser owner, PlanningProfile answers) throws ElementNotFound {
-        var profile = getProfile(id, owner);
+    public PlanningProfile update(Long id, PlanScope scope, PlanningProfile answers) throws ElementNotFound {
+        var profile = getProfile(id, scope);
         copyAnswers(answers, profile);
         profile.setDefaultProfile(answers.isDefaultProfile());
-        return keepSingleDefault(profileRepository.save(profile));
+        return keepSingleDefault(profileRepository.save(profile), scope);
     }
 
     /** Open drafts made from it are discarded: every adjustment to a draft is judged against its profile. */
-    public void delete(Long id, CookpalUser owner) throws ElementNotFound {
-        var profile = getProfile(id, owner);
+    public void delete(Long id, PlanScope scope) throws ElementNotFound {
+        var profile = getProfile(id, scope);
         draftRepository.findAllByProfileAndStatus(profile, PlanDraft.Status.DRAFT)
                 .forEach(draft -> draft.setStatus(PlanDraft.Status.DISCARDED));
         profileRepository.delete(profile);
     }
 
     /** Only one profile is the default; marking one takes the mark from the others. */
-    private PlanningProfile keepSingleDefault(PlanningProfile marked) {
+    private PlanningProfile keepSingleDefault(PlanningProfile marked, PlanScope scope) {
         if (marked.isDefaultProfile()) {
-            profileRepository.findAllByOwnerOrderByName(marked.getOwner()).stream()
+            profileRepository.findAllIn(scope).stream()
                     .filter(other -> !other.equals(marked) && other.isDefaultProfile())
                     .forEach(other -> other.setDefaultProfile(false));
         }
@@ -83,6 +84,7 @@ public class PlanningProfileService {
         to.setCooldownWeeks(from.getCooldownWeeks());
         to.setLeftoversAllowed(from.isLeftoversAllowed());
         to.setSpreadVariety(from.isSpreadVariety());
+        to.setIncludeHouseholdRecipes(from.isIncludeHouseholdRecipes());
         to.setMeals(new ArrayList<>(from.getMeals()));
         to.setPantry(new ArrayList<>(from.getPantry()));
         to.setAvoidedIngredientIds(new HashSet<>(from.getAvoidedIngredientIds()));

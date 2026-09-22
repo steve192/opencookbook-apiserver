@@ -4,9 +4,11 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import com.sterul.opencookbookapiserver.entities.PlanScope;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
+import com.sterul.opencookbookapiserver.services.access.CookbookAccess;
 import com.sterul.opencookbookapiserver.services.selection.MatchTarget;
 import com.sterul.opencookbookapiserver.services.selection.RecipeMatcher;
 import com.sterul.opencookbookapiserver.services.selection.RecipeSuitability;
@@ -17,10 +19,12 @@ public class CandidatePool {
 
     private final RecipeRepository recipeRepository;
     private final RecipeMatcher matcher;
+    private final CookbookAccess cookbookAccess;
 
-    public CandidatePool(RecipeRepository recipeRepository, RecipeMatcher matcher) {
+    public CandidatePool(RecipeRepository recipeRepository, RecipeMatcher matcher, CookbookAccess cookbookAccess) {
         this.recipeRepository = recipeRepository;
         this.matcher = matcher;
+        this.cookbookAccess = cookbookAccess;
     }
 
     /**
@@ -37,13 +41,14 @@ public class CandidatePool {
     }
 
     public Pool of(CookpalUser owner, List<MatchTarget> targets, SuggestionCriteria criteria) {
-        var owned = recipeRepository.findByOwnerWithIngredients(owner);
-        var eligible = owned.stream().filter(recipe -> isEligible(recipe, criteria)).toList();
+        var recipes = recipeRepository.findByOwnersWithIngredients(
+                cookbookAccess.poolOwnerIds(PlanScope.of(owner), criteria.includeHouseholdRecipes()));
+        var eligible = recipes.stream().filter(recipe -> isEligible(recipe, criteria)).toList();
         var candidates = eligible.stream()
                 .map(recipe -> new SuggestionCandidate(recipe, matcher.match(recipe, targets)))
                 .toList();
 
-        return partition(owned.size(), candidates, targets, criteria);
+        return partition(recipes.size(), candidates, targets, criteria);
     }
 
     private static boolean isEligible(Recipe recipe, SuggestionCriteria criteria) {

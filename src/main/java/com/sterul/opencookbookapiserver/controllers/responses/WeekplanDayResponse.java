@@ -12,7 +12,12 @@ import java.util.List;
 public class WeekplanDayResponse {
 
     private LocalDate day;
-    
+
+    /** Which plan the day belongs to; null for the caller's own. */
+    private String householdId;
+
+    private String householdName;
+
     private List<MinimalRecipe> recipes = new ArrayList<>();
 
 

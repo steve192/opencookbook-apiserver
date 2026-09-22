@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.sterul.opencookbookapiserver.configurations.ratelimiting.PathVariableRateLimitInterceptor;
 import com.sterul.opencookbookapiserver.controllers.sharing.SharePaths;
 import com.sterul.opencookbookapiserver.services.sharing.ShareAccessRateLimiter;
 
@@ -25,9 +26,11 @@ public class ShareRateLimitConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new ShareAccessRateLimitInterceptor(rateLimiter::recordRecipeView))
+        registry.addInterceptor(new PathVariableRateLimitInterceptor(
+                        SharePaths.SHARE_ID_VARIABLE, rateLimiter::recordRecipeView, "share"))
                 .addPathPatterns(SharePaths.PUBLIC_RECIPE_PATTERN, SharePaths.PUBLIC_NUTRITION_PATTERN);
-        registry.addInterceptor(new ShareAccessRateLimitInterceptor(rateLimiter::recordImageView))
+        registry.addInterceptor(new PathVariableRateLimitInterceptor(
+                        SharePaths.SHARE_ID_VARIABLE, rateLimiter::recordImageView, "share image"))
                 .addPathPatterns(SharePaths.PUBLIC_IMAGE_PATTERN);
     }
 }

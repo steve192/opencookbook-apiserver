@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -12,12 +13,14 @@ import org.springframework.stereotype.Component;
 
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
-import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
+import com.sterul.opencookbookapiserver.entities.PlanScope;
 import com.sterul.opencookbookapiserver.entities.planning.PantryItem;
 import com.sterul.opencookbookapiserver.entities.planning.PlanningProfile;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
+import com.sterul.opencookbookapiserver.services.access.CookbookAccess;
+import com.sterul.opencookbookapiserver.services.households.HouseholdMembershipService;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.GramsResolver;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.RecipeNutritionSummaries;
 import com.sterul.opencookbookapiserver.services.selection.IngredientTargetResolver;
@@ -38,16 +41,21 @@ public class PlanningPool {
     private final RecipeMatcher matcher;
     private final GramsResolver gramsResolver;
     private final Optional<RecipeNutritionSummaries> summaries;
+    private final CookbookAccess cookbookAccess;
+    private final HouseholdMembershipService householdMemberships;
 
     public PlanningPool(RecipeRepository recipeRepository, IngredientRepository ingredientRepository,
             IngredientTargetResolver targetResolver, RecipeMatcher matcher, GramsResolver gramsResolver,
-            Optional<RecipeNutritionSummaries> summaries) {
+            Optional<RecipeNutritionSummaries> summaries, CookbookAccess cookbookAccess,
+            HouseholdMembershipService householdMemberships) {
         this.recipeRepository = recipeRepository;
         this.ingredientRepository = ingredientRepository;
         this.targetResolver = targetResolver;
         this.matcher = matcher;
         this.gramsResolver = gramsResolver;
         this.summaries = summaries;
+        this.cookbookAccess = cookbookAccess;
+        this.householdMemberships = householdMemberships;
     }
 
     public record Pool(List<PlanCandidate> candidates, PantryBudget pantry) {
@@ -57,21 +65,35 @@ public class PlanningPool {
         }
     }
 
-    public Pool of(CookpalUser owner, PlanningProfile profile) {
-        var avoided = targetResolver.resolve(List.copyOf(profile.getAvoidedIngredientIds()), owner);
-        var allowed = recipeRepository.findByOwnerWithIngredients(owner).stream()
+    public Pool of(PlanScope scope, PlanningProfile profile) {
+        var ingredientOwners = ingredientOwnersOf(scope);
+        var avoided = targetResolver.resolve(List.copyOf(profile.getAvoidedIngredientIds()), ingredientOwners);
+        var allowed = recipesIn(scope, profile).stream()
                 .filter(RecipeSuitability::isServedOnItsOwn)
                 .filter(recipe -> RecipeSuitability.suitsDiet(recipe, profile.getDiet()))
                 .filter(recipe -> isFreeOf(recipe, avoided))
                 .toList();
 
-        var pantry = pantryBudget(owner, profile.getPantry());
+        var pantry = pantryBudget(ingredientOwners, profile.getPantry());
         var effort = EffortScale.rank(allowed);
         var candidates = allowed.stream()
                 .map(recipe -> new PlanCandidate(recipe, summaries.map(cache -> cache.of(recipe)).orElse(null),
                         effort.get(recipe.getId()), pantryUse(recipe, pantry)))
                 .toList();
         return new Pool(candidates, pantry);
+    }
+
+    private List<Recipe> recipesIn(PlanScope scope, PlanningProfile profile) {
+        var owners = cookbookAccess.poolOwnerIds(scope, profile.isIncludeHouseholdRecipes());
+        return owners.isEmpty() ? List.of() : recipeRepository.findByOwnersWithIngredients(owners);
+    }
+
+    /** A household profile refers to the ingredient rows of whichever member filled it in. */
+    private Set<Long> ingredientOwnersOf(PlanScope scope) {
+        return switch (scope) {
+            case PlanScope.Personal(var user) -> Set.of(user.getUserId());
+            case PlanScope.OfHousehold(var household) -> householdMemberships.memberIdsOf(household.getId());
+        };
     }
 
     /**
@@ -89,14 +111,14 @@ public class PlanningPool {
                 .allMatch(ingredient -> ingredient.getCatalogueFood() != null);
     }
 
-    private PantryBudget pantryBudget(CookpalUser owner, List<PantryItem> items) {
+    private PantryBudget pantryBudget(Set<Long> ownerIds, List<PantryItem> items) {
         if (items.isEmpty()) {
             return PantryBudget.EMPTY;
         }
         var ids = items.stream().map(PantryItem::getIngredientId).toList();
-        var targets = targetResolver.resolve(ids, owner);
+        var targets = targetResolver.resolve(ids, ownerIds);
         var targetById = targets.stream().collect(Collectors.toMap(MatchTarget::ingredientId, Function.identity()));
-        var ingredientById = ingredientRepository.findAllByIdInAndOwner(ids, owner).stream()
+        var ingredientById = ingredientRepository.findAllByIdInAndOwnerUserIdIn(ids, ownerIds).stream()
                 .collect(Collectors.toMap(Ingredient::getId, Function.identity()));
         var initial = new HashMap<MatchTarget, Double>();
         var measured = new HashSet<MatchTarget>();

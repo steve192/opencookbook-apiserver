@@ -1,5 +1,6 @@
 package com.sterul.opencookbookapiserver.services.selection;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -32,10 +33,15 @@ public class IngredientTargetResolver {
 
     /** Ingredients of somebody else are silently dropped, so ids cannot be probed. */
     public List<MatchTarget> resolve(List<Long> ingredientIds, CookpalUser owner) {
+        return resolve(ingredientIds, Set.of(owner.getUserId()));
+    }
+
+    /** @param ownerIds whose ingredients count; those of anybody else are silently dropped */
+    public List<MatchTarget> resolve(List<Long> ingredientIds, Collection<Long> ownerIds) {
         if (ingredientIds.isEmpty()) {
             return List.of();
         }
-        var ingredients = ingredientRepository.findAllByIdInAndOwner(ingredientIds, owner);
+        var ingredients = ingredientRepository.findAllByIdInAndOwnerUserIdIn(ingredientIds, ownerIds);
         var families = familiesOf(ingredients);
         return ingredients.stream().map(ingredient -> toTarget(ingredient, families)).toList();
     }

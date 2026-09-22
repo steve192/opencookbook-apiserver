@@ -58,6 +58,12 @@ public class RecipeResponse {
     /** Absent while nutrition is off, and for unsaved recipes. */
     private NutritionSummaryResponse nutrition;
 
+    /** Whether the reader may edit it; null without a reader, as in a share. */
+    private Boolean mine;
+
+    /** Who wrote it, for a recipe read through a household. Null for your own. */
+    private String ownerDisplayName;
+
     public record IngredientNeedResponse(Long id, Float amount, String unit, IngredientSummary ingredient) {
 
         static IngredientNeedResponse fromEntity(IngredientNeed need) {
