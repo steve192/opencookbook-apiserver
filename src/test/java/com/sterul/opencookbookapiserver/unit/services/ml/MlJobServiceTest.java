@@ -92,19 +92,19 @@ class MlJobServiceTest {
     }
 
     @Test
-    void aResetAllowanceLetsSomebodyScanAgain() throws Exception {
+    void aResetAllowanceLetsSomebodyScanAgain() {
         // The point of the feature: the count is what has to change, not just a flag.
         when(repository.countUsageSince(eq(owner), any()))
                 .thenReturn(2L, 0L);
         assertThrows(MlSubsystemException.class,
-                () -> cut.submitRecipeOcr(owner, List.of(), new RecipeOcrPayload(), false));
+                this::submitRecipeOcr);
         when(repository.findUsageSince(eq(owner), any()))
                 .thenReturn(List.of(MlJob.builder().id("a").owner(owner).build()));
         when(submitted()).thenReturn(REMOTE_ID);
 
         cut.resetQuota(owner);
 
-        var job = cut.submitRecipeOcr(owner, List.of(), new RecipeOcrPayload(), false);
+        var job = submitRecipeOcr();
         assertEquals(REMOTE_ID, job.getRemoteJobId());
     }
 
@@ -114,10 +114,10 @@ class MlJobServiceTest {
     }
 
     @Test
-    void aSubmittedJobRemembersTheSubsystemsIdForIt() throws Exception {
+    void aSubmittedJobRemembersTheSubsystemsIdForIt() {
         when(submitted()).thenReturn(REMOTE_ID);
 
-        var job = cut.submitRecipeOcr(owner, List.of(), new RecipeOcrPayload(), false);
+        var job = submitRecipeOcr();
 
         assertEquals(REMOTE_ID, job.getRemoteJobId());
         assertEquals(MlJobStatus.QUEUED, job.getStatus());
@@ -125,12 +125,12 @@ class MlJobServiceTest {
     }
 
     @Test
-    void aUserWhoHasUsedTodaysAllowanceIsRefusedBeforeAnythingIsUploaded() throws Exception {
+    void aUserWhoHasUsedTodaysAllowanceIsRefusedBeforeAnythingIsUploaded() {
         when(repository.countUsageSince(eq(owner), any()))
                 .thenReturn(2L);
 
         var thrown = assertThrows(MlSubsystemException.class,
-                () -> cut.submitRecipeOcr(owner, List.of(), new RecipeOcrPayload(), false));
+                this::submitRecipeOcr);
 
         assertEquals(ApiErrorCode.SCAN_DAILY_LIMIT_REACHED, thrown.getErrorCode());
         verify(proxy, never()).submitRecipeOcr(anyString(), any(RecipeOcrPayload.class),
@@ -139,33 +139,33 @@ class MlJobServiceTest {
     }
 
     @Test
-    void theAllowanceIsCountedFromTheStartOfTheDay() throws Exception {
+    void theAllowanceIsCountedFromTheStartOfTheDay() {
         when(submitted()).thenReturn(REMOTE_ID);
 
-        cut.submitRecipeOcr(owner, List.of(), new RecipeOcrPayload(), false);
+        submitRecipeOcr();
 
         verify(repository).countUsageSince(owner,
                 Instant.parse("2026-09-02T00:00:00Z"));
     }
 
     @Test
-    void anAllowanceOfZeroMeansUnlimited() throws Exception {
+    void anAllowanceOfZeroMeansUnlimited() {
         configuration.getMl().getRecipeOcr().setJobsPerUserPerDay(0);
         when(repository.countUsageSince(eq(owner), any())).thenReturn(9999L);
         when(submitted()).thenReturn(REMOTE_ID);
 
         assertEquals(REMOTE_ID,
-                cut.submitRecipeOcr(owner, List.of(), new RecipeOcrPayload(), false)
+                submitRecipeOcr()
                         .getRemoteJobId());
     }
 
     @Test
-    void aRefusedSubmissionLeavesAFailedJobRatherThanOneThatWaitsForEver() throws Exception {
+    void aRefusedSubmissionLeavesAFailedJobRatherThanOneThatWaitsForEver() {
         when(submitted())
                 .thenThrow(new MlSubsystemException(ApiErrorCode.SCAN_IMAGE_TOO_LARGE, "too big"));
 
         assertThrows(MlSubsystemException.class,
-                () -> cut.submitRecipeOcr(owner, List.of(), new RecipeOcrPayload(), false));
+                this::submitRecipeOcr);
 
         var saved = savedJob();
         assertEquals(MlJobStatus.FAILED, saved.getStatus());
@@ -174,19 +174,19 @@ class MlJobServiceTest {
     }
 
     @Test
-    void aScanTheSubsystemNeverTookOnDoesNotCostSomebodyTheirDay() throws Exception {
+    void aScanTheSubsystemNeverTookOnDoesNotCostSomebodyTheirDay() {
         // The allowance rations the instance's allowance with the subsystem, and a submission
         // that never arrived spent none of it.
         when(submitted()).thenThrow(new MlUnavailableException("down"));
 
         assertThrows(MlUnavailableException.class,
-                () -> cut.submitRecipeOcr(owner, List.of(), new RecipeOcrPayload(), false));
+                this::submitRecipeOcr);
 
         assertFalse(savedJob().isCountsTowardsQuota());
     }
 
     @Test
-    void aScanTheSubsystemDidTakeOnAndThenFailedStillCounts() throws Exception {
+    void aScanTheSubsystemDidTakeOnAndThenFailedStillCounts() {
         // It reached the worker, so it cost the instance something.
         var job = queuedJob();
         when(repository.findByStatusIn(anyList())).thenReturn(List.of(job));
@@ -199,17 +199,17 @@ class MlJobServiceTest {
     }
 
     @Test
-    void anUnreachableSubsystemIsRememberedSoTheFeatureCanSwitchItselfOff() throws Exception {
+    void anUnreachableSubsystemIsRememberedSoTheFeatureCanSwitchItselfOff() {
         when(submitted()).thenThrow(new MlUnavailableException("down"));
 
         assertThrows(MlUnavailableException.class,
-                () -> cut.submitRecipeOcr(owner, List.of(), new RecipeOcrPayload(), false));
+                this::submitRecipeOcr);
 
         verify(availability).reportUnreachable();
     }
 
     @Test
-    void aFinishedJobTakesOnTheSubsystemsResult() throws Exception {
+    void aFinishedJobTakesOnTheSubsystemsResult() {
         var job = queuedJob();
         when(repository.findByStatusIn(anyList())).thenReturn(List.of(job));
         when(proxy.fetch(REMOTE_ID)).thenReturn(new MlSubsystemProxy.MlJobState(
@@ -223,7 +223,7 @@ class MlJobServiceTest {
     }
 
     @Test
-    void aWaitingJobRemembersHowFarBackInTheQueueItIs() throws Exception {
+    void aWaitingJobRemembersHowFarBackInTheQueueItIs() {
         // So that waiting can say something better than "please wait".
         var job = queuedJob();
         when(repository.findByStatusIn(anyList())).thenReturn(List.of(job));
@@ -237,7 +237,7 @@ class MlJobServiceTest {
     }
 
     @Test
-    void aJobThatIsRunningNoLongerClaimsAQueuePosition() throws Exception {
+    void aJobThatIsRunningNoLongerClaimsAQueuePosition() {
         var job = queuedJob();
         job.setQueuePosition(4);
         when(repository.findByStatusIn(anyList())).thenReturn(List.of(job));
@@ -250,7 +250,7 @@ class MlJobServiceTest {
     }
 
     @Test
-    void aBrieflyUnreachableSubsystemDoesNotFailTheJob() throws Exception {
+    void aBrieflyUnreachableSubsystemDoesNotFailTheJob() {
         var job = queuedJob();
         when(repository.findByStatusIn(anyList())).thenReturn(List.of(job));
         when(proxy.fetch(REMOTE_ID))
@@ -264,7 +264,7 @@ class MlJobServiceTest {
     }
 
     @Test
-    void aJobTheSubsystemNeverFinishesIsEventuallyAbandoned() throws Exception {
+    void aJobTheSubsystemNeverFinishesIsEventuallyAbandoned() {
         var job = queuedJob();
         when(repository.findByStatusIn(anyList())).thenReturn(List.of(job));
         clock.advanceBy(Duration.ofSeconds(301));
@@ -277,7 +277,7 @@ class MlJobServiceTest {
     }
 
     @Test
-    void aSubmissionThatNeverGotAnIdIsNotAskedAbout() throws Exception {
+    void aSubmissionThatNeverGotAnIdIsNotAskedAbout() {
         var job = queuedJob();
         job.setRemoteJobId(null);
         when(repository.findByStatusIn(anyList())).thenReturn(List.of(job));
@@ -289,7 +289,7 @@ class MlJobServiceTest {
     }
 
     @Test
-    void cancellingTellsTheSubsystemAndClosesTheJob() throws Exception {
+    void cancellingTellsTheSubsystemAndClosesTheJob() {
         var job = queuedJob();
         when(repository.findByIdAndOwner("job-1", owner)).thenReturn(Optional.of(job));
 
@@ -300,7 +300,7 @@ class MlJobServiceTest {
     }
 
     @Test
-    void cancellingSomethingAlreadyFinishedDoesNothing() throws Exception {
+    void cancellingSomethingAlreadyFinishedDoesNothing() {
         var job = queuedJob();
         job.setStatus(MlJobStatus.COMPLETED);
         when(repository.findByIdAndOwner("job-1", owner)).thenReturn(Optional.of(job));
@@ -312,7 +312,7 @@ class MlJobServiceTest {
     }
 
     @Test
-    void correctingAScanReplacesItsResultWithoutStartingAnotherJob() throws Exception {
+    void correctingAScanReplacesItsResultWithoutStartingAnotherJob() {
         var job = queuedJob();
         job.setStatus(MlJobStatus.COMPLETED);
         when(repository.findByIdAndOwner("job-1", owner)).thenReturn(Optional.of(job));
@@ -337,13 +337,18 @@ class MlJobServiceTest {
     }
 
     @Test
-    void withdrawingConsentIsForwardedUnderTheOpaqueId() throws Exception {
+    void withdrawingConsentIsForwardedUnderTheOpaqueId() {
         when(proxy.deleteTrainingData("submitter-hash")).thenReturn(3);
 
         assertEquals(3, cut.deleteTrainingData(owner));
     }
 
     /** The submission call, which every one of these tests stubs the same way. */
+    /** The submission these tests make; none of them varies its arguments. */
+    private MlJob submitRecipeOcr() {
+        return cut.submitRecipeOcr(owner, List.of(), new RecipeOcrPayload(), false);
+    }
+
     private String submitted() {
         return proxy.submitRecipeOcr(anyString(), any(RecipeOcrPayload.class), anyList(),
                 anyBoolean(), anyString());

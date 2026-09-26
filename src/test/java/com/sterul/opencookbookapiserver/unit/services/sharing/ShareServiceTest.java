@@ -123,7 +123,9 @@ class ShareServiceTest {
         lapsed.setExpiresAt(NOW.minusSeconds(1));
         when(shareRepository.findById(SHARE_ID)).thenReturn(Optional.of(lapsed));
 
-        assertThrows(ElementNotFound.class, () -> cut().resolveSharedRecipe(SHARE_ID));
+        var service = cut();
+
+        assertThrows(ElementNotFound.class, () -> service.resolveSharedRecipe(SHARE_ID));
     }
 
     @Test
@@ -143,8 +145,10 @@ class ShareServiceTest {
                 .thenReturn(Optional.of(liveShareOf(recipeWithId(RECIPE_ID))));
         when(recipeService.getRecipeIgnoringAccess(RECIPE_ID)).thenReturn(recipeWithId(RECIPE_ID));
 
+        var service = cut();
+
         assertThrows(ElementNotFound.class,
-                () -> cut().requireSharedImage(SHARE_ID, "an-image-of-some-other-recipe"));
+                () -> service.requireSharedImage(SHARE_ID, "an-image-of-some-other-recipe"));
     }
 
     private Recipe recipeWithId(Long id) {

@@ -7,7 +7,6 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,19 +31,13 @@ import com.sterul.opencookbookapiserver.controllers.requests.UserLoginRequest;
 import com.sterul.opencookbookapiserver.controllers.responses.RefreshTokenResponse;
 import com.sterul.opencookbookapiserver.controllers.responses.UserInfoResponse;
 import com.sterul.opencookbookapiserver.controllers.responses.UserLoginResponse;
-import com.sterul.opencookbookapiserver.entities.RefreshToken;
 import com.sterul.opencookbookapiserver.entities.account.Role;
-import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
-import com.sterul.opencookbookapiserver.errors.ApiException;
 import com.sterul.opencookbookapiserver.services.AuthRateLimiter;
+import com.sterul.opencookbookapiserver.services.AuthTokenService;
 import com.sterul.opencookbookapiserver.services.EmailService;
-import com.sterul.opencookbookapiserver.services.RefreshTokenService;
 import com.sterul.opencookbookapiserver.services.SignedInUserService;
-import com.sterul.opencookbookapiserver.services.UserDetailsServiceImpl;
 import com.sterul.opencookbookapiserver.services.UserService;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.mail.MailLanguages;
-import com.sterul.opencookbookapiserver.util.JwtTokenUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -59,25 +52,19 @@ import lombok.extern.slf4j.Slf4j;
 public class UserController extends BaseController {
 
     private final AuthenticationManager authenticationManager;
-    private final JwtTokenUtil jwtTokenUtil;
-    private final UserDetailsServiceImpl userDetailsService;
+    private final AuthTokenService authTokenService;
     private final UserService userService;
-    private final RefreshTokenService refreshTokenService;
     private final EmailService emailService;
     private final MailLanguages mailLanguages;
     private final AuthRateLimiter authRateLimiter;
 
-    public UserController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil,
-            UserDetailsServiceImpl userDetailsService, UserService userService,
-            RefreshTokenService refreshTokenService, EmailService emailService, MailLanguages mailLanguages,
-            AuthRateLimiter authRateLimiter,
-            SignedInUserService signedInUser) {
+    public UserController(AuthenticationManager authenticationManager, AuthTokenService authTokenService,
+            UserService userService, EmailService emailService, MailLanguages mailLanguages,
+            AuthRateLimiter authRateLimiter, SignedInUserService signedInUser) {
         super(signedInUser);
         this.authenticationManager = authenticationManager;
-        this.jwtTokenUtil = jwtTokenUtil;
-        this.userDetailsService = userDetailsService;
+        this.authTokenService = authTokenService;
         this.userService = userService;
-        this.refreshTokenService = refreshTokenService;
         this.emailService = emailService;
         this.mailLanguages = mailLanguages;
         this.authRateLimiter = authRateLimiter;
@@ -119,19 +106,15 @@ public class UserController extends BaseController {
             throw e;
         }
 
-        final UserDetails userDetails = userDetailsService
-                .loadUserByUsername(authenticationRequest.emailAddress());
-
-        final String token = jwtTokenUtil.generateToken(userDetails);
-
-        var user = userService.getUserByEmail(userDetails.getUsername());
+        var user = userService.getUserByEmail(authenticationRequest.emailAddress());
         // Signing in is the clearest statement a client makes about which language it is in.
         userService.rememberLanguageOfCurrentRequest(user);
 
+        var tokens = authTokenService.issueFor(user);
         var response = UserLoginResponse.builder()
-                .token(token)
+                .token(tokens.accessToken())
                 .userActive(true)
-                .refreshToken(refreshTokenService.createRefreshTokenForUser(user).getToken())
+                .refreshToken(tokens.refreshToken())
                 .build();
 
         return ResponseEntity.ok(response);
@@ -177,16 +160,11 @@ public class UserController extends BaseController {
     public ResponseEntity<UserLoginResponse> activateUser(@Valid @RequestParam String activationId) {
         var user = userService.activateUser(activationId);
 
-        final UserDetails userDetails = userDetailsService
-                .loadUserByUsername(user.getEmailAddress());
-
-        final String token = jwtTokenUtil.generateToken(userDetails);
-
+        var tokens = authTokenService.issueFor(user);
         var response = UserLoginResponse.builder()
-                .token(token)
+                .token(tokens.accessToken())
                 .userActive(true)
-                .refreshToken(refreshTokenService.createRefreshTokenForUser(
-                        user).getToken())
+                .refreshToken(tokens.refreshToken())
                 .build();
 
         return ResponseEntity.ok(response);
@@ -246,23 +224,12 @@ public class UserController extends BaseController {
     @Operation(summary = "Generate a JWT token from a refresh token", description = "The JWT token is used to authenticate against all apis using the \"Authentication: Bearer < token >\" header field")
     @PostMapping("/refreshToken")
     public RefreshTokenResponse renewToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
-        // "Sign in again", not "you may not": a spent refresh token is the app's cue to send
-        // somebody back to the login screen, and 403 reads as a permission they will never have.
-        if (!refreshTokenService.isTokenValid(refreshTokenRequest.getRefreshToken())) {
-            throw new ApiException(ApiErrorCode.AUTHENTICATION_REQUIRED, "Refresh token expired");
-        }
-        RefreshToken refreshToken;
-        try {
-            refreshToken = refreshTokenService.getRefreshToken(refreshTokenRequest.getRefreshToken());
-        } catch (ElementNotFound e) {
-            throw new ApiException(ApiErrorCode.AUTHENTICATION_REQUIRED, "Refresh token unknown", e);
-        }
-        var userDetails = userDetailsService.loadUserByUsername(refreshToken.getOwner().getEmailAddress());
+        var refreshToken = authTokenService.requireValidRefreshToken(refreshTokenRequest.getRefreshToken());
         // The app renews its token every few minutes, which makes this the place where a change
         // of app language is noticed without waiting for the next sign in. It only writes when
         // the answer is different from the stored one.
         userService.rememberLanguageOfCurrentRequest(refreshToken.getOwner());
-        var jwtToken = jwtTokenUtil.generateToken(userDetails);
+        var jwtToken = authTokenService.accessTokenFor(refreshToken.getOwner());
 
         var response = new RefreshTokenResponse();
         response.setToken(jwtToken);

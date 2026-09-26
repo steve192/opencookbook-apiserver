@@ -115,11 +115,12 @@ class UserAPIIntegrationTest extends IntegrationTestBase{
     void passwordChangeWithWrongPasswordFails() {
         whenAuthenticated(userRepository);
 
-        var thrown = assertThrows(UnauthorizedException.class,
-                () -> cut.changePassword(PasswordChangeRequest.builder()
-                        .oldPassword(testPassword + "wrong")
-                        .newPassword("blablabla")
-                        .build()));
+        var request = PasswordChangeRequest.builder()
+                .oldPassword(testPassword + "wrong")
+                .newPassword("blablabla")
+                .build();
+
+        var thrown = assertThrows(UnauthorizedException.class, () -> cut.changePassword(request));
 
         assertEquals(ApiErrorCode.INVALID_CREDENTIALS, thrown.getErrorCode());
     }
@@ -148,8 +149,9 @@ class UserAPIIntegrationTest extends IntegrationTestBase{
     void nonActivatedUserCannotLogin() {
         whenTestUserExists(false);
 
-        var thrown = assertThrows(UserNotActiveException.class,
-                () -> cut.login(new UserLoginRequest(testUser.getEmailAddress(), testPassword)));
+        var request = new UserLoginRequest(testUser.getEmailAddress(), testPassword);
+
+        var thrown = assertThrows(UserNotActiveException.class, () -> cut.login(request));
 
         // The link is sent again on the way out, because somebody trying to sign in is somebody
         // who never received it or lost it.
@@ -170,11 +172,13 @@ class UserAPIIntegrationTest extends IntegrationTestBase{
 
     @Test
     void errorWhenPasswordResetLinkDoesNotExists() {
+        var request = PasswordResetExecutionRequest.builder()
+                .passwordResetId("not existant")
+                .newPassword("does not matter")
+                .build();
+
         var thrown = assertThrows(PasswordResetLinkNotExistingException.class,
-                () -> cut.resetPassword(PasswordResetExecutionRequest.builder()
-                        .passwordResetId("not existant")
-                        .newPassword("does not matter")
-                        .build()));
+                () -> cut.resetPassword(request));
 
         assertEquals(ApiErrorCode.PASSWORD_RESET_LINK_INVALID, thrown.getErrorCode());
     }

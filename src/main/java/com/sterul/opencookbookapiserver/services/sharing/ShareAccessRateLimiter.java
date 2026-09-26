@@ -39,8 +39,11 @@ public class ShareAccessRateLimiter implements EvictableRateLimits {
         return recipeViewsPerShare.tryAcquire(shareId);
     }
 
-    // Same signature as recordRecipeView, which the rate limit filter calls both of through;
-    // image views are counted per address only.
+    /**
+     * The share id goes unread. Image views are counted per address alone, but the rate limit
+     * filter reaches this and recordRecipeView through one and the same function type, so both
+     * take the same two arguments.
+     */
     @SuppressWarnings("java:S1172")
     public RateLimitDecision recordImageView(String clientAddress, String shareId) {
         return imageViewsPerAddress.tryAcquire(clientAddress);

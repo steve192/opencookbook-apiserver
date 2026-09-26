@@ -25,8 +25,10 @@ public class HouseholdInviteRateLimiter implements EvictableRateLimits {
                 configuration.getHouseholds().getInviteLookupsPerHourPerIp(), WINDOW, MAX_TRACKED_CALLERS, clock);
     }
 
-    // The token is part of the signature the rate limit filter calls this through; lookups are
-    // counted per address, so it is deliberately not read.
+    /**
+     * The token goes unread. Lookups are counted per address alone, but the rate limit filter
+     * reaches this through a function type that passes the path variable with it.
+     */
     @SuppressWarnings("java:S1172")
     public RateLimitDecision recordLookup(String clientAddress, String token) {
         return lookupsPerAddress.tryAcquire(clientAddress);

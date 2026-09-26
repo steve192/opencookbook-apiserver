@@ -87,7 +87,8 @@ class BringExportAPITest extends IntegrationTestBase {
 
                 // "Not found" rather than "not allowed", so that this cannot be used to find
                 // out which recipe ids exist.
-                assertThrows(ElementNotFound.class,
-                                () -> cut.createBringExport(new ExportCreationRequest(123456789l)));
+                var request = new ExportCreationRequest(123456789l);
+
+                assertThrows(ElementNotFound.class, () -> cut.createBringExport(request));
         }
 }

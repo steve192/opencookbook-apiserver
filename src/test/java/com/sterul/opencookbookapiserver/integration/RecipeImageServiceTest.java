@@ -88,8 +88,10 @@ class RecipeImageServiceTest extends IntegrationTestBase{
         var image = cut.saveNewImage(new FileInputStream(pngFile), 100, testUser);
         deleteStoredFiles(image.getUuid());
 
-        assertThrows(ElementNotFound.class, () -> cut.getImage(image.getUuid()));
-        assertThrows(ElementNotFound.class, () -> cut.getThumbnailImage(image.getUuid()));
+        var uuid = image.getUuid();
+
+        assertThrows(ElementNotFound.class, () -> cut.getImage(uuid));
+        assertThrows(ElementNotFound.class, () -> cut.getThumbnailImage(uuid));
     }
 
     @Test
