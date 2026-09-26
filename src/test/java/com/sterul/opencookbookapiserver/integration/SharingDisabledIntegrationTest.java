@@ -25,7 +25,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @SpringBootTest(properties = "opencookbook.sharing.enabled=false")
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class SharingDisabledIntegrationTest extends IntegrationTest {
+class SharingDisabledIntegrationTest extends IntegrationTestBase {
 
     @Autowired
     private MockMvc mockMvc;

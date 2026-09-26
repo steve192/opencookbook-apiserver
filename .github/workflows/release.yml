@@ -20,12 +20,10 @@ concurrency:
   group: release
   cancel-in-progress: false
 
+# Only what every job needs. The jobs that write (tag, publish-docker) raise their own
+# ceiling, so a compromised step in one job cannot use another job's privileges.
 permissions:
-  actions: read
-  contents: write
-  issues: write
-  pull-requests: write
-  packages: write
+  contents: read
 
 env:
   REGISTRY: ghcr.io
@@ -60,7 +58,7 @@ jobs:
       # never invoked. The tag job below sets one up.
       - name: Run semantic-release dry run
         id: semantic
-        uses: cycjimmy/semantic-release-action@v6.0.0
+        uses: cycjimmy/semantic-release-action@b12c8f6015dc215fe37bc154d4ad456dd3833c90 # v6.0.0
         with:
           dry_run: true
           semantic_version: 25.0.9
@@ -83,6 +81,10 @@ jobs:
     # itself would silently skip the entire release.
     if: needs.semantic-preview.outputs.published == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      # Reads the CI run that covers the release commit; see the last step.
+      actions: read
+      contents: read
     steps:
       - name: Skip verification (called from CI itself)
         if: inputs.skip_default_branch_ci_check
@@ -167,7 +169,7 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Run semantic-release
-        uses: cycjimmy/semantic-release-action@v6.0.0
+        uses: cycjimmy/semantic-release-action@b12c8f6015dc215fe37bc154d4ad456dd3833c90 # v6.0.0
         with:
           semantic_version: 25.0.9
           branches: main

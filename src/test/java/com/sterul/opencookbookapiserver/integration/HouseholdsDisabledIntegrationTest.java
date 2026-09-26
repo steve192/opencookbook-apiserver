@@ -41,7 +41,7 @@ import com.sterul.opencookbookapiserver.services.access.PersonalCookbookAccess;
 @SpringBootTest(properties = "opencookbook.households.enabled=false")
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class HouseholdsDisabledIntegrationTest extends IntegrationTest {
+class HouseholdsDisabledIntegrationTest extends IntegrationTestBase {
 
     private static final String ANNA = "disabled-anna@example.invalid";
     private static final String BERT = "disabled-bert@example.invalid";

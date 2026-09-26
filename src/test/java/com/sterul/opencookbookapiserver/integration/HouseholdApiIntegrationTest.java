@@ -33,7 +33,7 @@ import com.sterul.opencookbookapiserver.repositories.UserRepository;
 })
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class HouseholdApiIntegrationTest extends IntegrationTest {
+class HouseholdApiIntegrationTest extends IntegrationTestBase {
 
     private static final String ANNA = "hh-anna@example.invalid";
     private static final String BERT = "hh-bert@example.invalid";
@@ -114,6 +114,23 @@ class HouseholdApiIntegrationTest extends IntegrationTest {
         mockMvc.perform(create("A second one", false).with(asUser(ANNA)))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.code").value("TOO_MANY_HOUSEHOLDS"));
+    }
+
+    /**
+     * The household row is written before its creator joins it, and joining is what hits the
+     * cap. The refusal must take the household with it, or the server keeps one nobody is in.
+     * This held only once ApiException became unchecked, which is what makes Spring roll the
+     * transaction back.
+     */
+    @Test
+    void aHouseholdItsCreatorCannotJoinIsNotKept() throws Exception {
+        householdStartedBy(ANNA);
+        var householdsBefore = householdRepository.count();
+
+        mockMvc.perform(create("A second one", false).with(asUser(ANNA)))
+                .andExpect(status().isConflict());
+
+        assertEquals(householdsBefore, householdRepository.count());
     }
 
     @Test

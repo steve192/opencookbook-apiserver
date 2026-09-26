@@ -51,7 +51,7 @@ class RecipeOcrImportServiceTest {
             """;
 
     @Test
-    void everyFieldReachesTheRecipe() throws MlSubsystemException {
+    void everyFieldReachesTheRecipe() {
         var recipe = toRecipe(FULL_RESULT);
 
         assertEquals("Apfelkuchen", recipe.getTitle());
@@ -64,7 +64,7 @@ class RecipeOcrImportServiceTest {
     }
 
     @Test
-    void ingredientsKeepTheirAmountUnitAndDetail() throws MlSubsystemException {
+    void ingredientsKeepTheirAmountUnitAndDetail() {
         var needs = toRecipe(FULL_RESULT).getNeededIngredients();
 
         assertEquals(2, needs.size());
@@ -76,7 +76,7 @@ class RecipeOcrImportServiceTest {
     }
 
     @Test
-    void aUnitThisInstanceDoesNotKnowMakesTheLineBeReadAgainHere() throws MlSubsystemException {
+    void aUnitThisInstanceDoesNotKnowMakesTheLineBeReadAgainHere() {
         // "Schnapsglas" has no entry in cookpal's vocabulary, so the proposal cannot be used as it is.
         var result = ingredientResult(
                 "{\"raw\": \"8 Schnapsglas Frischkaese\", \"amount\": 8.0, \"unit\": \"Schnapsglas\","
@@ -90,7 +90,7 @@ class RecipeOcrImportServiceTest {
     }
 
     @Test
-    void aKnownUnitIsTakenAsProposed() throws MlSubsystemException {
+    void aKnownUnitIsTakenAsProposed() {
         var result = ingredientResult(
                 "{\"raw\": \"1 Prise Salz\", \"amount\": 1.0, \"unit\": \"Prise(n)\","
                         + " \"name\": \"Salz\", \"additionalInfo\": \"\", \"confidence\": 0.9}");
@@ -103,7 +103,7 @@ class RecipeOcrImportServiceTest {
     }
 
     @Test
-    void anIngredientWithoutANameIsLeftOut() throws MlSubsystemException {
+    void anIngredientWithoutANameIsLeftOut() {
         var result = ingredientResult(
                 "{\"raw\": \"200\", \"amount\": 200.0, \"unit\": \"\", \"name\": \"\","
                         + " \"additionalInfo\": \"\", \"confidence\": 0.2}");
@@ -112,7 +112,7 @@ class RecipeOcrImportServiceTest {
     }
 
     @Test
-    void aFieldTheSubsystemWasNotSureOfArrivesEmpty() throws MlSubsystemException {
+    void aFieldTheSubsystemWasNotSureOfArrivesEmpty() {
         // Below its own threshold the subsystem sends null, and this side must not invent one.
         var result = """
                 {"title": {"value": null, "confidence": 0.3},
@@ -129,7 +129,7 @@ class RecipeOcrImportServiceTest {
     }
 
     @Test
-    void aRecipeIsAlwaysForAtLeastOnePerson() throws MlSubsystemException {
+    void aRecipeIsAlwaysForAtLeastOnePerson() {
         var result = """
                 {"servings": {"value": 0, "confidence": 0.9},
                  "ingredients": [], "preparationSteps": []}
@@ -139,12 +139,12 @@ class RecipeOcrImportServiceTest {
     }
 
     @Test
-    void theScannedRecipeIsNotGivenAnIdBecauseItIsNotSavedYet() throws MlSubsystemException {
+    void theScannedRecipeIsNotGivenAnIdBecauseItIsNotSavedYet() {
         assertNull(toRecipe(FULL_RESULT).getId());
     }
 
     @Test
-    void theBlocksTheAppAsksAboutAreReadBack() throws MlSubsystemException {
+    void theBlocksTheAppAsksAboutAreReadBack() {
         var withBlocks = """
                 {"ingredients": [], "preparationSteps": [],
                  "blocks": {
@@ -174,7 +174,7 @@ class RecipeOcrImportServiceTest {
     }
 
     @Test
-    void aPhotographWithNoIngredientsAndNoStepsInItStillMakesARecipe() throws MlSubsystemException {
+    void aPhotographWithNoIngredientsAndNoStepsInItStillMakesARecipe() {
         // Null, not an empty list: that is how the subsystem says it found none of that kind,
         // and gson takes a written null over the field's initialiser.
         var recipe = toRecipe("""
@@ -188,7 +188,7 @@ class RecipeOcrImportServiceTest {
     }
 
     @Test
-    void aResultThatMentionsNeitherListAtAllIsTheSame() throws MlSubsystemException {
+    void aResultThatMentionsNeitherListAtAllIsTheSame() {
         var recipe = toRecipe("{\"title\": {\"value\": \"Nur ein Titel\"}}");
 
         assertEquals(List.of(), recipe.getNeededIngredients());
@@ -196,7 +196,7 @@ class RecipeOcrImportServiceTest {
     }
 
     /** Read the subsystem's answer, then turn it into a recipe - what a scan does in one go. */
-    private Recipe toRecipe(String resultJson) throws MlSubsystemException {
+    private Recipe toRecipe(String resultJson) {
         return cut.toRecipe(cut.read(resultJson), owner);
     }
 

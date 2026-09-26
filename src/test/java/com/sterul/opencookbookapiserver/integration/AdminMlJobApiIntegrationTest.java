@@ -36,7 +36,7 @@ import com.sterul.opencookbookapiserver.services.ml.MlJobService;
 })
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class AdminMlJobApiIntegrationTest extends IntegrationTest {
+class AdminMlJobApiIntegrationTest extends IntegrationTestBase {
 
     private static final String SCANNER = "admin-ml-scanner@example.com";
     private static final String OPERATOR = "admin-ml-operator@example.com";

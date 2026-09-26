@@ -69,10 +69,10 @@ public class MlAvailabilityService {
                 return available;
             }
             proxy.health();
-            record(true);
+            recordReachability(true);
         } catch (MlSubsystemException e) {
             log.warn("The machine learning subsystem is not available: {}", e.getMessage());
-            record(false);
+            recordReachability(false);
         } finally {
             refreshing.unlock();
         }
@@ -101,14 +101,14 @@ public class MlAvailabilityService {
 
     /** Remember what a real request just proved, so the next check does not have to ask again. */
     public void reportReachable() {
-        record(true);
+        recordReachability(true);
     }
 
     public void reportUnreachable() {
-        record(false);
+        recordReachability(false);
     }
 
-    private void record(boolean reachable) {
+    private void recordReachability(boolean reachable) {
         this.available = reachable;
         this.checkedAt = clock.instant();
     }

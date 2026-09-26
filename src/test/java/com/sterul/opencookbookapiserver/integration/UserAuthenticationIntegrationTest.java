@@ -31,7 +31,7 @@ import com.sterul.opencookbookapiserver.services.EmailService;
 @SpringBootTest(properties = "opencookbook.activate-users-after-signup=false")
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class UserAuthenticationIntegrationTest extends IntegrationTest {
+class UserAuthenticationIntegrationTest extends IntegrationTestBase {
 
     @Autowired
     private MockMvc mockMvc;

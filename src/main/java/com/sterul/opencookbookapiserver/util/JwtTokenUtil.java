@@ -7,7 +7,6 @@ import java.util.function.Function;
 
 import javax.crypto.SecretKey;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -21,12 +20,15 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 
 @Component
+@SuppressWarnings("java:S2143") // jjwt's setExpiration/setIssuedAt take java.util.Date.
 public class JwtTokenUtil {
 
     private final SecretKey jwtSigningKey = Jwts.SIG.HS512.key().build();
+    private final OpencookbookConfiguration opencookbookConfiguration;
 
-    @Autowired
-    OpencookbookConfiguration opencookbookConfiguration;
+    public JwtTokenUtil(OpencookbookConfiguration opencookbookConfiguration) {
+        this.opencookbookConfiguration = opencookbookConfiguration;
+    }
 
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
@@ -51,7 +53,8 @@ public class JwtTokenUtil {
     }
 
     public String generateToken(UserDetails userDetails) {
-        // TODO: Add claim information when needed
+        // No claims beyond the subject: the request filter reads nothing else, and anything
+        // put here would have to stay true for as long as the token lives.
         Map<String, Object> claims = new HashMap<>();
         return doGenerateToken(claims, userDetails.getUsername());
     }

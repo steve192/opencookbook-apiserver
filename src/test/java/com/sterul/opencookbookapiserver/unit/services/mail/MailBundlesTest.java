@@ -2,6 +2,7 @@ package com.sterul.opencookbookapiserver.unit.services.mail;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -58,7 +59,7 @@ class MailBundlesTest {
                 assertFalse(translated.getProperty(key).isBlank(), key + " is empty in " + translation);
                 // The product's own name is the same in every language; nothing else should be.
                 if (!key.equals("mail.app.name")) {
-                    assertFalse(english.getProperty(key).equals(translated.getProperty(key)),
+                    assertNotEquals(english.getProperty(key), translated.getProperty(key),
                             key + " was never translated into " + translation);
                 }
             }

@@ -32,7 +32,7 @@ import com.sterul.opencookbookapiserver.repositories.UserRepository;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class AdminIngredientCleanupApiIntegrationTest extends IntegrationTest {
+class AdminIngredientCleanupApiIntegrationTest extends IntegrationTestBase {
 
     private static final String OPERATOR = "cleanup-operator@example.com";
     private static final String COOK = "cleanup-cook@example.com";

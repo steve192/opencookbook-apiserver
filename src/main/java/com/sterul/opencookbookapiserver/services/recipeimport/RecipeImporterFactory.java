@@ -32,7 +32,7 @@ public class RecipeImporterFactory {
         this.opencookbookConfiguration = opencookbookConfiguration;
     }
 
-    public IRecipeImporter getRecipeImporter(String url) throws ApiException {
+    public IRecipeImporter getRecipeImporter(String url) {
         // Checked before anything is chosen, so that a link nobody could follow is refused here
         // rather than handed on to a scraper service that would fail on it in its own way.
         var host = hostOf(url);
@@ -60,7 +60,7 @@ public class RecipeImporterFactory {
      * @return the host it names
      * @throws ApiException when it names none
      */
-    private static String hostOf(String url) throws ApiException {
+    private static String hostOf(String url) {
         String host = null;
         try {
             host = new URI(url).getHost();

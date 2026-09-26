@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sterul.opencookbookapiserver.configurations.nutrition.ConditionalOnNutritionEnabled;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
-import com.sterul.opencookbookapiserver.errors.ApiException;
 import com.sterul.opencookbookapiserver.repositories.CatalogueFoodRepository;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.services.nutrition.IngredientNames;
@@ -58,7 +57,7 @@ public class UserCorrectionReport {
     }
 
     /** The corrections the most users made first. */
-    public List<UserCorrection> corrections(int limit) throws ApiException {
+    public List<UserCorrection> corrections(int limit) {
         suggester.requireReady();
         var rules = nameRules.ruleBook();
         var decisions = ingredientRepository.findAllWithOwnerAndFood().stream()

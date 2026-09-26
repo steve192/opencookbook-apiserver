@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sterul.opencookbookapiserver.configurations.nutrition.ConditionalOnNutritionEnabled;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
-import com.sterul.opencookbookapiserver.errors.ApiException;
 import com.sterul.opencookbookapiserver.repositories.CatalogueFoodRepository;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.repositories.projections.IngredientUseCount;
@@ -62,7 +61,7 @@ public class IngredientNameReport {
     }
 
     /** Undecided names not linked silently, the names most users wrote first. */
-    public List<UnmatchedName> unmatchedNames(int limit) throws ApiException {
+    public List<UnmatchedName> unmatchedNames(int limit) {
         matcher.requireReady();
         var uses = IngredientUseCount.asMap(ingredientRepository.countUsesGroupedByIngredient());
         var rules = nameRules.ruleBook();

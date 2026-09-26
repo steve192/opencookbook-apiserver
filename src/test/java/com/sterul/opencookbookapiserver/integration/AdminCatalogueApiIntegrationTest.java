@@ -41,7 +41,7 @@ import com.sterul.opencookbookapiserver.services.nutrition.catalogue.NutritionDa
 @SpringBootTest(properties = "opencookbook.nutrition.enabled=true")
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class AdminCatalogueApiIntegrationTest extends IntegrationTest {
+class AdminCatalogueApiIntegrationTest extends IntegrationTestBase {
 
     private static final String OPERATOR = "catalogue-operator@example.com";
     private static final String COOK = "catalogue-cook@example.com";

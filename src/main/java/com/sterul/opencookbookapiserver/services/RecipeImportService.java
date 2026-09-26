@@ -4,25 +4,25 @@ import java.util.List;
 
 import jakarta.transaction.Transactional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
-import com.sterul.opencookbookapiserver.errors.ApiException;
 import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImporterFactory;
 
 @Service
 @Transactional
 public class RecipeImportService {
 
-    @Autowired
-    private RecipeImporterFactory importerFactory;
+    private final RecipeImporterFactory importerFactory;
+    private final RecipeService recipeService;
 
-    @Autowired
-    private RecipeService recipeService;
+    public RecipeImportService(RecipeImporterFactory importerFactory, RecipeService recipeService) {
+        this.importerFactory = importerFactory;
+        this.recipeService = recipeService;
+    }
 
-    public Recipe importRecipe(String importUrl, CookpalUser owner) throws ApiException {
+    public Recipe importRecipe(String importUrl, CookpalUser owner) {
         var importer = importerFactory.getRecipeImporter(importUrl);
         var importedRecipe = importer.importRecipe(importUrl, owner);
         return recipeService.createNewRecipe(importedRecipe);

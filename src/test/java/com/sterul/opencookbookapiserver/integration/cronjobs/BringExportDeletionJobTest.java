@@ -4,7 +4,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 
@@ -18,12 +17,12 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import com.sterul.opencookbookapiserver.cronjobs.BringExportDeletionJob;
 import com.sterul.opencookbookapiserver.entities.BringExport;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
-import com.sterul.opencookbookapiserver.integration.IntegrationTest;
+import com.sterul.opencookbookapiserver.integration.IntegrationTestBase;
 import com.sterul.opencookbookapiserver.repositories.BringExportRepository;
 
 @SpringBootTest
 @ActiveProfiles("integration-test")
-class BringExportDeletionJobTest extends IntegrationTest {
+class BringExportDeletionJobTest extends IntegrationTestBase {
 
     @MockitoBean
     BringExportRepository bringExportRepository;
@@ -48,7 +47,7 @@ class BringExportDeletionJobTest extends IntegrationTest {
     }
 
     @Test
-    void oldExportsAreDeleted() throws IOException {
+    void oldExportsAreDeleted() {
         cut.deleteBringExports();
         verify(bringExportRepository, times(1)).delete(invalidExport);
         verify(bringExportRepository, times(0)).delete(validExport);

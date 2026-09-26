@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sterul.opencookbookapiserver.controllers.requests.RecipeSuggestionRequest;
 import com.sterul.opencookbookapiserver.controllers.responses.RecipeSuggestionResponse;
 import com.sterul.opencookbookapiserver.controllers.support.RecipeResponses;
+import com.sterul.opencookbookapiserver.services.SignedInUserService;
 import com.sterul.opencookbookapiserver.services.suggestion.RecipeSuggestionService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,7 +23,9 @@ public class RecipeSuggestionController extends BaseController {
     private final RecipeSuggestionService suggestionService;
     private final RecipeResponses recipeResponses;
 
-    public RecipeSuggestionController(RecipeSuggestionService suggestionService, RecipeResponses recipeResponses) {
+    public RecipeSuggestionController(RecipeSuggestionService suggestionService, RecipeResponses recipeResponses,
+            SignedInUserService signedInUser) {
+        super(signedInUser);
         this.suggestionService = suggestionService;
         this.recipeResponses = recipeResponses;
     }

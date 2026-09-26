@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminBringExportResponse;
 import com.sterul.opencookbookapiserver.services.BringExportService;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -48,7 +47,7 @@ public class AdminBringExportController {
     @Operation(summary = "Delete an export before it lapses on its own")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteExport(@PathVariable String id) throws ElementNotFound {
+    public void deleteExport(@PathVariable String id) {
         log.info("Admin: Deleting bring export {}", id);
         bringExportService.deleteExport(id);
     }

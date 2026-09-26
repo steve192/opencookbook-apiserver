@@ -18,9 +18,6 @@ import com.sterul.opencookbookapiserver.controllers.admin.requests.AdminUserRequ
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminUserOverviewResponse;
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminUserResponse;
 import com.sterul.opencookbookapiserver.services.UserService;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
-import com.sterul.opencookbookapiserver.services.exceptions.LastAdministratorException;
-import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -52,7 +49,7 @@ public class AdminUserController {
 
     @Operation(summary = "One account")
     @GetMapping("/{id}")
-    public AdminUserResponse getOne(@PathVariable Long id) throws ElementNotFound {
+    public AdminUserResponse getOne(@PathVariable Long id) {
         return AdminUserResponse.fromEntity(userService.getUserById(id));
     }
 
@@ -61,8 +58,7 @@ public class AdminUserController {
                     + "takes it away. The last administrator who can sign in cannot be changed "
                     + "into somebody who cannot.")
     @PutMapping("/{id}")
-    public AdminUserResponse updateUser(@PathVariable Long id, @Valid @RequestBody AdminUserRequest request)
-            throws ElementNotFound, UserAlreadyExistsException, LastAdministratorException {
+    public AdminUserResponse updateUser(@PathVariable Long id, @Valid @RequestBody AdminUserRequest request) {
         log.info("Admin: Updating user {}", id);
         return AdminUserResponse.fromEntity(userService.updateUser(id, request.getEmailAddress(),
                 request.getActivated(), request.getRole()));
@@ -71,23 +67,21 @@ public class AdminUserController {
     @Operation(summary = "Delete an account and everything it holds")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@PathVariable Long id) throws ElementNotFound, LastAdministratorException {
+    public void deleteUser(@PathVariable Long id) {
         log.info("Admin: Deleting user {}", id);
         userService.deleteUser(userService.getUserById(id));
     }
 
     @Operation(summary = "Let somebody sign in again")
     @PostMapping("/{id}/activate")
-    public AdminUserResponse activateUser(@PathVariable Long id)
-            throws ElementNotFound, LastAdministratorException {
+    public AdminUserResponse activateUser(@PathVariable Long id) {
         log.info("Admin: Activating user {}", id);
         return AdminUserResponse.fromEntity(userService.setUserActivation(id, true));
     }
 
     @Operation(summary = "Lock an account", description = "The account and its data stay; nobody can sign in to it.")
     @PostMapping("/{id}/deactivate")
-    public AdminUserResponse deactivateUser(@PathVariable Long id)
-            throws ElementNotFound, LastAdministratorException {
+    public AdminUserResponse deactivateUser(@PathVariable Long id) {
         log.info("Admin: Deactivating user {}", id);
         return AdminUserResponse.fromEntity(userService.setUserActivation(id, false));
     }
@@ -95,7 +89,7 @@ public class AdminUserController {
     @Operation(summary = "Send somebody a password reset mail")
     @PostMapping("/{id}/password-reset")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void sendPasswordReset(@PathVariable Long id) throws ElementNotFound, MessagingException {
+    public void sendPasswordReset(@PathVariable Long id) throws MessagingException {
         var user = userService.getUserById(id);
         log.info("Admin: Sending a password reset mail to user {}", id);
         userService.requestPasswordReset(user.getEmailAddress());

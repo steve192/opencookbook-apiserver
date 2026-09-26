@@ -44,7 +44,6 @@ import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
 import com.sterul.opencookbookapiserver.services.RecipeImageService;
 import com.sterul.opencookbookapiserver.services.RecipeService;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 /**
  * The behaviour of a share link end to end.
@@ -57,7 +56,7 @@ import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class ShareApiIntegrationTest extends IntegrationTest {
+class ShareApiIntegrationTest extends IntegrationTestBase {
 
     private static final String OWNER = "share-owner@example.com";
     private static final String IMPORTER = "share-importer@example.com";
@@ -85,7 +84,7 @@ class ShareApiIntegrationTest extends IntegrationTest {
     private String unsharedImageUuid;
 
     @BeforeEach
-    void setup() throws IOException, ElementNotFound {
+    void setup() throws IOException {
         shareRepository.deleteAll();
         owner = userNamed(OWNER);
         userNamed(IMPORTER);
@@ -380,8 +379,7 @@ class ShareApiIntegrationTest extends IntegrationTest {
         }
     }
 
-    private Long recipeWithImage(String title, CookpalUser recipeOwner, String storedImageUuid)
-            throws ElementNotFound {
+    private Long recipeWithImage(String title, CookpalUser recipeOwner, String storedImageUuid) {
         var recipe = Recipe.builder()
                 .title(title)
                 .owner(recipeOwner)

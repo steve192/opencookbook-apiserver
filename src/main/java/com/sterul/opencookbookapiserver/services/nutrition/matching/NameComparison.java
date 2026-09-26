@@ -37,39 +37,56 @@ final class NameComparison {
      * the candidate does not share is not held against it: "gehackte Petersilie" is still just parsley.
      */
     private static TypedSide explainTyped(List<AnalyzedWord> typedWords, List<AnalyzedWord> explaining) {
-        var explained = 0.0;
-        var counted = 0;
-        var fuzzy = 0.0;
-        var unexplained = 0;
-        var conflicting = 0;
-        var exact = true;
+        var tally = new TypedTally();
         for (var word : typedWords) {
-            var best = best(word, explaining);
+            tally.add(word, best(word, explaining));
+        }
+        return tally.toSide();
+    }
+
+    /** What the typed words added up to, one word at a time. */
+    private static final class TypedTally {
+        private double explained;
+        private int counted;
+        private double fuzzy;
+        private int unexplained;
+        private int conflicting;
+        private boolean exact = true;
+
+        private void add(AnalyzedWord word, Explanation best) {
             if (word.description() && (best.fraction() == 0 || best.fuzzy())) {
                 // Not exact, though: a food whose name shares the description stays ahead.
                 exact = false;
-                continue;
+                return;
             }
             if (best.fraction() == 0) {
-                exact = false;
-                if (word.foodWord() || word.parts().stream().anyMatch(AnalyzedWord.Part::foodWord)) {
-                    conflicting++;
-                    counted++;
-                } else {
-                    unexplained++;
-                }
-            } else {
-                explained += best.fraction();
+                addUnexplained(word);
+                return;
+            }
+            explained += best.fraction();
+            counted++;
+            conflicting += best.unexplainedFoodParts();
+            if (best.fuzzy()) {
+                fuzzy += best.fraction();
+            }
+            exact &= best.whole();
+        }
+
+        private void addUnexplained(AnalyzedWord word) {
+            exact = false;
+            if (word.foodWord() || word.parts().stream().anyMatch(AnalyzedWord.Part::foodWord)) {
+                conflicting++;
                 counted++;
-                conflicting += best.unexplainedFoodParts();
-                if (best.fuzzy()) {
-                    fuzzy += best.fraction();
-                }
-                exact &= best.whole();
+            } else {
+                unexplained++;
             }
         }
-        return new TypedSide(counted == 0 ? 0 : explained / counted, explained == 0 ? 0 : fuzzy / explained, unexplained,
-                conflicting, exact);
+
+        private TypedSide toSide() {
+            var coverage = counted == 0 ? 0 : explained / counted;
+            var fuzzyShare = explained == 0 ? 0 : fuzzy / explained;
+            return new TypedSide(coverage, fuzzyShare, unexplained, conflicting, exact);
+        }
     }
 
     private static CataloguedSide explainCatalogued(AnalyzedName catalogued, List<AnalyzedWord> typedWords) {

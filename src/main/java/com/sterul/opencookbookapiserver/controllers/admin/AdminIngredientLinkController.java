@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sterul.opencookbookapiserver.configurations.nutrition.ConditionalOnNutritionEnabled;
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminIngredientResponse;
 import com.sterul.opencookbookapiserver.controllers.nutrition.IngredientLinkRequest;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.nutrition.linking.IngredientLinkService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,7 +29,7 @@ public class AdminIngredientLinkController {
 
     @Operation(summary = "Say what an ingredient is", description = "Automatic matching never overrides it.")
     @PutMapping("/api/v1/admin/ingredients/{id}/link")
-    public AdminIngredientResponse link(@PathVariable Long id, @Valid @RequestBody IngredientLinkRequest request) throws ElementNotFound {
+    public AdminIngredientResponse link(@PathVariable Long id, @Valid @RequestBody IngredientLinkRequest request) {
         var ingredient = request.isExcluded()
                 ? linkService.excludeByAdmin(id)
                 : linkService.linkByAdmin(id, request.catalogueFoodId());

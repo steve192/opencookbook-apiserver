@@ -27,7 +27,7 @@ import com.sterul.opencookbookapiserver.repositories.UserRepository;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class ApiErrorContractIntegrationTest extends IntegrationTest {
+class ApiErrorContractIntegrationTest extends IntegrationTestBase {
 
     @Autowired
     private MockMvc mockMvc;

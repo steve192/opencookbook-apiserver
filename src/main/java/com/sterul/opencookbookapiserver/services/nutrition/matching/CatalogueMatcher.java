@@ -66,7 +66,7 @@ public class CatalogueMatcher {
         return index.get() != null;
     }
 
-    public void requireReady() throws ApiException {
+    public void requireReady() {
         if (!isReady()) {
             throw new ApiException(ApiErrorCode.CONFLICT, "The matcher is not ready: the catalogue is still being imported");
         }

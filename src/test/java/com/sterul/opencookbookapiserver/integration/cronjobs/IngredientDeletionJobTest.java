@@ -20,14 +20,14 @@ import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
-import com.sterul.opencookbookapiserver.integration.IntegrationTest;
+import com.sterul.opencookbookapiserver.integration.IntegrationTestBase;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
 
 @SpringBootTest
 @ActiveProfiles("integration-test")
-class IngredientDeletionJobTest extends IntegrationTest {
+class IngredientDeletionJobTest extends IntegrationTestBase {
 
     @Autowired
     private IngredientDeletionJob cut;

@@ -21,7 +21,7 @@ import com.sterul.opencookbookapiserver.controllers.sharing.requests.ShareRecipe
 import com.sterul.opencookbookapiserver.controllers.sharing.responses.ShareResponse;
 import com.sterul.opencookbookapiserver.controllers.support.RecipeResponses;
 import com.sterul.opencookbookapiserver.services.RecipeService;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
+import com.sterul.opencookbookapiserver.services.SignedInUserService;
 import com.sterul.opencookbookapiserver.services.sharing.ShareLinkFactory;
 import com.sterul.opencookbookapiserver.services.sharing.ShareService;
 import com.sterul.opencookbookapiserver.services.sharing.SharedRecipeImportService;
@@ -45,7 +45,9 @@ public class ShareController extends BaseController {
     private final RecipeResponses recipeResponses;
 
     public ShareController(ShareService shareService, SharedRecipeImportService sharedRecipeImportService,
-            RecipeService recipeService, ShareLinkFactory shareLinkFactory, RecipeResponses recipeResponses) {
+            RecipeService recipeService, ShareLinkFactory shareLinkFactory, RecipeResponses recipeResponses,
+            SignedInUserService signedInUser) {
+        super(signedInUser);
         this.shareService = shareService;
         this.sharedRecipeImportService = sharedRecipeImportService;
         this.recipeService = recipeService;
@@ -55,8 +57,7 @@ public class ShareController extends BaseController {
 
     @Operation(summary = "The shares of one of your recipes", description = "Empty while the recipe is not shared.")
     @GetMapping
-    public List<ShareResponse> getSharesOfRecipe(@RequestParam Long recipeId)
-            throws ElementNotFound {
+    public List<ShareResponse> getSharesOfRecipe(@RequestParam Long recipeId) {
         requireOwnershipOfRecipe(recipeId);
         return shareService.findPublicRecipeShare(recipeId)
                 .map(share -> List.of(ShareResponse.fromEntity(share, shareLinkFactory)))
@@ -65,8 +66,7 @@ public class ShareController extends BaseController {
 
     @Operation(summary = "Share a recipe publicly", description = "Returns the existing link if the recipe already has one.")
     @PostMapping
-    public ShareResponse shareRecipe(@Valid @RequestBody ShareRecipeRequest request)
-            throws ElementNotFound {
+    public ShareResponse shareRecipe(@Valid @RequestBody ShareRecipeRequest request) {
         requireOwnershipOfRecipe(request.recipeId());
         return ShareResponse.fromEntity(shareService.shareRecipePublicly(request.recipeId()),
                 shareLinkFactory);
@@ -75,14 +75,14 @@ public class ShareController extends BaseController {
     @Operation(summary = "Stop sharing", description = "The link stops working immediately and permanently.")
     @DeleteMapping("/{" + SharePaths.SHARE_ID_VARIABLE + "}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void revokeShare(@Valid @NotBlank @PathVariable String shareId) throws ElementNotFound {
+    public void revokeShare(@Valid @NotBlank @PathVariable String shareId) {
         shareService.revoke(shareId, getLoggedInUser());
     }
 
     @Operation(summary = "Import a shared recipe", description = "Copies the shared recipe, its ingredients and its images into your own cookbook.")
     @PostMapping("/{" + SharePaths.SHARE_ID_VARIABLE + "}/import")
     public RecipeResponse importSharedRecipe(@Valid @NotBlank @PathVariable String shareId)
-            throws ElementNotFound, IOException {
+            throws IOException {
         return recipeResponses.of(sharedRecipeImportService.importSharedRecipe(shareId, getLoggedInUser()));
     }
 
@@ -91,7 +91,7 @@ public class ShareController extends BaseController {
      * for a recipe that exists but belongs to somebody else would let anyone count the recipes
      * on this server by walking the ids.
      */
-    private void requireOwnershipOfRecipe(Long recipeId) throws ElementNotFound {
+    private void requireOwnershipOfRecipe(Long recipeId) {
         recipeService.getOwnRecipe(recipeId, getLoggedInUser());
     }
 

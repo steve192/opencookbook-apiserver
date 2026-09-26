@@ -39,7 +39,7 @@ import com.sterul.opencookbookapiserver.repositories.WeekplanDayRepository;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class PlanningApiIntegrationTest extends IntegrationTest {
+class PlanningApiIntegrationTest extends IntegrationTestBase {
 
     private static final String COOK = "planning-cook@example.com";
     private static final String STRANGER = "planning-stranger@example.com";

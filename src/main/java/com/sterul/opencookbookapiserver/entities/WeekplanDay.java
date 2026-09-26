@@ -15,6 +15,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderColumn;
@@ -46,6 +47,7 @@ public class WeekplanDay extends AuditableEntity implements ScopedEntity {
     // order has to survive a round trip. Without an order column this is a bag and jpa
     // gives no such guarantee - a reorder was written and then read back arbitrarily.
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "weekplan_day_id")
     @OrderColumn(name = "recipe_order")
     private List<WeekplanDayRecipe> recipes;
 }

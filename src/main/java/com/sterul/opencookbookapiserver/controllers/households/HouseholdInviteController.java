@@ -13,8 +13,7 @@ import com.sterul.opencookbookapiserver.controllers.households.requests.AcceptIn
 import com.sterul.opencookbookapiserver.controllers.households.responses.HouseholdResponse;
 import com.sterul.opencookbookapiserver.controllers.households.responses.InvitePreviewResponse;
 import com.sterul.opencookbookapiserver.controllers.support.HouseholdResponses;
-import com.sterul.opencookbookapiserver.errors.ApiException;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
+import com.sterul.opencookbookapiserver.services.SignedInUserService;
 import com.sterul.opencookbookapiserver.services.households.HouseholdInviteService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,21 +31,23 @@ public class HouseholdInviteController extends BaseController {
     private final HouseholdInviteService invites;
     private final HouseholdResponses householdResponses;
 
-    public HouseholdInviteController(HouseholdInviteService invites, HouseholdResponses householdResponses) {
+    public HouseholdInviteController(HouseholdInviteService invites, HouseholdResponses householdResponses,
+            SignedInUserService signedInUser) {
+        super(signedInUser);
         this.invites = invites;
         this.householdResponses = householdResponses;
     }
 
     @Operation(summary = "What an invite leads to", description = "The household's name, and nothing else.")
     @GetMapping("/{token}")
-    public InvitePreviewResponse preview(@Valid @NotBlank @PathVariable String token) throws ApiException {
+    public InvitePreviewResponse preview(@Valid @NotBlank @PathVariable String token) {
         return new InvitePreviewResponse(invites.preview(token).getName());
     }
 
     @Operation(summary = "Join the household this invite leads to")
     @PostMapping("/{token}/accept")
     public HouseholdResponse accept(@Valid @NotBlank @PathVariable String token,
-            @Valid @RequestBody AcceptInviteRequest request) throws ApiException, ElementNotFound {
+            @Valid @RequestBody AcceptInviteRequest request) {
         var user = getLoggedInUser();
         var household = invites.accept(token, user, request.shareRecipes());
         return householdResponses.detailFor(household.getId(), user);

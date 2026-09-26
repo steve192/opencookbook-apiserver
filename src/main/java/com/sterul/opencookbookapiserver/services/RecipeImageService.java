@@ -15,7 +15,6 @@ import javax.imageio.ImageIO;
 import jakarta.transaction.Transactional;
 
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
@@ -35,13 +34,14 @@ public class RecipeImageService {
     private final Path imageUploadPath;
     private final Path thumbnailUploadPath;
     private final OpencookbookConfiguration opencookbookConfiguration;
-    @Autowired
-    private RecipeImageRepository recipeImageRepository;
-    @Autowired
-    private CookbookAccess cookbookAccess;
+    private final RecipeImageRepository recipeImageRepository;
+    private final CookbookAccess cookbookAccess;
 
-    public RecipeImageService(OpencookbookConfiguration opencookbookConfiguration) {
+    public RecipeImageService(OpencookbookConfiguration opencookbookConfiguration,
+            RecipeImageRepository recipeImageRepository, CookbookAccess cookbookAccess) {
         this.opencookbookConfiguration = opencookbookConfiguration;
+        this.recipeImageRepository = recipeImageRepository;
+        this.cookbookAccess = cookbookAccess;
         imageUploadPath = prepareStorageDirectory(opencookbookConfiguration.getUploadDir());
         thumbnailUploadPath = prepareStorageDirectory(opencookbookConfiguration.getThumbnailDir());
     }
@@ -114,7 +114,7 @@ public class RecipeImageService {
     }
 
     public RecipeImage saveNewImage(InputStream inputStream, long expectedSize, CookpalUser owner)
-            throws IOException, IllegalFiletypeException {
+            throws IOException {
         log.info("Saving new image for user {}", owner);
         if (expectedSize > opencookbookConfiguration.getMaxImageSize()) {
             throw new FileSizeLimitExceededException("Image too big", expectedSize,
@@ -172,7 +172,7 @@ public class RecipeImageService {
     }
 
     /** The owner, or anyone who may read its recipe; a fresh upload has no recipe yet. */
-    public boolean hasAccessPermissionToRecipeImage(String imageUUID, CookpalUser user) throws ElementNotFound {
+    public boolean hasAccessPermissionToRecipeImage(String imageUUID, CookpalUser user) {
         if (ownsImage(imageUUID, user)) {
             return true;
         }
@@ -182,17 +182,17 @@ public class RecipeImageService {
     }
 
     /** Deleting stays with the owner. */
-    public boolean ownsImage(String imageUUID, CookpalUser user) throws ElementNotFound {
+    public boolean ownsImage(String imageUUID, CookpalUser user) {
         var image = recipeImageRepository.findById(imageUUID).orElseThrow(ElementNotFound::new);
         return image.getOwner().getUserId().equals(user.getUserId());
     }
 
     /** @throws ElementNotFound where the record outlived its file, which is nobody's fault to report */
-    public byte[] getImage(String uuid) throws IOException, ElementNotFound {
+    public byte[] getImage(String uuid) throws IOException {
         return Files.readAllBytes(storedImage(uuid));
     }
 
-    public byte[] getThumbnailImage(String uuid) throws IOException, ElementNotFound {
+    public byte[] getThumbnailImage(String uuid) throws IOException {
         var thumbnail = thumbnailUploadPath.resolve(uuid);
         if (!Files.exists(thumbnail)) {
             // Only reachable for an image stored before thumbnails were written on upload
@@ -203,7 +203,7 @@ public class RecipeImageService {
     }
 
     /** The stored file of an image, which an image known to the database need not still have. */
-    private Path storedImage(String uuid) throws ElementNotFound {
+    private Path storedImage(String uuid) {
         var path = imageUploadPath.resolve(uuid);
         if (!Files.exists(path)) {
             log.info("Image {} is known but no longer stored", uuid);

@@ -9,13 +9,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.JsonSyntaxException;
+import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
+import com.sterul.opencookbookapiserver.services.RecipeImageService;
 import com.sterul.opencookbookapiserver.services.recipeimport.AbstractRecipeImporter;
-import com.sterul.opencookbookapiserver.services.recipeimport.ImportNotSupportedException;
 import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImportFailedException;
 
 import lombok.Data;
@@ -30,14 +31,15 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
     private final IngredientExtractor ingredientExtractor;
 
     public RecipeScrapersWebserviceImporter(RecipeScraperServiceProxy recipeScraperServiceProxy,
-            IngredientExtractor ingredientExtractor) {
+            IngredientExtractor ingredientExtractor, RecipeImageService recipeImageService,
+            OpencookbookConfiguration opencookbookConfiguration) {
+        super(recipeImageService, opencookbookConfiguration);
         this.recipeScraperServiceProxy = recipeScraperServiceProxy;
         this.ingredientExtractor = ingredientExtractor;
     }
 
     @Override
-    public Recipe importRecipe(String url, CookpalUser owner)
-            throws RecipeImportFailedException, ImportNotSupportedException {
+    public Recipe importRecipe(String url, CookpalUser owner) {
         log.info("Importing recipe " + url);
         ScrapedRecipe scrapedRecipe;
         try {
@@ -87,13 +89,13 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
                 .build();
 
         extractImage(owner, scrapedRecipe, importRecipe);
-        extractIngredients(scrapedRecipe, importRecipe, owner);
+        extractIngredients(scrapedRecipe, importRecipe);
 
         log.info("Recipe imported");
         return importRecipe;
     }
 
-    private void extractIngredients(ScrapedRecipe scrapedRecipe, Recipe importRecipe, CookpalUser owner) {
+    private void extractIngredients(ScrapedRecipe scrapedRecipe, Recipe importRecipe) {
         var needs = scrapedRecipe.ingredients.stream().map(ingredient -> {
             var unit = ingredientExtractor.extractUnit(ingredient);
             var amount = ingredientExtractor.extractAmount(ingredient);
@@ -131,7 +133,7 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
 
     private List<String> extractPraparationSteps(ScrapedRecipe scrapedRecipe) {
         var prepsteps = Arrays.asList(scrapedRecipe.instructions.replace("\r", "").split("\\n"));
-        return prepsteps.stream().filter(step -> step.length() > 0).toList();
+        return prepsteps.stream().filter(step -> !step.isEmpty()).toList();
     }
 
     @Override

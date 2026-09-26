@@ -21,7 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class NutritionDisabledIntegrationTest extends IntegrationTest {
+class NutritionDisabledIntegrationTest extends IntegrationTestBase {
 
     @Autowired
     private MockMvc mockMvc;

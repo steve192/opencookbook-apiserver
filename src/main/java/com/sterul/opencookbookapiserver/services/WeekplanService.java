@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
@@ -27,11 +26,13 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 public class WeekplanService {
 
-    @Autowired
-    WeekplanDayRepository weekplanDayRepository;
+    private final WeekplanDayRepository weekplanDayRepository;
+    private final CookbookAccess cookbookAccess;
 
-    @Autowired
-    CookbookAccess cookbookAccess;
+    public WeekplanService(WeekplanDayRepository weekplanDayRepository, CookbookAccess cookbookAccess) {
+        this.weekplanDayRepository = weekplanDayRepository;
+        this.cookbookAccess = cookbookAccess;
+    }
 
     public List<WeekplanDay> getWeekplanDaysBetweenTime(LocalDate startTime, LocalDate endTime, PlanScope scope) {
         return weekplanDayRepository.findInRange(startTime, endTime, scope);

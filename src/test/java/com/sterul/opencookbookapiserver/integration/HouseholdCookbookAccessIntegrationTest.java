@@ -45,7 +45,7 @@ import com.sterul.opencookbookapiserver.services.households.HouseholdCookbook;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class HouseholdCookbookAccessIntegrationTest extends IntegrationTest {
+class HouseholdCookbookAccessIntegrationTest extends IntegrationTestBase {
 
     private static final String ANNA = "anna@example.invalid";
     private static final String BERT = "bert@example.invalid";

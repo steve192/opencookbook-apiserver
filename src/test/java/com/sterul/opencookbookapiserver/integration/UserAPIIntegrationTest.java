@@ -42,14 +42,12 @@ import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.EmailService;
 import com.sterul.opencookbookapiserver.services.RefreshTokenService;
 import com.sterul.opencookbookapiserver.services.exceptions.PasswordResetLinkNotExistingException;
-import com.sterul.opencookbookapiserver.services.exceptions.SignupDisabledException;
-import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
 
 import jakarta.mail.MessagingException;
 
 @SpringBootTest
 @ActiveProfiles("integration-test")
-class UserAPIIntegrationTest extends IntegrationTest{
+class UserAPIIntegrationTest extends IntegrationTestBase{
 
     final String testPassword = "12345";
 
@@ -102,7 +100,7 @@ class UserAPIIntegrationTest extends IntegrationTest{
     }
 
     @Test
-    void passwordChangeWithCorrectPasswordIsSuccessfull() throws UnauthorizedException {
+    void passwordChangeWithCorrectPasswordIsSuccessfull() {
         whenAuthenticated(userRepository);
 
         var response = cut.changePassword(PasswordChangeRequest.builder()
@@ -117,11 +115,12 @@ class UserAPIIntegrationTest extends IntegrationTest{
     void passwordChangeWithWrongPasswordFails() {
         whenAuthenticated(userRepository);
 
-        var thrown = assertThrows(UnauthorizedException.class,
-                () -> cut.changePassword(PasswordChangeRequest.builder()
-                        .oldPassword(testPassword + "wrong")
-                        .newPassword("blablabla")
-                        .build()));
+        var request = PasswordChangeRequest.builder()
+                .oldPassword(testPassword + "wrong")
+                .newPassword("blablabla")
+                .build();
+
+        var thrown = assertThrows(UnauthorizedException.class, () -> cut.changePassword(request));
 
         assertEquals(ApiErrorCode.INVALID_CREDENTIALS, thrown.getErrorCode());
     }
@@ -140,7 +139,7 @@ class UserAPIIntegrationTest extends IntegrationTest{
 
     @Test
     @Transactional
-    void registrationEmailSent() throws UserAlreadyExistsException, MessagingException, SignupDisabledException {
+    void registrationEmailSent() throws MessagingException {
         cut.signup(new UserCreationRequest("testi@cookpal.io", "12345"));
         verify(emailService, times(1)).sendActivationMail(any());
     }
@@ -150,8 +149,9 @@ class UserAPIIntegrationTest extends IntegrationTest{
     void nonActivatedUserCannotLogin() {
         whenTestUserExists(false);
 
-        var thrown = assertThrows(UserNotActiveException.class,
-                () -> cut.login(new UserLoginRequest(testUser.getEmailAddress(), testPassword)));
+        var request = new UserLoginRequest(testUser.getEmailAddress(), testPassword);
+
+        var thrown = assertThrows(UserNotActiveException.class, () -> cut.login(request));
 
         // The link is sent again on the way out, because somebody trying to sign in is somebody
         // who never received it or lost it.
@@ -172,19 +172,20 @@ class UserAPIIntegrationTest extends IntegrationTest{
 
     @Test
     void errorWhenPasswordResetLinkDoesNotExists() {
+        var request = PasswordResetExecutionRequest.builder()
+                .passwordResetId("not existant")
+                .newPassword("does not matter")
+                .build();
+
         var thrown = assertThrows(PasswordResetLinkNotExistingException.class,
-                () -> cut.resetPassword(PasswordResetExecutionRequest.builder()
-                        .passwordResetId("not existant")
-                        .newPassword("does not matter")
-                        .build()));
+                () -> cut.resetPassword(request));
 
         assertEquals(ApiErrorCode.PASSWORD_RESET_LINK_INVALID, thrown.getErrorCode());
     }
 
     @Test
-    void passwordIsReset() throws PasswordResetLinkNotExistingException {
+    void passwordIsReset() {
         final var newPassword = "12345";
-        final var newPasswordHash = passwordEncoder.encode(newPassword);
 
         cut.resetPassword(PasswordResetExecutionRequest.builder()
                 .passwordResetId(passwordResetLink.getId())
@@ -220,7 +221,7 @@ class UserAPIIntegrationTest extends IntegrationTest{
     }
 
     @Test
-    void activeUserCanLogin() throws UnauthorizedException, UserNotActiveException {
+    void activeUserCanLogin() {
         whenTestUserExists(true);
 
         var response = cut.login(new UserLoginRequest(testUser.getEmailAddress(), testPassword));

@@ -90,7 +90,7 @@ public class RelinkService {
     }
 
     /** Changes no ingredient. */
-    public IngredientRelinkRun preview(Scope scope, CookpalUser startedBy) throws ApiException {
+    public IngredientRelinkRun preview(Scope scope, CookpalUser startedBy) {
         suggester.requireReady();
         var groups = inScope(scope).stream().collect(Collectors.groupingBy(Group::of, LinkedHashMap::new, Collectors.toList()));
         var rules = nameRules.ruleBook();
@@ -126,7 +126,7 @@ public class RelinkService {
 
     /** @param remember for rejections: never link the name to the proposed food again */
     public List<IngredientRelinkProposal> decide(Long runId, Collection<Long> proposalIds, IngredientRelinkProposal.Decision decision,
-            boolean remember, CookpalUser admin) throws ApiException {
+            boolean remember, CookpalUser admin) {
         var run = previewed(runId);
         var proposals = proposalRepository.findAllByRunAndIdIn(run, proposalIds);
         for (var proposal : proposals) {
@@ -139,7 +139,7 @@ public class RelinkService {
     }
 
     /** Skips ingredients changed since the preview. */
-    public IngredientRelinkRun apply(Long runId) throws ApiException {
+    public IngredientRelinkRun apply(Long runId) {
         var run = previewed(runId);
         var accepted = ReviewedRuns.requireAnyAccepted(run,
                 proposalRepository.findAllByRunAndDecision(run, IngredientRelinkProposal.Decision.ACCEPTED));
@@ -165,7 +165,7 @@ public class RelinkService {
     }
 
     /** Restores only ingredients this run was the last to link. */
-    public IngredientRelinkRun revert(Long runId) throws ApiException {
+    public IngredientRelinkRun revert(Long runId) {
         var run = ReviewedRuns.require(run(runId), ReviewedRun.Status.APPLIED);
         var reverted = 0;
         for (var proposal : proposalRepository.findAllByRunAndDecision(run, IngredientRelinkProposal.Decision.ACCEPTED)) {
@@ -188,7 +188,7 @@ public class RelinkService {
         return run;
     }
 
-    public IngredientRelinkRun discard(Long runId) throws ApiException {
+    public IngredientRelinkRun discard(Long runId) {
         var run = previewed(runId);
         run.discard();
         return run;
@@ -200,24 +200,24 @@ public class RelinkService {
     }
 
     @Transactional(readOnly = true)
-    public IngredientRelinkRun getRun(Long runId) throws ElementNotFound {
+    public IngredientRelinkRun getRun(Long runId) {
         return run(runId);
     }
 
     @Transactional(readOnly = true)
-    public List<IngredientRelinkProposal> getProposals(Long runId) throws ElementNotFound {
+    public List<IngredientRelinkProposal> getProposals(Long runId) {
         return proposalRepository.findAllByRunOrderByNameAsc(run(runId));
     }
 
     @Transactional(readOnly = true)
-    public List<Recipe> sampleRecipes(Long runId, Long proposalId) throws ElementNotFound {
+    public List<Recipe> sampleRecipes(Long runId, Long proposalId) {
         var proposal = proposalRepository.findAllByRunAndIdIn(run(runId), List.of(proposalId)).stream().findFirst()
                 .orElseThrow(ElementNotFound::new);
         return recipeRepository.findUsingIngredients(
                 proposal.getMembers().stream().map(IngredientRelinkMember::getIngredientId).toList(), PageRequest.of(0, SAMPLE_RECIPES));
     }
 
-    private List<Ingredient> inScope(Scope scope) throws ApiException {
+    private List<Ingredient> inScope(Scope scope) {
         return switch (scope.kind()) {
             case NEVER_MATCHED_OR_UNLINKED -> ingredientRepository.findNeverMatchedOrUnlinked();
             case AUTOMATIC_BELOW_CONFIDENCE -> {
@@ -249,18 +249,18 @@ public class RelinkService {
     }
 
     /** Unlinking needs no rule: rejecting it keeps the link. */
-    private void rememberRejection(IngredientRelinkProposal proposal, CookpalUser admin) throws ApiException {
+    private void rememberRejection(IngredientRelinkProposal proposal, CookpalUser admin) {
         var food = proposal.getNewFood();
         if (food != null && !nameRules.ruleBookFor(proposal.getName()).forbids(proposal.getName(), food.getCatalogueKey())) {
             nameRules.neverLinkTo(proposal.getName(), food, admin);
         }
     }
 
-    private IngredientRelinkRun run(Long runId) throws ElementNotFound {
+    private IngredientRelinkRun run(Long runId) {
         return runRepository.findById(runId).orElseThrow(ElementNotFound::new);
     }
 
-    private IngredientRelinkRun previewed(Long runId) throws ApiException {
+    private IngredientRelinkRun previewed(Long runId) {
         return ReviewedRuns.require(run(runId), ReviewedRun.Status.PREVIEWED);
     }
 

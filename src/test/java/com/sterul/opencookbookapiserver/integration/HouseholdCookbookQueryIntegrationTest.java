@@ -38,7 +38,7 @@ import jakarta.persistence.EntityManagerFactory;
 @SpringBootTest(properties = "spring.jpa.properties.hibernate.generate_statistics=true")
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class HouseholdCookbookQueryIntegrationTest extends IntegrationTest {
+class HouseholdCookbookQueryIntegrationTest extends IntegrationTestBase {
 
     private static final String ANNA = "anna@example.invalid";
     private static final String BERT = "bert@example.invalid";

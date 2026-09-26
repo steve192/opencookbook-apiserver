@@ -74,34 +74,41 @@ public class WeekplanGenerator {
     private Map<PlanDraftSlot, Assignment> assign(List<PlanDraftSlot> ordered, Set<PlanDraftSlot> toFill,
             PlanningPool.Pool pool, PlanState state, Map<PlanDraftSlot, Reroll> rerolls) {
         var assignments = new IdentityHashMap<PlanDraftSlot, Assignment>();
-        var household = state.profile().getHouseholdSize();
         for (var slot : ordered) {
             if (!toFill.contains(slot) || assignments.containsKey(slot)) {
                 continue;
             }
-            if (slot.getKind() == SlotKind.GAP) {
-                assignments.put(slot, Assignment.GAP);
-                continue;
-            }
-            var reroll = rerolls.get(slot);
-            var planSlot = new PlanSlot(slot.getPlanDate(), state.profile().mealSetting(slot.getMealType()), SlotKind.COOKED,
-                    reroll);
-            var best = best(planSlot, pool, state, reroll == null ? null : reroll.rejectedRecipeId());
-            if (best.isEmpty()) {
-                assignments.put(slot, Assignment.NOTHING_FITS);
-                continue;
-            }
-            var chosen = best.get();
-            state.cooked(slot.getPlanDate(), chosen.candidate());
-            var leftover = state.profile().isLeftoversAllowed() ?
-                    leftoverSlot(ordered, toFill, assignments, slot, chosen.candidate(), household) :
-                    Optional.<PlanDraftSlot>empty();
-            var cookedServings = leftover.isPresent() ? 2 * household : household;
-            assignments.put(slot, new Assignment(SlotKind.COOKED, chosen.candidate(), cookedServings, null, chosen.terms()));
-            leftover.ifPresent(later -> assignments.put(later,
-                    new Assignment(SlotKind.LEFTOVER, chosen.candidate(), household, slot, List.of())));
+            fill(slot, ordered, toFill, assignments, pool, state, rerolls);
         }
         return assignments;
+    }
+
+    /** Fills one slot, and the later slot its leftovers go to where it has any. */
+    private void fill(PlanDraftSlot slot, List<PlanDraftSlot> ordered, Set<PlanDraftSlot> toFill,
+            Map<PlanDraftSlot, Assignment> assignments, PlanningPool.Pool pool, PlanState state,
+            Map<PlanDraftSlot, Reroll> rerolls) {
+        if (slot.getKind() == SlotKind.GAP) {
+            assignments.put(slot, Assignment.GAP);
+            return;
+        }
+        var reroll = rerolls.get(slot);
+        var planSlot = new PlanSlot(slot.getPlanDate(), state.profile().mealSetting(slot.getMealType()), SlotKind.COOKED,
+                reroll);
+        var best = best(planSlot, pool, state, reroll == null ? null : reroll.rejectedRecipeId());
+        if (best.isEmpty()) {
+            assignments.put(slot, Assignment.NOTHING_FITS);
+            return;
+        }
+        var household = state.profile().getHouseholdSize();
+        var chosen = best.get();
+        state.cooked(slot.getPlanDate(), chosen.candidate());
+        var leftover = state.profile().isLeftoversAllowed() ?
+                leftoverSlot(ordered, toFill, assignments, slot, chosen.candidate(), household) :
+                Optional.<PlanDraftSlot>empty();
+        var cookedServings = leftover.isPresent() ? 2 * household : household;
+        assignments.put(slot, new Assignment(SlotKind.COOKED, chosen.candidate(), cookedServings, null, chosen.terms()));
+        leftover.ifPresent(later -> assignments.put(later,
+                new Assignment(SlotKind.LEFTOVER, chosen.candidate(), household, slot, List.of())));
     }
 
     private Optional<Scored> best(PlanSlot slot, PlanningPool.Pool pool, PlanState state, Long excludedRecipeId) {

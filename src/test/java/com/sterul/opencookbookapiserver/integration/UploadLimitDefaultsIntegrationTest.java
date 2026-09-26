@@ -12,7 +12,7 @@ import org.springframework.util.unit.DataSize;
 /** The upload limits an installation that sets neither of them gets. */
 @SpringBootTest
 @ActiveProfiles("integration-test")
-class UploadLimitDefaultsIntegrationTest extends IntegrationTest {
+class UploadLimitDefaultsIntegrationTest extends IntegrationTestBase {
 
     @Autowired
     private MultipartProperties multipart;

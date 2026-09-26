@@ -11,6 +11,10 @@ spring:
       max-request-size: ${MAX_UPLOAD_SIZE_MB:30}MB
       enabled: true
   jpa:
+    hibernate:
+      # The schema belongs to Flyway. Validating it on start turns any drift between the
+      # migrations and the entities into a refusal to boot
+      ddl-auto: validate
     show-sql: false
     properties:
       hibernate:
