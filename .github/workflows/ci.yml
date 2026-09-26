@@ -1,163 +1,152 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+name: CI
 
-name: ci
-
-on: 
+on:
   push:
-    branches: [main]
-    # Publish semver tags as releases.
-    tags: ["v*.*.*"]
-  release:
-    types: [published]
+    branches:
+      - "**"
   pull_request:
-      types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
 
 env:
-  # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
-  # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
 
-jobs:
-  maven-verify:
-    name: BuildAndTest
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      # The admin panel is built by maven (frontend-maven-plugin), which brings its own node.
-      # Cached so that neither the node download nor the npm install is repeated per run.
-      - name: cache node and node modules
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: |
-            ~/.npm
-            cookpal-admin-frontend/node
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+# Cancel superseded runs per ref, except on main where a cancelled run could
+# abort an in-flight auto-release.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: "21"
-          distribution: "temurin"
-          cache: maven
-      - name: Setup tools
-        run:  sudo apt update && sudo apt install xmlstarlet 
-      - name: update version  
-        run: |
-          REF_TYPE="${{github.ref_type}}"
-          if [[ "$REF_TYPE" == "tag" ]]; then
-            TAG=${{  github.ref_name }}
-            TAG=${TAG#v}
-            echo $TAG
-            xmlstarlet edit -L -N w=http://maven.apache.org/POM/4.0.0  --update "//w:project/w:version" --value "${TAG}" pom.xml 
-          fi
-      - name: maven-verify
-        run: mvn verify --file pom.xml
-      - uses: actions/upload-artifact@v4
-        with:
-          name: java-build
-          path: target/
-  sonarcloud:
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  packages: write
+
+jobs:
+  build-test:
+    name: Build & Test
+    uses: ./.github/workflows/build-test.yml
+
+  sonar:
     name: SonarCloud
+    needs: build-test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v7.0.1
         with:
-          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: "21"
-          distribution: "temurin"
-          cache: maven
-      - name: Cache SonarCloud packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
+          # Shallow clones should be disabled for a better relevancy of analysis.
+          fetch-depth: 0
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      # Sonar analyses the Java sources only, so the admin panel bundle is not worth
+      # the node download here.
       - name: Build and analyze
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=steve192_opencookbook-apiserver
-  docker:
-    name: BuildDocker
-    needs: maven-verify
+        run: >-
+          mvn --batch-mode -DskipAdminUi verify
+          org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+          -Dsonar.projectKey=steve192_opencookbook-apiserver
+
+  publish-main:
+    name: Publish main image
+    needs: build-test
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-      # This is used to complete the identity challenge
-      # with sigstore/fulcio when running outside of PRs.
-      id-token: write
-
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: java-build
-          path: target/
+      - name: Setup
+        uses: ./.github/actions/setup
 
-      # Install the cosign tool except on PR
-      # https://github.com/sigstore/cosign-installer
-      #- name: Install cosign
-      #  if: github.event_name != 'pull_request' && github.ref_protected == true
-      #  uses: sigstore/cosign-installer@1e95c1de343b5b0c23352d6417ee3e48d5bcd422
-      #  with:
-      #    cosign-release: "v1.4.0"
+      # build-test already ran the tests for this commit; this build only produces the jar.
+      - name: Package
+        run: mvn --batch-mode package -DskipTests
 
-      # Workaround: https://github.com/docker/build-push-action/issues/461
-      - name: Setup Docker buildx
-        uses: docker/setup-buildx-action@79abd3f86f79a9d68a23c75a09a9a85889262adf
-
-      # Login against a Docker registry except on PR
-      # https://github.com/docker/login-action
-      - name: Log into registry ${{ env.REGISTRY }}
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      # Extract metadata (tags, labels) for Docker
-      # https://github.com/docker/metadata-action
-      - name: Extract Docker metadata
-        id: meta
-        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
-      # Build and push Docker image with Buildx (don't push on PR)
-      # https://github.com/docker/build-push-action
       - name: Build and push Docker image
-        id: build-and-push
-        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        uses: ./.github/actions/publish-image
         with:
-          context: .
-          push: ${{ github.event_name != 'pull_request' && ( github.ref_protected == true || github.ref_type == 'tag' ) }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
 
-      # Sign the resulting Docker image digest except on PRs.
-      # This will only write to the public Rekor transparency log when the Docker
-      # repository is public to avoid leaking data.  If you would like to publish
-      # transparency data even for private images, pass --force to cosign below.
-      # https://github.com/sigstore/cosign
-      #- name: Sign the published Docker image
-      #  if: ${{ github.event_name != 'pull_request' && github.ref_protected == true }}
-      #  env:
-      #    COSIGN_EXPERIMENTAL: "true"
-      #  # This step uses the identity token to provision an ephemeral certificate
-      #  # against the sigstore community Fulcio instance.
-      #  run: cosign sign ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build-and-push.outputs.digest }}
+  renovate-release-check:
+    name: Evaluate Renovate-only commits
+    needs: build-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    outputs:
+      should_release: ${{ steps.evaluate.outputs.should_release }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Determine eligibility
+        id: evaluate
+        run: |
+          last_tag=$(git describe --tags --abbrev=0 --match 'v*' 2>/dev/null || echo '')
+          if [ -z "$last_tag" ]; then
+            echo "No previous release tag found. Skipping automatic release."
+            echo "should_release=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if git merge-base --is-ancestor "$last_tag" HEAD; then
+            :
+          else
+            echo "Last tag $last_tag not an ancestor of HEAD; skipping automatic release."
+            echo "should_release=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          commit_range="${last_tag}..HEAD"
+          commit_list=$(git rev-list "$commit_range")
+          if [ -z "$commit_list" ]; then
+            echo "No commits since $last_tag. Skipping automatic release."
+            echo "should_release=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          commit_info=$(git log "$commit_range" --pretty='%an|%ae')
+          should_release=true
+          while IFS='|' read -r author email; do
+            [ -z "$author" ] && continue
+            lower=$(printf '%s %s' "$author" "$email" | tr '[:upper:]' '[:lower:]')
+            if [[ "$lower" == *renovate* ]]; then
+              continue
+            fi
+            echo "Found non-dependency-bot commit from $author <$email>. Release will be skipped."
+            should_release=false
+            break
+          done <<< "$commit_info"
+
+          echo "should_release=$should_release" >> "$GITHUB_OUTPUT"
+
+  auto-release:
+    name: Auto release
+    needs: renovate-release-check
+    if: needs.renovate-release-check.outputs.should_release == 'true'
+    uses: ./.github/workflows/release.yml
+    with:
+      # The calling workflow IS the CI run that release.yml would otherwise
+      # have to verify, so wait-on-yourself is impossible. See the
+      # verify-default-branch-ci job in release.yml for details.
+      skip_default_branch_ci_check: true
+    permissions:
+      actions: read
+      contents: write
+      issues: write
+      pull-requests: write
+      packages: write
+    secrets: inherit

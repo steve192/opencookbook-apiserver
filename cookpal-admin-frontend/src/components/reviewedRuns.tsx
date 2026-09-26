@@ -193,7 +193,7 @@ export function RunReviewHeader<Run extends ReviewedRun, Proposal>(props: {
 
   return (
     <>
-      <Stack direction="row" spacing={1} alignItems="center" sx={{mb: 2}} flexWrap="wrap" useFlexGap>
+      <Stack direction="row" spacing={1} sx={{alignItems: 'center', flexWrap: 'wrap', mb: 2}} useFlexGap>
         <Button startIcon={<ArrowBackIcon />} onClick={props.onBack}>All runs</Button>
         {run && <StatusChip status={run.status} />}
         <Box sx={{flexGrow: 1}} />

@@ -1,0 +1,111 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":semanticCommits"
+  ],
+  "timezone": "UTC",
+  "dependencyDashboard": true,
+  "rangeStrategy": "pin",
+  "minimumReleaseAge": "7 days",
+  "platformAutomerge": true,
+  "automergeType": "branch",
+  "labels": [
+    "dependencies"
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "The node that frontend-maven-plugin downloads to build the admin panel",
+      "managerFilePatterns": [
+        "/^pom\\.xml$/"
+      ],
+      "matchStrings": [
+        "<node\\.version>v(?<currentValue>.*?)</node\\.version>"
+      ],
+      "depNameTemplate": "node",
+      "datasourceTemplate": "node-version",
+      "versioningTemplate": "node"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Safely automerge patch and digest updates",
+      "matchUpdateTypes": [
+        "patch",
+        "digest"
+      ],
+      "automerge": true
+    },
+    {
+      "description": "Never automerge major updates",
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "automerge": false
+    },
+    {
+      "description": "Maven minor/patch updates - grouped, since a single Java dependency bump is rarely worth a pull request of its own",
+      "matchManagers": [
+        "maven"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "maven-dependencies",
+      "automerge": true
+    },
+    {
+      "description": "Spring Boot - a minor bump of the parent pom moves every version it manages at once, so it is looked at rather than merged unseen. Patch updates stay on the automerge path above.",
+      "matchManagers": [
+        "maven"
+      ],
+      "matchPackageNames": [
+        "org.springframework.boot:*",
+        "org.springframework:*"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "major"
+      ],
+      "groupName": "spring-boot",
+      "automerge": false
+    },
+    {
+      "description": "Admin panel npm minor/patch updates - one PR per package so a single failure doesn't block the rest",
+      "matchManagers": [
+        "npm"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "automerge": true
+    },
+    {
+      "description": "Docker base images (JRE runtime + devcontainer)",
+      "matchManagers": [
+        "dockerfile"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "docker-base-images",
+      "automerge": true
+    },
+    {
+      "description": "GitHub Actions workflow dependencies",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "github-actions",
+      "automerge": true
+    }
+  ]
+}

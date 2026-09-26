@@ -197,7 +197,7 @@ const CoveragePanel = () => {
 
   return (
     <Paper variant="outlined" sx={{p: 2, mb: 2}}>
-      <Stack direction="row" alignItems="center" spacing={2} sx={{mb: coverage ? 2 : 0}}>
+      <Stack direction="row" spacing={2} sx={{alignItems: 'center', mb: coverage ? 2 : 0}}>
         <Typography variant="subtitle1" sx={{flexGrow: 1}}>Coverage over all recipes</Typography>
         <Button onClick={run} disabled={running}>{running ? 'Calculating…' : 'Run coverage report'}</Button>
       </Stack>
@@ -222,9 +222,9 @@ const CoveragePanel = () => {
 
 const CountList = (props: {title: string, counts: {key: string, count: number}[]}) => (
   <Box>
-    <Typography variant="body2" fontWeight="bold" gutterBottom>{props.title}</Typography>
+    <Typography variant="body2" gutterBottom sx={{fontWeight: 'bold'}}>{props.title}</Typography>
     {props.counts.map((entry) => (
-      <Stack key={entry.key} direction="row" justifyContent="space-between">
+      <Stack key={entry.key} direction="row" sx={{justifyContent: 'space-between'}}>
         <Typography variant="body2" noWrap>{entry.key}</Typography>
         <Typography variant="body2" color="text.secondary">{entry.count}</Typography>
       </Stack>

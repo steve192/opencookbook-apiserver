@@ -1,5 +1,5 @@
 import AddIcon from '@mui/icons-material/Add';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import {Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, FormControlLabel, IconButton, MenuItem, Stack, Switch, TextField, Typography, useMediaQuery, useTheme} from '@mui/material';
 import {Fragment, useEffect, useRef, useState} from 'react';
 import {FormFieldDefinition, FormValue, FormValues, PairListEntry,
@@ -172,7 +172,7 @@ function PairList<V>(props: {
       <Typography variant="overline" color="text.secondary">{props.field.label}</Typography>
       <Stack spacing={1}>
         {props.value.map((entry, index) => (
-          <Stack direction="row" spacing={1} key={index} alignItems="center">
+          <Stack direction="row" spacing={1} key={index} sx={{alignItems: 'center'}}>
             <TextField
               size="small"
               label={firstLabel}

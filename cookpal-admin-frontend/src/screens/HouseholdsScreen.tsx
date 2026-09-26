@@ -29,7 +29,7 @@ const fields: FieldDefinition<Household>[] = [
     width: 360,
     importance: 'secondary',
     render: (household) => (
-      <Stack direction="row" gap={0.5} flexWrap="wrap">
+      <Stack direction="row" sx={{flexWrap: 'wrap', gap: 0.5}}>
         {household.members.map((member) => (
           <Chip key={member.userId} size="small" label={member.emailAddress}
             color={member.shareRecipes ? 'success' : 'default'} />

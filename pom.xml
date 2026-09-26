@@ -11,7 +11,7 @@
     </parent>
     <groupId>com.sterul</groupId>
     <artifactId>opencookbook-apiserver</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.9.1</version>
     <name>opencookbook-apiserver</name>
     <description>opencookbook api-server</description>
 
@@ -29,8 +29,8 @@
         <lucene.version>10.5.1</lucene.version>
 
         <!-- The admin panel, which is bundled into this server's static resources -->
-        <frontend-maven-plugin.version>1.15.1</frontend-maven-plugin.version>
-        <node.version>v20.19.0</node.version>
+        <frontend-maven-plugin.version>2.0.2</frontend-maven-plugin.version>
+        <node.version>v24.21.0</node.version>
         <skipAdminUi>false</skipAdminUi>
 
         <!-- Test groups that need what a normal build has not: see the profiles below -->
@@ -43,7 +43,6 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>5.18.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -152,7 +151,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>3.1.0</version>
+            <version>3.1.1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -212,12 +211,26 @@
             <!-- Enforces the access-rule boundaries, see AccessRuleArchitectureTest. -->
             <groupId>com.tngtech.archunit</groupId>
             <artifactId>archunit-junit5</artifactId>
-            <version>1.3.0</version>
+            <version>1.5.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <!--
+                    Invoked from the command line only, by the release workflow: it writes the
+                    version semantic-release decided on into this pom. Pinned here so the release
+                    does not silently pick up whatever version happens to be newest. See .releaserc.json.
+                -->
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>2.21.0</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -302,7 +315,7 @@
             <plugin>
                 <groupId>org.sonarsource.scanner.maven</groupId>
                 <artifactId>sonar-maven-plugin</artifactId>
-                <version>5.7.0.6970</version>
+                <version>5.8.0.7211</version>
             </plugin>
         </plugins>
     </build>

@@ -1,0 +1,27 @@
+name: Setup
+description: >-
+  Set up the JDK with a Maven repository cache and restore the toolchain the
+  admin panel build needs. The repository must already be checked out.
+
+runs:
+  using: composite
+  steps:
+    - name: Setup JDK
+      uses: actions/setup-java@v6.0.1
+      # Kept in step with the java.version property in pom.xml.
+      with:
+        java-version: "21"
+        distribution: temurin
+        cache: maven
+
+    # The admin panel is built by Maven (frontend-maven-plugin), which brings its own
+    # node. Cached so that neither the node download nor the npm install is repeated
+    # per run. The pom is part of the key because it pins the node version.
+    - name: Cache admin panel toolchain
+      uses: actions/cache@v6.1.0
+      with:
+        path: |
+          ~/.npm
+          cookpal-admin-frontend/node
+        key: ${{ runner.os }}-admin-ui-${{ hashFiles('cookpal-admin-frontend/package-lock.json', 'pom.xml') }}
+        restore-keys: ${{ runner.os }}-admin-ui-

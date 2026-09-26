@@ -152,7 +152,7 @@ const QuotaPanel = (props: {
 
   return (
     <Paper variant="outlined" sx={{p: 2, mb: 2}}>
-      <Stack direction="row" alignItems="center" spacing={1} sx={{mb: 1}}>
+      <Stack direction="row" spacing={1} sx={{alignItems: 'center', mb: 1}}>
         <Typography variant="subtitle1">Today&apos;s allowance</Typography>
         <Chip size="small" label={dailyLimit > 0 ? dailyLimit + ' scans per person' : 'No limit'} />
       </Stack>
@@ -166,7 +166,7 @@ const QuotaPanel = (props: {
               key={usage.userId}
               direction={{xs: 'column', sm: 'row'}}
               spacing={1}
-              alignItems={{xs: 'stretch', sm: 'center'}}
+              sx={{alignItems: {xs: 'stretch', sm: 'center'}}}
             >
               <Typography variant="body2" sx={{flexGrow: 1, wordBreak: 'break-word'}}>
                 {usage.emailAddress}

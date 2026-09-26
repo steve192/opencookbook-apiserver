@@ -1,20 +1,205 @@
 name: Release
-on: workflow_dispatch
+
+on:
+  workflow_dispatch:
+    inputs:
+      skip_default_branch_ci_check:
+        description: "Skip verifying that the release commit already has a successful CI run"
+        type: boolean
+        default: false
+  workflow_call:
+    inputs:
+      skip_default_branch_ci_check:
+        description: "Skip verifying that the release commit already has a successful CI run"
+        type: boolean
+        default: false
+
+# Two releases at once would race to push the same tag and the same version commit.
+# Queue them instead of cancelling: a cancelled release can leave a tag without an image.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  actions: read
+  contents: write
+  issues: write
+  pull-requests: write
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
-  release:
-    name: Release
+  semantic-preview:
+    name: Semantic release preview
     runs-on: ubuntu-latest
+    outputs:
+      published: ${{ steps.semantic.outputs.new_release_published }}
+      version: ${{ steps.semantic.outputs.new_release_version }}
+      tag: ${{ steps.semantic.outputs.new_release_git_tag }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
+
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7.0.0
         with:
-          node-version: "lts/*"
-      - name: Release
+          node-version: lts/*
+
+      # No JDK here on purpose: a dry run skips the prepare step, so the
+      # ``mvn versions:set`` that writes the release version into the pom is
+      # never invoked. The tag job below sets one up.
+      - name: Run semantic-release dry run
+        id: semantic
+        uses: cycjimmy/semantic-release-action@v6.0.0
+        with:
+          dry_run: true
+          semantic_version: 25.0.9
+          branches: main
+          extra_plugins: |
+            @semantic-release/exec@6
+            @semantic-release/git@10
+            conventional-changelog-conventionalcommits@9
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npx semantic-release@18
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  verify-default-branch-ci:
+    name: Verify default branch CI
+    needs: semantic-preview
+    # The job runs whenever there is something to publish. The actual
+    # verification steps are gated by ``skip_default_branch_ci_check`` so that
+    # downstream jobs (which `needs:` this one) see a ``success`` result instead
+    # of a ``skipped`` result when verification is bypassed - GitHub
+    # cascade-skips dependents of a skipped job by default, so skipping the job
+    # itself would silently skip the entire release.
+    if: needs.semantic-preview.outputs.published == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Skip verification (called from CI itself)
+        if: inputs.skip_default_branch_ci_check
+        # The CI workflow calls this reusable workflow as one of its jobs, so
+        # when this flag is set the calling workflow IS the CI run we would
+        # otherwise have to wait for. Querying the API here would never find a
+        # completed successful run for $GITHUB_SHA, because the run that called
+        # us is still in_progress.
+        run: |
+          echo "Bypassed: the calling workflow is the CI run for $GITHUB_SHA."
+
+      - name: Confirm release commit matches default branch head
+        if: ${{ !inputs.skip_default_branch_ci_check }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          DEFAULT_BRANCH_SHA=$(curl -fsSL \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/branches/$DEFAULT_BRANCH" | jq -r '.commit.sha')
+
+          echo "Release workflow SHA: $GITHUB_SHA"
+          echo "Default branch SHA:  $DEFAULT_BRANCH_SHA"
+
+          if [ "$GITHUB_SHA" != "$DEFAULT_BRANCH_SHA" ]; then
+            echo "Release workflow is not running on the current default branch head"
+            exit 1
+          fi
+
+      - name: Confirm CI succeeded for release commit
+        if: ${{ !inputs.skip_default_branch_ci_check }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          # ``head_sha`` filters server-side to runs for this exact commit;
+          # ``status=success`` filters to runs whose CONCLUSION is success (the
+          # endpoint's ``status`` parameter accepts either status or conclusion
+          # values, but does NOT accept a ``conclusion`` key - unknown query
+          # params are silently dropped, which would let a failed completed run
+          # sneak through if we used ``status=completed`` alone).
+          SUCCESSFUL_RUN_ID=$(curl -fsSL \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?branch=$DEFAULT_BRANCH&head_sha=$GITHUB_SHA&status=success&per_page=5" \
+            | jq -r '.workflow_runs[0].id // empty')
+
+          if [ -z "$SUCCESSFUL_RUN_ID" ]; then
+            echo "No successful CI workflow run found for commit $GITHUB_SHA on $DEFAULT_BRANCH"
+            exit 1
+          fi
+
+          echo "Found successful CI workflow run: $SUCCESSFUL_RUN_ID"
+
+  tag:
+    name: Create tag and GitHub release
+    needs: [semantic-preview, verify-default-branch-ci]
+    if: needs.semantic-preview.outputs.published == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      # @semantic-release/github comments on the released PRs/issues, which
+      # needs pull-requests + issues write. A job-level permissions block sets
+      # every unlisted scope to none, so these must be listed explicitly.
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7.0.0
+        with:
+          node-version: lts/*
+
+      # semantic-release's prepareCmd writes the release version into pom.xml
+      # with ``mvn versions:set``, and @semantic-release/git commits it.
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Run semantic-release
+        uses: cycjimmy/semantic-release-action@v6.0.0
+        with:
+          semantic_version: 25.0.9
+          branches: main
+          extra_plugins: |
+            @semantic-release/exec@6
+            @semantic-release/git@10
+            conventional-changelog-conventionalcommits@9
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-docker:
+    name: Publish Docker
+    needs: [semantic-preview, tag]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      # The tag points at the release commit, so the jar built here carries the
+      # released version and the application reports it on startup.
+      - name: Checkout tag
+        uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ needs.semantic-preview.outputs.tag }}
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      # CI already ran the tests for this commit; this build only produces the jar.
+      - name: Package
+        run: mvn --batch-mode package -DskipTests
+
+      - name: Build and push Docker image
+        uses: ./.github/actions/publish-image
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.semantic-preview.outputs.tag }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.semantic-preview.outputs.version }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest

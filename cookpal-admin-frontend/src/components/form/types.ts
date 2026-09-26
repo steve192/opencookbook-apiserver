@@ -10,9 +10,7 @@ export type FormValue =
   | string[]
   | PairListEntry[];
 
-// A mapped type rather than an index signature, so an interface can satisfy it. The base
-// no-unused-vars rule does not see a mapped type's parameter as used.
-// eslint-disable-next-line no-unused-vars
+// A mapped type rather than an index signature, so an interface can satisfy it.
 export type FormValues<V> = {[Field in keyof V]: FormValue};
 
 interface CommonFieldDefinition<V> {

@@ -31,10 +31,9 @@ export function CollectionToolbar<T>(props: {
       <Stack
         direction={{xs: 'column', sm: 'row'}}
         spacing={1}
-        alignItems={{xs: 'stretch', sm: 'center'}}
-        sx={{mb: 1}}
+        sx={{alignItems: {xs: 'stretch', sm: 'center'}, mb: 1}}
       >
-        <Stack direction="row" spacing={1} alignItems="center" sx={{flexGrow: 1, minWidth: 0}}>
+        <Stack direction="row" spacing={1} sx={{alignItems: 'center', flexGrow: 1, minWidth: 0}}>
           <Typography variant="h6" noWrap>{props.title}</Typography>
           <Chip size="small" label={props.shown === props.total ?
             props.total : props.shown + ' of ' + props.total} />
@@ -46,15 +45,17 @@ export function CollectionToolbar<T>(props: {
           value={props.query}
           onChange={(event) => props.onQueryChange(event.target.value)}
           sx={{width: {xs: '100%', sm: 260}}}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start"><SearchIcon fontSize="small" /></InputAdornment>
-            ),
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start"><SearchIcon fontSize="small" /></InputAdornment>
+              ),
+            },
           }}
         />
 
         {props.sort && (
-          <Stack direction="row" spacing={0.5} alignItems="center">
+          <Stack direction="row" spacing={0.5} sx={{alignItems: 'center'}}>
             <TextField
               select
               size="small"
@@ -99,8 +100,7 @@ export function CollectionToolbar<T>(props: {
         <Stack
           direction="row"
           spacing={1}
-          alignItems="center"
-          sx={{p: 1, borderRadius: 1, bgcolor: 'action.selected', flexWrap: 'wrap'}}
+          sx={{alignItems: 'center', p: 1, borderRadius: 1, bgcolor: 'action.selected', flexWrap: 'wrap'}}
         >
           <Typography variant="body2" sx={{mr: 1}}>{props.selectedCount} selected</Typography>
           {props.actions.map((action) => (

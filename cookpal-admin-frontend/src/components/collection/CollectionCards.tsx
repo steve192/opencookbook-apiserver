@@ -40,7 +40,7 @@ export function CollectionCards<T>(props: {
                   sx={{mt: -1, ml: -1.5}}
                   checked={props.selection.includes(id)}
                   onChange={() => toggle(id)}
-                  inputProps={{'aria-label': 'Select'}}
+                  slotProps={{input: {'aria-label': 'Select'}}}
                 />
                 <Box sx={{minWidth: 0, flexGrow: 1}}>
                   <Typography variant="subtitle1" sx={{wordBreak: 'break-word'}}>

@@ -57,7 +57,7 @@ export const SharesScreen = () => {
     try {
       await navigator.clipboard.writeText(selected.map((share) => share.shareUrl).join('\n'));
       toast.success('Copied ' + selected.length + ' link(s)');
-    } catch (cause) {
+    } catch {
       // Clipboard access needs a secure context, which a panel reached over plain http is not.
       toast.error('The browser refused clipboard access');
     }

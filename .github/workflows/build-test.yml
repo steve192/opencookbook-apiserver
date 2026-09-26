@@ -1,0 +1,38 @@
+name: Build & Test
+
+# Reusable validation suite: the Maven build (which also bundles the admin panel) with its
+# tests, followed by a no-push Docker build. Called by ci.yml for pushes and pull requests,
+# so the validation logic lives in one place.
+
+on:
+  workflow_call:
+    inputs:
+      ref:
+        description: "Git ref to check out and validate. Empty = the triggering ref."
+        type: string
+        required: false
+        default: ""
+
+jobs:
+  app:
+    name: App
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Verify
+        run: mvn --batch-mode verify
+
+      # The image copies the jar built above, so this runs in the same job rather than
+      # shuttling an 80 MB artifact between them.
+      - name: Build Docker image (no push)
+        uses: ./.github/actions/publish-image
+        with:
+          push: "false"
+          tags: opencookbook-apiserver-ci:${{ github.sha }}

@@ -83,6 +83,15 @@ export function CollectionTable<T>(props: {
   const [columnVisibility, setColumnVisibility] = useState(defaultVisibility);
   useEffect(() => setColumnVisibility(defaultVisibility), [defaultVisibility]);
 
+  // The grid reports a selection either as the ids it holds or, once everything is selected,
+  // as the ids it leaves out. Callers of this component only ever see what is selected.
+  const selectedIds = (model: GridRowSelectionModel): RowId[] => {
+    if (model.type === 'exclude') {
+      return props.rows.map(getRowId).filter((id) => !model.ids.has(id));
+    }
+    return [...model.ids];
+  };
+
   return (
     <DataGrid
       rows={props.rows}
@@ -95,9 +104,8 @@ export function CollectionTable<T>(props: {
       slotProps={{toolbar: {printOptions: {disableToolbarButton: true}}}}
       initialState={{pagination: {paginationModel: {page: 0, pageSize: 50}}}}
       pageSizeOptions={[25, 50, 100, 500]}
-      rowSelectionModel={props.selection}
-      onRowSelectionModelChange={(model: GridRowSelectionModel) =>
-        props.onSelectionChange(model as RowId[])}
+      rowSelectionModel={{type: 'include', ids: new Set(props.selection)}}
+      onRowSelectionModelChange={(model) => props.onSelectionChange(selectedIds(model))}
       checkboxSelection
       disableRowSelectionOnClick
       onRowDoubleClick={(params) => onShowDetails(params.row)}
