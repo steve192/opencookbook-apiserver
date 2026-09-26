@@ -35,6 +35,11 @@ jobs:
   semantic-preview:
     name: Semantic release preview
     runs-on: ubuntu-latest
+    permissions:
+      # Write, despite this being a dry run: semantic-release verifies up front that it could
+      # push, with `git push --dry-run`, and a read-only token fails that with a 403 rather
+      # than reporting the version it would have released.
+      contents: write
     outputs:
       published: ${{ steps.semantic.outputs.new_release_published }}
       version: ${{ steps.semantic.outputs.new_release_version }}
