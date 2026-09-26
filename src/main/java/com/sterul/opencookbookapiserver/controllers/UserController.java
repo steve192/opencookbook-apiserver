@@ -1,11 +1,11 @@
 package com.sterul.opencookbookapiserver.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,14 +39,10 @@ import com.sterul.opencookbookapiserver.errors.ApiException;
 import com.sterul.opencookbookapiserver.services.AuthRateLimiter;
 import com.sterul.opencookbookapiserver.services.EmailService;
 import com.sterul.opencookbookapiserver.services.RefreshTokenService;
+import com.sterul.opencookbookapiserver.services.SignedInUserService;
 import com.sterul.opencookbookapiserver.services.UserDetailsServiceImpl;
 import com.sterul.opencookbookapiserver.services.UserService;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
-import com.sterul.opencookbookapiserver.services.exceptions.LastAdministratorException;
-import com.sterul.opencookbookapiserver.services.exceptions.InvalidActivationLinkException;
-import com.sterul.opencookbookapiserver.services.exceptions.PasswordResetLinkNotExistingException;
-import com.sterul.opencookbookapiserver.services.exceptions.SignupDisabledException;
-import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
 import com.sterul.opencookbookapiserver.services.mail.MailLanguages;
 import com.sterul.opencookbookapiserver.util.JwtTokenUtil;
 
@@ -62,35 +58,35 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserController extends BaseController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final UserDetailsServiceImpl userDetailsService;
+    private final UserService userService;
+    private final RefreshTokenService refreshTokenService;
+    private final EmailService emailService;
+    private final MailLanguages mailLanguages;
+    private final AuthRateLimiter authRateLimiter;
 
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
-
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private RefreshTokenService refreshTokenService;
-
-    @Autowired
-    private EmailService emailService;
-
-    @Autowired
-    private MailLanguages mailLanguages;
-
-    @Autowired
-    private AuthRateLimiter authRateLimiter;
+    public UserController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil,
+            UserDetailsServiceImpl userDetailsService, UserService userService,
+            RefreshTokenService refreshTokenService, EmailService emailService, MailLanguages mailLanguages,
+            AuthRateLimiter authRateLimiter,
+            SignedInUserService signedInUser) {
+        super(signedInUser);
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.userDetailsService = userDetailsService;
+        this.userService = userService;
+        this.refreshTokenService = refreshTokenService;
+        this.emailService = emailService;
+        this.mailLanguages = mailLanguages;
+        this.authRateLimiter = authRateLimiter;
+    }
 
     @Operation(summary = "Creates a new user")
     @PostMapping("/signup")
     @Transactional
-    public void signup(@Valid @RequestBody UserCreationRequest userCreationRequest)
-            throws UserAlreadyExistsException, SignupDisabledException {
+    public void signup(@Valid @RequestBody UserCreationRequest userCreationRequest) {
         // Whatever the client asked for in Accept-Language, which is the only thing known about
         // a person who does not have an account yet.
         var createdUser = userService.createUser(userCreationRequest.emailAddress(),
@@ -107,8 +103,7 @@ public class UserController extends BaseController {
 
     @Operation(summary = "Logs a user in", description = "Logs in and generates tokens for authentication")
     @PostMapping("/login")
-    public ResponseEntity<UserLoginResponse> login(@Valid @RequestBody UserLoginRequest authenticationRequest)
-            throws UnauthorizedException, UserNotActiveException {
+    public ResponseEntity<UserLoginResponse> login(@Valid @RequestBody UserLoginRequest authenticationRequest) {
 
         try {
             login(authenticationRequest.emailAddress(), authenticationRequest.password());
@@ -160,16 +155,14 @@ public class UserController extends BaseController {
 
     @Operation(summary = "Executes a password reset")
     @PostMapping("/resetPassword")
-    public ResponseEntity<Void> resetPassword(@Valid @RequestBody PasswordResetExecutionRequest request)
-            throws PasswordResetLinkNotExistingException {
+    public ResponseEntity<Void> resetPassword(@Valid @RequestBody PasswordResetExecutionRequest request) {
         userService.resetPassword(request.getNewPassword(), request.getPasswordResetId());
         return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "Sets a new password")
     @PostMapping("/changePassword")
-    public ResponseEntity<Void> changePassword(@Valid @RequestBody PasswordChangeRequest request)
-            throws UnauthorizedException {
+    public ResponseEntity<Void> changePassword(@Valid @RequestBody PasswordChangeRequest request) {
         var loggedInUser = this.getLoggedInUser();
         if (!userService.isPasswordCorrect(loggedInUser.getEmailAddress(), request.getOldPassword())) {
             throw new UnauthorizedException();
@@ -181,8 +174,7 @@ public class UserController extends BaseController {
 
     @Operation(summary = "Activates a user, using an activation id")
     @GetMapping("/activate")
-    public ResponseEntity<UserLoginResponse> activateUser(@Valid @RequestParam String activationId)
-            throws InvalidActivationLinkException {
+    public ResponseEntity<UserLoginResponse> activateUser(@Valid @RequestParam String activationId) {
         var user = userService.activateUser(activationId);
 
         final UserDetails userDetails = userDetailsService
@@ -217,7 +209,7 @@ public class UserController extends BaseController {
         response.setDisplayName(user.getDisplayName());
         response.setOnboarded(user.isOnboarded());
         response.setRoles(SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
-                .map(authority -> authority.getAuthority()).toList());
+                .map(GrantedAuthority::getAuthority).toList());
         return response;
     }
 
@@ -242,7 +234,7 @@ public class UserController extends BaseController {
             description = "The last administrator who can sign in cannot delete themselves; the "
                     + "instance would be left with nobody able to administer it.")
     @DeleteMapping("/self")
-    public ResponseEntity<Void> deleteOwnUser() throws LastAdministratorException, NotAuthorizedException {
+    public ResponseEntity<Void> deleteOwnUser() {
         var user = getLoggedInUser();
         if (Role.DEMO.equals(user.getRoles())) {
             throw new NotAuthorizedException();
@@ -253,8 +245,7 @@ public class UserController extends BaseController {
 
     @Operation(summary = "Generate a JWT token from a refresh token", description = "The JWT token is used to authenticate against all apis using the \"Authentication: Bearer < token >\" header field")
     @PostMapping("/refreshToken")
-    public RefreshTokenResponse renewToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest)
-            throws ApiException {
+    public RefreshTokenResponse renewToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
         // "Sign in again", not "you may not": a spent refresh token is the app's cue to send
         // somebody back to the login screen, and 403 reads as a permission they will never have.
         if (!refreshTokenService.isTokenValid(refreshTokenRequest.getRefreshToken())) {
@@ -299,7 +290,7 @@ public class UserController extends BaseController {
         return false;
     }
 
-    private void login(String username, String password) throws UnauthorizedException, UserNotActiveException {
+    private void login(String username, String password) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         } catch (BadCredentialsException e) {

@@ -45,7 +45,7 @@ import com.sterul.opencookbookapiserver.repositories.WeekplanDayRepository;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class HouseholdWeekplanApiIntegrationTest extends IntegrationTest {
+class HouseholdWeekplanApiIntegrationTest extends IntegrationTestBase {
 
     private static final String ANNA = "wp-anna@example.invalid";
     private static final String BERT = "wp-bert@example.invalid";

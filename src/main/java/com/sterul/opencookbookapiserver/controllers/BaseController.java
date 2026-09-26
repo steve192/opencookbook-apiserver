@@ -1,20 +1,20 @@
 package com.sterul.opencookbookapiserver.controllers;
 
-import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
-import com.sterul.opencookbookapiserver.repositories.UserRepository;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
+import com.sterul.opencookbookapiserver.services.SignedInUserService;
 
 @RestController
 public abstract class BaseController {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final SignedInUserService signedInUser;
+
+    protected BaseController(SignedInUserService signedInUser) {
+        this.signedInUser = signedInUser;
+    }
 
     protected CookpalUser getLoggedInUser() {
-        var userEmailAddress = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findByEmailAddress(userEmailAddress);
+        return signedInUser.get();
     }
 }

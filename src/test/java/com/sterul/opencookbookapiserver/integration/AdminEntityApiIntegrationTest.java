@@ -40,7 +40,7 @@ import com.sterul.opencookbookapiserver.services.EmailService;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class AdminEntityApiIntegrationTest extends IntegrationTest {
+class AdminEntityApiIntegrationTest extends IntegrationTestBase {
 
     private static final String OWNER = "admin-entities-owner@example.com";
     private static final String OPERATOR = "admin-entities-operator@example.com";

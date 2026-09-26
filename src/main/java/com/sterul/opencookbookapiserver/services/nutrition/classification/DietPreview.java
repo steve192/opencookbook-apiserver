@@ -2,7 +2,6 @@ package com.sterul.opencookbookapiserver.services.nutrition.classification;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -33,7 +32,7 @@ public class DietPreview {
                         .map(name -> IngredientNeed.builder()
                                 .ingredient(ingredientService.existingOrUnsaved(name, null, owner))
                                 .build())
-                        .collect(Collectors.toList()))
+                        .toList())
                 .build();
         return deriver.derive(unsaved);
     }

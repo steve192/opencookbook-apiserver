@@ -5,7 +5,6 @@ import java.util.NoSuchElementException;
 
 import jakarta.transaction.Transactional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
@@ -20,11 +19,13 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 public class RecipeGroupService {
 
-    @Autowired
-    private RecipeGroupRepository recipeGroupRepository;
+    private final RecipeGroupRepository recipeGroupRepository;
+    private final RecipeService recipeService;
 
-    @Autowired
-    private RecipeService recipeService;
+    public RecipeGroupService(RecipeGroupRepository recipeGroupRepository, RecipeService recipeService) {
+        this.recipeGroupRepository = recipeGroupRepository;
+        this.recipeService = recipeService;
+    }
 
     public RecipeGroup createRecipeGroup(RecipeGroup recipeGroup) {
         log.info("Creating recipe group {} for user {}", recipeGroup.getTitle(), recipeGroup.getOwner());
@@ -53,7 +54,7 @@ public class RecipeGroupService {
         recipeGroupRepository.deleteById(recipeGroupId);
     }
 
-    public boolean hasAccessPermissionToRecipeGroup(Long recipeGroupId, CookpalUser user) throws ElementNotFound {
+    public boolean hasAccessPermissionToRecipeGroup(Long recipeGroupId, CookpalUser user) {
         var recipeGroup = recipeGroupRepository.findById(recipeGroupId);
         if (recipeGroup.isEmpty()) {
             throw new ElementNotFound();

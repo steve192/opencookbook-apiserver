@@ -17,7 +17,7 @@ import com.sterul.opencookbookapiserver.controllers.requests.IngredientRequest;
 import com.sterul.opencookbookapiserver.controllers.responses.IngredientResponse;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.services.IngredientService;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
+import com.sterul.opencookbookapiserver.services.SignedInUserService;
 import com.sterul.opencookbookapiserver.services.mail.MailLanguages;
 import com.sterul.opencookbookapiserver.services.nutrition.linking.CatalogueSearchService;
 
@@ -34,7 +34,9 @@ public class IngredientsController extends BaseController {
     private final MailLanguages languages;
 
     public IngredientsController(IngredientService ingredientService, Optional<CatalogueSearchService> catalogueSearch,
-            MailLanguages languages) {
+            MailLanguages languages,
+            SignedInUserService signedInUser) {
+        super(signedInUser);
         this.ingredientService = ingredientService;
         this.catalogueSearch = catalogueSearch;
         this.languages = languages;
@@ -57,7 +59,7 @@ public class IngredientsController extends BaseController {
 
     @Operation(summary = "Get a single ingredient")
     @GetMapping("/{id}")
-    public IngredientResponse single(@PathVariable Long id) throws ElementNotFound {
+    public IngredientResponse single(@PathVariable Long id) {
         return entityToResponse(ingredientService.getOwnIngredient(id, getLoggedInUser()));
     }
 

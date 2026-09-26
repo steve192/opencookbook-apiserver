@@ -15,7 +15,6 @@ import com.sterul.opencookbookapiserver.configurations.nutrition.ConditionalOnNu
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminCoverageResponse;
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminUnmatchedNameResponse;
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminUserCorrectionResponse;
-import com.sterul.opencookbookapiserver.errors.ApiException;
 import com.sterul.opencookbookapiserver.services.nutrition.reports.CoverageReport;
 import com.sterul.opencookbookapiserver.services.nutrition.reports.IngredientNameReport;
 import com.sterul.opencookbookapiserver.services.nutrition.reports.UserCorrectionReport;
@@ -49,16 +48,14 @@ public class AdminNutritionReportController {
 
     @Operation(summary = "Names the catalogue does not answer silently", description = "The names most users wrote first.")
     @GetMapping("/unmatched-names")
-    public List<AdminUnmatchedNameResponse> getUnmatchedNames(@RequestParam(defaultValue = "200") @Min(1) @Max(1000) int limit)
-            throws ApiException {
+    public List<AdminUnmatchedNameResponse> getUnmatchedNames(@RequestParam(defaultValue = "200") @Min(1) @Max(1000) int limit) {
         return nameReport.unmatchedNames(limit).stream().map(AdminUnmatchedNameResponse::of).toList();
     }
 
     @Operation(summary = "Where users linked a name otherwise than the matcher would",
             description = "The corrections the most users made first; each is a candidate name for a food, or a name that is no food.")
     @GetMapping("/user-corrections")
-    public List<AdminUserCorrectionResponse> getUserCorrections(@RequestParam(defaultValue = "200") @Min(1) @Max(1000) int limit)
-            throws ApiException {
+    public List<AdminUserCorrectionResponse> getUserCorrections(@RequestParam(defaultValue = "200") @Min(1) @Max(1000) int limit) {
         return correctionReport.corrections(limit).stream().map(AdminUserCorrectionResponse::of).toList();
     }
 

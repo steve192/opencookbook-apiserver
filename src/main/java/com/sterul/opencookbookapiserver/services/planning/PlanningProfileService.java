@@ -35,7 +35,7 @@ public class PlanningProfileService {
     }
 
     /** Somebody else's profile is not found. */
-    public PlanningProfile getProfile(Long id, PlanScope scope) throws ElementNotFound {
+    public PlanningProfile getProfile(Long id, PlanScope scope) {
         return profileRepository.findIn(id, scope).orElseThrow(ElementNotFound::new);
     }
 
@@ -49,7 +49,7 @@ public class PlanningProfileService {
         return keepSingleDefault(profileRepository.save(profile), scope);
     }
 
-    public PlanningProfile update(Long id, PlanScope scope, PlanningProfile answers) throws ElementNotFound {
+    public PlanningProfile update(Long id, PlanScope scope, PlanningProfile answers) {
         var profile = getProfile(id, scope);
         copyAnswers(answers, profile);
         profile.setDefaultProfile(answers.isDefaultProfile());
@@ -57,7 +57,7 @@ public class PlanningProfileService {
     }
 
     /** Open drafts made from it are discarded: every adjustment to a draft is judged against its profile. */
-    public void delete(Long id, PlanScope scope) throws ElementNotFound {
+    public void delete(Long id, PlanScope scope) {
         var profile = getProfile(id, scope);
         draftRepository.findAllByProfileAndStatus(profile, PlanDraft.Status.DRAFT)
                 .forEach(draft -> draft.setStatus(PlanDraft.Status.DISCARDED));

@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminCleanupOutcomeResponse;
-import com.sterul.opencookbookapiserver.errors.ApiException;
 import com.sterul.opencookbookapiserver.services.ingredients.IngredientNameCleanupService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -62,7 +61,7 @@ public class AdminIngredientCleanupController {
             description = "Moves amount and unit into the recipe lines, renames or merges the ingredient. Not revertible. "
                     + "Ingredients changed since the preview are skipped.")
     @PostMapping("/apply")
-    public AdminCleanupOutcomeResponse apply(@Valid @RequestBody ApplyRequest request) throws ApiException {
+    public AdminCleanupOutcomeResponse apply(@Valid @RequestBody ApplyRequest request) {
         return AdminCleanupOutcomeResponse.fromResult(cleanupService.apply(request.decisions().stream()
                 .map(decision -> new IngredientNameCleanupService.Decision(decision.ingredientId(), decision.name(),
                         decision.lastChange()))

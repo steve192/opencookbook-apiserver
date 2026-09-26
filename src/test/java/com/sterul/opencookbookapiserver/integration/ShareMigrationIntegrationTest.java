@@ -128,10 +128,12 @@ class ShareMigrationIntegrationTest {
 
     @Test
     void anUnknownVisibilityIsRejected() {
+        var expiry = expiryTimestamp();
+
         assertThrows(DataIntegrityViolationException.class, () -> jdbcTemplate.update(
                 "INSERT INTO share (id, resource_type, visibility, expires_at, access_count, owner_user_id, recipe_id)"
                         + " VALUES (?, 'RECIPE', 'EVERYBODY_FOREVER', ?, 0, ?, ?)",
-                "invalid", expiryTimestamp(), userId, recipeId));
+                "invalid", expiry, userId, recipeId));
     }
 
     @Test

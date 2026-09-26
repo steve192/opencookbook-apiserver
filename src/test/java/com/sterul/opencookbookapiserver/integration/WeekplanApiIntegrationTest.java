@@ -33,7 +33,7 @@ import com.sterul.opencookbookapiserver.repositories.UserRepository;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class WeekplanApiIntegrationTest extends IntegrationTest {
+class WeekplanApiIntegrationTest extends IntegrationTestBase {
 
     private static final String USER = "weekplan-api@example.com";
 
@@ -215,12 +215,11 @@ class WeekplanApiIntegrationTest extends IntegrationTest {
                 simpleRecipe("a"), simpleRecipe("b"), simpleRecipe("c")));
 
         var stored = jdbcTemplate.queryForList("""
-                SELECT link.recipe_order, meal.simple_recipe_text
-                FROM weekplan_day_recipes link
-                JOIN weekplan_day day ON day.id = link.weekplan_day_id
-                JOIN weekplan_day_recipe meal ON meal.id = link.recipes_id
+                SELECT meal.recipe_order, meal.simple_recipe_text
+                FROM weekplan_day_recipe meal
+                JOIN weekplan_day day ON day.id = meal.weekplan_day_id
                 WHERE day.plan_date = DATE '2026-05-04'
-                ORDER BY link.recipe_order
+                ORDER BY meal.recipe_order
                 """);
 
         assertEquals(List.of(0, 1, 2), stored.stream().map(row -> row.get("recipe_order")).toList());

@@ -29,7 +29,7 @@ import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 @SpringBootTest
 @ActiveProfiles("integration-test")
-class BringExportAPITest extends IntegrationTest {
+class BringExportAPITest extends IntegrationTestBase {
         @Autowired
         private BringExportController cut;
 
@@ -41,7 +41,7 @@ class BringExportAPITest extends IntegrationTest {
 
         @Test
         @Transactional
-        void testBringExportCreation() throws ElementNotFound {
+        void testBringExportCreation() {
                 var testRecipe = Recipe.builder().servings(10)
                                 .owner(new CookpalUser(1l, "test@test.com", "dskid", true, null, null, null, false))
                                 .neededIngredients(Arrays.asList(

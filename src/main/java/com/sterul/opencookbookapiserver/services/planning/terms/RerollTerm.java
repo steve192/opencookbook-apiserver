@@ -37,12 +37,27 @@ public class RerollTerm implements PlanTerm {
     /** From 0, nothing like the recipe passed over in the way that put the cook off, to 1. */
     private static double likeness(PlanCandidate candidate, PlanCandidate rejected, RerollReason reason) {
         return switch (reason) {
-            case HAD_RECENTLY -> candidate.sharesMainFood(rejected) ? 1 : candidate.sharesGroup(rejected) ? SAME_GROUP : 0;
+            case HAD_RECENTLY -> hadRecentlyLikeness(candidate, rejected);
             case TOO_MUCH_WORK -> candidate.effort() != null && rejected.effort() != null
                     && candidate.effort() >= rejected.effort() ? 1 : 0;
             case MISSING_INGREDIENTS -> candidate.shareOfIngredientsOf(rejected);
             // Sauces sit with sauces: the rejected recipe's group is the best hint of what else is no dish
-            case NOT_A_FULL_MEAL -> candidate.sharesGroup(rejected) ? 1 : candidate.isKnownDish() ? 0 : UNKNOWN_ROLE;
+            case NOT_A_FULL_MEAL -> notAFullMealLikeness(candidate, rejected);
         };
+    }
+
+    private static double hadRecentlyLikeness(PlanCandidate candidate, PlanCandidate rejected) {
+        if (candidate.sharesMainFood(rejected)) {
+            return 1;
+        }
+        return candidate.sharesGroup(rejected) ? SAME_GROUP : 0;
+    }
+
+    private static double notAFullMealLikeness(PlanCandidate candidate, PlanCandidate rejected) {
+        if (candidate.sharesGroup(rejected)) {
+            return 1;
+        }
+        // A recipe that is not known to be a dish may still be one, so it is only half ruled out.
+        return candidate.isKnownDish() ? 0 : UNKNOWN_ROLE;
     }
 }

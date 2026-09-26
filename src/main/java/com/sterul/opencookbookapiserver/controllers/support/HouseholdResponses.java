@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import com.sterul.opencookbookapiserver.controllers.households.responses.HouseholdResponse;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.households.HouseholdCookbook;
 import com.sterul.opencookbookapiserver.services.households.HouseholdMembershipService;
 
@@ -28,7 +27,7 @@ public class HouseholdResponses {
                 .toList();
     }
 
-    public HouseholdResponse detailFor(String householdId, CookpalUser viewer) throws ElementNotFound {
+    public HouseholdResponse detailFor(String householdId, CookpalUser viewer) {
         var mine = memberships.requireMembership(householdId, viewer);
         return HouseholdResponse.detailOf(mine, memberships.membersOf(householdId),
                 cookbook.recipeCountOf(householdId, viewer));

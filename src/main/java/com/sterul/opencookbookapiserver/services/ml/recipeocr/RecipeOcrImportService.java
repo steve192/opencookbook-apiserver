@@ -43,7 +43,7 @@ public class RecipeOcrImportService {
      * @return the parsed answer
      * @throws MlSubsystemException when it cannot be read
      */
-    public RecipeOcrResult read(String resultJson) throws MlSubsystemException {
+    public RecipeOcrResult read(String resultJson) {
         try {
             var result = gson.fromJson(resultJson, RecipeOcrResult.class);
             if (result == null) {

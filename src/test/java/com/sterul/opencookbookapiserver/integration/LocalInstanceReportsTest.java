@@ -22,7 +22,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.sterul.opencookbookapiserver.cronjobs.BringExportDeletionJob;
 import com.sterul.opencookbookapiserver.cronjobs.IngredientDeletionJob;
 import com.sterul.opencookbookapiserver.cronjobs.MlJobPollingCronjob;
-import com.sterul.opencookbookapiserver.errors.ApiException;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 import com.sterul.opencookbookapiserver.services.nutrition.IngredientNames;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.LineFlag;
@@ -92,7 +91,7 @@ class LocalInstanceReportsTest {
 
     @Test
     @SuppressWarnings("java:S2699") // A report writer run through Maven, not a check: the files are its outcome.
-    void writeTheReports() throws IOException, ApiException {
+    void writeTheReports() throws IOException {
         assumeTrue(URL != null, "no local instance given with -Dlocal.instance.url");
         indexUpdater.rebuild();
 
@@ -149,7 +148,7 @@ class LocalInstanceReportsTest {
                 + "\n";
     }
 
-    private String unmatchedNames() throws ApiException {
+    private String unmatchedNames() {
         return "# name\tlanguage\tusers\trecipe lines\tcandidates (key confidence)\n" + nameReport.unmatchedNames(UNMATCHED_NAMES).stream()
                 .map(name -> String.join("\t", name.name(), String.valueOf(name.language()), String.valueOf(name.userCount()),
                         String.valueOf(name.useCount()), name.candidates().stream()

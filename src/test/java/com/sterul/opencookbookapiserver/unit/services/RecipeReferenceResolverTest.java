@@ -46,7 +46,7 @@ class RecipeReferenceResolverTest {
     private final CookpalUser owner = new CookpalUser();
 
     @Test
-    void everyIngredientIsLookedUpAmongTheOwnersIngredients() throws ElementNotFound {
+    void everyIngredientIsLookedUpAmongTheOwnersIngredients() {
         var named = Ingredient.builder().name("Salz").build();
         var owned = Ingredient.builder().id(5L).name("Salz").build();
         when(ingredientService.createOrGetIngredient(named, owner)).thenReturn(owned);
@@ -58,7 +58,7 @@ class RecipeReferenceResolverTest {
     }
 
     @Test
-    void aGroupWithoutIdIsCreatedForTheOwner() throws ElementNotFound {
+    void aGroupWithoutIdIsCreatedForTheOwner() {
         var created = RecipeGroup.builder().id(3L).title("Dinner").owner(owner).build();
         when(recipeGroupRepository.save(any())).thenReturn(created);
         var recipe = recipeWith(List.of(), List.of(RecipeGroup.builder().title("Dinner").build()), List.of());
@@ -70,7 +70,7 @@ class RecipeReferenceResolverTest {
     }
 
     @Test
-    void aGroupWithIdIsReplacedByTheOwnersStoredGroup() throws ElementNotFound {
+    void aGroupWithIdIsReplacedByTheOwnersStoredGroup() {
         var stored = RecipeGroup.builder().id(3L).title("Stored title").owner(owner).build();
         when(recipeGroupRepository.findByIdAndOwner(3L, owner)).thenReturn(Optional.of(stored));
         var recipe = recipeWith(List.of(), List.of(RecipeGroup.builder().id(3L).title("Sent title").build()), List.of());
@@ -98,7 +98,7 @@ class RecipeReferenceResolverTest {
     }
 
     @Test
-    void imagesKeepTheirOrder() throws ElementNotFound {
+    void imagesKeepTheirOrder() {
         var first = RecipeImage.builder().uuid("first").owner(owner).build();
         var second = RecipeImage.builder().uuid("second").owner(owner).build();
         when(recipeImageRepository.findByUuidAndOwner("first", owner)).thenReturn(Optional.of(first));

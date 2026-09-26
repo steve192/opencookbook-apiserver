@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminHouseholdResponse;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.households.HouseholdMembershipService;
 import com.sterul.opencookbookapiserver.services.households.HouseholdService;
 
@@ -53,7 +52,7 @@ public class AdminHouseholdController {
                     + "a household owns none, so every member keeps their own cookbook.")
     @DeleteMapping("/{householdId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void dissolve(@Valid @NotBlank @PathVariable String householdId) throws ElementNotFound {
+    public void dissolve(@Valid @NotBlank @PathVariable String householdId) {
         log.info("Admin: Dissolving household {}", householdId);
         householdService.dissolveAsAdministrator(householdId);
     }

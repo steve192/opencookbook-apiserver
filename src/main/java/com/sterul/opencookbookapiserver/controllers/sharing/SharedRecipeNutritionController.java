@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sterul.opencookbookapiserver.configurations.nutrition.ConditionalOnNutritionEnabled;
 import com.sterul.opencookbookapiserver.controllers.responses.RecipeNutritionResponse;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.mail.MailLanguages;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.NutritionCalculator;
 import com.sterul.opencookbookapiserver.services.nutrition.dataset.NutritionDatasetReader;
@@ -42,7 +41,7 @@ public class SharedRecipeNutritionController {
 
     @Operation(summary = "The estimated nutrients of a shared recipe", description = "No authentication required.")
     @GetMapping("/{" + SharePaths.SHARE_ID_VARIABLE + "}/nutrition")
-    public RecipeNutritionResponse nutrition(@Valid @NotBlank @PathVariable String shareId) throws ElementNotFound {
+    public RecipeNutritionResponse nutrition(@Valid @NotBlank @PathVariable String shareId) {
         return RecipeNutritionResponse.forShared(calculator.calculate(shareService.resolveSharedRecipe(shareId)),
                 languages.forCurrentRequest().getLanguage(), datasetReader.manifest());
     }

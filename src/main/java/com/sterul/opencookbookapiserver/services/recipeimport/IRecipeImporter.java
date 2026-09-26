@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface IRecipeImporter {
 
-    Recipe importRecipe(String url, CookpalUser owner) throws RecipeImportFailedException, ImportNotSupportedException;
+    Recipe importRecipe(String url, CookpalUser owner);
 
     List<String> getSupportedHostnames() throws IOException;
 }

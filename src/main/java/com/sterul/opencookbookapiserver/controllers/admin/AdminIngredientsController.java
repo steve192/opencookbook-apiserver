@@ -12,9 +12,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminIngredientResponse;
-import com.sterul.opencookbookapiserver.errors.ApiException;
 import com.sterul.opencookbookapiserver.services.IngredientService;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -42,14 +40,14 @@ public class AdminIngredientsController {
 
     @Operation(summary = "One ingredient")
     @GetMapping("/{id}")
-    public AdminIngredientResponse getOne(@PathVariable Long id) throws ElementNotFound {
+    public AdminIngredientResponse getOne(@PathVariable Long id) {
         return AdminIngredientResponse.fromEntity(ingredientService.getIngredient(id));
     }
 
     @Operation(summary = "Delete an ingredient no recipe uses")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteIngredient(@PathVariable Long id) throws ApiException {
+    public void deleteIngredient(@PathVariable Long id) {
         log.info("Admin: Deleting ingredient {}", id);
         ingredientService.deleteIngredient(ingredientService.getIngredient(id));
     }

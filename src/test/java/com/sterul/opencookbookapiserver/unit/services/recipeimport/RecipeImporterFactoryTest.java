@@ -51,21 +51,21 @@ class RecipeImporterFactoryTest {
     }
 
     @Test
-    void aHostWithNoDotsIsNotACrash() throws ApiException {
+    void aHostWithNoDotsIsNotACrash() {
         when(configuration.getRecipeScaperServiceUrl()).thenReturn("");
 
         assertThrows(ApiException.class, () -> cut.getRecipeImporter("https://localhost/recipe"));
     }
 
     @Test
-    void theScraperServiceTakesEverythingWhenItIsConfigured() throws ApiException {
+    void theScraperServiceTakesEverythingWhenItIsConfigured() {
         when(configuration.getRecipeScaperServiceUrl()).thenReturn("http://recipe-scrapers:9090");
 
         assertEquals(scrapers, cut.getRecipeImporter("https://www.example.com/some/recipe"));
     }
 
     @Test
-    void chefkochIsRecognisedThroughItsSubdomains() throws ApiException {
+    void chefkochIsRecognisedThroughItsSubdomains() {
         when(configuration.getRecipeScaperServiceUrl()).thenReturn("");
 
         assertEquals(chefkoch, cut.getRecipeImporter("https://www.chefkoch.de/rezepte/123/x.html"));

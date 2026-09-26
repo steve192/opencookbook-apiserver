@@ -1,7 +1,6 @@
 package com.sterul.opencookbookapiserver.unit.services.recipeimport;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -16,8 +15,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
-import com.sterul.opencookbookapiserver.services.recipeimport.ImportNotSupportedException;
-import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImportFailedException;
 import com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers.RecipeScraperServiceProxy;
 import com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers.RecipeScrapersWebserviceImporter;
 
@@ -25,7 +22,7 @@ import com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers.Rec
 @ActiveProfiles("unit-test")
 class RecipeScrapersWebserviceImporterTest {
 
-    private static final String testRecipeUrl = "https://testing.com/recipe";
+    private static final String TEST_RECIPE_URL = "https://testing.com/recipe";
 
     private final String testRecipeJson = """
             {
@@ -78,13 +75,13 @@ class RecipeScrapersWebserviceImporterTest {
     private final CookpalUser userMock = new CookpalUser();
 
     @BeforeEach
-    public void setup() throws IOException, ImportNotSupportedException {
-        when(recipeScraperServiceProxy.scrapeRecipe(testRecipeUrl)).thenReturn(testRecipeJson);
+    void setup() throws IOException {
+        when(recipeScraperServiceProxy.scrapeRecipe(TEST_RECIPE_URL)).thenReturn(testRecipeJson);
     }
 
     @Test
-    void testPreparationStepsImported() throws RecipeImportFailedException, ImportNotSupportedException {
-        var recipe = cut.importRecipe(testRecipeUrl, null);
+    void testPreparationStepsImported() {
+        var recipe = cut.importRecipe(TEST_RECIPE_URL, null);
 
         assertEquals(Arrays.asList("Den Ofen auf 160°C vorheizen.",
                         "200 g Butter und 200 g Bitterschokoladestückchen vorsichtig miteinander schmelzen, die Schokolade darf nicht zu heiß werden. Abkühlen lassen.",
@@ -96,14 +93,14 @@ class RecipeScrapersWebserviceImporterTest {
     }
 
     @Test
-    void testServingsImported() throws RecipeImportFailedException, ImportNotSupportedException {
-        var recipe = cut.importRecipe(testRecipeUrl, userMock);
+    void testServingsImported() {
+        var recipe = cut.importRecipe(TEST_RECIPE_URL, userMock);
         assertEquals(1, recipe.getServings());
     }
 
     @Test
-    void testIngredientsImported() throws RecipeImportFailedException, ImportNotSupportedException {
-        var recipe = cut.importRecipe(testRecipeUrl, userMock);
+    void testIngredientsImported() {
+        var recipe = cut.importRecipe(TEST_RECIPE_URL, userMock);
 
         assertIngredientPresent(recipe, 250, "g", "Butter", 0);
         assertIngredientPresent(recipe, 300, "g", "Schokolade", 1);
@@ -112,7 +109,8 @@ class RecipeScrapersWebserviceImporterTest {
         assertIngredientPresent(recipe, 1, "Pck.", "Vanillezucker", 4);
         assertIngredientPresent(recipe, 4, "", "Ei(er)", 5);
         assertIngredientPresent(recipe, 1, "Prise(n)", "Salz", 6);
-        // TODO: Decide how to handle multiple units amounts in a single ingredient
+        // The source line offers two alternatives at once. The importer keeps the first amount
+        // and unit and leaves the rest of the line in the name, rather than inventing a split.
         assertIngredientPresent(recipe, 0.5F, "Flasche", "Rumaroma oder EL Rum", 7);
         assertIngredientPresent(recipe, 0, "", "Salz nach Wunsch", 9);
     }
@@ -124,27 +122,27 @@ class RecipeScrapersWebserviceImporterTest {
     }
 
     @Test
-    void testTitleImported() throws RecipeImportFailedException, ImportNotSupportedException {
-        var recipe = cut.importRecipe(testRecipeUrl, userMock);
+    void testTitleImported() {
+        var recipe = cut.importRecipe(TEST_RECIPE_URL, userMock);
         assertEquals("Der schönste Tod", recipe.getTitle());
     }
 
     @Test
-    void testTimesImported() throws RecipeImportFailedException, ImportNotSupportedException {
-        var recipe = cut.importRecipe(testRecipeUrl, userMock);
+    void testTimesImported() {
+        var recipe = cut.importRecipe(TEST_RECIPE_URL, userMock);
         assertEquals(140, recipe.getTotalTime());
         assertEquals(123, recipe.getPreparationTime());
     }
 
     @Test
-    void testRecipeGroupNotSet() throws RecipeImportFailedException, ImportNotSupportedException {
-        var recipe = cut.importRecipe(testRecipeUrl, userMock);
+    void testRecipeGroupNotSet() {
+        var recipe = cut.importRecipe(TEST_RECIPE_URL, userMock);
         assertEquals(0, recipe.getRecipeGroups().size());
     }
 
     @Test
-    void testOwnerSet() throws RecipeImportFailedException, ImportNotSupportedException {
-        var recipe = cut.importRecipe(testRecipeUrl, userMock);
+    void testOwnerSet() {
+        var recipe = cut.importRecipe(TEST_RECIPE_URL, userMock);
         assertEquals(userMock, recipe.getOwner());
     }
 

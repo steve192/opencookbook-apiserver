@@ -1,13 +1,15 @@
 package com.sterul.opencookbookapiserver.controllers;
 
+import java.util.Optional;
+
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.controllers.responses.InstanceInfoResponse;
 import com.sterul.opencookbookapiserver.services.InstanceInfoService;
+import com.sterul.opencookbookapiserver.services.SignedInUserService;
 import com.sterul.opencookbookapiserver.services.ml.MlAvailabilityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,17 +20,23 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class InstanceInfoController extends BaseController {
 
-    @Autowired
-    private InstanceInfoService instanceInfoService;
-
-    @Autowired
-    private OpencookbookConfiguration opencookbookConfiguration;
+    private final InstanceInfoService instanceInfoService;
+    private final OpencookbookConfiguration opencookbookConfiguration;
 
     /**
      * Absent on an instance with no machine learning subsystem, which is the common case.
      */
-    @Autowired(required = false)
-    private MlAvailabilityService mlAvailabilityService;
+    private final Optional<MlAvailabilityService> mlAvailabilityService;
+
+    public InstanceInfoController(InstanceInfoService instanceInfoService,
+            OpencookbookConfiguration opencookbookConfiguration,
+            Optional<MlAvailabilityService> mlAvailabilityService,
+            SignedInUserService signedInUser) {
+        super(signedInUser);
+        this.instanceInfoService = instanceInfoService;
+        this.opencookbookConfiguration = opencookbookConfiguration;
+        this.mlAvailabilityService = mlAvailabilityService;
+    }
 
     @Operation(summary = "What this instance offers",
             description = "Read before signing in, so the app only offers what the server can do.")
@@ -44,6 +52,6 @@ public class InstanceInfoController extends BaseController {
     }
 
     private boolean isOcrImportEnabled() {
-        return mlAvailabilityService != null && mlAvailabilityService.isRecipeOcrAvailable();
+        return mlAvailabilityService.map(MlAvailabilityService::isRecipeOcrAvailable).orElse(false);
     }
 }

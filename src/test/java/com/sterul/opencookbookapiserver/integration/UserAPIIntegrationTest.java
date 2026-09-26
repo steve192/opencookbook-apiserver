@@ -42,14 +42,12 @@ import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.EmailService;
 import com.sterul.opencookbookapiserver.services.RefreshTokenService;
 import com.sterul.opencookbookapiserver.services.exceptions.PasswordResetLinkNotExistingException;
-import com.sterul.opencookbookapiserver.services.exceptions.SignupDisabledException;
-import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
 
 import jakarta.mail.MessagingException;
 
 @SpringBootTest
 @ActiveProfiles("integration-test")
-class UserAPIIntegrationTest extends IntegrationTest{
+class UserAPIIntegrationTest extends IntegrationTestBase{
 
     final String testPassword = "12345";
 
@@ -102,7 +100,7 @@ class UserAPIIntegrationTest extends IntegrationTest{
     }
 
     @Test
-    void passwordChangeWithCorrectPasswordIsSuccessfull() throws UnauthorizedException {
+    void passwordChangeWithCorrectPasswordIsSuccessfull() {
         whenAuthenticated(userRepository);
 
         var response = cut.changePassword(PasswordChangeRequest.builder()
@@ -140,7 +138,7 @@ class UserAPIIntegrationTest extends IntegrationTest{
 
     @Test
     @Transactional
-    void registrationEmailSent() throws UserAlreadyExistsException, MessagingException, SignupDisabledException {
+    void registrationEmailSent() throws MessagingException {
         cut.signup(new UserCreationRequest("testi@cookpal.io", "12345"));
         verify(emailService, times(1)).sendActivationMail(any());
     }
@@ -182,9 +180,8 @@ class UserAPIIntegrationTest extends IntegrationTest{
     }
 
     @Test
-    void passwordIsReset() throws PasswordResetLinkNotExistingException {
+    void passwordIsReset() {
         final var newPassword = "12345";
-        final var newPasswordHash = passwordEncoder.encode(newPassword);
 
         cut.resetPassword(PasswordResetExecutionRequest.builder()
                 .passwordResetId(passwordResetLink.getId())
@@ -220,7 +217,7 @@ class UserAPIIntegrationTest extends IntegrationTest{
     }
 
     @Test
-    void activeUserCanLogin() throws UnauthorizedException, UserNotActiveException {
+    void activeUserCanLogin() {
         whenTestUserExists(true);
 
         var response = cut.login(new UserLoginRequest(testUser.getEmailAddress(), testPassword));

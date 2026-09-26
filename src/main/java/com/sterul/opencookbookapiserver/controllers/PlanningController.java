@@ -22,7 +22,7 @@ import com.sterul.opencookbookapiserver.controllers.support.PlanScopes;
 import com.sterul.opencookbookapiserver.controllers.support.RecipeResponses;
 import com.sterul.opencookbookapiserver.entities.PlanScope;
 import com.sterul.opencookbookapiserver.entities.planning.PlanDraft;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
+import com.sterul.opencookbookapiserver.services.SignedInUserService;
 import com.sterul.opencookbookapiserver.services.planning.PlanDraftService;
 import com.sterul.opencookbookapiserver.services.planning.PlanningProfileService;
 import com.sterul.opencookbookapiserver.services.planning.RerollReason;
@@ -43,7 +43,9 @@ public class PlanningController extends BaseController {
     private final PlanScopes planScopes;
 
     public PlanningController(PlanningProfileService profileService, PlanDraftService draftService,
-            RecipeResponses recipeResponses, PlanScopes planScopes) {
+            RecipeResponses recipeResponses, PlanScopes planScopes,
+            SignedInUserService signedInUser) {
+        super(signedInUser);
         this.profileService = profileService;
         this.draftService = draftService;
         this.recipeResponses = recipeResponses;
@@ -59,29 +61,28 @@ public class PlanningController extends BaseController {
 
     @Operation(summary = "The caller's planning profiles")
     @GetMapping("/profiles")
-    public List<PlanningProfileResponse> getProfiles(@RequestParam(required = false) String household)
-            throws ElementNotFound {
+    public List<PlanningProfileResponse> getProfiles(@RequestParam(required = false) String household) {
         return profileService.getProfiles(planScope(household)).stream().map(PlanningProfileResponse::fromEntity).toList();
     }
 
     @Operation(summary = "One planning profile")
     @GetMapping("/profiles/{id}")
     public PlanningProfileResponse getProfile(@PathVariable Long id,
-            @RequestParam(required = false) String household) throws ElementNotFound {
+            @RequestParam(required = false) String household) {
         return PlanningProfileResponse.fromEntity(profileService.getProfile(id, planScope(household)));
     }
 
     @Operation(summary = "Save the answers of the weekplan wizard", description = "The first profile becomes the default.")
     @PostMapping("/profiles")
     public PlanningProfileResponse createProfile(@Valid @RequestBody PlanningProfileRequest request,
-            @RequestParam(required = false) String household) throws ElementNotFound {
+            @RequestParam(required = false) String household) {
         return PlanningProfileResponse.fromEntity(profileService.create(planScope(household), request.toProfile()));
     }
 
     @Operation(summary = "Change a planning profile")
     @PutMapping("/profiles/{id}")
     public PlanningProfileResponse updateProfile(@PathVariable Long id, @Valid @RequestBody PlanningProfileRequest request,
-            @RequestParam(required = false) String household) throws ElementNotFound {
+            @RequestParam(required = false) String household) {
         return PlanningProfileResponse.fromEntity(profileService.update(id, planScope(household), request.toProfile()));
     }
 
@@ -89,7 +90,7 @@ public class PlanningController extends BaseController {
     @DeleteMapping("/profiles/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteProfile(@PathVariable Long id,
-            @RequestParam(required = false) String household) throws ElementNotFound {
+            @RequestParam(required = false) String household) {
         profileService.delete(id, planScope(household));
     }
 
@@ -97,7 +98,7 @@ public class PlanningController extends BaseController {
             description = "Generates a draft from a profile. Nothing reaches the weekplan until the draft is accepted.")
     @PostMapping("/drafts")
     public PlanDraftResponse generate(@Valid @RequestBody PlanDraftRequest request,
-            @RequestParam(required = false) String household) throws ElementNotFound {
+            @RequestParam(required = false) String household) {
         return draft(draftService.generate(planScope(household), request.profileId(),
                 request.startDate(), request.daysOrWeek(), request.skippedOrNone()));
     }
@@ -105,7 +106,7 @@ public class PlanningController extends BaseController {
     @Operation(summary = "One proposed week")
     @GetMapping("/drafts/{id}")
     public PlanDraftResponse getDraft(@PathVariable Long id,
-            @RequestParam(required = false) String household) throws ElementNotFound {
+            @RequestParam(required = false) String household) {
         return draft(draftService.getDraft(id, planScope(household)));
     }
 
@@ -115,7 +116,7 @@ public class PlanningController extends BaseController {
     @PostMapping("/drafts/{id}/slots/{slotId}/reroll")
     public PlanDraftResponse reroll(@PathVariable Long id, @PathVariable Long slotId,
             @RequestParam(required = false) String household,
-            @RequestBody(required = false) RerollRequest request) throws ElementNotFound {
+            @RequestBody(required = false) RerollRequest request) {
         var reason = request == null ? null : request.reason();
         return draft(draftService.reroll(planScope(household), id, slotId, reason));
     }
@@ -123,7 +124,7 @@ public class PlanningController extends BaseController {
     @Operation(summary = "Keep or release a meal", description = "A locked meal stays as it is when the week is drawn again.")
     @PostMapping("/drafts/{id}/slots/{slotId}/lock")
     public PlanDraftResponse lock(@PathVariable Long id, @PathVariable Long slotId, @Valid @RequestBody LockRequest request,
-            @RequestParam(required = false) String household) throws ElementNotFound {
+            @RequestParam(required = false) String household) {
         return draft(draftService.setLocked(planScope(household), id, slotId, request.locked()));
     }
 
@@ -131,14 +132,14 @@ public class PlanningController extends BaseController {
             description = "A gap is left to the cook - for the meals nobody keeps in a cookbook.")
     @PostMapping("/drafts/{id}/slots/{slotId}/toggle-gap")
     public PlanDraftResponse toggleGap(@PathVariable Long id, @PathVariable Long slotId,
-            @RequestParam(required = false) String household) throws ElementNotFound {
+            @RequestParam(required = false) String household) {
         return draft(draftService.toggleGap(planScope(household), id, slotId));
     }
 
     @Operation(summary = "Draw every meal that is not locked again")
     @PostMapping("/drafts/{id}/reroll")
     public PlanDraftResponse rerollAll(@PathVariable Long id,
-            @RequestParam(required = false) String household) throws ElementNotFound {
+            @RequestParam(required = false) String household) {
         return draft(draftService.rerollAll(planScope(household), id));
     }
 
@@ -147,18 +148,18 @@ public class PlanningController extends BaseController {
                     + "not written.")
     @PostMapping("/drafts/{id}/accept")
     public PlanDraftResponse accept(@PathVariable Long id,
-            @RequestParam(required = false) String household) throws ElementNotFound {
+            @RequestParam(required = false) String household) {
         return draft(draftService.accept(planScope(household), id));
     }
 
     @Operation(summary = "Throw a proposed week away")
     @DeleteMapping("/drafts/{id}")
     public PlanDraftResponse discard(@PathVariable Long id,
-            @RequestParam(required = false) String household) throws ElementNotFound {
+            @RequestParam(required = false) String household) {
         return draft(draftService.discard(planScope(household), id));
     }
 
-    private PlanScope planScope(String household) throws ElementNotFound {
+    private PlanScope planScope(String household) {
         return planScopes.of(getLoggedInUser(), household);
     }
 

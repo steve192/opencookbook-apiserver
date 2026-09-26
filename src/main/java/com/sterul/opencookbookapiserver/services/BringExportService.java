@@ -1,6 +1,5 @@
 package com.sterul.opencookbookapiserver.services;
 
-import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
 
@@ -38,7 +37,7 @@ public class BringExportService {
                 });
     }
 
-    public void deleteExport(String bringExportId) throws ElementNotFound {
+    public void deleteExport(String bringExportId) {
         var export = bringExportRepository.findById(bringExportId).orElseThrow(ElementNotFound::new);
         log.info("Deleting bring export {}", bringExportId);
         bringExportRepository.delete(export);
@@ -55,7 +54,7 @@ public class BringExportService {
         return bringExportRepository.save(bringExport);
     }
 
-    public BringExport getBringExport(String bringExportId) throws ElementNotFound {
+    public BringExport getBringExport(String bringExportId) {
         var export = bringExportRepository.findById(bringExportId).orElseThrow(ElementNotFound::new);
         if (export.hasExpired(Instant.now())) {
             // Not valid anymore

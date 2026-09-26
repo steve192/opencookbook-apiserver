@@ -51,6 +51,7 @@ public class Recipe extends AuditableEntity {
 
     // Lines are recreated in list order on every save, so id order is the written order.
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "recipe_id")
     @OrderBy("id")
     @Builder.Default
     private List<IngredientNeed> neededIngredients = new ArrayList<>();
@@ -67,6 +68,7 @@ public class Recipe extends AuditableEntity {
     // Ordered: the first image is the recipe's title image, so the order has to survive a
     // round trip. Without an order column this is a bag and jpa gives no such guarantee.
     @OneToMany
+    @JoinColumn(name = "recipe_id")
     @OrderColumn(name = "image_order")
     @Builder.Default
     private List<RecipeImage> images = new ArrayList<>();

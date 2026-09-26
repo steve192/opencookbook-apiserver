@@ -32,7 +32,6 @@ import com.sterul.opencookbookapiserver.services.RecipeReferenceResolver;
 import com.sterul.opencookbookapiserver.services.RecipeService;
 import com.sterul.opencookbookapiserver.services.WeekplanService;
 import com.sterul.opencookbookapiserver.services.classification.ClassificationProvenance;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.sharing.ShareService;
 
 @ExtendWith(MockitoExtension.class)
@@ -66,12 +65,12 @@ class RecipeServiceTest {
     @Mock
     private CookpalUser testUser;
 
-    private static final String testRecipeImageUUID = "duniwqndiu2u912nd9";
+    private static final String TEST_RECIPE_IMAGE_UUID = "duniwqndiu2u912nd9";
 
     private final AtomicLong ids = new AtomicLong();
 
     @Test
-    void recipeCreatedWithItsReferencesResolvedForItsOwner() throws ElementNotFound {
+    void recipeCreatedWithItsReferencesResolvedForItsOwner() {
         when(mockRecipe.getOwner()).thenReturn(testUser);
 
         cut.createNewRecipe(mockRecipe);
@@ -82,7 +81,7 @@ class RecipeServiceTest {
     }
 
     @Test
-    void updatedRecipeKeepsOwnerAndSourceAndIsResolvedForTheOwner() throws ElementNotFound {
+    void updatedRecipeKeepsOwnerAndSourceAndIsResolvedForTheOwner() {
         var existing = recipe("Stored", 7L);
         existing.setOwner(testUser);
         existing.setRecipeSource("https://example.com/recipe");
@@ -116,7 +115,7 @@ class RecipeServiceTest {
         cut.deleteRecipe(recipe("test", 1L));
 
         verify(recipeRepository, times(1)).deleteById(1L);
-        verify(recipeImageService, times(1)).deleteImage(testRecipeImageUUID);
+        verify(recipeImageService, times(1)).deleteImage(TEST_RECIPE_IMAGE_UUID);
     }
 
     @Test
@@ -171,7 +170,7 @@ class RecipeServiceTest {
         return Recipe.builder()
                 .title(title)
                 .id(id)
-                .images(List.of(RecipeImage.builder().uuid(testRecipeImageUUID).build()))
+                .images(List.of(RecipeImage.builder().uuid(TEST_RECIPE_IMAGE_UUID).build()))
                 .build();
     }
 

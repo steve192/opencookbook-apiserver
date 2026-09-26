@@ -26,7 +26,7 @@ public class PlanScopes {
     }
 
     /** No household means the user's own plan; one they are not a member of is "not found". */
-    public PlanScope of(CookpalUser user, @Nullable String householdId) throws ElementNotFound {
+    public PlanScope of(CookpalUser user, @Nullable String householdId) {
         if (householdId == null || householdId.isBlank()) {
             return PlanScope.of(user);
         }

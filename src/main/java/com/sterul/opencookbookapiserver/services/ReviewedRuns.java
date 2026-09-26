@@ -12,7 +12,7 @@ public final class ReviewedRuns {
     private ReviewedRuns() {
     }
 
-    public static <R extends ReviewedRun> R require(R run, ReviewedRun.Status status) throws ApiException {
+    public static <R extends ReviewedRun> R require(R run, ReviewedRun.Status status) {
         if (run.getStatus() != status) {
             throw new ApiException(ApiErrorCode.CONFLICT,
                     "Run " + run.getId() + " is " + run.getStatus() + ", not " + status);
@@ -21,7 +21,7 @@ public final class ReviewedRuns {
     }
 
     /** Applying nothing would close the run as applied without it having done anything. */
-    public static <P> List<P> requireAnyAccepted(ReviewedRun run, List<P> accepted) throws ApiException {
+    public static <P> List<P> requireAnyAccepted(ReviewedRun run, List<P> accepted) {
         if (accepted.isEmpty()) {
             throw new ApiException(ApiErrorCode.CONFLICT, "Accept the proposals to apply first: run " + run.getId() + " has none accepted");
         }

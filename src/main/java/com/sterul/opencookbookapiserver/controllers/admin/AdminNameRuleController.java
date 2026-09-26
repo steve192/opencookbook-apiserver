@@ -17,8 +17,7 @@ import com.sterul.opencookbookapiserver.configurations.nutrition.ConditionalOnNu
 import com.sterul.opencookbookapiserver.controllers.BaseController;
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminNameRuleResponse;
 import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueNameRule;
-import com.sterul.opencookbookapiserver.errors.ApiException;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
+import com.sterul.opencookbookapiserver.services.SignedInUserService;
 import com.sterul.opencookbookapiserver.services.nutrition.catalogue.CatalogueService;
 import com.sterul.opencookbookapiserver.services.nutrition.linking.NameRuleService;
 
@@ -40,7 +39,9 @@ public class AdminNameRuleController extends BaseController {
     private final NameRuleService nameRules;
     private final CatalogueService catalogueService;
 
-    public AdminNameRuleController(NameRuleService nameRules, CatalogueService catalogueService) {
+    public AdminNameRuleController(NameRuleService nameRules, CatalogueService catalogueService,
+            SignedInUserService signedInUser) {
+        super(signedInUser);
         this.nameRules = nameRules;
         this.catalogueService = catalogueService;
     }
@@ -63,7 +64,7 @@ public class AdminNameRuleController extends BaseController {
 
     @Operation(summary = "Add a name rule")
     @PostMapping
-    public AdminNameRuleResponse addRule(@Valid @RequestBody NameRuleRequest request) throws ApiException {
+    public AdminNameRuleResponse addRule(@Valid @RequestBody NameRuleRequest request) {
         var admin = getLoggedInUser();
         var rule = request.kind() == CatalogueNameRule.Kind.NOT_A_FOOD
                 ? nameRules.notAFood(request.name(), admin)
@@ -74,7 +75,7 @@ public class AdminNameRuleController extends BaseController {
     @Operation(summary = "Delete a name rule", description = "Links made while it held stay as they are.")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteRule(@PathVariable Long id) throws ElementNotFound {
+    public void deleteRule(@PathVariable Long id) {
         nameRules.deleteRule(id);
     }
 }

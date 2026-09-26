@@ -22,7 +22,7 @@ import org.springframework.util.unit.DataSize;
         "MAX_IMAGE_SIZE_MB=25",
 })
 @ActiveProfiles("integration-test")
-class UploadLimitIntegrationTest extends IntegrationTest {
+class UploadLimitIntegrationTest extends IntegrationTestBase {
 
     @Autowired
     private MultipartProperties multipart;

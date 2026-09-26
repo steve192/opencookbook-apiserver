@@ -23,7 +23,7 @@ import com.sterul.opencookbookapiserver.repositories.UserRepository;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class UserOnboardingIntegrationTest extends IntegrationTest {
+class UserOnboardingIntegrationTest extends IntegrationTestBase {
 
     private static final String NEWCOMER = "newcomer@example.invalid";
 

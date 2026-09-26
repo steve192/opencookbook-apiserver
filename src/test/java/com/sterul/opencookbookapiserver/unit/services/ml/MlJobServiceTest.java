@@ -328,7 +328,7 @@ class MlJobServiceTest {
     }
 
     @Test
-    void aScanThatNeverReachedTheSubsystemCannotBeCorrected() throws Exception {
+    void aScanThatNeverReachedTheSubsystemCannotBeCorrected() {
         var job = queuedJob();
         job.setRemoteJobId(null);
         when(repository.findByIdAndOwner("job-1", owner)).thenReturn(Optional.of(job));
@@ -344,7 +344,7 @@ class MlJobServiceTest {
     }
 
     /** The submission call, which every one of these tests stubs the same way. */
-    private String submitted() throws MlSubsystemException {
+    private String submitted() {
         return proxy.submitRecipeOcr(anyString(), any(RecipeOcrPayload.class), anyList(),
                 anyBoolean(), anyString());
     }

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.stereotype.Controller;
@@ -18,8 +17,8 @@ import com.sterul.opencookbookapiserver.entities.PlanScope;
 import com.sterul.opencookbookapiserver.entities.WeekplanDay;
 import com.sterul.opencookbookapiserver.entities.WeekplanDayRecipe;
 import com.sterul.opencookbookapiserver.services.RecipeService;
+import com.sterul.opencookbookapiserver.services.SignedInUserService;
 import com.sterul.opencookbookapiserver.services.WeekplanService;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,12 +28,17 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Weekplan", description = "Managing and fetching weekplans")
 public class WeekplanController extends BaseController {
 
-    @Autowired
-    WeekplanService weekplanService;
-    @Autowired
-    RecipeService recipeService;
-    @Autowired
-    PlanScopes planScopes;
+    private final WeekplanService weekplanService;
+    private final RecipeService recipeService;
+    private final PlanScopes planScopes;
+
+    public WeekplanController(WeekplanService weekplanService, RecipeService recipeService, PlanScopes planScopes,
+            SignedInUserService signedInUser) {
+        super(signedInUser);
+        this.weekplanService = weekplanService;
+        this.recipeService = recipeService;
+        this.planScopes = planScopes;
+    }
 
     @Operation(summary = "Fetch weekplan days in timerange",
             description = "Your own plan, or the household's given. With allPlans, the week across every "
@@ -44,8 +48,7 @@ public class WeekplanController extends BaseController {
                                                      @PathVariable @DateTimeFormat(iso = ISO.DATE) LocalDate to,
                                                      @RequestParam(required = false) String household,
                                                      // Opt-in, so apps that predate households see their own plan only.
-                                                     @RequestParam(defaultValue = "false") boolean allPlans)
-            throws ElementNotFound {
+                                                     @RequestParam(defaultValue = "false") boolean allPlans) {
         var user = getLoggedInUser();
         if (!allPlans) {
             return daysOf(planScopes.of(user, household), from, to);
@@ -60,7 +63,7 @@ public class WeekplanController extends BaseController {
     @PutMapping("/{date}")
     public WeekplanDayResponse createAndUpdate(@PathVariable @DateTimeFormat(iso = ISO.DATE) LocalDate date,
                                                @RequestParam(required = false) String household,
-                                               @RequestBody WeekplanDayPut weekplanDayPut) throws ElementNotFound {
+                                               @RequestBody WeekplanDayPut weekplanDayPut) {
 
         var scope = planScopes.of(getLoggedInUser(), household);
         var weekplanDayEntity = weekplanService.dayOf(date, scope);
@@ -105,8 +108,7 @@ public class WeekplanController extends BaseController {
     }
 
     private void populateWeekplanDayWithRecipes(WeekplanDayPut weekplanDayPut, final WeekplanDay newWeekplanDay,
-            PlanScope scope)
-            throws ElementNotFound {
+            PlanScope scope) {
 
         // Built up separately and only swapped in at the end. RecipeService is transactional,
         // so every lookup below commits a transaction of its own and flushes the session that

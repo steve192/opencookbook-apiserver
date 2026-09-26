@@ -29,7 +29,7 @@ import com.sterul.opencookbookapiserver.services.IngredientService;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class RecipeReferenceOwnershipIntegrationTest extends IntegrationTest {
+class RecipeReferenceOwnershipIntegrationTest extends IntegrationTestBase {
 
     private static final String AUTHOR = "reference-author@example.com";
     private static final String OTHER = "reference-other@example.com";

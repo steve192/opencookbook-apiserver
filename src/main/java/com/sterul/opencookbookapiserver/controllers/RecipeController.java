@@ -30,11 +30,10 @@ import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.entities.recipe.Diet;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
-import com.sterul.opencookbookapiserver.errors.ApiException;
 import com.sterul.opencookbookapiserver.services.RecipeCopier;
 import com.sterul.opencookbookapiserver.services.RecipeImportService;
 import com.sterul.opencookbookapiserver.services.RecipeService;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
+import com.sterul.opencookbookapiserver.services.SignedInUserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -51,7 +50,9 @@ public class RecipeController extends BaseController {
     private final RecipeResponses recipeResponses;
 
     public RecipeController(RecipeImportService recipeImportService, RecipeService recipeService,
-            RecipeCopier recipeCopier, RecipeResponses recipeResponses) {
+            RecipeCopier recipeCopier, RecipeResponses recipeResponses,
+            SignedInUserService signedInUser) {
+        super(signedInUser);
         this.recipeImportService = recipeImportService;
         this.recipeService = recipeService;
         this.recipeCopier = recipeCopier;
@@ -70,7 +71,7 @@ public class RecipeController extends BaseController {
 
     @Operation(summary = "Create a new recipe", description = "Not existing ingredients and recipe groups will be created when no id is supplied.")
     @PostMapping("")
-    public RecipeResponse newRecipe(@RequestBody @Valid RecipeRequest recipeRequest) throws ElementNotFound {
+    public RecipeResponse newRecipe(@RequestBody @Valid RecipeRequest recipeRequest) {
         var newRecipe = requestToEntity(null, recipeRequest);
         newRecipe.setOwner(getLoggedInUser());
         if (newRecipe.getServings() <= 0) {
@@ -82,7 +83,7 @@ public class RecipeController extends BaseController {
     @Operation(summary = "Get a single recipe",
             description = "Your own, or one a household you are in makes readable.")
     @GetMapping("/{id}")
-    public RecipeResponse single(@PathVariable Long id) throws ElementNotFound {
+    public RecipeResponse single(@PathVariable Long id) {
         var reader = getLoggedInUser();
         return recipeResponses.forReader(recipeService.getRecipeFor(id, reader), reader);
     }
@@ -92,7 +93,7 @@ public class RecipeController extends BaseController {
                     + "survives the original being unshared or deleted.")
     @PostMapping("/{id}/import")
     @ResponseStatus(HttpStatus.CREATED)
-    public RecipeResponse importRecipe(@PathVariable Long id) throws ElementNotFound, IOException {
+    public RecipeResponse importRecipe(@PathVariable Long id) throws IOException {
         var importer = getLoggedInUser();
         var recipe = recipeService.getRecipeFor(id, importer);
         return recipeResponses.of(recipeCopier.copyTo(recipe, importer, recipe.getRecipeSource()));
@@ -100,8 +101,7 @@ public class RecipeController extends BaseController {
 
     @Operation(summary = "Update an existing recipe")
     @PutMapping("/{id}")
-    public RecipeResponse updateRecipe(@PathVariable Long id, @RequestBody @Valid RecipeRequest recipeUpdate)
-            throws ElementNotFound {
+    public RecipeResponse updateRecipe(@PathVariable Long id, @RequestBody @Valid RecipeRequest recipeUpdate) {
         return recipeResponses.of(recipeService.updateSingleRecipe(requestToEntity(id, recipeUpdate), getLoggedInUser()));
     }
 
@@ -109,20 +109,19 @@ public class RecipeController extends BaseController {
             description = "For the warning shown before deleting: how many households would lose "
                     + "it and how many planned meals would go with it.")
     @GetMapping("/{id}/impact")
-    public RecipeDeletionImpactResponse deletionImpact(@PathVariable Long id) throws ElementNotFound {
+    public RecipeDeletionImpactResponse deletionImpact(@PathVariable Long id) {
         return RecipeDeletionImpactResponse.fromResult(recipeService.impactOfDeleting(id, getLoggedInUser()));
     }
 
     @Operation(summary = "Delete a recipe", description = "Deleted recipes will automatically deleted from weekplan days. Also linked images will be automatically deleted")
     @DeleteMapping("/{id}")
-    public void deleteRecipe(@PathVariable Long id) throws ElementNotFound {
+    public void deleteRecipe(@PathVariable Long id) {
         recipeService.deleteRecipe(recipeService.getOwnRecipe(id, getLoggedInUser()));
     }
 
     @Operation(summary = "Import a recipe from a recipe website")
     @GetMapping("/import")
-    public RecipeResponse importRecipe(@RequestParam String importUrl)
-            throws ApiException {
+    public RecipeResponse importRecipe(@RequestParam String importUrl) {
         var owner = getLoggedInUser();
         return recipeResponses.of(recipeImportService.importRecipe(importUrl, owner));
     }

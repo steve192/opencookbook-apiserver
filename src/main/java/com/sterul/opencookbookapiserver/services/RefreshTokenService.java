@@ -3,7 +3,6 @@ package com.sterul.opencookbookapiserver.services;
 import java.time.Instant;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,11 +16,14 @@ import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 @Transactional
 public class RefreshTokenService {
 
-    @Autowired
-    private RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final OpencookbookConfiguration opencookbookConfiguration;
 
-    @Autowired
-    private OpencookbookConfiguration opencookbookConfiguration;
+    public RefreshTokenService(RefreshTokenRepository refreshTokenRepository,
+            OpencookbookConfiguration opencookbookConfiguration) {
+        this.refreshTokenRepository = refreshTokenRepository;
+        this.opencookbookConfiguration = opencookbookConfiguration;
+    }
 
     public RefreshToken createRefreshTokenForUser(CookpalUser user) {
         //Delete all old tokens
@@ -53,7 +55,7 @@ public class RefreshTokenService {
         return true;
     }
 
-    public RefreshToken getRefreshToken(String refreshToken) throws ElementNotFound {
+    public RefreshToken getRefreshToken(String refreshToken) {
         var token = refreshTokenRepository.findById(refreshToken);
         if (token.isEmpty()) {
             throw new ElementNotFound();

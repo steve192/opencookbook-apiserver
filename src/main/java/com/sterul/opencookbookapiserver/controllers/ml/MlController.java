@@ -24,9 +24,8 @@ import com.sterul.opencookbookapiserver.controllers.ml.responses.PageEdgesRespon
 import com.sterul.opencookbookapiserver.controllers.responses.RecipeResponse;
 import com.sterul.opencookbookapiserver.entities.ml.MlJob;
 import com.sterul.opencookbookapiserver.entities.ml.MlJobStatus;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
+import com.sterul.opencookbookapiserver.services.SignedInUserService;
 import com.sterul.opencookbookapiserver.services.ml.MlJobService;
-import com.sterul.opencookbookapiserver.services.ml.MlSubsystemException;
 import com.sterul.opencookbookapiserver.services.ml.RecipeOcrPayload;
 import com.sterul.opencookbookapiserver.services.ml.recipeocr.RecipeOcrImportService;
 
@@ -48,7 +47,9 @@ public class MlController extends BaseController {
     private final RecipeOcrImportService recipeOcrImportService;
 
     public MlController(MlJobService mlJobService,
-            RecipeOcrImportService recipeOcrImportService) {
+            RecipeOcrImportService recipeOcrImportService,
+            SignedInUserService signedInUser) {
+        super(signedInUser);
         this.mlJobService = mlJobService;
         this.recipeOcrImportService = recipeOcrImportService;
     }
@@ -63,7 +64,7 @@ public class MlController extends BaseController {
             @RequestParam("images") List<MultipartFile> images,
             @RequestParam(value = "payload", required = false) String payload,
             @RequestParam(value = "trainingConsent", defaultValue = "false")
-            boolean trainingConsent) throws ApiException {
+            boolean trainingConsent) {
 
         requirePlausiblePageCount(images);
         var parsed = parse(payload, images.size());
@@ -79,14 +80,13 @@ public class MlController extends BaseController {
                     + "detected=false.")
     @PostMapping(value = "/page-edges", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public PageEdgesResponse detectPageEdges(
-            @RequestParam("image") MultipartFile image) throws MlSubsystemException {
+            @RequestParam("image") MultipartFile image) {
         return PageEdgesResponse.from(mlJobService.detectPageEdges(image));
     }
 
     @Operation(summary = "Check on a scan")
     @GetMapping("/jobs/{id}")
-    public MlJobResponse getJob(@PathVariable String id)
-            throws ElementNotFound, MlSubsystemException {
+    public MlJobResponse getJob(@PathVariable String id) {
         return toResponse(mlJobService.get(getLoggedInUser(), id));
     }
 
@@ -100,8 +100,7 @@ public class MlController extends BaseController {
                     + "about. Corners are fractions of the page.")
     @PostMapping("/jobs/{id}/refine")
     public MlJobResponse refineJob(@PathVariable String id,
-            @RequestBody(required = false) Map<String, Object> corrections)
-            throws ElementNotFound, MlSubsystemException {
+            @RequestBody(required = false) Map<String, Object> corrections) {
 
         return toResponse(mlJobService.refine(getLoggedInUser(), id,
                 corrections == null ? Map.of() : corrections));
@@ -109,7 +108,7 @@ public class MlController extends BaseController {
 
     @Operation(summary = "Abandon a scan")
     @DeleteMapping("/jobs/{id}")
-    public void cancelJob(@PathVariable String id) throws ElementNotFound, MlSubsystemException {
+    public void cancelJob(@PathVariable String id) {
         mlJobService.cancel(getLoggedInUser(), id);
     }
 
@@ -117,12 +116,12 @@ public class MlController extends BaseController {
             description = "Withdraws consent. The scans themselves stay in your cookbook; the "
                     + "photographs held by the subsystem are deleted.")
     @DeleteMapping("/training-data")
-    public void deleteTrainingData() throws MlSubsystemException {
+    public void deleteTrainingData() {
         var deleted = mlJobService.deleteTrainingData(getLoggedInUser());
         log.info("Deleted {} donated image(s) at a user's request", deleted);
     }
 
-    private MlJobResponse toResponse(MlJob job) throws MlSubsystemException {
+    private MlJobResponse toResponse(MlJob job) {
         if (job.getStatus() != MlJobStatus.COMPLETED || job.getResult() == null) {
             return MlJobResponse.of(job, null, null, null);
         }
@@ -132,7 +131,7 @@ public class MlController extends BaseController {
                 job, RecipeResponse.fromEntity(recipe), result.getBlocks(), result.getPhoto());
     }
 
-    private void requirePlausiblePageCount(List<MultipartFile> images) throws ApiException {
+    private void requirePlausiblePageCount(List<MultipartFile> images) {
         var maxPages = mlJobService.maxPagesPerRecipe();
         if (images == null || images.isEmpty()) {
             throw new ApiException(ApiErrorCode.VALIDATION_FAILED,
@@ -144,7 +143,7 @@ public class MlController extends BaseController {
         }
     }
 
-    private RecipeOcrPayload parse(String payload, int imageCount) throws ApiException {
+    private RecipeOcrPayload parse(String payload, int imageCount) {
         try {
             return RecipeOcrPayload.parse(payload, imageCount);
         } catch (IllegalArgumentException e) {

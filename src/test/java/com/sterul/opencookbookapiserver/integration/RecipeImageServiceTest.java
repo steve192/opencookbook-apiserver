@@ -3,7 +3,6 @@ package com.sterul.opencookbookapiserver.integration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.awt.image.BufferedImage;
@@ -36,7 +35,7 @@ import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 @SpringBootTest
 @ActiveProfiles("integration-test")
-class RecipeImageServiceTest extends IntegrationTest{
+class RecipeImageServiceTest extends IntegrationTestBase{
 
     @Autowired
     private RecipeImageService cut;
@@ -62,14 +61,14 @@ class RecipeImageServiceTest extends IntegrationTest{
 
     @Test
     @Transactional
-    void jpegCanBeUploaded() throws IOException, IllegalFiletypeException, ElementNotFound {
+    void jpegCanBeUploaded() throws IOException {
         var image = cut.saveNewImage(new FileInputStream(jpgFile), 100, testUser);
         assertFileWasWritten(image);
     }
 
     @Test
     @Transactional
-    void pngCanBeUploaded() throws IOException, IllegalFiletypeException, ElementNotFound {
+    void pngCanBeUploaded() throws IOException {
         var image = cut.saveNewImage(new FileInputStream(pngFile), 100, testUser);
         assertFileWasWritten(image);
     }
@@ -78,20 +77,14 @@ class RecipeImageServiceTest extends IntegrationTest{
     @Transactional
     void invalidFileCannotBeUploaded() throws FileNotFoundException {
         var file = new FileInputStream(invalidFile);
-        try {
-            cut.saveNewImage(file, 100, testUser);
-        } catch (IllegalFiletypeException e) {
-            return;
-        } catch (IOException e) {
-            fail();
-        }
-        fail();
+
+        assertThrows(IllegalFiletypeException.class, () -> cut.saveNewImage(file, 100, testUser));
     }
 
     /** Storage and database can come apart, and a record without its file is not a server fault. */
     @Test
     @Transactional
-    void anImageWithoutItsStoredFileIsNotFound() throws IOException, IllegalFiletypeException {
+    void anImageWithoutItsStoredFileIsNotFound() throws IOException {
         var image = cut.saveNewImage(new FileInputStream(pngFile), 100, testUser);
         deleteStoredFiles(image.getUuid());
 
@@ -101,7 +94,7 @@ class RecipeImageServiceTest extends IntegrationTest{
 
     @Test
     @Transactional
-    void thumbnailIsGeneratedAndSmaller() throws IOException, IllegalFiletypeException, ElementNotFound {
+    void thumbnailIsGeneratedAndSmaller() throws IOException {
         var image = cut.saveNewImage(new FileInputStream(pngFile), 100, testUser);
         assertFileWasWritten(image);
         assertThumbnailFileIsSmaller(image);
@@ -131,7 +124,7 @@ class RecipeImageServiceTest extends IntegrationTest{
      */
     @Test
     @Transactional
-    void largeImageIsNotDecodedAtFullResolution() throws IOException, IllegalFiletypeException, ElementNotFound {
+    void largeImageIsNotDecodedAtFullResolution() throws IOException {
         var threads = (com.sun.management.ThreadMXBean) ManagementFactory.getThreadMXBean();
         assumeTrue(threads.isThreadAllocatedMemorySupported());
         var largePhoto = jpegOf(4000, 3000);
@@ -148,7 +141,7 @@ class RecipeImageServiceTest extends IntegrationTest{
 
     @Test
     @Transactional
-    void largeImageIsStoredAtTheConfiguredSizes() throws IOException, IllegalFiletypeException, ElementNotFound {
+    void largeImageIsStoredAtTheConfiguredSizes() throws IOException {
         var largePhoto = jpegOf(4000, 3000);
 
         var image = cut.saveNewImage(new ByteArrayInputStream(largePhoto), largePhoto.length, testUser);
@@ -157,7 +150,7 @@ class RecipeImageServiceTest extends IntegrationTest{
         assertEquals(512, widthOf(cut.getThumbnailImage(image.getUuid())));
     }
 
-    private void assertThumbnailFileIsSmaller(RecipeImage image) throws IOException, ElementNotFound {
+    private void assertThumbnailFileIsSmaller(RecipeImage image) throws IOException {
         assertTrue(cut.getImage(image.getUuid()).length
                 > cut.getThumbnailImage(image.getUuid()).length);
     }
@@ -167,7 +160,7 @@ class RecipeImageServiceTest extends IntegrationTest{
         Files.deleteIfExists(Path.of(configuration.getThumbnailDir(), uuid));
     }
 
-    void assertFileWasWritten(RecipeImage recipeImage) throws IOException, ElementNotFound {
+    void assertFileWasWritten(RecipeImage recipeImage) throws IOException {
         assertTrue(cut.getImage(recipeImage.getUuid()).length > 0);
     }
 

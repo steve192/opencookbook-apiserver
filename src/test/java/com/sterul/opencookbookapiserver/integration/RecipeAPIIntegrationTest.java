@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -42,7 +42,7 @@ import com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers.Rec
 
 @SpringBootTest
 @ActiveProfiles("integration-test")
-class RecipeAPIIntegrationTest extends IntegrationTest {
+class RecipeAPIIntegrationTest extends IntegrationTestBase {
 
     @Autowired
     private RecipeController cut;
@@ -68,17 +68,17 @@ class RecipeAPIIntegrationTest extends IntegrationTest {
         }
 
         // Mock currently logged in user
-        Authentication authentication = Mockito.mock(Authentication.class);
-        Mockito.when(authentication.getName()).thenReturn("test@test.com");
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getName()).thenReturn("test@test.com");
 
-        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
     }
 
     @Test
     @Transactional
-    void testRecipeCreation() throws ApiException {
+    void testRecipeCreation() {
         var ingredient = ingredientsController.create(
                 IngredientRequest.builder()
                         .name("TestIngredient")
@@ -105,7 +105,7 @@ class RecipeAPIIntegrationTest extends IntegrationTest {
 
     @Test
     @Transactional
-    void nonPositiveServingsAreNormalisedToOne() throws ApiException {
+    void nonPositiveServingsAreNormalisedToOne() {
         var newRecipe = RecipeRequest.builder()
                 .title("test")
                 .servings(-10)
@@ -117,7 +117,7 @@ class RecipeAPIIntegrationTest extends IntegrationTest {
     @Test
     @Transactional
     @DirtiesContext
-    void testRecipeCreationWithGroup() throws ApiException {
+    void testRecipeCreationWithGroup() {
 
         var ingredient = ingredientsController.create(
                 IngredientRequest.builder()
@@ -150,11 +150,9 @@ class RecipeAPIIntegrationTest extends IntegrationTest {
 
     private void whenImportWebsiteNotSupported() {
         try {
-            Mockito.when(recipeScraperServiceProxy.scrapeRecipe(Mockito.any()))
+            when(recipeScraperServiceProxy.scrapeRecipe(Mockito.any()))
                     .thenThrow(new ImportNotSupportedException());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ImportNotSupportedException e) {
+        } catch (IOException | ImportNotSupportedException e) {
             e.printStackTrace();
         }
     }

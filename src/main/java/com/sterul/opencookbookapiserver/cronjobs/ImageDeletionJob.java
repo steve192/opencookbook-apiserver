@@ -5,7 +5,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -21,14 +20,16 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 @Slf4j
 public class ImageDeletionJob {
-    @Autowired
-    RecipeImageRepository recipeImageRepository;
+    private final RecipeImageRepository recipeImageRepository;
+    private final RecipeRepository recipeRepository;
+    private final RecipeImageService recipeImageService;
 
-    @Autowired
-    RecipeRepository recipeRepository;
-
-    @Autowired
-    RecipeImageService recipeImageService;
+    public ImageDeletionJob(RecipeImageRepository recipeImageRepository, RecipeRepository recipeRepository,
+            RecipeImageService recipeImageService) {
+        this.recipeImageRepository = recipeImageRepository;
+        this.recipeRepository = recipeRepository;
+        this.recipeImageService = recipeImageService;
+    }
 
     @Scheduled(cron = "0 0 0/24 * * *")
     @Transactional

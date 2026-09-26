@@ -9,7 +9,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @DirtiesContext
 @Testcontainers
-public class IntegrationTest {
+public class IntegrationTestBase {
 
     @Container
     @ServiceConnection

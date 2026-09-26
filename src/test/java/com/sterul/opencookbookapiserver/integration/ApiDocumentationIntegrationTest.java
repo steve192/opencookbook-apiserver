@@ -26,7 +26,7 @@ import com.jayway.jsonpath.JsonPath;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class ApiDocumentationIntegrationTest extends IntegrationTest {
+class ApiDocumentationIntegrationTest extends IntegrationTestBase {
 
     @Autowired
     private MockMvc mockMvc;

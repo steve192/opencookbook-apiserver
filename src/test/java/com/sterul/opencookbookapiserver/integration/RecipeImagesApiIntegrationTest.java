@@ -32,7 +32,7 @@ import com.sterul.opencookbookapiserver.repositories.UserRepository;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class RecipeImagesApiIntegrationTest extends IntegrationTest {
+class RecipeImagesApiIntegrationTest extends IntegrationTestBase {
 
     private static final String USER = "recipe-images-api@example.com";
 

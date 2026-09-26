@@ -5,7 +5,6 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 import com.sterul.opencookbookapiserver.configurations.nutrition.ConditionalOnNutritionEnabled;
-import com.sterul.opencookbookapiserver.errors.ApiException;
 import com.sterul.opencookbookapiserver.services.nutrition.matching.CatalogueMatcher;
 import com.sterul.opencookbookapiserver.services.nutrition.matching.MatchCandidate;
 
@@ -27,7 +26,7 @@ public class LinkSuggester {
         return matcher.isReady();
     }
 
-    public void requireReady() throws ApiException {
+    public void requireReady() {
         matcher.requireReady();
     }
 

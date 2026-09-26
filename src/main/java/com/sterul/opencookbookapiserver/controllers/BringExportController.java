@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sterul.opencookbookapiserver.services.BringExportService;
 import com.sterul.opencookbookapiserver.services.RecipeService;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
+import com.sterul.opencookbookapiserver.services.SignedInUserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,15 +25,16 @@ public class BringExportController extends BaseController {
     private BringExportService bringExportService;
     private RecipeService recipeService;
 
-    public BringExportController(BringExportService bringExportService, RecipeService recipeService) {
+    public BringExportController(BringExportService bringExportService, RecipeService recipeService,
+            SignedInUserService signedInUser) {
+        super(signedInUser);
         this.bringExportService = bringExportService;
         this.recipeService = recipeService;
     }
 
     @Operation(summary = "Get the bring export data for a given export id")
     @GetMapping
-    public ResponseEntity<String> getExportData(@RequestParam String exportId)
-            throws ElementNotFound {
+    public ResponseEntity<String> getExportData(@RequestParam String exportId) {
         var export = bringExportService.getBringExport(exportId);
         var stringBuilder = new StringBuilder();
         stringBuilder.append("<div itemType='http://schema.org/Recipe'>");
@@ -55,8 +56,7 @@ public class BringExportController extends BaseController {
             + "for 5 minutes and are fetched without authentication, so they carry ingredient lines only.")
     @PostMapping
     public ResponseEntity<ExportCreationResponse> createBringExport(
-            @RequestBody ExportCreationRequest request)
-            throws ElementNotFound {
+            @RequestBody ExportCreationRequest request) {
         var user = this.getLoggedInUser();
         var recipe = recipeService.getRecipeFor(request.recipeId(), user);
         var createdExport = bringExportService.createBringExport(recipe, user);

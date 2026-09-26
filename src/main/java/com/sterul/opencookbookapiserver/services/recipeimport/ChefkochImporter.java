@@ -6,11 +6,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
+import com.sterul.opencookbookapiserver.services.RecipeImageService;
 
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
@@ -21,8 +23,13 @@ import lombok.Data;
 @Component
 public class ChefkochImporter extends AbstractRecipeImporter {
 
+    public ChefkochImporter(RecipeImageService recipeImageService,
+            OpencookbookConfiguration opencookbookConfiguration) {
+        super(recipeImageService, opencookbookConfiguration);
+    }
+
     @Override
-    public Recipe importRecipe(String url, CookpalUser owner) throws RecipeImportFailedException {
+    public Recipe importRecipe(String url, CookpalUser owner) {
         var importRecipe = Recipe.builder().build();
         var recipeId = url.split("//")[1].split("/")[2];
 
@@ -59,7 +66,8 @@ public class ChefkochImporter extends AbstractRecipeImporter {
             // Ingredient groups are not supported for now, just import all
             for (var ingredient : ingredientGroup.ingredients) {
 
-                // TODO: Fetch ingredients form ingredient service
+                // Detached on purpose. RecipeReferenceResolver swaps this for the owner's own
+                // ingredient of the same name while the recipe is being saved.
                 var importIngredient = Ingredient.builder()
                         .name(ingredient.name)
                         .build();

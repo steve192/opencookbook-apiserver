@@ -39,7 +39,7 @@ public class ShareService {
         this.clock = clock;
     }
 
-    public Share shareRecipePublicly(Long recipeId) throws ElementNotFound {
+    public Share shareRecipePublicly(Long recipeId) {
         var recipe = recipeService.getRecipeForUpdate(recipeId);
 
         var existingShare = publicShareOf(recipe);
@@ -68,38 +68,52 @@ public class ShareService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<Share> findPublicRecipeShare(Long recipeId) throws ElementNotFound {
+    public Optional<Share> findPublicRecipeShare(Long recipeId) {
         return livePublicShareOf(recipeService.getRecipeIgnoringAccess(recipeId));
     }
 
-    @Transactional(readOnly = true)
-    public Share resolveLiveShare(String shareId) throws ElementNotFound {
+    /**
+     * The shared recipe and the live share are wanted both on their own, where the
+     * annotated entry points below apply, and from the writing methods, which must not run
+     * them as a separate read-only transaction. Calling an annotated method through
+     * {@code this} would not do that anyway, since the proxy is not involved.
+     */
+    private Share liveShare(String shareId) {
         return shareRepository.findById(shareId)
                 .filter(share -> !share.hasExpired(clock.instant()))
                 .orElseThrow(ElementNotFound::new);
     }
 
-    @Transactional(readOnly = true)
-    public Recipe resolveSharedRecipe(String shareId) throws ElementNotFound {
-        return recipeService.getRecipeIgnoringAccess(resolveLiveShare(shareId).getRecipe().getId());
+    private Recipe sharedRecipe(String shareId) {
+        return recipeService.getRecipeIgnoringAccess(liveShare(shareId).getRecipe().getId());
     }
 
-    public Recipe openSharedRecipe(String shareId) throws ElementNotFound {
-        var recipe = resolveSharedRecipe(shareId);
+    @Transactional(readOnly = true)
+    public Share resolveLiveShare(String shareId) {
+        return liveShare(shareId);
+    }
+
+    @Transactional(readOnly = true)
+    public Recipe resolveSharedRecipe(String shareId) {
+        return sharedRecipe(shareId);
+    }
+
+    public Recipe openSharedRecipe(String shareId) {
+        var recipe = sharedRecipe(shareId);
         shareRepository.incrementAccessCount(shareId);
         return recipe;
     }
 
     @Transactional(readOnly = true)
-    public void requireSharedImage(String shareId, String imageUuid) throws ElementNotFound {
-        var shareShowsImage = resolveSharedRecipe(shareId).getImages().stream()
+    public void requireSharedImage(String shareId, String imageUuid) {
+        var shareShowsImage = sharedRecipe(shareId).getImages().stream()
                 .anyMatch(image -> image.getUuid().equals(imageUuid));
         if (!shareShowsImage) {
             throw new ElementNotFound();
         }
     }
 
-    public void revoke(String shareId, CookpalUser requester) throws ElementNotFound {
+    public void revoke(String shareId, CookpalUser requester) {
         var share = shareRepository.findById(shareId)
                 .filter(candidate -> candidate.getOwner().getUserId().equals(requester.getUserId()))
                 .orElseThrow(ElementNotFound::new);
@@ -120,7 +134,7 @@ public class ShareService {
         return shareRepository.findAllForAdministration();
     }
 
-    public void revokeAsAdministrator(String shareId) throws ElementNotFound {
+    public void revokeAsAdministrator(String shareId) {
         var share = shareRepository.findById(shareId).orElseThrow(ElementNotFound::new);
         log.info("Administrator is revoking share {} of user {}", shareId, share.getOwner().getUserId());
         shareRepository.delete(share);

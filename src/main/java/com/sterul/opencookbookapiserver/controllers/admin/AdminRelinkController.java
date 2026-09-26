@@ -17,8 +17,7 @@ import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminRelinkP
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminRelinkRunResponse;
 import com.sterul.opencookbookapiserver.entities.nutrition.IngredientRelinkProposal;
 import com.sterul.opencookbookapiserver.entities.nutrition.IngredientRelinkRun;
-import com.sterul.opencookbookapiserver.errors.ApiException;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
+import com.sterul.opencookbookapiserver.services.SignedInUserService;
 import com.sterul.opencookbookapiserver.services.nutrition.relinking.RelinkService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,7 +37,9 @@ public class AdminRelinkController extends BaseController {
 
     private final RelinkService relinkService;
 
-    public AdminRelinkController(RelinkService relinkService) {
+    public AdminRelinkController(RelinkService relinkService,
+            SignedInUserService signedInUser) {
+        super(signedInUser);
         this.relinkService = relinkService;
     }
 
@@ -59,52 +60,51 @@ public class AdminRelinkController extends BaseController {
 
     @Operation(summary = "Preview a relink run", description = "Proposes links for every name in scope; changes no ingredient.")
     @PostMapping
-    public AdminRelinkRunResponse preview(@Valid @RequestBody PreviewRequest request) throws ApiException {
+    public AdminRelinkRunResponse preview(@Valid @RequestBody PreviewRequest request) {
         return AdminRelinkRunResponse.fromEntity(relinkService.preview(
                 new RelinkService.Scope(request.scope(), request.belowConfidence()), getLoggedInUser()));
     }
 
     @Operation(summary = "One relink run")
     @GetMapping("/{id}")
-    public AdminRelinkRunResponse getRun(@PathVariable Long id) throws ElementNotFound {
+    public AdminRelinkRunResponse getRun(@PathVariable Long id) {
         return AdminRelinkRunResponse.fromEntity(relinkService.getRun(id));
     }
 
     @Operation(summary = "The proposals of a relink run")
     @GetMapping("/{id}/proposals")
-    public List<AdminRelinkProposalResponse> getProposals(@PathVariable Long id) throws ElementNotFound {
+    public List<AdminRelinkProposalResponse> getProposals(@PathVariable Long id) {
         return relinkService.getProposals(id).stream().map(AdminRelinkProposalResponse::fromEntity).toList();
     }
 
     @Operation(summary = "Decide proposals of a previewed run", description = "A remembered rejection becomes a name rule.")
     @PostMapping("/{id}/decisions")
-    public List<AdminRelinkProposalResponse> decide(@PathVariable Long id, @Valid @RequestBody DecisionRequest request)
-            throws ApiException {
+    public List<AdminRelinkProposalResponse> decide(@PathVariable Long id, @Valid @RequestBody DecisionRequest request) {
         return relinkService.decide(id, request.proposalIds(), request.decision(), request.remember(), getLoggedInUser()).stream()
                 .map(AdminRelinkProposalResponse::fromEntity).toList();
     }
 
     @Operation(summary = "Some recipes a proposal affects")
     @GetMapping("/{id}/proposals/{proposalId}/recipes")
-    public List<AdminRecipeResponse> getSampleRecipes(@PathVariable Long id, @PathVariable Long proposalId) throws ElementNotFound {
+    public List<AdminRecipeResponse> getSampleRecipes(@PathVariable Long id, @PathVariable Long proposalId) {
         return relinkService.sampleRecipes(id, proposalId).stream().map(AdminRecipeResponse::fromEntity).toList();
     }
 
     @Operation(summary = "Apply the accepted proposals", description = "Ingredients changed since the preview are skipped.")
     @PostMapping("/{id}/apply")
-    public AdminRelinkRunResponse apply(@PathVariable Long id) throws ApiException {
+    public AdminRelinkRunResponse apply(@PathVariable Long id) {
         return AdminRelinkRunResponse.fromEntity(relinkService.apply(id));
     }
 
     @Operation(summary = "Revert an applied run", description = "Only ingredients the run was the last to link are restored.")
     @PostMapping("/{id}/revert")
-    public AdminRelinkRunResponse revert(@PathVariable Long id) throws ApiException {
+    public AdminRelinkRunResponse revert(@PathVariable Long id) {
         return AdminRelinkRunResponse.fromEntity(relinkService.revert(id));
     }
 
     @Operation(summary = "Discard a previewed run")
     @PostMapping("/{id}/discard")
-    public AdminRelinkRunResponse discard(@PathVariable Long id) throws ApiException {
+    public AdminRelinkRunResponse discard(@PathVariable Long id) {
         return AdminRelinkRunResponse.fromEntity(relinkService.discard(id));
     }
 }

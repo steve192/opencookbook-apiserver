@@ -34,7 +34,7 @@ public class RecipeReferenceResolver {
         this.recipeImageRepository = recipeImageRepository;
     }
 
-    public void resolve(Recipe recipe, CookpalUser owner) throws ElementNotFound {
+    public void resolve(Recipe recipe, CookpalUser owner) {
         resolveIngredients(recipe, owner);
         recipe.setRecipeGroups(resolveGroups(recipe.getRecipeGroups(), owner));
         recipe.setImages(resolveImages(recipe.getImages(), owner));
@@ -46,7 +46,7 @@ public class RecipeReferenceResolver {
         }
     }
 
-    private List<RecipeGroup> resolveGroups(List<RecipeGroup> groups, CookpalUser owner) throws ElementNotFound {
+    private List<RecipeGroup> resolveGroups(List<RecipeGroup> groups, CookpalUser owner) {
         var resolved = new ArrayList<RecipeGroup>();
         for (var group : groups) {
             resolved.add(group.getId() == null ? createGroup(group.getTitle(), owner) : ownedGroup(group.getId(), owner));
@@ -59,11 +59,11 @@ public class RecipeReferenceResolver {
         return recipeGroupRepository.save(RecipeGroup.builder().title(title).owner(owner).build());
     }
 
-    private RecipeGroup ownedGroup(Long id, CookpalUser owner) throws ElementNotFound {
+    private RecipeGroup ownedGroup(Long id, CookpalUser owner) {
         return recipeGroupRepository.findByIdAndOwner(id, owner).orElseThrow(ElementNotFound::new);
     }
 
-    private List<RecipeImage> resolveImages(List<RecipeImage> images, CookpalUser owner) throws ElementNotFound {
+    private List<RecipeImage> resolveImages(List<RecipeImage> images, CookpalUser owner) {
         var resolved = new ArrayList<RecipeImage>();
         for (var image : images) {
             resolved.add(recipeImageRepository.findByUuidAndOwner(image.getUuid(), owner)

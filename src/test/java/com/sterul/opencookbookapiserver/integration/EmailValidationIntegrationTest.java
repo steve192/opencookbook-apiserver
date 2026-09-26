@@ -28,7 +28,7 @@ import com.sterul.opencookbookapiserver.services.EmailService;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class EmailValidationIntegrationTest extends IntegrationTest {
+class EmailValidationIntegrationTest extends IntegrationTestBase {
 
     @Autowired
     private MockMvc mockMvc;

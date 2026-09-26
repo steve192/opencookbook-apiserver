@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.services.RecipeCopier;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 /**
  * Copies a shared recipe into somebody else's cookbook. The copying itself is
@@ -30,7 +29,7 @@ public class SharedRecipeImportService {
         this.shareLinkFactory = shareLinkFactory;
     }
 
-    public Recipe importSharedRecipe(String shareId, CookpalUser importer) throws ElementNotFound, IOException {
+    public Recipe importSharedRecipe(String shareId, CookpalUser importer) throws IOException {
         var sharedRecipe = shareService.resolveSharedRecipe(shareId);
         return recipeCopier.copyTo(sharedRecipe, importer, shareLinkFactory.linkTo(shareId));
     }

@@ -39,7 +39,7 @@ import com.sterul.opencookbookapiserver.repositories.UserRepository;
 })
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class ShareRateLimitIntegrationTest extends IntegrationTest {
+class ShareRateLimitIntegrationTest extends IntegrationTestBase {
 
     private static final String OWNER = "share-ratelimit@example.com";
 

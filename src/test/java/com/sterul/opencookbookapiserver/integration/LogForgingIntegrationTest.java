@@ -23,7 +23,7 @@ import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
  */
 @SpringBootTest
 @ActiveProfiles("integration-test")
-class LogForgingIntegrationTest extends IntegrationTest {
+class LogForgingIntegrationTest extends IntegrationTestBase {
 
     private static final String FORGED =
             "victim@example.com\n2026-01-01T00:00:00.000+02:00  INFO 1 --- [x] x : all is well";

@@ -17,7 +17,6 @@ import com.sterul.opencookbookapiserver.controllers.admin.requests.AdminRecipeRe
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminRecipeResponse;
 import com.sterul.opencookbookapiserver.services.RecipeService;
 import com.sterul.opencookbookapiserver.services.RecipeService.RecipeDetails;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -46,7 +45,7 @@ public class AdminRecipeController {
 
     @Operation(summary = "One recipe")
     @GetMapping("/{id}")
-    public AdminRecipeResponse getOne(@PathVariable Long id) throws ElementNotFound {
+    public AdminRecipeResponse getOne(@PathVariable Long id) {
         return AdminRecipeResponse.fromEntity(recipeService.getRecipeIgnoringAccess(id));
     }
 
@@ -54,8 +53,7 @@ public class AdminRecipeController {
             description = "Every detail given replaces the one that was there, so leaving one "
                     + "out clears it. Ingredients and images are left alone.")
     @PutMapping("/{id}")
-    public AdminRecipeResponse updateRecipe(@PathVariable Long id, @Valid @RequestBody AdminRecipeRequest request)
-            throws ElementNotFound {
+    public AdminRecipeResponse updateRecipe(@PathVariable Long id, @Valid @RequestBody AdminRecipeRequest request) {
         log.info("Admin: Updating recipe {}", id);
         var recipe = recipeService.getRecipeIgnoringAccess(id);
         var updated = recipeService.updateRecipeDetails(recipe, new RecipeDetails(
@@ -71,7 +69,7 @@ public class AdminRecipeController {
     @Operation(summary = "Delete a recipe", description = "Takes its images and any share of it with it.")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteRecipe(@PathVariable Long id) throws ElementNotFound {
+    public void deleteRecipe(@PathVariable Long id) {
         log.info("Admin: Deleting recipe {}", id);
         recipeService.deleteRecipe(recipeService.getRecipeIgnoringAccess(id));
     }

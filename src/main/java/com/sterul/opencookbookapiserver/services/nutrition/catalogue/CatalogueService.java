@@ -59,7 +59,7 @@ public class CatalogueService {
         return foodRepository.findAll();
     }
 
-    public CatalogueFood getFood(Long id) throws ElementNotFound {
+    public CatalogueFood getFood(Long id) {
         return foodRepository.findById(id).orElseThrow(ElementNotFound::new);
     }
 
@@ -71,7 +71,7 @@ public class CatalogueService {
         return importRepository.findAllByOrderByStartedAtDesc();
     }
 
-    public CatalogueFood createCustomFood(CustomFood custom) throws ApiException {
+    public CatalogueFood createCustomFood(CustomFood custom) {
         var food = CatalogueFood.builder()
                 .catalogueKey("custom-" + UUID.randomUUID())
                 .origin(CatalogueFood.Origin.CUSTOM)
@@ -83,7 +83,7 @@ public class CatalogueService {
         return created;
     }
 
-    public CatalogueFood updateCustomFood(Long id, CustomFood custom) throws ApiException {
+    public CatalogueFood updateCustomFood(Long id, CustomFood custom) {
         var food = requireCustom(getFood(id));
         applyCustom(food, custom);
         log.info("Admin: Updating custom catalogue food {}", food.getCatalogueKey());
@@ -91,7 +91,7 @@ public class CatalogueService {
         return food;
     }
 
-    public void deleteCustomFood(Long id) throws ApiException {
+    public void deleteCustomFood(Long id) {
         var food = requireCustom(getFood(id));
         if (countLinkedIngredients(food) > 0 || foodRepository.existsByVariantOf(food)) {
             throw new ApiException(ApiErrorCode.CONFLICT, "Catalogue food " + id + " is still referred to; merge it instead");
@@ -101,7 +101,7 @@ public class CatalogueService {
         changed("deleted " + food.getCatalogueKey());
     }
 
-    public CatalogueFood addName(Long id, String languageIsoCode, String name) throws ApiException {
+    public CatalogueFood addName(Long id, String languageIsoCode, String name) {
         var food = getFood(id);
         var trimmed = name.trim();
         var added = CatalogueFoodName.adminAlias(languageIsoCode, trimmed);
@@ -116,7 +116,7 @@ public class CatalogueService {
     }
 
     /** Only administrator names can be removed. */
-    public CatalogueFood removeName(Long id, String languageIsoCode, String name) throws ApiException {
+    public CatalogueFood removeName(Long id, String languageIsoCode, String name) {
         var food = getFood(id);
         var unwanted = CatalogueFoodName.adminAlias(languageIsoCode, name);
         var removed = food.getNames()
@@ -133,14 +133,14 @@ public class CatalogueService {
      * on a dataset food too: the shipped class is a reading of a description, and an operator who
      * knows the food better outranks it. The correction is marked and survives later releases.
      */
-    public CatalogueFood classifyByAdmin(Long id, Diet dietClass) throws ElementNotFound {
+    public CatalogueFood classifyByAdmin(Long id, Diet dietClass) {
         var food = getFood(id);
         log.info("Classifying catalogue food {} as {}", food.getCatalogueKey(), dietClass);
         food.classifyByAdmin(dietClass);
         return foodRepository.save(food);
     }
 
-    public CatalogueFood mergeCustomFood(Long sourceId, Long targetId) throws ApiException {
+    public CatalogueFood mergeCustomFood(Long sourceId, Long targetId) {
         var source = requireCustom(getFood(sourceId));
         var target = getFood(targetId);
         if (source.equals(target)) {
@@ -165,7 +165,7 @@ public class CatalogueService {
         events.publishEvent(new CatalogueChangedEvent(reason));
     }
 
-    private void applyCustom(CatalogueFood food, CustomFood custom) throws ApiException {
+    private void applyCustom(CatalogueFood food, CustomFood custom) {
         var names = new ArrayList<CatalogueFoodName>();
         for (var name : custom.names()) {
             if (names.stream().anyMatch(name::sameAs)) {
@@ -193,7 +193,7 @@ public class CatalogueService {
                 .toList());
     }
 
-    private void requireNameFree(String languageIsoCode, String name, CatalogueFood food) throws ApiException {
+    private void requireNameFree(String languageIsoCode, String name, CatalogueFood food) {
         var owner = foodRepository.findByName(languageIsoCode, name);
         if (owner.isPresent() && !owner.get().equals(food)) {
             throw new ApiException(ApiErrorCode.CONFLICT,
@@ -201,7 +201,7 @@ public class CatalogueService {
         }
     }
 
-    private static CatalogueFood requireCustom(CatalogueFood food) throws ApiException {
+    private static CatalogueFood requireCustom(CatalogueFood food) {
         if (food.isReadOnly()) {
             throw new ApiException(ApiErrorCode.CONFLICT, "Catalogue food " + food.getCatalogueKey() + " ships with the dataset and is read-only");
         }

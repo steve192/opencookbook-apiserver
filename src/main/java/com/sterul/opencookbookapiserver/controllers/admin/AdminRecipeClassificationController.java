@@ -17,9 +17,8 @@ import com.sterul.opencookbookapiserver.entities.recipe.ClassificationKind;
 import com.sterul.opencookbookapiserver.entities.recipe.ClassificationSource;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeClassificationProposal;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeClassificationRun;
-import com.sterul.opencookbookapiserver.errors.ApiException;
+import com.sterul.opencookbookapiserver.services.SignedInUserService;
 import com.sterul.opencookbookapiserver.services.classification.RecipeClassificationService;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,7 +34,9 @@ public class AdminRecipeClassificationController extends BaseController {
 
     private final RecipeClassificationService classificationService;
 
-    public AdminRecipeClassificationController(RecipeClassificationService classificationService) {
+    public AdminRecipeClassificationController(RecipeClassificationService classificationService,
+            SignedInUserService signedInUser) {
+        super(signedInUser);
         this.classificationService = classificationService;
     }
 
@@ -86,27 +87,26 @@ public class AdminRecipeClassificationController extends BaseController {
                     + "skipped with a reason rather than guessed at. A kind this instance cannot classify is not "
                     + "found; diets need nutrition estimation.")
     @PostMapping
-    public RunResponse preview(@Valid @RequestBody PreviewRequest request) throws ElementNotFound {
+    public RunResponse preview(@Valid @RequestBody PreviewRequest request) {
         return RunResponse.fromEntity(
                 classificationService.preview(request.kind(), request.scope(), getLoggedInUser()));
     }
 
     @Operation(summary = "One classification run")
     @GetMapping("/{id}")
-    public RunResponse getRun(@PathVariable Long id) throws ElementNotFound {
+    public RunResponse getRun(@PathVariable Long id) {
         return RunResponse.fromEntity(classificationService.getRun(id));
     }
 
     @Operation(summary = "The proposals of a classification run")
     @GetMapping("/{id}/proposals")
-    public List<ProposalResponse> getProposals(@PathVariable Long id) throws ElementNotFound {
+    public List<ProposalResponse> getProposals(@PathVariable Long id) {
         return classificationService.getProposals(id).stream().map(ProposalResponse::fromEntity).toList();
     }
 
     @Operation(summary = "Decide proposals of a previewed run")
     @PostMapping("/{id}/decisions")
-    public List<ProposalResponse> decide(@PathVariable Long id, @Valid @RequestBody DecisionRequest request)
-            throws ApiException {
+    public List<ProposalResponse> decide(@PathVariable Long id, @Valid @RequestBody DecisionRequest request) {
         return classificationService.decide(id, request.proposalIds(), request.decision()).stream()
                 .map(ProposalResponse::fromEntity).toList();
     }
@@ -114,20 +114,20 @@ public class AdminRecipeClassificationController extends BaseController {
     @Operation(summary = "Apply the accepted proposals",
             description = "Recipes whose value changed since the preview are skipped.")
     @PostMapping("/{id}/apply")
-    public RunResponse apply(@PathVariable Long id) throws ApiException {
+    public RunResponse apply(@PathVariable Long id) {
         return RunResponse.fromEntity(classificationService.apply(id));
     }
 
     @Operation(summary = "Revert an applied run",
             description = "Only recipes this run was the last to classify are restored.")
     @PostMapping("/{id}/revert")
-    public RunResponse revert(@PathVariable Long id) throws ApiException {
+    public RunResponse revert(@PathVariable Long id) {
         return RunResponse.fromEntity(classificationService.revert(id));
     }
 
     @Operation(summary = "Discard a previewed run")
     @PostMapping("/{id}/discard")
-    public RunResponse discard(@PathVariable Long id) throws ApiException {
+    public RunResponse discard(@PathVariable Long id) {
         return RunResponse.fromEntity(classificationService.discard(id));
     }
 }
