@@ -54,8 +54,7 @@ public class PlanDraftService {
     }
 
     /** @param skipped days the cook is not at home; no meals are planned for them at all */
-    public PlanDraft generate(PlanScope scope, Long profileId, LocalDate start, int days, Collection<LocalDate> skipped)
-            throws ElementNotFound {
+    public PlanDraft generate(PlanScope scope, Long profileId, LocalDate start, int days, Collection<LocalDate> skipped) {
         var profile = profileService.getProfile(profileId, scope);
         // One open draft per week and plan, so two members do not adjust competing proposals.
         draftRepository.findOpenFor(start, scope)
@@ -72,7 +71,7 @@ public class PlanDraftService {
         return draftRepository.save(draft);
     }
 
-    public PlanDraft getDraft(Long id, PlanScope scope) throws ElementNotFound {
+    public PlanDraft getDraft(Long id, PlanScope scope) {
         return draftRepository.findIn(id, scope).orElseThrow(ElementNotFound::new);
     }
 
@@ -81,7 +80,7 @@ public class PlanDraftService {
      *
      * @param reason why the recipe was passed over, steering the replacement; null for just something else
      */
-    public PlanDraft reroll(PlanScope scope, Long draftId, Long slotId, RerollReason reason) throws ElementNotFound {
+    public PlanDraft reroll(PlanScope scope, Long draftId, Long slotId, RerollReason reason) {
         var draft = requireOpen(draftId, scope);
         var slot = slotOf(draft, slotId);
         Map<PlanDraftSlot, Reroll> rerolls = slot.getRecipe() == null ? Map.of() :
@@ -93,7 +92,7 @@ public class PlanDraftService {
     }
 
     /** A locked meal stays as it is when the rest of the draft is drawn again. */
-    public PlanDraft setLocked(PlanScope scope, Long draftId, Long slotId, boolean locked) throws ElementNotFound {
+    public PlanDraft setLocked(PlanScope scope, Long draftId, Long slotId, boolean locked) {
         var draft = requireOpen(draftId, scope);
         slotOf(draft, slotId).setLocked(locked);
         return draft;
@@ -103,7 +102,7 @@ public class PlanDraftService {
      * Turns a meal into a gap for the cook to fill, or a gap back into a cooked meal. The one pattern a
      * weekly count cannot express - this Friday is takeaway - is exactly this one tap.
      */
-    public PlanDraft toggleGap(PlanScope scope, Long draftId, Long slotId) throws ElementNotFound {
+    public PlanDraft toggleGap(PlanScope scope, Long draftId, Long slotId) {
         var draft = requireOpen(draftId, scope);
         var slot = slotOf(draft, slotId);
         var affected = withLeftoversOf(draft, slot);
@@ -116,7 +115,7 @@ public class PlanDraftService {
     }
 
     /** A new draw for every meal not locked, keeping locked meals and what they left over. */
-    public PlanDraft rerollAll(PlanScope scope, Long draftId) throws ElementNotFound {
+    public PlanDraft rerollAll(PlanScope scope, Long draftId) {
         var draft = requireOpen(draftId, scope);
         draft.setSeed(Jitter.newSeed());
         var open = draft.getSlots().stream()
@@ -133,7 +132,7 @@ public class PlanDraftService {
      * are not written: the weekplan has no meal slots, so an empty entry would only be noise, and the
      * cook can add a free-text meal to any day there already.
      */
-    public PlanDraft accept(PlanScope scope, Long draftId) throws ElementNotFound {
+    public PlanDraft accept(PlanScope scope, Long draftId) {
         var draft = requireOpen(draftId, scope);
         var byDate = draft.getSlots().stream()
                 .filter(slot -> slot.getRecipe() != null && slot.getKind() != SlotKind.GAP)
@@ -150,7 +149,7 @@ public class PlanDraftService {
         return draft;
     }
 
-    public PlanDraft discard(PlanScope scope, Long draftId) throws ElementNotFound {
+    public PlanDraft discard(PlanScope scope, Long draftId) {
         var draft = requireOpen(draftId, scope);
         draft.setStatus(PlanDraft.Status.DISCARDED);
         return draft;
@@ -198,7 +197,7 @@ public class PlanDraftService {
                 .collect(Collectors.toSet());
     }
 
-    private PlanDraft requireOpen(Long draftId, PlanScope scope) throws ElementNotFound {
+    private PlanDraft requireOpen(Long draftId, PlanScope scope) {
         var draft = getDraft(draftId, scope);
         if (!draft.isOpen()) {
             throw new ElementNotFound();
@@ -206,7 +205,7 @@ public class PlanDraftService {
         return draft;
     }
 
-    private static PlanDraftSlot slotOf(PlanDraft draft, Long slotId) throws ElementNotFound {
+    private static PlanDraftSlot slotOf(PlanDraft draft, Long slotId) {
         return draft.getSlots().stream().filter(slot -> slot.getId().equals(slotId)).findFirst()
                 .orElseThrow(ElementNotFound::new);
     }

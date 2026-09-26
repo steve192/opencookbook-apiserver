@@ -60,17 +60,17 @@ public class RecipeClassificationService {
         return runRepository.findAllByOrderByIdDesc();
     }
 
-    public RecipeClassificationRun getRun(Long id) throws ElementNotFound {
+    public RecipeClassificationRun getRun(Long id) {
         return runRepository.findById(id).orElseThrow(ElementNotFound::new);
     }
 
-    public List<RecipeClassificationProposal> getProposals(Long runId) throws ElementNotFound {
+    public List<RecipeClassificationProposal> getProposals(Long runId) {
         return proposalRepository.findAllOf(getRun(runId));
     }
 
     /** Reads every recipe in scope and writes down what it would make of it. Changes no recipe. */
     public RecipeClassificationRun preview(ClassificationKind kind, RecipeClassificationRun.Scope scope,
-            CookpalUser startedBy) throws ElementNotFound {
+            CookpalUser startedBy) {
         var classifier = classifierFor(kind);
         var run = runRepository.save(RecipeClassificationRun.builder()
                 .kind(kind)
@@ -95,7 +95,7 @@ public class RecipeClassificationService {
 
     /** Skipping is the run's own decision about a recipe it cannot read, never a reviewer's. */
     public List<RecipeClassificationProposal> decide(Long runId, List<Long> proposalIds,
-            RecipeClassificationProposal.Decision decision) throws ApiException {
+            RecipeClassificationProposal.Decision decision) {
         if (decision == RecipeClassificationProposal.Decision.SKIPPED) {
             throw new ApiException(ApiErrorCode.VALIDATION_FAILED, "A proposal is accepted, rejected or left pending");
         }
@@ -108,7 +108,7 @@ public class RecipeClassificationService {
     }
 
     /** Writes the accepted proposals onto their recipes. A recipe changed since the preview is skipped. */
-    public RecipeClassificationRun apply(Long runId) throws ApiException {
+    public RecipeClassificationRun apply(Long runId) {
         var run = requirePreviewed(runId);
         var attribute = classifierFor(run.getKind()).attribute();
         var accepted = ReviewedRuns.requireAnyAccepted(run,
@@ -138,7 +138,7 @@ public class RecipeClassificationService {
     }
 
     /** Puts back what each recipe had, but only where this run is still the last to have written it. */
-    public RecipeClassificationRun revert(Long runId) throws ApiException {
+    public RecipeClassificationRun revert(Long runId) {
         var run = ReviewedRuns.require(getRun(runId), ReviewedRun.Status.APPLIED);
         var attribute = classifierFor(run.getKind()).attribute();
         for (var proposal : proposalRepository.findAllByRunAndDecision(run, RecipeClassificationProposal.Decision.ACCEPTED)) {
@@ -153,7 +153,7 @@ public class RecipeClassificationService {
         return runRepository.save(run);
     }
 
-    public RecipeClassificationRun discard(Long runId) throws ApiException {
+    public RecipeClassificationRun discard(Long runId) {
         var run = requirePreviewed(runId);
         run.discard();
         return runRepository.save(run);
@@ -196,7 +196,7 @@ public class RecipeClassificationService {
     }
 
     /** A kind this instance cannot classify - diets need nutrition estimation switched on - does not exist here. */
-    private RecipeClassifier<?> classifierFor(ClassificationKind kind) throws ElementNotFound {
+    private RecipeClassifier<?> classifierFor(ClassificationKind kind) {
         var classifier = classifiers.get(kind);
         if (classifier == null) {
             throw new ElementNotFound();
@@ -204,7 +204,7 @@ public class RecipeClassificationService {
         return classifier;
     }
 
-    private RecipeClassificationRun requirePreviewed(Long runId) throws ApiException {
+    private RecipeClassificationRun requirePreviewed(Long runId) {
         return ReviewedRuns.require(getRun(runId), ReviewedRun.Status.PREVIEWED);
     }
 }

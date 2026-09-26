@@ -17,7 +17,6 @@ import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 import com.sterul.opencookbookapiserver.repositories.projections.RecipeTitle;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.selection.FuzzyTitleSearch;
 
 import jakarta.annotation.Nullable;
@@ -41,8 +40,7 @@ public class HouseholdCookbook {
      * @param page   counted from zero
      * @param search blank for everything by title, otherwise the best matches first
      */
-    public Slice<Recipe> recipesOf(String householdId, CookpalUser viewer, int page, @Nullable String search)
-            throws ElementNotFound {
+    public Slice<Recipe> recipesOf(String householdId, CookpalUser viewer, int page, @Nullable String search) {
         memberships.requireMembership(householdId, viewer);
         var sharingMembers = memberships.sharingMemberIdsOf(householdId);
         var request = PageRequest.of(page, PAGE_SIZE);
@@ -55,7 +53,7 @@ public class HouseholdCookbook {
         return matching(search.strip(), sharingMembers, request);
     }
 
-    public long recipeCountOf(String householdId, CookpalUser viewer) throws ElementNotFound {
+    public long recipeCountOf(String householdId, CookpalUser viewer) {
         memberships.requireMembership(householdId, viewer);
         var sharingMembers = memberships.sharingMemberIdsOf(householdId);
         return sharingMembers.isEmpty() ? 0 : recipeRepository.countByOwnerUserIdIn(sharingMembers);

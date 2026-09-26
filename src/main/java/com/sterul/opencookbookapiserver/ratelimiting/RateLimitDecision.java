@@ -7,10 +7,10 @@ import java.time.Duration;
  */
 public record RateLimitDecision(boolean allowed, Duration retryAfter) {
 
-    private static final RateLimitDecision ALLOWED = new RateLimitDecision(true, Duration.ZERO);
+    private static final RateLimitDecision ALWAYS_ALLOWED = new RateLimitDecision(true, Duration.ZERO);
 
     public static RateLimitDecision allow() {
-        return ALLOWED;
+        return ALWAYS_ALLOWED;
     }
 
     public static RateLimitDecision refuse(Duration retryAfter) {

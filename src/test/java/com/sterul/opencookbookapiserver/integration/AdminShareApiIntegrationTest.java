@@ -32,7 +32,7 @@ import com.sterul.opencookbookapiserver.repositories.UserRepository;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class AdminShareApiIntegrationTest extends IntegrationTest {
+class AdminShareApiIntegrationTest extends IntegrationTestBase {
 
     private static final String SHARER = "admin-test-sharer@example.com";
     private static final String OPERATOR = "admin-test-operator@example.com";

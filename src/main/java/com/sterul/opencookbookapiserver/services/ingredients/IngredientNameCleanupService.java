@@ -82,7 +82,7 @@ public class IngredientNameCleanupService {
     }
 
     /** Skips ingredients gone, changed since the preview, or clean by now. */
-    public Outcome apply(List<Decision> decisions) throws ApiException {
+    public Outcome apply(List<Decision> decisions) {
         var renamed = 0;
         var merged = 0;
         var linesChanged = 0;

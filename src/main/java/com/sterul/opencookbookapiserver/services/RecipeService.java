@@ -64,7 +64,7 @@ public class RecipeService {
         this.cookbookAccess = cookbookAccess;
     }
 
-    public Recipe createNewRecipe(Recipe newRecipe) throws ElementNotFound {
+    public Recipe createNewRecipe(Recipe newRecipe) {
         log.info("Creating new recipe {} for user {}", newRecipe.getTitle(), newRecipe.getOwner());
         recipeReferenceResolver.resolve(newRecipe, newRecipe.getOwner());
 
@@ -107,23 +107,23 @@ public class RecipeService {
     }
 
     /** Own or household-readable. "Not found" rather than "not allowed", so ids cannot be walked. */
-    public Recipe getRecipeFor(Long recipeId, CookpalUser viewer) throws ElementNotFound {
+    public Recipe getRecipeFor(Long recipeId, CookpalUser viewer) {
         return getRecipeIf(recipeId,
                 recipe -> cookbookAccess.visibleOwnerIds(viewer).contains(recipe.getOwner().getUserId()));
     }
 
     /** For a household plan only its cookbook, so every member can open what is planned. */
-    public Recipe getPlannableRecipe(Long recipeId, PlanScope plan) throws ElementNotFound {
+    public Recipe getPlannableRecipe(Long recipeId, PlanScope plan) {
         return getRecipeIf(recipeId,
                 recipe -> cookbookAccess.plannableOwnerIds(plan).contains(recipe.getOwner().getUserId()));
     }
 
     /** Editing, deleting and publishing stay with the owner. */
-    public Recipe getOwnRecipe(Long recipeId, CookpalUser owner) throws ElementNotFound {
+    public Recipe getOwnRecipe(Long recipeId, CookpalUser owner) {
         return getRecipeIf(recipeId, recipe -> recipe.isOwnedBy(owner));
     }
 
-    private Recipe getRecipeIf(Long recipeId, Predicate<Recipe> allowed) throws ElementNotFound {
+    private Recipe getRecipeIf(Long recipeId, Predicate<Recipe> allowed) {
         return recipeRepository.findById(recipeId).filter(allowed).orElseThrow(ElementNotFound::new);
     }
 
@@ -134,7 +134,7 @@ public class RecipeService {
     public record DeletionImpact(long households, long plannedMeals) {
     }
 
-    public DeletionImpact impactOfDeleting(Long recipeId, CookpalUser owner) throws ElementNotFound {
+    public DeletionImpact impactOfDeleting(Long recipeId, CookpalUser owner) {
         var recipe = getOwnRecipe(recipeId, owner);
         return new DeletionImpact(
                 cookbookAccess.householdsShowing(recipe.getOwner()),
@@ -149,7 +149,7 @@ public class RecipeService {
         }
     }
 
-    public Recipe updateSingleRecipe(Recipe recipeUpdate, CookpalUser owner) throws ElementNotFound {
+    public Recipe updateSingleRecipe(Recipe recipeUpdate, CookpalUser owner) {
         var existingRecipe = getOwnRecipe(recipeUpdate.getId(), owner);
         log.info("Updating recipe {} of user {}", existingRecipe.getId(), existingRecipe.getOwner());
         recipeUpdate.setOwner(existingRecipe.getOwner());
@@ -195,7 +195,7 @@ public class RecipeService {
     }
 
     /** For administration and share resolution only, which are authorised by a role and a token. */
-    public Recipe getRecipeIgnoringAccess(Long id) throws ElementNotFound {
+    public Recipe getRecipeIgnoringAccess(Long id) {
         return recipeRepository.findById(id).orElseThrow(ElementNotFound::new);
     }
 
@@ -204,7 +204,7 @@ public class RecipeService {
      * callers that decide something by reading a recipe and then writing it - "share this unless
      * it is already shared" - which two requests arriving together would both answer "not yet".
      */
-    public Recipe getRecipeForUpdate(Long id) throws ElementNotFound {
+    public Recipe getRecipeForUpdate(Long id) {
         return recipeRepository.findForUpdateById(id).orElseThrow(ElementNotFound::new);
     }
 

@@ -2,6 +2,11 @@
 spring:
   flyway:
     enabled: false
+  jpa:
+    hibernate:
+      # No migrations run here, so there is nothing for the base profile's validate to
+      # check against. The throwaway in memory schema comes from the entities.
+      ddl-auto: create-drop
   # Not actually used, just to enable spring to create its beans correctly
   datasource:
     url: jdbc:h2:mem:testdb

@@ -40,7 +40,7 @@ import com.sterul.opencookbookapiserver.services.EmailService;
 })
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class AuthRateLimitIntegrationTest extends IntegrationTest {
+class AuthRateLimitIntegrationTest extends IntegrationTestBase {
 
     @Autowired
     private MockMvc mockMvc;

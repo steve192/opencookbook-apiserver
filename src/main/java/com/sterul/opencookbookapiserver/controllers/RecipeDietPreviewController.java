@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sterul.opencookbookapiserver.configurations.nutrition.ConditionalOnNutritionEnabled;
 import com.sterul.opencookbookapiserver.entities.recipe.Diet;
+import com.sterul.opencookbookapiserver.services.SignedInUserService;
 import com.sterul.opencookbookapiserver.services.nutrition.classification.DietPreview;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,7 +29,9 @@ public class RecipeDietPreviewController extends BaseController {
 
     private final DietPreview dietPreview;
 
-    public RecipeDietPreviewController(DietPreview dietPreview) {
+    public RecipeDietPreviewController(DietPreview dietPreview,
+            SignedInUserService signedInUser) {
+        super(signedInUser);
         this.dietPreview = dietPreview;
     }
 

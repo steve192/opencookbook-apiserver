@@ -9,7 +9,7 @@ import com.sterul.opencookbookapiserver.configurations.nutrition.ConditionalOnNu
 import com.sterul.opencookbookapiserver.controllers.BaseController;
 import com.sterul.opencookbookapiserver.controllers.responses.RecipeNutritionResponse;
 import com.sterul.opencookbookapiserver.services.RecipeService;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
+import com.sterul.opencookbookapiserver.services.SignedInUserService;
 import com.sterul.opencookbookapiserver.services.mail.MailLanguages;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.NutritionCalculator;
 import com.sterul.opencookbookapiserver.services.nutrition.dataset.NutritionDatasetReader;
@@ -29,7 +29,9 @@ public class RecipeNutritionController extends BaseController {
     private final MailLanguages languages;
 
     public RecipeNutritionController(RecipeService recipeService, NutritionCalculator calculator,
-            NutritionDatasetReader datasetReader, MailLanguages languages) {
+            NutritionDatasetReader datasetReader, MailLanguages languages,
+            SignedInUserService signedInUser) {
+        super(signedInUser);
         this.recipeService = recipeService;
         this.calculator = calculator;
         this.datasetReader = datasetReader;
@@ -38,7 +40,7 @@ public class RecipeNutritionController extends BaseController {
 
     @Operation(summary = "The estimated nutrients of one of your recipes, line by line")
     @GetMapping("/{id}/nutrition")
-    public RecipeNutritionResponse nutrition(@PathVariable Long id) throws ElementNotFound {
+    public RecipeNutritionResponse nutrition(@PathVariable Long id) {
         var user = getLoggedInUser();
         return RecipeNutritionResponse.forOwner(calculator.calculate(recipeService.getRecipeFor(id, user)),
                 languages.forUser(user).getLanguage(), datasetReader.manifest());

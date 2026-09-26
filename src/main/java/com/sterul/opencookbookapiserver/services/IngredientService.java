@@ -51,7 +51,7 @@ public class IngredientService {
     }
 
     /** Somebody else's ingredient is not found. */
-    public Ingredient getOwnIngredient(Long id, CookpalUser owner) throws ElementNotFound {
+    public Ingredient getOwnIngredient(Long id, CookpalUser owner) {
         return ingredientRepository.findByIdAndOwner(id, owner).orElseThrow(ElementNotFound::new);
     }
 
@@ -59,7 +59,7 @@ public class IngredientService {
         return ingredientRepository.findAllByOwner(owner);
     }
 
-    public Ingredient getIngredient(Long id) throws ElementNotFound {
+    public Ingredient getIngredient(Long id) {
         return ingredientRepository.findById(id).orElseThrow(ElementNotFound::new);
     }
 
@@ -76,7 +76,7 @@ public class IngredientService {
         ingredientRepository.deleteAllByOwner(user);
     }
 
-    public void deleteIngredient(Ingredient ingredient) throws ApiException {
+    public void deleteIngredient(Ingredient ingredient) {
         if (ingredientRepository.isUsedByARecipe(ingredient)) {
             throw new ApiException(ApiErrorCode.CONFLICT, "Ingredient " + ingredient.getId() + " is used by a recipe");
         }

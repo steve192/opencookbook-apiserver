@@ -46,7 +46,7 @@ import com.sterul.opencookbookapiserver.services.nutrition.matching.CatalogueInd
 @SpringBootTest(properties = "opencookbook.nutrition.enabled=true")
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class AdminRecipeClassificationApiIntegrationTest extends IntegrationTest {
+class AdminRecipeClassificationApiIntegrationTest extends IntegrationTestBase {
 
     private static final String OPERATOR = "classification-operator@example.com";
     private static final String COOK = "classification-cook@example.com";
@@ -97,7 +97,7 @@ class AdminRecipeClassificationApiIntegrationTest extends IntegrationTest {
     private TransactionTemplate transactionTemplate;
 
     @BeforeEach
-    void catalogue() throws Exception {
+    void catalogue() {
         clean();
         food("custom-mince", "Hackfleisch", "Minced meat", Diet.MEAT);
         food("custom-tomato", "Tomate", "Tomato", Diet.VEGAN);

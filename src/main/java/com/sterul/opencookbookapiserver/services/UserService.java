@@ -7,7 +7,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,47 +37,42 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final IngredientService ingredientService;
+    private final PasswordEncoder passwordEncoder;
+    private final RecipeService recipeService;
+    private final RecipeGroupService recipeGroupService;
+    private final RecipeImageService recipeImageService;
+    private final WeekplanService weekplanService;
+    private final HouseholdService households;
+    private final RefreshTokenService refreshTokenService;
+    private final ActivationLinkRepository activationLinkRepository;
+    private final PasswordResetLinkRepository passwordResetLinkRepository;
+    private final EmailService emailService;
+    private final OpencookbookConfiguration opencookbookConfiguration;
+    private final MailLanguages mailLanguages;
 
-    @Autowired
-    private IngredientService ingredientService;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private RecipeService recipeService;
-
-    @Autowired
-    private RecipeGroupService recipeGroupService;
-
-    @Autowired
-    private RecipeImageService recipeImageService;
-
-    @Autowired
-    private WeekplanService weekplanService;
-
-    @Autowired
-    private HouseholdService households;
-
-    @Autowired
-    private RefreshTokenService refreshTokenService;
-
-    @Autowired
-    private ActivationLinkRepository activationLinkRepository;
-
-    @Autowired
-    private PasswordResetLinkRepository passwordResetLinkRepository;
-
-    @Autowired
-    private EmailService emailService;
-
-    @Autowired
-    private OpencookbookConfiguration opencookbookConfiguration;
-
-    @Autowired
-    private MailLanguages mailLanguages;
+    public UserService(UserRepository userRepository, IngredientService ingredientService,
+            PasswordEncoder passwordEncoder, RecipeService recipeService, RecipeGroupService recipeGroupService,
+            RecipeImageService recipeImageService, WeekplanService weekplanService, HouseholdService households,
+            RefreshTokenService refreshTokenService, ActivationLinkRepository activationLinkRepository,
+            PasswordResetLinkRepository passwordResetLinkRepository, EmailService emailService,
+            OpencookbookConfiguration opencookbookConfiguration, MailLanguages mailLanguages) {
+        this.userRepository = userRepository;
+        this.ingredientService = ingredientService;
+        this.passwordEncoder = passwordEncoder;
+        this.recipeService = recipeService;
+        this.recipeGroupService = recipeGroupService;
+        this.recipeImageService = recipeImageService;
+        this.weekplanService = weekplanService;
+        this.households = households;
+        this.refreshTokenService = refreshTokenService;
+        this.activationLinkRepository = activationLinkRepository;
+        this.passwordResetLinkRepository = passwordResetLinkRepository;
+        this.emailService = emailService;
+        this.opencookbookConfiguration = opencookbookConfiguration;
+        this.mailLanguages = mailLanguages;
+    }
 
     public CookpalUser getUserByEmail(String username) {
         return userRepository.findByEmailAddress(username);
@@ -90,7 +84,7 @@ public class UserService {
      *                 guess it can never be talked out of
      */
     public com.sterul.opencookbookapiserver.entities.account.CookpalUser createUser(String emailAddress,
-            String unencryptedPassword, Locale language) throws UserAlreadyExistsException, SignupDisabledException {
+            String unencryptedPassword, Locale language) {
         if (!opencookbookConfiguration.isAllowSignup()) {
             throw new SignupDisabledException();
         }
@@ -150,8 +144,7 @@ public class UserService {
         return activationLinkRepository.save(activationLink);
     }
 
-    public CookpalUser setUserActivation(Long userId, boolean activated)
-            throws ElementNotFound, LastAdministratorException {
+    public CookpalUser setUserActivation(Long userId, boolean activated) {
         var user = getUserById(userId);
         requireAnAdministratorRemains(user, activated && user.getRoles() == Role.ADMIN);
         user.setActivated(activated);
@@ -159,8 +152,7 @@ public class UserService {
     }
 
     /** Everything given replaces what was there, so a role of null takes the role away. */
-    public CookpalUser updateUser(Long userId, String emailAddress, boolean activated, Role role)
-            throws ElementNotFound, UserAlreadyExistsException, LastAdministratorException {
+    public CookpalUser updateUser(Long userId, String emailAddress, boolean activated, Role role) {
         var user = getUserById(userId);
         requireAnAdministratorRemains(user, activated && role == Role.ADMIN);
 
@@ -178,8 +170,7 @@ public class UserService {
     }
 
     /** Only the admin panel gives the role back, so losing the last one is final. */
-    private void requireAnAdministratorRemains(CookpalUser user, boolean staysAnAdministrator)
-            throws LastAdministratorException {
+    private void requireAnAdministratorRemains(CookpalUser user, boolean staysAnAdministrator) {
         if (staysAnAdministrator || user.getRoles() != Role.ADMIN || !user.isActivated()) {
             return;
         }
@@ -188,7 +179,7 @@ public class UserService {
         }
     }
 
-    public CookpalUser activateUser(String activationId) throws InvalidActivationLinkException {
+    public CookpalUser activateUser(String activationId) {
         var activationLink = activationLinkRepository.findById(activationId);
         if (activationLink.isEmpty()) {
             throw new InvalidActivationLinkException();
@@ -213,7 +204,7 @@ public class UserService {
         return setDisplayName(user, displayName);
     }
 
-    public void deleteUser(CookpalUser user) throws LastAdministratorException {
+    public void deleteUser(CookpalUser user) {
         requireAnAdministratorRemains(user, false);
         log.info("Deleting user {}", user);
         // Explicitly rather than by cascade, so the households hear of it.
@@ -295,7 +286,7 @@ public class UserService {
         return passwordResetLinkRepository.save(passwordResetLink);
     }
 
-    public void resetPassword(String newPassword, String passwordResetId) throws PasswordResetLinkNotExistingException {
+    public void resetPassword(String newPassword, String passwordResetId) {
 
         var link = passwordResetLinkRepository.findById(passwordResetId);
         if (link.isEmpty()) {
@@ -340,7 +331,7 @@ public class UserService {
         return counts.getOrDefault(user.getUserId(), 0L);
     }
 
-    public CookpalUser getUserById(Long id) throws ElementNotFound {
+    public CookpalUser getUserById(Long id) {
         return findUserById(id).orElseThrow(ElementNotFound::new);
     }
 

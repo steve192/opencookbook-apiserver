@@ -45,23 +45,23 @@ public class NameRuleService {
         return repository.findAllByOrderByNameAsc();
     }
 
-    public CatalogueNameRule neverLinkTo(String name, CatalogueFood food, CookpalUser admin) throws ApiException {
+    public CatalogueNameRule neverLinkTo(String name, CatalogueFood food, CookpalUser admin) {
         return save(CatalogueNameRule.builder().name(IngredientNames.normalise(name)).kind(CatalogueNameRule.Kind.NEVER_LINK_TO)
                 .catalogueFood(food).createdBy(admin).build());
     }
 
-    public CatalogueNameRule notAFood(String name, CookpalUser admin) throws ApiException {
+    public CatalogueNameRule notAFood(String name, CookpalUser admin) {
         return save(CatalogueNameRule.builder().name(IngredientNames.normalise(name)).kind(CatalogueNameRule.Kind.NOT_A_FOOD)
                 .createdBy(admin).build());
     }
 
-    public void deleteRule(Long id) throws ElementNotFound {
+    public void deleteRule(Long id) {
         var rule = repository.findById(id).orElseThrow(ElementNotFound::new);
         log.info("Admin: Deleting name rule {} '{}'", rule.getKind(), rule.getName());
         repository.delete(rule);
     }
 
-    private CatalogueNameRule save(CatalogueNameRule rule) throws ApiException {
+    private CatalogueNameRule save(CatalogueNameRule rule) {
         log.info("Admin: Adding name rule {} '{}'", rule.getKind(), rule.getName());
         try {
             return repository.saveAndFlush(rule);

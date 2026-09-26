@@ -2,7 +2,6 @@ package com.sterul.opencookbookapiserver.configurations.security.requestfilters;
 
 import java.io.IOException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,11 +20,13 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private UserDetailsService jwtUserDetailsService;
+    private final UserDetailsService jwtUserDetailsService;
+    private final JwtTokenUtil jwtTokenUtil;
 
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+    public JwtRequestFilter(UserDetailsService jwtUserDetailsService, JwtTokenUtil jwtTokenUtil) {
+        this.jwtUserDetailsService = jwtUserDetailsService;
+        this.jwtTokenUtil = jwtTokenUtil;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -59,7 +60,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                     .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             // Tell spring security that we are now authenticated
             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-
 
         } catch (IllegalArgumentException e) {
             logger.warn("JWT token is invalid");

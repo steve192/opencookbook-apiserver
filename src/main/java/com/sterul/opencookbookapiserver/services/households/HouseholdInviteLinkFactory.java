@@ -11,6 +11,7 @@ import com.sterul.opencookbookapiserver.services.AppLinkFactory;
 @Component
 public class HouseholdInviteLinkFactory {
 
+    @SuppressWarnings("java:S1075") // The app's own route; the host comes from AppLinkFactory.
     private static final String INVITE_PATH = "/household-invite/";
 
     private final AppLinkFactory appLinkFactory;

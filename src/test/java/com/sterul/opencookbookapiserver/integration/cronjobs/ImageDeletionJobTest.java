@@ -20,14 +20,14 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import com.sterul.opencookbookapiserver.cronjobs.ImageDeletionJob;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
-import com.sterul.opencookbookapiserver.integration.IntegrationTest;
+import com.sterul.opencookbookapiserver.integration.IntegrationTestBase;
 import com.sterul.opencookbookapiserver.repositories.RecipeImageRepository;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 import com.sterul.opencookbookapiserver.services.RecipeImageService;
 
 @SpringBootTest
 @ActiveProfiles("integration-test")
-class ImageDeletionJobTest extends IntegrationTest {
+class ImageDeletionJobTest extends IntegrationTestBase {
 
     @Autowired
     ImageDeletionJob cut;

@@ -24,8 +24,7 @@ public final class RecipeImageResponses {
     }
 
     /** Serves an image only the requesting user may see. */
-    public static ResponseEntity<byte[]> servePrivately(ImageSource source, String imageUuid)
-            throws ElementNotFound {
+    public static ResponseEntity<byte[]> servePrivately(ImageSource source, String imageUuid) {
         return serve(source, imageUuid, cacheFor(CacheControl.maxAge(CACHE_DURATION).cachePrivate()));
     }
 
@@ -33,13 +32,11 @@ public final class RecipeImageResponses {
      * Serves an image that anybody holding a share link may see. Cacheable by intermediaries,
      * unlike the owner's own images: the link is meant to be handed around.
      */
-    public static ResponseEntity<byte[]> servePublicly(ImageSource source, String imageUuid)
-            throws ElementNotFound {
+    public static ResponseEntity<byte[]> servePublicly(ImageSource source, String imageUuid) {
         return serve(source, imageUuid, cacheFor(CacheControl.maxAge(CACHE_DURATION).cachePublic()));
     }
 
-    private static ResponseEntity<byte[]> serve(ImageSource source, String imageUuid, CacheControl cacheControl)
-            throws ElementNotFound {
+    private static ResponseEntity<byte[]> serve(ImageSource source, String imageUuid, CacheControl cacheControl) {
         byte[] imageData;
         try {
             imageData = source.read();
@@ -63,6 +60,6 @@ public final class RecipeImageResponses {
 
     @FunctionalInterface
     public interface ImageSource {
-        byte[] read() throws IOException, ElementNotFound;
+        byte[] read() throws IOException;
     }
 }

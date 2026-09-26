@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.household.Household;
 import com.sterul.opencookbookapiserver.entities.household.HouseholdMembership;
-import com.sterul.opencookbookapiserver.errors.ApiException;
 import com.sterul.opencookbookapiserver.repositories.HouseholdRepository;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
@@ -36,7 +35,7 @@ public class HouseholdService {
         this.events = events;
     }
 
-    public Household create(String name, CookpalUser creator, boolean shareRecipes) throws ApiException {
+    public Household create(String name, CookpalUser creator, boolean shareRecipes) {
         var household = householdRepository.save(Household.builder().name(name.strip()).build());
         log.info("User {} created household {}", creator.getUserId(), household.getId());
         // Through join, so the creator counts against the caps too.
@@ -44,7 +43,7 @@ public class HouseholdService {
         return household;
     }
 
-    public Household rename(String householdId, String name, CookpalUser requester) throws ElementNotFound {
+    public Household rename(String householdId, String name, CookpalUser requester) {
         var household = memberships.requireMembership(householdId, requester).getHousehold();
         household.setName(name.strip());
         return householdRepository.save(household);
@@ -62,7 +61,7 @@ public class HouseholdService {
     }
 
     /** Leaving and being removed are the same; any member may remove any member. */
-    public void removeMember(String householdId, Long memberUserId, CookpalUser requester) throws ElementNotFound {
+    public void removeMember(String householdId, Long memberUserId, CookpalUser requester) {
         memberships.requireMembership(householdId, requester);
         var membership = memberships.membershipOf(householdId, memberUserId);
         log.info("User {} is removing user {} from household {}", requester.getUserId(), memberUserId, householdId);
@@ -74,7 +73,7 @@ public class HouseholdService {
         memberships.householdsOf(user).forEach(this::leave);
     }
 
-    public void dissolveAsAdministrator(String householdId) throws ElementNotFound {
+    public void dissolveAsAdministrator(String householdId) {
         var household = householdRepository.findById(householdId).orElseThrow(ElementNotFound::new);
         log.info("Administrator is dissolving household {}", householdId);
         memberships.membersOf(householdId).forEach(memberships::remove);

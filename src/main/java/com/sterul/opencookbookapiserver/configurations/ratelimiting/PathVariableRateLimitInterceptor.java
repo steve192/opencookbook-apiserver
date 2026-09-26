@@ -35,8 +35,7 @@ public class PathVariableRateLimitInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-            throws ApiException {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         var subject = subjectOf(request);
         if (subject == null) {
             // Nothing was matched, so there is nothing to charge and the request is about to be

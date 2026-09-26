@@ -14,8 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sterul.opencookbookapiserver.configurations.nutrition.ConditionalOnNutritionEnabled;
 import com.sterul.opencookbookapiserver.controllers.BaseController;
-import com.sterul.opencookbookapiserver.errors.ApiException;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
+import com.sterul.opencookbookapiserver.services.SignedInUserService;
 import com.sterul.opencookbookapiserver.services.mail.MailLanguages;
 import com.sterul.opencookbookapiserver.services.nutrition.linking.CatalogueSearchService;
 import com.sterul.opencookbookapiserver.services.nutrition.linking.IngredientLinkService;
@@ -40,7 +39,9 @@ public class IngredientLinkController extends BaseController {
     private final IngredientLinkService linkService;
     private final MailLanguages languages;
 
-    public IngredientLinkController(CatalogueSearchService searchService, IngredientLinkService linkService, MailLanguages languages) {
+    public IngredientLinkController(CatalogueSearchService searchService, IngredientLinkService linkService, MailLanguages languages,
+            SignedInUserService signedInUser) {
+        super(signedInUser);
         this.searchService = searchService;
         this.linkService = linkService;
         this.languages = languages;
@@ -59,7 +60,7 @@ public class IngredientLinkController extends BaseController {
     @Operation(summary = "Say what one of your ingredients is",
             description = "Applies to every recipe using the ingredient. Automatic matching never overrides it.")
     @PutMapping("/api/v1/ingredients/{id}/link")
-    public IngredientLinkResponse link(@PathVariable Long id, @Valid @RequestBody IngredientLinkRequest request) throws ElementNotFound {
+    public IngredientLinkResponse link(@PathVariable Long id, @Valid @RequestBody IngredientLinkRequest request) {
         var owner = getLoggedInUser();
         var ingredient = request.isExcluded()
                 ? linkService.exclude(id, owner)
@@ -76,14 +77,14 @@ public class IngredientLinkController extends BaseController {
                     + "the ingredient with that unit, and counts before the catalogue's weights.")
     @PutMapping("/api/v1/ingredients/{id}/portion")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void setOwnPortion(@PathVariable Long id, @Valid @RequestBody OwnPortionRequest request) throws ApiException {
+    public void setOwnPortion(@PathVariable Long id, @Valid @RequestBody OwnPortionRequest request) {
         linkService.setOwnPortion(id, getLoggedInUser(), request.unit(), request.grams());
     }
 
     @Operation(summary = "Take back what you said a piece of an ingredient weighs")
     @DeleteMapping("/api/v1/ingredients/{id}/portion")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void removeOwnPortion(@PathVariable Long id, @RequestParam(defaultValue = "") String unit) throws ApiException {
+    public void removeOwnPortion(@PathVariable Long id, @RequestParam(defaultValue = "") String unit) {
         linkService.removeOwnPortion(id, getLoggedInUser(), unit);
     }
 

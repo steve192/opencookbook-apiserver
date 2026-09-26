@@ -13,7 +13,6 @@ import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,7 +36,7 @@ public class RecipeCopier {
      * @param recipeSource where the copy says it came from
      */
     public Recipe copyTo(Recipe source, CookpalUser recipient, String recipeSource)
-            throws ElementNotFound, IOException {
+            throws IOException {
         log.info("User {} is copying recipe {}", recipient.getUserId(), source.getId());
 
         var copy = Recipe.builder()

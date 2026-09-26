@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminShareResponse;
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminShareStatisticsResponse;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.sharing.ShareLinkFactory;
 import com.sterul.opencookbookapiserver.services.sharing.ShareService;
 
@@ -71,7 +70,7 @@ public class AdminShareController {
     @Operation(summary = "Take a share down", description = "Revokes any share regardless of who owns it. The link stops working immediately.")
     @DeleteMapping("/{shareId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void revokeShare(@Valid @NotBlank @PathVariable String shareId) throws ElementNotFound {
+    public void revokeShare(@Valid @NotBlank @PathVariable String shareId) {
         log.info("Admin: Revoking share {}", shareId);
         shareService.revokeAsAdministrator(shareId);
     }

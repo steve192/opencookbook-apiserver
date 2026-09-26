@@ -7,33 +7,31 @@ import com.google.gson.Gson;
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
-import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
 import com.sterul.opencookbookapiserver.services.RecipeImageService;
 
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class AbstractRecipeImporter implements IRecipeImporter {
 
     protected CloseableHttpClient client;
     protected Gson gson;
 
-    protected AbstractRecipeImporter() {
+    private final RecipeImageService recipeImageService;
+    private final OpencookbookConfiguration opencookbookConfiguration;
+
+    protected AbstractRecipeImporter(RecipeImageService recipeImageService,
+            OpencookbookConfiguration opencookbookConfiguration) {
+        this.recipeImageService = recipeImageService;
+        this.opencookbookConfiguration = opencookbookConfiguration;
         client = HttpClientBuilder.create().build();
         gson = new Gson();
     }
 
-    @Autowired
-    private RecipeImageService recipeImageService;
-
-    @Autowired
-    private OpencookbookConfiguration opencookbookConfiguration;
-
     protected RecipeImage fetchImage(String url, CookpalUser owner)
-            throws UnsupportedOperationException, IllegalFiletypeException, IOException {
+            throws UnsupportedOperationException, IOException {
         // Bound the download by the configured limit: the response is read into memory,
         // so an oversized image has to be rejected while reading, not afterwards.
         var maxImageSize = Math.toIntExact(opencookbookConfiguration.getMaxImageSize());

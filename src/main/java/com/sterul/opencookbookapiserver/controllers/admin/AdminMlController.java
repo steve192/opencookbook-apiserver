@@ -20,7 +20,6 @@ import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminMlQuota
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminMlStatisticsResponse;
 import com.sterul.opencookbookapiserver.entities.ml.MlJobStatus;
 import com.sterul.opencookbookapiserver.services.UserService;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.ml.MlAvailabilityService;
 import com.sterul.opencookbookapiserver.services.ml.MlJobService;
 
@@ -85,14 +84,14 @@ public class AdminMlController {
             description = "A scan still running is stopped, and it stops counting against its "
                     + "owner's daily allowance.")
     @PostMapping("/jobs/{id}/reset")
-    public AdminMlJobResponse resetJob(@PathVariable String id) throws ElementNotFound {
+    public AdminMlJobResponse resetJob(@PathVariable String id) {
         return AdminMlJobResponse.fromEntity(mlJobService.resetJob(id));
     }
 
     @Operation(summary = "Delete a scan", description = "Stops it first if it is still running.")
     @DeleteMapping("/jobs/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteJob(@PathVariable String id) throws ElementNotFound {
+    public void deleteJob(@PathVariable String id) {
         mlJobService.deleteJob(id);
     }
 
@@ -121,7 +120,7 @@ public class AdminMlController {
             description = "The scans themselves are kept and stop counting, so the record of "
                     + "what was run survives the exception being granted.")
     @PostMapping("/quota/{userId}/reset")
-    public AdminMlQuotaResponse resetQuota(@PathVariable Long userId) throws ElementNotFound {
+    public AdminMlQuotaResponse resetQuota(@PathVariable Long userId) {
         mlJobService.resetQuota(userService.getUserById(userId));
         return getQuotaUsage();
     }

@@ -27,7 +27,6 @@ import com.sterul.opencookbookapiserver.services.mail.MailLanguages;
 import com.sterul.opencookbookapiserver.services.mail.MailMessages;
 import com.sterul.opencookbookapiserver.services.mail.MailRenderer;
 
-import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
 /**
@@ -128,7 +127,7 @@ class EmailServiceTest {
         return user;
     }
 
-    private ActivationLink activationLinkFor(CookpalUser user) throws MessagingException {
+    private ActivationLink activationLinkFor(CookpalUser user) {
         var link = new ActivationLink();
         link.setId("activation-id");
         link.setUser(user);

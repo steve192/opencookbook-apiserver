@@ -48,7 +48,7 @@ import com.sterul.opencookbookapiserver.services.nutrition.matching.CatalogueInd
 @SpringBootTest(properties = "opencookbook.nutrition.enabled=true")
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class AdminRelinkApiIntegrationTest extends IntegrationTest {
+class AdminRelinkApiIntegrationTest extends IntegrationTestBase {
 
     private static final String OPERATOR = "relink-operator@example.com";
     private static final String COOK = "relink-cook@example.com";

@@ -12,7 +12,6 @@ import com.sterul.opencookbookapiserver.controllers.sharing.responses.SharedReci
 import com.sterul.opencookbookapiserver.controllers.support.RecipeImageResponses;
 import com.sterul.opencookbookapiserver.controllers.support.RecipeResponses;
 import com.sterul.opencookbookapiserver.services.RecipeImageService;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.sharing.ShareService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,8 +46,7 @@ public class SharedRecipeController {
 
     @Operation(summary = "Read a shared recipe", description = "No authentication required. Rate limited per client and per share.")
     @GetMapping("/{" + SharePaths.SHARE_ID_VARIABLE + "}")
-    public SharedRecipeResponse getSharedRecipe(@Valid @NotBlank @PathVariable String shareId)
-            throws ElementNotFound {
+    public SharedRecipeResponse getSharedRecipe(@Valid @NotBlank @PathVariable String shareId) {
         var recipe = shareService.openSharedRecipe(shareId);
         return SharedRecipeResponse.fromEntity(recipe, recipeResponses.nutritionOf(recipe));
     }
@@ -57,7 +55,7 @@ public class SharedRecipeController {
     @GetMapping(value = "/{" + SharePaths.SHARE_ID_VARIABLE + "}/images/{uuid}", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> getSharedRecipeImage(
             @Valid @NotBlank @PathVariable String shareId,
-            @Valid @NotBlank @PathVariable String uuid) throws ElementNotFound {
+            @Valid @NotBlank @PathVariable String uuid) {
 
         shareService.requireSharedImage(shareId, uuid);
         return RecipeImageResponses.servePublicly(() -> recipeImageService.getImage(uuid), uuid);
@@ -68,7 +66,7 @@ public class SharedRecipeController {
             + "}/images/thumbnail/{uuid}", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> getSharedRecipeThumbnail(
             @Valid @NotBlank @PathVariable String shareId,
-            @Valid @NotBlank @PathVariable String uuid) throws ElementNotFound {
+            @Valid @NotBlank @PathVariable String uuid) {
 
         shareService.requireSharedImage(shareId, uuid);
         return RecipeImageResponses.servePublicly(() -> recipeImageService.getThumbnailImage(uuid), uuid);

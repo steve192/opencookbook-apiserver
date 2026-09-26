@@ -13,12 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sterul.opencookbookapiserver.configurations.households.ConditionalOnHouseholdsEnabled;
-import com.sterul.opencookbookapiserver.controllers.BaseController;
 import com.sterul.opencookbookapiserver.controllers.support.PlanScopes;
 import com.sterul.opencookbookapiserver.entities.PlanScope;
 import com.sterul.opencookbookapiserver.entities.household.Household;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
-import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.RecipeService;
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaAnnotation;
@@ -50,8 +48,6 @@ class AccessRuleArchitectureTest {
             .whereLayer("Controllers").mayNotBeAccessedByAnyLayer()
             .whereLayer("Services").mayOnlyBeAccessedByLayers("Controllers")
             .whereLayer("Repositories").mayOnlyBeAccessedByLayers("Services")
-            // Resolves the signed in user, before anything can be authorised.
-            .ignoreDependency(BaseController.class, UserRepository.class)
             .because("the access rule lives in the services, and reaching past it is how it gets skipped");
 
     @ArchTest

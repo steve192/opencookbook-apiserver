@@ -13,10 +13,8 @@ public class RecipeGroupRequest {
 
     private Long id;
 
-    // Temporarily disabled. When a recipe has a recipe group, it does not have a title
-    // TODO: Different class for recipe group creation / update and recipe creation / update
-    // @NotNull
-    // @NotEmpty
+    // Not required: this shape is sent both to name a group and as the group of a recipe, and
+    // in the second case the caller sends the id alone. Validating it here would reject that.
     private String title;
 
 }

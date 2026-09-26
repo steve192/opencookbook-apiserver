@@ -42,7 +42,7 @@ import com.sterul.opencookbookapiserver.services.nutrition.matching.CatalogueInd
 @SpringBootTest(properties = "opencookbook.nutrition.enabled=true")
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class NutritionApiIntegrationTest extends IntegrationTest {
+class NutritionApiIntegrationTest extends IntegrationTestBase {
 
     private static final String COOK = "nutrition-cook@example.com";
     private static final String STRANGER = "nutrition-stranger@example.com";

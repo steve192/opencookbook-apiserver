@@ -18,11 +18,10 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
+# Only what every job needs. The jobs that write (publish-main, auto-release) raise their
+# own ceiling, so a compromised step in one job cannot use another job's privileges.
 permissions:
-  contents: write
-  issues: write
-  pull-requests: write
-  packages: write
+  contents: read
 
 jobs:
   build-test:
@@ -33,6 +32,11 @@ jobs:
     name: SonarCloud
     needs: build-test
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # The scanner reads the pull request it is analysing. SonarCloud decorates the
+      # pull request through its own GitHub app, not through this token.
+      pull-requests: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7.0.1
@@ -84,6 +88,8 @@ jobs:
     needs: build-test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
     outputs:
       should_release: ${{ steps.evaluate.outputs.should_release }}
     steps:

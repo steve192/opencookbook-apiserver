@@ -53,7 +53,7 @@ public class MlJobService {
     }
 
     public MlJob submitRecipeOcr(CookpalUser owner, List<MultipartFile> images,
-            RecipeOcrPayload payload, boolean trainingConsent) throws MlSubsystemException {
+            RecipeOcrPayload payload, boolean trainingConsent) {
 
         requireRemainingQuota(owner);
         var job = createQueuedJob(owner, RECIPE_OCR_JOB_TYPE);
@@ -75,20 +75,18 @@ public class MlJobService {
     }
 
     /** The corners the app should start the crop from. */
-    public MlSubsystemProxy.DetectedPage detectPageEdges(MultipartFile image)
-            throws MlSubsystemException {
+    public MlSubsystemProxy.DetectedPage detectPageEdges(MultipartFile image) {
         var detected = proxy.detectPageEdges(image);
         availability.reportReachable();
         return detected;
     }
 
-    public MlJob get(CookpalUser owner, String id) throws ElementNotFound {
+    public MlJob get(CookpalUser owner, String id) {
         return mlJobRepository.findByIdAndOwner(id, owner).orElseThrow(ElementNotFound::new);
     }
 
     /** Apply what somebody marked as the ingredients and the steps, in the subsystem's shape. */
-    public MlJob refine(CookpalUser owner, String id, Map<String, Object> corrections)
-            throws ElementNotFound, MlSubsystemException {
+    public MlJob refine(CookpalUser owner, String id, Map<String, Object> corrections) {
         var job = get(owner, id);
         if (job.getRemoteJobId() == null) {
             throw new ElementNotFound();
@@ -101,7 +99,7 @@ public class MlJobService {
     }
 
     /** Reports a refusing subsystem back, unlike {@link #resetJob}, which carries on. */
-    public void cancel(CookpalUser owner, String id) throws ElementNotFound, MlSubsystemException {
+    public void cancel(CookpalUser owner, String id) {
         var job = get(owner, id);
         if (job.isFinished()) {
             return;
@@ -118,12 +116,12 @@ public class MlJobService {
         return mlJobRepository.findMatching(userId, status);
     }
 
-    public MlJob getAnyJob(String id) throws ElementNotFound {
+    public MlJob getAnyJob(String id) {
         return mlJobRepository.findById(id).orElseThrow(ElementNotFound::new);
     }
 
     /** Stops a running scan and takes it off its owner's allowance, so they can try again. */
-    public MlJob resetJob(String id) throws ElementNotFound {
+    public MlJob resetJob(String id) {
         var job = getAnyJob(id);
         if (!job.isFinished()) {
             stopRemotely(job);
@@ -134,7 +132,7 @@ public class MlJobService {
         return mlJobRepository.save(job);
     }
 
-    public void deleteJob(String id) throws ElementNotFound {
+    public void deleteJob(String id) {
         var job = getAnyJob(id);
         if (!job.isFinished()) {
             stopRemotely(job);
@@ -161,7 +159,7 @@ public class MlJobService {
     }
 
     /** Withdraw consent: everything this person donated for training is deleted. */
-    public int deleteTrainingData(CookpalUser owner) throws MlSubsystemException {
+    public int deleteTrainingData(CookpalUser owner) {
         return proxy.deleteTrainingData(submitterIds.of(owner));
     }
 
@@ -228,7 +226,7 @@ public class MlJobService {
                 .build());
     }
 
-    private void requireRemainingQuota(CookpalUser owner) throws MlSubsystemException {
+    private void requireRemainingQuota(CookpalUser owner) {
         var limit = configuration.getMl().getRecipeOcr().getJobsPerUserPerDay();
         if (limit <= 0) {
             return;

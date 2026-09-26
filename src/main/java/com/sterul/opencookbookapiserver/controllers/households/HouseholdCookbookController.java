@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sterul.opencookbookapiserver.configurations.households.ConditionalOnHouseholdsEnabled;
 import com.sterul.opencookbookapiserver.controllers.BaseController;
 import com.sterul.opencookbookapiserver.controllers.households.responses.HouseholdRecipePageResponse;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
+import com.sterul.opencookbookapiserver.services.SignedInUserService;
 import com.sterul.opencookbookapiserver.services.households.HouseholdCookbook;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,7 +26,9 @@ public class HouseholdCookbookController extends BaseController {
 
     private final HouseholdCookbook cookbook;
 
-    public HouseholdCookbookController(HouseholdCookbook cookbook) {
+    public HouseholdCookbookController(HouseholdCookbook cookbook,
+            SignedInUserService signedInUser) {
+        super(signedInUser);
         this.cookbook = cookbook;
     }
 
@@ -36,7 +38,7 @@ public class HouseholdCookbookController extends BaseController {
     @GetMapping
     public HouseholdRecipePageResponse getRecipes(@Valid @NotBlank @PathVariable String householdId,
             @RequestParam(defaultValue = "0") @Min(0) int page,
-            @RequestParam(required = false) String search) throws ElementNotFound {
+            @RequestParam(required = false) String search) {
         var viewer = getLoggedInUser();
         return HouseholdRecipePageResponse.of(cookbook.recipesOf(householdId, viewer, page, search), viewer);
     }

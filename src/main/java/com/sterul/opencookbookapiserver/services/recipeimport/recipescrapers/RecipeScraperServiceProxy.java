@@ -34,7 +34,7 @@ public class RecipeScraperServiceProxy {
         this.opencookbookConfiguration = opencookbookConfiguration;
     }
 
-    public String scrapeRecipe(String url) throws IOException, ImportNotSupportedException {
+    public String scrapeRecipe(String url) throws IOException {
         // Encoded rather than concatenated: a recipe link carrying its own query string ("?id=7")
         // used to have everything after the first "&" read as further parameters of this call,
         // which both truncated the link and let a caller add parameters of their own to it.

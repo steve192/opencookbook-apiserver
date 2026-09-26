@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,7 +14,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
+import com.sterul.opencookbookapiserver.repositories.RecipeImageRepository;
 import com.sterul.opencookbookapiserver.services.RecipeImageService;
+import com.sterul.opencookbookapiserver.services.access.CookbookAccess;
 
 /**
  * Storage failures must be recognisable as such. They used to be swallowed at startup and then
@@ -29,12 +32,17 @@ class RecipeImageServiceStorageTest {
         return configuration;
     }
 
+    /** Only the storage directories are under test; the collaborators are never reached. */
+    private RecipeImageService serviceWith(OpencookbookConfiguration configuration) {
+        return new RecipeImageService(configuration, mock(RecipeImageRepository.class), mock(CookbookAccess.class));
+    }
+
     @Test
     void storageDirectoriesAreCreatedOnStartup(@TempDir Path tempDir) {
         var uploadDir = tempDir.resolve("images");
         var thumbnailDir = tempDir.resolve("images/thumbnails");
 
-        new RecipeImageService(configurationWith(uploadDir, thumbnailDir));
+        serviceWith(configurationWith(uploadDir, thumbnailDir));
 
         assertTrue(Files.isDirectory(uploadDir));
         assertTrue(Files.isDirectory(thumbnailDir));
@@ -45,8 +53,9 @@ class RecipeImageServiceStorageTest {
         // A plain file where the directory should go: creating it cannot succeed
         var blockedByFile = Files.createFile(tempDir.resolve("images"));
 
-        var thrown = assertThrows(IllegalStateException.class,
-                () -> new RecipeImageService(configurationWith(blockedByFile, tempDir.resolve("thumbnails"))));
+        var configuration = configurationWith(blockedByFile, tempDir.resolve("thumbnails"));
+
+        var thrown = assertThrows(IllegalStateException.class, () -> serviceWith(configuration));
 
         assertTrue(thrown.getMessage().contains(blockedByFile.toAbsolutePath().toString()));
         assertInstanceOf(IOException.class, thrown.getCause());
@@ -56,16 +65,17 @@ class RecipeImageServiceStorageTest {
     void startupFailsWhenTheThumbnailDirectoryCannotBeCreated(@TempDir Path tempDir) throws IOException {
         var blockedByFile = Files.createFile(tempDir.resolve("thumbnails"));
 
-        assertThrows(IllegalStateException.class,
-                () -> new RecipeImageService(configurationWith(tempDir.resolve("images"), blockedByFile)));
+        var configuration = configurationWith(tempDir.resolve("images"), blockedByFile);
+
+        assertThrows(IllegalStateException.class, () -> serviceWith(configuration));
     }
 
     @Test
     void startingTwiceOverAnExistingDirectoryIsFine(@TempDir Path tempDir) {
         var configuration = configurationWith(tempDir.resolve("images"), tempDir.resolve("thumbnails"));
 
-        new RecipeImageService(configuration);
-        new RecipeImageService(configuration);
+        serviceWith(configuration);
+        serviceWith(configuration);
 
         assertEquals(true, Files.isDirectory(tempDir.resolve("images")));
     }

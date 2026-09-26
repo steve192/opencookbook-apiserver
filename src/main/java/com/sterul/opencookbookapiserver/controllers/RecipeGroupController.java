@@ -2,7 +2,6 @@ package com.sterul.opencookbookapiserver.controllers;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +15,7 @@ import com.sterul.opencookbookapiserver.controllers.requests.RecipeGroupRequest;
 import com.sterul.opencookbookapiserver.controllers.responses.RecipeGroupResponse;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.services.RecipeGroupService;
+import com.sterul.opencookbookapiserver.services.SignedInUserService;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,8 +27,13 @@ import jakarta.validation.Valid;
 @Tag(name = "Recipe groups", description = "Recipe groups")
 public class RecipeGroupController extends BaseController {
 
-    @Autowired
-    private RecipeGroupService recipeGroupService;
+    private final RecipeGroupService recipeGroupService;
+
+    public RecipeGroupController(RecipeGroupService recipeGroupService,
+            SignedInUserService signedInUser) {
+        super(signedInUser);
+        this.recipeGroupService = recipeGroupService;
+    }
 
     @Operation(summary = "Get all recipe groups")
     @GetMapping("")
@@ -49,8 +54,7 @@ public class RecipeGroupController extends BaseController {
 
     @Operation(summary = "Change a recipe group")
     @PutMapping("/{id}")
-    public RecipeGroupResponse change(@PathVariable Long id, @Valid @RequestBody RecipeGroupRequest updatedRecipeGroup)
-            throws ElementNotFound {
+    public RecipeGroupResponse change(@PathVariable Long id, @Valid @RequestBody RecipeGroupRequest updatedRecipeGroup) {
 
         requireOwnRecipeGroup(id);
         var groupEntity = requestToEntity(updatedRecipeGroup);
@@ -61,7 +65,7 @@ public class RecipeGroupController extends BaseController {
 
     @Operation(summary = "Delete a recipe group", description = "Assigned recipes will not be deleted, but the recipe group will be removed from them")
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) throws ElementNotFound {
+    public void delete(@PathVariable Long id) {
         requireOwnRecipeGroup(id);
 
         recipeGroupService.deleteRecipeGroup(id);
@@ -86,7 +90,7 @@ public class RecipeGroupController extends BaseController {
      * for a recipe that exists but belongs to somebody else would let anyone count the recipes
      * on this server by walking the ids.
      */
-    private void requireOwnRecipeGroup(Long id) throws ElementNotFound {
+    private void requireOwnRecipeGroup(Long id) {
         if (!recipeGroupService.hasAccessPermissionToRecipeGroup(id, getLoggedInUser())) {
             throw new ElementNotFound();
         }

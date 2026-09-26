@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -14,6 +13,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -44,6 +44,7 @@ public class WebSecurityConfiguration {
          * Public as well, but left out of the budget: the app renews every few minutes, so a
          * household behind one address would exhaust any sane limit in normal use.
          */
+        @SuppressWarnings("java:S1075") // This server's own endpoint, matched where it is served.
         private static final String REFRESH_TOKEN_PATH = "/api/v1/users/refreshToken";
 
         private static final String[] AUTH_WHITELIST = Stream.concat(
@@ -59,20 +60,18 @@ public class WebSecurityConfiguration {
                                         "/actuator/health",
                                         "/admin/**"))
                         .toArray(String[]::new);
-        @Autowired
-        private UnauthorizedEntryPoint unauthorizedEntryPoint;
-        @Autowired
-        private JwtRequestFilter jwtRequestFilter;
 
         @Bean
-        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        public SecurityFilterChain filterChain(HttpSecurity http,
+                        UnauthorizedEntryPoint unauthorizedEntryPoint,
+                        JwtRequestFilter jwtRequestFilter) {
 
                 // Cors and csrf not needed in an api server
                 http.cors(configurer -> configurer.configurationSource(c -> allowAllCorsConfig()));
                 http.csrf(conf -> conf.disable());
 
                 // Allow frames needed for h2 console
-                http.headers(config -> config.frameOptions(options -> options.sameOrigin()));
+                http.headers(config -> config.frameOptions(FrameOptionsConfig::sameOrigin));
 
                 // Permit whitelist and authenticated request
                 http.authorizeHttpRequests(
@@ -106,8 +105,7 @@ public class WebSecurityConfiguration {
         }
 
         @Bean
-        public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
-                        throws Exception {
+        public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) {
                 return authenticationConfiguration.getAuthenticationManager();
         }
 

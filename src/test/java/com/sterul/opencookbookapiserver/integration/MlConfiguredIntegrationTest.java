@@ -33,7 +33,7 @@ import com.sterul.opencookbookapiserver.repositories.UserRepository;
 })
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class MlConfiguredIntegrationTest extends IntegrationTest {
+class MlConfiguredIntegrationTest extends IntegrationTestBase {
 
     @Autowired
     private MockMvc mockMvc;

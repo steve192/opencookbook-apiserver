@@ -37,7 +37,7 @@ import java.util.Set;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class PublicEndpointsIntegrationTest extends IntegrationTest {
+class PublicEndpointsIntegrationTest extends IntegrationTestBase {
 
     @Autowired
     private MockMvc mockMvc;

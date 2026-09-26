@@ -20,8 +20,7 @@ import com.sterul.opencookbookapiserver.controllers.households.requests.SharingR
 import com.sterul.opencookbookapiserver.controllers.households.responses.HouseholdInviteResponse;
 import com.sterul.opencookbookapiserver.controllers.households.responses.HouseholdResponse;
 import com.sterul.opencookbookapiserver.controllers.support.HouseholdResponses;
-import com.sterul.opencookbookapiserver.errors.ApiException;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
+import com.sterul.opencookbookapiserver.services.SignedInUserService;
 import com.sterul.opencookbookapiserver.services.households.HouseholdInviteLinkFactory;
 import com.sterul.opencookbookapiserver.services.households.HouseholdInviteService;
 import com.sterul.opencookbookapiserver.services.households.HouseholdMembershipService;
@@ -46,7 +45,9 @@ public class HouseholdController extends BaseController {
 
     public HouseholdController(HouseholdService householdService, HouseholdMembershipService memberships,
             HouseholdInviteService invites, HouseholdInviteLinkFactory linkFactory,
-            HouseholdResponses householdResponses) {
+            HouseholdResponses householdResponses,
+            SignedInUserService signedInUser) {
+        super(signedInUser);
         this.householdService = householdService;
         this.memberships = memberships;
         this.invites = invites;
@@ -63,22 +64,21 @@ public class HouseholdController extends BaseController {
     @Operation(summary = "Start a household", description = "You become its first member.")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public HouseholdResponse create(@Valid @RequestBody HouseholdRequest request)
-            throws ApiException, ElementNotFound {
+    public HouseholdResponse create(@Valid @RequestBody HouseholdRequest request) {
         var household = householdService.create(request.name(), getLoggedInUser(), request.shareRecipes());
         return detailOf(household.getId());
     }
 
     @Operation(summary = "One household you are in")
     @GetMapping("/{householdId}")
-    public HouseholdResponse getSingle(@Valid @NotBlank @PathVariable String householdId) throws ElementNotFound {
+    public HouseholdResponse getSingle(@Valid @NotBlank @PathVariable String householdId) {
         return detailOf(householdId);
     }
 
     @Operation(summary = "Rename a household", description = "Any member may; there are no roles.")
     @PutMapping("/{householdId}")
     public HouseholdResponse rename(@Valid @NotBlank @PathVariable String householdId,
-            @Valid @RequestBody HouseholdRequest request) throws ElementNotFound {
+            @Valid @RequestBody HouseholdRequest request) {
         householdService.rename(householdId, request.name(), getLoggedInUser());
         return detailOf(householdId);
     }
@@ -88,7 +88,7 @@ public class HouseholdController extends BaseController {
                     + "household at once and removes your meals from its weekplan.")
     @PutMapping("/{householdId}/sharing")
     public HouseholdResponse setSharing(@Valid @NotBlank @PathVariable String householdId,
-            @Valid @RequestBody SharingRequest request) throws ElementNotFound {
+            @Valid @RequestBody SharingRequest request) {
         memberships.setSharing(householdId, getLoggedInUser(), request.shareRecipes());
         return detailOf(householdId);
     }
@@ -99,23 +99,21 @@ public class HouseholdController extends BaseController {
     @DeleteMapping("/{householdId}/members/{memberUserId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeMember(@Valid @NotBlank @PathVariable String householdId,
-            @PathVariable Long memberUserId) throws ElementNotFound {
+            @PathVariable Long memberUserId) {
         householdService.removeMember(householdId, memberUserId, getLoggedInUser());
     }
 
     @Operation(summary = "Create an invite link", description = "Lets one person join, until it lapses or is revoked.")
     @PostMapping("/{householdId}/invites")
     @ResponseStatus(HttpStatus.CREATED)
-    public HouseholdInviteResponse createInvite(@Valid @NotBlank @PathVariable String householdId)
-            throws ElementNotFound, ApiException {
+    public HouseholdInviteResponse createInvite(@Valid @NotBlank @PathVariable String householdId) {
         var invite = invites.create(householdId, getLoggedInUser());
         return HouseholdInviteResponse.of(invite, linkFactory.linkTo(invite.getId()));
     }
 
     @Operation(summary = "The invite links of this household that are still valid")
     @GetMapping("/{householdId}/invites")
-    public List<HouseholdInviteResponse> getInvites(@Valid @NotBlank @PathVariable String householdId)
-            throws ElementNotFound {
+    public List<HouseholdInviteResponse> getInvites(@Valid @NotBlank @PathVariable String householdId) {
         return invites.liveInvitesOf(householdId, getLoggedInUser()).stream()
                 .map(invite -> HouseholdInviteResponse.of(invite, linkFactory.linkTo(invite.getId())))
                 .toList();
@@ -125,11 +123,11 @@ public class HouseholdController extends BaseController {
     @DeleteMapping("/{householdId}/invites/{inviteId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void revokeInvite(@Valid @NotBlank @PathVariable String householdId,
-            @Valid @NotBlank @PathVariable String inviteId) throws ElementNotFound {
+            @Valid @NotBlank @PathVariable String inviteId) {
         invites.revoke(householdId, inviteId, getLoggedInUser());
     }
 
-    private HouseholdResponse detailOf(String householdId) throws ElementNotFound {
+    private HouseholdResponse detailOf(String householdId) {
         return householdResponses.detailFor(householdId, getLoggedInUser());
     }
 }

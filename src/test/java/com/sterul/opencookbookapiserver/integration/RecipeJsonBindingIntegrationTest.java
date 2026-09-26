@@ -24,7 +24,7 @@ import com.sterul.opencookbookapiserver.repositories.UserRepository;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class RecipeJsonBindingIntegrationTest extends IntegrationTest {
+class RecipeJsonBindingIntegrationTest extends IntegrationTestBase {
 
     private static final String USER = "json-binding@example.com";
 

@@ -39,7 +39,7 @@ import jakarta.mail.internet.MimeMessage;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class MailLanguageIntegrationTest extends IntegrationTest {
+class MailLanguageIntegrationTest extends IntegrationTestBase {
 
     private static final String GERMAN_BROWSER = "de-AT,de;q=0.9,en;q=0.5";
     private static final String ENGLISH_BROWSER = "en-GB,en;q=0.9";

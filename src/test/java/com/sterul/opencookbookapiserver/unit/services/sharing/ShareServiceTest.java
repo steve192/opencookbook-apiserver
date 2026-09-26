@@ -59,7 +59,7 @@ class ShareServiceTest {
     }
 
     @Test
-    void aSharedRecipeIsFetchedThroughTheRecipeServiceRatherThanOffTheShare() throws ElementNotFound {
+    void aSharedRecipeIsFetchedThroughTheRecipeServiceRatherThanOffTheShare() {
         var recipeAsTheShareRefersToIt = recipeWithId(RECIPE_ID);
         var recipeAsTheRecipeServiceHandsItOut = recipeWithId(RECIPE_ID);
         when(shareRepository.findById(SHARE_ID))
@@ -74,7 +74,7 @@ class ShareServiceTest {
     }
 
     @Test
-    void sharingARecipeTakesItUnderLock() throws ElementNotFound {
+    void sharingARecipeTakesItUnderLock() {
         when(recipeService.getRecipeForUpdate(RECIPE_ID)).thenReturn(recipeWithId(RECIPE_ID));
         when(shareRepository.findByRecipeAndVisibility(any(), any())).thenReturn(Optional.empty());
         when(shareRepository.save(any())).thenAnswer(saved -> saved.getArgument(0));
@@ -88,7 +88,7 @@ class ShareServiceTest {
     }
 
     @Test
-    void aShareBelongsToWhoeverOwnsTheRecipe() throws ElementNotFound {
+    void aShareBelongsToWhoeverOwnsTheRecipe() {
         var recipeOwner = new CookpalUser();
         recipeOwner.setUserId(99L);
         var recipe = recipeWithId(RECIPE_ID);
@@ -106,7 +106,7 @@ class ShareServiceTest {
     }
 
     @Test
-    void aNewShareLapsesAfterTheConfiguredNumberOfDays() throws ElementNotFound {
+    void aNewShareLapsesAfterTheConfiguredNumberOfDays() {
         configuration.getSharing().setValidityDays(30);
         when(recipeService.getRecipeForUpdate(RECIPE_ID)).thenReturn(recipeWithId(RECIPE_ID));
         when(shareRepository.findByRecipeAndVisibility(any(), any())).thenReturn(Optional.empty());
@@ -123,11 +123,13 @@ class ShareServiceTest {
         lapsed.setExpiresAt(NOW.minusSeconds(1));
         when(shareRepository.findById(SHARE_ID)).thenReturn(Optional.of(lapsed));
 
-        assertThrows(ElementNotFound.class, () -> cut().resolveSharedRecipe(SHARE_ID));
+        var service = cut();
+
+        assertThrows(ElementNotFound.class, () -> service.resolveSharedRecipe(SHARE_ID));
     }
 
     @Test
-    void openingASharedRecipeCountsTheView() throws ElementNotFound {
+    void openingASharedRecipeCountsTheView() {
         when(shareRepository.findById(SHARE_ID))
                 .thenReturn(Optional.of(liveShareOf(recipeWithId(RECIPE_ID))));
         when(recipeService.getRecipeIgnoringAccess(RECIPE_ID)).thenReturn(recipeWithId(RECIPE_ID));
@@ -138,13 +140,15 @@ class ShareServiceTest {
     }
 
     @Test
-    void anImageOfAnotherRecipeIsNotReachableThroughAShare() throws ElementNotFound {
+    void anImageOfAnotherRecipeIsNotReachableThroughAShare() {
         when(shareRepository.findById(SHARE_ID))
                 .thenReturn(Optional.of(liveShareOf(recipeWithId(RECIPE_ID))));
         when(recipeService.getRecipeIgnoringAccess(RECIPE_ID)).thenReturn(recipeWithId(RECIPE_ID));
 
+        var service = cut();
+
         assertThrows(ElementNotFound.class,
-                () -> cut().requireSharedImage(SHARE_ID, "an-image-of-some-other-recipe"));
+                () -> service.requireSharedImage(SHARE_ID, "an-image-of-some-other-recipe"));
     }
 
     private Recipe recipeWithId(Long id) {

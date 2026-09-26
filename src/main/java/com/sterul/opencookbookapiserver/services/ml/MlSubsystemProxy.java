@@ -41,6 +41,9 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @ConditionalOnMlConfigured
 @Slf4j
+// The path constants below are the subsystem's API, which this class is written against.
+// Only its host is configurable, through opencookbook.ml.serviceUrl.
+@SuppressWarnings("java:S1075")
 public class MlSubsystemProxy {
 
     private static final String JOBS_PATH = "/api/v1/jobs";
@@ -48,6 +51,7 @@ public class MlSubsystemProxy {
     private static final String PAGE_EDGES_PATH = "/api/v1/page-edges";
     private static final String TRAINING_DATA_PATH = "/api/v1/training-data";
     private static final String ATTACHMENTS_FIELD = "attachments";
+    private static final String ERROR_FIELD = "error";
 
     private final OpencookbookConfiguration configuration;
     private final Gson gson = new Gson();
@@ -88,8 +92,7 @@ public class MlSubsystemProxy {
 
     /** Hand over a photographed recipe. */
     public String submitRecipeOcr(String jobType, RecipeOcrPayload payload,
-            List<MultipartFile> images, boolean trainingConsent, String submitter)
-            throws MlSubsystemException {
+            List<MultipartFile> images, boolean trainingConsent, String submitter) {
 
         var body = MultipartEntityBuilder.create()
                 .addTextBody("job_type", jobType)
@@ -117,7 +120,7 @@ public class MlSubsystemProxy {
      * @return the four corners as fractions of the picture, and how sure the subsystem is
      * @throws MlSubsystemException when the subsystem refuses or cannot be reached
      */
-    public DetectedPage detectPageEdges(MultipartFile image) throws MlSubsystemException {
+    public DetectedPage detectPageEdges(MultipartFile image) {
         var body = MultipartEntityBuilder.create()
                 .addBinaryBody("image", readFully(image), contentTypeOf(image), filenameOf(image))
                 .build();
@@ -144,7 +147,7 @@ public class MlSubsystemProxy {
         }
     }
 
-    public MlJobState fetch(String remoteJobId) throws MlSubsystemException {
+    public MlJobState fetch(String remoteJobId) {
         var response = execute(new HttpGet(url(JOBS_PATH + "/" + remoteJobId)));
         return toState(parse(response.body()));
     }
@@ -157,8 +160,7 @@ public class MlSubsystemProxy {
      * @return the corrected job
      * @throws MlSubsystemException when the subsystem refuses or cannot be reached
      */
-    public MlJobState refine(String remoteJobId, Map<String, Object> corrections)
-            throws MlSubsystemException {
+    public MlJobState refine(String remoteJobId, Map<String, Object> corrections) {
         var request = new HttpPost(url(JOBS_PATH + "/" + remoteJobId + "/refine"));
         request.setEntity(new StringEntity(gson.toJson(corrections), ContentType.APPLICATION_JSON));
 
@@ -166,12 +168,12 @@ public class MlSubsystemProxy {
         return toState(parse(response.body()));
     }
 
-    public void cancel(String remoteJobId) throws MlSubsystemException {
+    public void cancel(String remoteJobId) {
         execute(new HttpDelete(url(JOBS_PATH + "/" + remoteJobId)));
     }
 
     /** Delete everything one person donated for training. */
-    public int deleteTrainingData(String submitter) throws MlSubsystemException {
+    public int deleteTrainingData(String submitter) {
         var response = execute(new HttpDelete(url(TRAINING_DATA_PATH + "?submitter="
                 + URLEncoder.encode(submitter, StandardCharsets.UTF_8))));
         var body = parse(response.body());
@@ -184,18 +186,17 @@ public class MlSubsystemProxy {
      *
      * @throws MlSubsystemException when the subsystem cannot be reached or refuses
      */
-    public void health() throws MlSubsystemException {
+    public void health() {
         execute(new HttpGet(url(HEALTH_PATH)), false);
     }
 
     // -- transport -----------------------------------------------------------
 
-    private RawResponse execute(HttpUriRequestBase request) throws MlSubsystemException {
+    private RawResponse execute(HttpUriRequestBase request) {
         return execute(request, true);
     }
 
-    private RawResponse execute(HttpUriRequestBase request, boolean authenticated)
-            throws MlSubsystemException {
+    private RawResponse execute(HttpUriRequestBase request, boolean authenticated) {
 
         var ml = configuration.getMl();
         if (authenticated) {
@@ -241,7 +242,7 @@ public class MlSubsystemProxy {
     }
 
     private MlJobState toState(JsonObject body) {
-        var error = has(body, "error") ? body.getAsJsonObject("error") : null;
+        var error = has(body, ERROR_FIELD) ? body.getAsJsonObject(ERROR_FIELD) : null;
         var result = has(body, "result") ? gson.toJson(body.get("result")) : null;
 
         return new MlJobState(
@@ -258,8 +259,8 @@ public class MlSubsystemProxy {
     private JsonObject errorOf(String body) {
         try {
             var parsed = JsonParser.parseString(body);
-            if (parsed.isJsonObject() && parsed.getAsJsonObject().has("error")) {
-                return parsed.getAsJsonObject().getAsJsonObject("error");
+            if (parsed.isJsonObject() && parsed.getAsJsonObject().has(ERROR_FIELD)) {
+                return parsed.getAsJsonObject().getAsJsonObject(ERROR_FIELD);
             }
         } catch (JsonSyntaxException | IllegalStateException e) {
             log.debug("The subsystem's error body was not the shape we expect", e);
@@ -267,7 +268,7 @@ public class MlSubsystemProxy {
         return null;
     }
 
-    private JsonObject parse(String body) throws MlSubsystemException {
+    private JsonObject parse(String body) {
         try {
             return JsonParser.parseString(body).getAsJsonObject();
         } catch (JsonSyntaxException | IllegalStateException e) {
@@ -293,7 +294,7 @@ public class MlSubsystemProxy {
         return has(body, field) && body.get(field).getAsBoolean();
     }
 
-    private static byte[] readFully(MultipartFile image) throws MlSubsystemException {
+    private static byte[] readFully(MultipartFile image) {
         try {
             return image.getBytes();
         } catch (IOException e) {
@@ -317,7 +318,14 @@ public class MlSubsystemProxy {
     }
 
     private String url(String path) {
-        return configuration.getMl().getServiceUrl().replaceAll("/+$", "") + path;
+        // Trimmed rather than matched: "/+$" backtracks over a run of slashes, and the whole job
+        // is to drop them.
+        var serviceUrl = configuration.getMl().getServiceUrl();
+        var end = serviceUrl.length();
+        while (end > 0 && serviceUrl.charAt(end - 1) == '/') {
+            end--;
+        }
+        return serviceUrl.substring(0, end) + path;
     }
 
     @PreDestroy

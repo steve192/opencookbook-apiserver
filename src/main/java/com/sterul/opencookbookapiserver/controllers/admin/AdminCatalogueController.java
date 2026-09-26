@@ -22,8 +22,6 @@ import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminCatalog
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminNutritionDatasetResponse;
 import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
 import com.sterul.opencookbookapiserver.entities.recipe.Diet;
-import com.sterul.opencookbookapiserver.errors.ApiException;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.nutrition.catalogue.CatalogueService;
 import com.sterul.opencookbookapiserver.services.nutrition.dataset.NutritionDatasetReader;
 
@@ -66,40 +64,39 @@ public class AdminCatalogueController {
 
     @Operation(summary = "One catalogue food")
     @GetMapping("/foods/{id}")
-    public AdminCatalogueFoodResponse getFood(@PathVariable Long id) throws ElementNotFound {
+    public AdminCatalogueFoodResponse getFood(@PathVariable Long id) {
         return response(catalogueService.getFood(id));
     }
 
     @Operation(summary = "Add a custom food")
     @PostMapping("/foods")
-    public AdminCatalogueFoodResponse createFood(@Valid @RequestBody AdminCustomFoodRequest request) throws ApiException {
+    public AdminCatalogueFoodResponse createFood(@Valid @RequestBody AdminCustomFoodRequest request) {
         return response(catalogueService.createCustomFood(request.toCustomFood()));
     }
 
     @Operation(summary = "Correct a custom food", description = "Foods shipped with the dataset are read-only.")
     @PutMapping("/foods/{id}")
-    public AdminCatalogueFoodResponse updateFood(@PathVariable Long id, @Valid @RequestBody AdminCustomFoodRequest request)
-            throws ApiException {
+    public AdminCatalogueFoodResponse updateFood(@PathVariable Long id, @Valid @RequestBody AdminCustomFoodRequest request) {
         return response(catalogueService.updateCustomFood(id, request.toCustomFood()));
     }
 
     @Operation(summary = "Delete a custom food", description = "Only while no ingredient links to it and no food is its variant.")
     @DeleteMapping("/foods/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteFood(@PathVariable Long id) throws ApiException {
+    public void deleteFood(@PathVariable Long id) {
         catalogueService.deleteCustomFood(id);
     }
 
     @Operation(summary = "Add a name to a food", description = "Also for dataset foods; the name must not belong to another food.")
     @PostMapping("/foods/{id}/names")
-    public AdminCatalogueFoodResponse addName(@PathVariable Long id, @Valid @RequestBody NameRequest request) throws ApiException {
+    public AdminCatalogueFoodResponse addName(@PathVariable Long id, @Valid @RequestBody NameRequest request) {
         return response(catalogueService.addName(id, request.languageIsoCode(), request.name()));
     }
 
     @Operation(summary = "Remove a name an administrator added")
     @DeleteMapping("/foods/{id}/names")
     public AdminCatalogueFoodResponse removeName(@PathVariable Long id, @RequestParam String languageIsoCode,
-            @RequestParam String name) throws ApiException {
+            @RequestParam String name) {
         return response(catalogueService.removeName(id, languageIsoCode, name));
     }
 
@@ -107,15 +104,14 @@ public class AdminCatalogueController {
             description = "Allowed for dataset foods too: the shipped class is read from a description, and the "
                     + "correction is marked as an administrator's so later dataset releases keep it.")
     @PutMapping("/foods/{id}/diet-class")
-    public AdminCatalogueFoodResponse classify(@PathVariable Long id, @Valid @RequestBody DietClassRequest request)
-            throws ApiException {
+    public AdminCatalogueFoodResponse classify(@PathVariable Long id, @Valid @RequestBody DietClassRequest request) {
         return response(catalogueService.classifyByAdmin(id, request.dietClass()));
     }
 
     @Operation(summary = "Merge a custom food into another food",
             description = "Ingredients linked to the custom food move to the target, its names too; the custom food is deleted.")
     @PostMapping("/foods/{id}/merge")
-    public AdminCatalogueFoodResponse merge(@PathVariable Long id, @Valid @RequestBody MergeRequest request) throws ApiException {
+    public AdminCatalogueFoodResponse merge(@PathVariable Long id, @Valid @RequestBody MergeRequest request) {
         return response(catalogueService.mergeCustomFood(id, request.targetId()));
     }
 

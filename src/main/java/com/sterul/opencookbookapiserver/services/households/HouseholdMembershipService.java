@@ -40,13 +40,13 @@ public class HouseholdMembershipService {
     }
 
     /** "Not found" rather than "not allowed", so a household cannot be shown to exist by asking. */
-    public HouseholdMembership requireMembership(String householdId, CookpalUser user) throws ElementNotFound {
+    public HouseholdMembership requireMembership(String householdId, CookpalUser user) {
         return membershipRepository.findByHouseholdIdAndMember(householdId, user)
                 .orElseThrow(ElementNotFound::new);
     }
 
     /** Somebody's membership, for acting on it; says nothing about who may. */
-    public HouseholdMembership membershipOf(String householdId, Long memberUserId) throws ElementNotFound {
+    public HouseholdMembership membershipOf(String householdId, Long memberUserId) {
         return membershipRepository.findByHouseholdIdAndMemberUserId(householdId, memberUserId)
                 .orElseThrow(ElementNotFound::new);
     }
@@ -76,7 +76,7 @@ public class HouseholdMembershipService {
         return membershipRepository.findSharingMemberIds(householdId);
     }
 
-    public HouseholdMembership join(Household household, CookpalUser user, boolean shareRecipes) throws ApiException {
+    public HouseholdMembership join(Household household, CookpalUser user, boolean shareRecipes) {
         if (membershipRepository.findByHouseholdIdAndMember(household.getId(), user).isPresent()) {
             throw new ApiException(ApiErrorCode.ALREADY_A_MEMBER, "Already a member");
         }
@@ -96,8 +96,7 @@ public class HouseholdMembershipService {
                 .build());
     }
 
-    public HouseholdMembership setSharing(String householdId, CookpalUser user, boolean shareRecipes)
-            throws ElementNotFound {
+    public HouseholdMembership setSharing(String householdId, CookpalUser user, boolean shareRecipes) {
         var membership = requireMembership(householdId, user);
         if (membership.isShareRecipes() == shareRecipes) {
             return membership;

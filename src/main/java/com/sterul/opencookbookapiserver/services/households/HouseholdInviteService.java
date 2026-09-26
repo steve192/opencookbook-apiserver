@@ -37,7 +37,7 @@ public class HouseholdInviteService {
         this.clock = clock;
     }
 
-    public HouseholdInvite create(String householdId, CookpalUser creator) throws ElementNotFound, ApiException {
+    public HouseholdInvite create(String householdId, CookpalUser creator) {
         var household = memberships.requireMembership(householdId, creator).getHousehold();
         var live = inviteRepository.countByHouseholdIdAndExpiresAtAfter(householdId, clock.instant());
         if (live >= configuration.getHouseholds().getMaxLiveInvites()) {
@@ -52,12 +52,12 @@ public class HouseholdInviteService {
                 .build());
     }
 
-    public List<HouseholdInvite> liveInvitesOf(String householdId, CookpalUser requester) throws ElementNotFound {
+    public List<HouseholdInvite> liveInvitesOf(String householdId, CookpalUser requester) {
         memberships.requireMembership(householdId, requester);
         return inviteRepository.findAllByHouseholdIdAndExpiresAtAfterOrderByCreatedOnDesc(householdId, clock.instant());
     }
 
-    public void revoke(String householdId, String inviteId, CookpalUser requester) throws ElementNotFound {
+    public void revoke(String householdId, String inviteId, CookpalUser requester) {
         memberships.requireMembership(householdId, requester);
         var invite = inviteRepository.findById(inviteId)
                 .filter(candidate -> candidate.getHousehold().getId().equals(householdId))
@@ -66,11 +66,11 @@ public class HouseholdInviteService {
         inviteRepository.delete(invite);
     }
 
-    public Household preview(String token) throws ApiException {
+    public Household preview(String token) {
         return resolve(token).getHousehold();
     }
 
-    public Household accept(String token, CookpalUser user, boolean shareRecipes) throws ApiException {
+    public Household accept(String token, CookpalUser user, boolean shareRecipes) {
         var invite = resolve(token);
         var household = invite.getHousehold();
         // Joined first: a refused join throws before the invite is used up.
@@ -84,7 +84,7 @@ public class HouseholdInviteService {
     }
 
     /** One answer for expired, revoked and never-existed alike. */
-    private HouseholdInvite resolve(String token) throws ApiException {
+    private HouseholdInvite resolve(String token) {
         return inviteRepository.findById(token)
                 .filter(invite -> !invite.hasExpired(clock.instant()))
                 .orElseThrow(() -> new ApiException(ApiErrorCode.INVITE_INVALID, "Invite is not valid"));

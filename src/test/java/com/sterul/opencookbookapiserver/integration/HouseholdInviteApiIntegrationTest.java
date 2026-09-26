@@ -43,7 +43,7 @@ import com.sterul.opencookbookapiserver.services.households.HouseholdInviteServi
 @SpringBootTest(properties = "opencookbook.households.maxLiveInvites=2")
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
-class HouseholdInviteApiIntegrationTest extends IntegrationTest {
+class HouseholdInviteApiIntegrationTest extends IntegrationTestBase {
 
     private static final String ANNA = "inv-anna@example.invalid";
     private static final String BERT = "inv-bert@example.invalid";

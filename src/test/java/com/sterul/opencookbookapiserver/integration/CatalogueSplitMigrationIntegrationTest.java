@@ -183,7 +183,7 @@ class CatalogueSplitMigrationIntegrationTest {
         migrate();
 
         assertEquals(List.of(saltLine), jdbc.queryForList(
-                "SELECT needed_ingredients_id FROM recipe_needed_ingredients WHERE recipe_id = ?", Long.class, recipe));
+                "SELECT id FROM ingredient_need WHERE recipe_id = ?", Long.class, recipe));
         assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM ingredient_need WHERE id IN (?, ?)", Integer.class,
                 blankLine, blankPublicLine));
         assertEquals(0, jdbc.queryForObject("SELECT count(*) FROM ingredient WHERE id IN (?, ?)", Integer.class, blank, blankPublic));

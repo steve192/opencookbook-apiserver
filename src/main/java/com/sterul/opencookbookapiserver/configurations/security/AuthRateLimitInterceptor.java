@@ -22,7 +22,7 @@ public class AuthRateLimitInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-            Object handler) throws ApiException {
+            Object handler) {
 
         var clientAddress = request.getRemoteAddr();
         var decision = rateLimiter.recordAttempt(clientAddress);
