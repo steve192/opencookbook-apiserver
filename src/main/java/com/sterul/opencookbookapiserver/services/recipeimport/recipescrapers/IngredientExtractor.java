@@ -7,8 +7,8 @@ import java.util.regex.Pattern;
 import org.springframework.stereotype.Component;
 
 import com.sterul.opencookbookapiserver.services.ingredients.Amounts;
-import com.sterul.opencookbookapiserver.services.nutrition.IngredientNames;
-import com.sterul.opencookbookapiserver.services.nutrition.UnitLexicon;
+import com.sterul.opencookbookapiserver.services.catalogue.IngredientNames;
+import com.sterul.opencookbookapiserver.services.catalogue.UnitLexicon;
 
 /** Splits an ingredient line as a website or a scan writes it ("1 1/2 EL Butter, weich") into its parts. */
 @Component

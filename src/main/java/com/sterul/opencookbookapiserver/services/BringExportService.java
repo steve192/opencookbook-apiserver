@@ -1,6 +1,7 @@
 package com.sterul.opencookbookapiserver.services;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -45,13 +46,14 @@ public class BringExportService {
 
     /** Takes the recipe rather than its id, so that whoever asked has already been let in. */
     public BringExport createBringExport(Recipe recipe, CookpalUser user) {
-        var bringExport = BringExport.builder().baseAmount(recipe.getServings()).owner(user)
-                .ingredients(recipe.getNeededIngredients().stream()
-                        .map(IngredientNeed::describe)
-                        .toList())
-                .build();
+        return createBringExport(recipe.getTitle(), recipe.getServings(),
+                recipe.getNeededIngredients().stream().map(IngredientNeed::describe).toList(), user);
+    }
 
-        return bringExportRepository.save(bringExport);
+    /** @param lines finished shopping lines ("500 g Mehl"); what Bring shows as the recipe's ingredients */
+    public BringExport createBringExport(String title, int servings, List<String> lines, CookpalUser user) {
+        return bringExportRepository.save(BringExport.builder()
+                .title(title).baseAmount(servings).owner(user).ingredients(new ArrayList<>(lines)).build());
     }
 
     public BringExport getBringExport(String bringExportId) {

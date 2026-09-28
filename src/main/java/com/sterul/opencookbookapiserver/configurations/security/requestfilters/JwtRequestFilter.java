@@ -37,12 +37,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     }
 
     private void tryAuthentication(HttpServletRequest request) {
-        final String requestTokenHeader = request.getHeader("Authorization");
-        if (requestTokenHeader == null || !requestTokenHeader.startsWith("Bearer ")) {
+        var token = BearerTokens.of(request);
+        if (token.isEmpty()) {
             return;
         }
 
-        var jwtToken = requestTokenHeader.substring(7);
+        var jwtToken = token.get();
         try {
             if (!jwtTokenUtil.isTokenValid(jwtToken)) {
                 return;

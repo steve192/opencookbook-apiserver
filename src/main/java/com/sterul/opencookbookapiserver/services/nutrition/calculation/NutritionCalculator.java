@@ -5,12 +5,11 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.sterul.opencookbookapiserver.configurations.nutrition.ConditionalOnNutritionEnabled;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFood;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
-import com.sterul.opencookbookapiserver.services.nutrition.matching.ConfidenceBand;
+import com.sterul.opencookbookapiserver.services.catalogue.matching.ConfidenceBand;
 
 /**
  * Estimates a recipe's nutrients on demand; never stored. A line warns by impact:
@@ -21,7 +20,6 @@ import com.sterul.opencookbookapiserver.services.nutrition.matching.ConfidenceBa
  * Lines used only a little ("Mehl für die Form") never warn for being unlinked or without amount.
  */
 @Service
-@ConditionalOnNutritionEnabled
 public class NutritionCalculator {
 
     static final double RICH_KCAL_PER_100_G = 100;

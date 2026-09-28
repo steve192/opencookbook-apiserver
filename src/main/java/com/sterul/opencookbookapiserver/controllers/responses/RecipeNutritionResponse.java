@@ -5,16 +5,16 @@ import java.util.Set;
 import java.util.function.Function;
 
 import com.sterul.opencookbookapiserver.entities.Ingredient;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFood;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.LineFlag;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.LineNutrition;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.LineStatus;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.RecipeNutrition;
-import com.sterul.opencookbookapiserver.services.nutrition.dataset.NutritionDataset;
+import com.sterul.opencookbookapiserver.services.catalogue.dataset.CatalogueDataset;
 
 /** Line by line. Shared recipes get no ids and no link details. */
 public record RecipeNutritionResponse(NutritionSummaryResponse summary, List<Line> lines,
-        List<NutritionDataset.Attribution> attributions) {
+        List<CatalogueDataset.Attribution> attributions) {
 
     /** @param values for the whole recipe */
     public record Line(Long needId, Long ingredientId, String ingredientName, Float amount, String unit, Double grams,
@@ -31,16 +31,16 @@ public record RecipeNutritionResponse(NutritionSummaryResponse summary, List<Lin
         }
     }
 
-    public static RecipeNutritionResponse forOwner(RecipeNutrition nutrition, String language, NutritionDataset.Manifest manifest) {
+    public static RecipeNutritionResponse forOwner(RecipeNutrition nutrition, String language, CatalogueDataset.Manifest manifest) {
         return of(nutrition, line -> line(line, language, true), manifest);
     }
 
-    public static RecipeNutritionResponse forShared(RecipeNutrition nutrition, String language, NutritionDataset.Manifest manifest) {
+    public static RecipeNutritionResponse forShared(RecipeNutrition nutrition, String language, CatalogueDataset.Manifest manifest) {
         return of(nutrition, line -> line(line, language, false), manifest);
     }
 
     private static RecipeNutritionResponse of(RecipeNutrition nutrition, Function<LineNutrition, Line> lines,
-            NutritionDataset.Manifest manifest) {
+            CatalogueDataset.Manifest manifest) {
         return new RecipeNutritionResponse(NutritionSummaryResponse.of(nutrition), nutrition.lines().stream().map(lines).toList(),
                 manifest.attributions());
     }

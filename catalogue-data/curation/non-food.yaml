@@ -1,0 +1,149 @@
+# Things a food shop sells that are no food, for shopping lists. Their names must not be a food's:
+# the build refuses a name that is in the catalogue too. Icons are Fluent Emoji (fluent-icons.txt).
+
+baking-paper:
+  aisle: HOUSEHOLD
+  icon: roll_of_paper
+  de: [Backpapier, Backförmchen, Muffinförmchen]
+  en: [baking paper, parchment paper, muffin cases, cupcake liners]
+toilet-paper:
+  aisle: HOUSEHOLD
+  icon: roll_of_paper
+  de: [Toilettenpapier, Klopapier, Feuchttücher, feuchtes Toilettenpapier]
+  en: [toilet paper, toilet roll, toilet rolls, wet wipes]
+kitchen-roll:
+  aisle: HOUSEHOLD
+  icon: roll_of_paper
+  de: [Küchenrolle, Küchenpapier, Haushaltsrolle, Servietten]
+  en: [kitchen roll, paper towels, kitchen paper, napkins, serviettes]
+tissues:
+  aisle: HOUSEHOLD
+  icon: roll_of_paper
+  de: [Taschentücher, Tempo, Kosmetiktücher]
+  en: [tissues, paper tissues, facial tissues]
+foil:
+  aisle: HOUSEHOLD
+  icon: roll_of_paper
+  de: [Alufolie, Aluminiumfolie, Frischhaltefolie, Klarsichtfolie]
+  en: [aluminium foil, aluminum foil, tin foil, cling film, plastic wrap]
+bags:
+  aisle: HOUSEHOLD
+  de: [Müllbeutel, Müllsäcke, Mülltüten, Gefrierbeutel, Frühstücksbeutel, Zipbeutel, Biomüllbeutel]
+  en: [bin bags, trash bags, garbage bags, freezer bags, sandwich bags, zip bags]
+dish-soap:
+  aisle: HOUSEHOLD
+  icon: bubbles
+  de: [Spülmittel, Handspülmittel, Spüli]
+  en: [washing-up liquid, dish soap, dishwashing liquid]
+dishwasher-tabs:
+  aisle: HOUSEHOLD
+  icon: bubbles
+  de: [Spülmaschinentabs, Geschirrspültabs, Tabs, Klarspüler, Spülmaschinensalz, Regeneriersalz]
+  en: [dishwasher tablets, dishwasher tabs, rinse aid, dishwasher salt]
+detergent:
+  aisle: HOUSEHOLD
+  icon: bubbles
+  de: [Waschmittel, Waschpulver, Flüssigwaschmittel, Colorwaschmittel, Vollwaschmittel, Weichspüler, Fleckentferner, Waschmittel-Pods]
+  en: [laundry detergent, detergent, washing powder, fabric softener, stain remover, laundry pods]
+cleaner:
+  aisle: HOUSEHOLD
+  icon: bubbles
+  de: [Reiniger, Allzweckreiniger, Badreiniger, WC-Reiniger, Glasreiniger, Entkalker, Scheuermilch, Essigreiniger, Putzmittel, Kalkreiniger]
+  en: [cleaner, all-purpose cleaner, bathroom cleaner, toilet cleaner, glass cleaner, descaler, cleaning spray]
+sponge:
+  aisle: HOUSEHOLD
+  icon: sponge
+  de: [Schwamm, Schwämme, Spülschwamm, Spültuch, Spültücher, Putzlappen, Mikrofasertuch, Lappen]
+  en: [sponge, sponges, dishcloth, cleaning cloth, microfibre cloth]
+batteries:
+  aisle: HOUSEHOLD
+  icon: battery
+  de: [Batterien, Batterie, AA-Batterien, AAA-Batterien, Knopfzelle]
+  en: [batteries, battery, aa batteries, aaa batteries]
+light-bulb:
+  aisle: HOUSEHOLD
+  icon: light_bulb
+  de: [Glühbirne, Glühbirnen, Leuchtmittel, LED-Lampe]
+  en: [light bulb, light bulbs, bulb]
+candles:
+  aisle: HOUSEHOLD
+  icon: candle
+  de: [Kerzen, Teelichter, Kerze]
+  en: [candles, tea lights, candle]
+matches:
+  aisle: HOUSEHOLD
+  icon: fire
+  de: [Streichhölzer, Feuerzeug, Grillanzünder, Grillkohle]
+  en: [matches, lighter, firelighters, charcoal]
+pet-food:
+  aisle: HOUSEHOLD
+  icon: paw_prints
+  de: [Katzenfutter, Hundefutter, Katzenstreu, Tierfutter, Leckerli]
+  en: [cat food, dog food, cat litter, pet food, pet treats]
+flowers:
+  aisle: HOUSEHOLD
+  icon: bouquet
+  de: [Blumen, Blumenstrauß, Tulpen, Rosen]
+  en: [flowers, bouquet, tulips, roses]
+shampoo:
+  aisle: DRUGSTORE
+  icon: lotion_bottle
+  de: [Shampoo, Spülung, Haarspülung, Conditioner, Haarkur]
+  en: [shampoo, conditioner, hair conditioner]
+shower-gel:
+  aisle: DRUGSTORE
+  icon: lotion_bottle
+  de: [Duschgel, Duschbad, Badezusatz]
+  en: [shower gel, body wash, bubble bath]
+soap:
+  aisle: DRUGSTORE
+  icon: soap
+  de: [Seife, Handseife, Flüssigseife, Seifenspender]
+  en: [soap, hand soap, liquid soap]
+toothpaste:
+  aisle: DRUGSTORE
+  icon: toothbrush
+  de: [Zahnpasta, Zahncreme, Zahnbürste, Zahnbürsten, Zahnseide, Mundspülung, Aufsteckbürsten]
+  en: [toothpaste, toothbrush, toothbrushes, dental floss, floss, mouthwash]
+deodorant:
+  aisle: DRUGSTORE
+  icon: lotion_bottle
+  de: [Deo, Deodorant, Deoroller, Deospray]
+  en: [deodorant, deo, antiperspirant]
+cream-body:
+  aisle: DRUGSTORE
+  icon: lotion_bottle
+  de: [Creme, Handcreme, Bodylotion, Gesichtscreme, Sonnencreme, Sonnenmilch, Lippenpflege, Labello]
+  en: [lotion, body lotion, hand cream, face cream, sunscreen, sun cream, lip balm]
+razor:
+  aisle: DRUGSTORE
+  icon: razor
+  de: [Rasierer, Rasierklingen, Rasierschaum, Rasiergel]
+  en: [razor, razors, razor blades, shaving foam, shaving gel]
+hygiene:
+  aisle: DRUGSTORE
+  de: [Tampons, Binden, Slipeinlagen, Damenbinden, Menstruationstasse]
+  en: [tampons, pads, sanitary pads, panty liners, sanitary towels]
+cotton:
+  aisle: DRUGSTORE
+  de: [Wattepads, Wattestäbchen, Watte]
+  en: [cotton pads, cotton buds, cotton swabs, q-tips]
+diapers:
+  aisle: DRUGSTORE
+  icon: baby_bottle
+  de: [Windeln, Babywindeln, Feuchttücher Baby, Babynahrung, Babybrei, Gläschen]
+  en: [diapers, nappies, baby wipes, baby food]
+medicine:
+  aisle: DRUGSTORE
+  icon: pill
+  de: [Medikamente, Tabletten, Schmerztabletten, Ibuprofen, Paracetamol, Vitamine, Vitamintabletten, Nahrungsergänzung]
+  en: [medicine, tablets, painkillers, ibuprofen, paracetamol, vitamins, supplements]
+plasters:
+  aisle: DRUGSTORE
+  icon: adhesive_bandage
+  de: [Pflaster, Verband, Desinfektionsmittel]
+  en: [plasters, band-aids, bandage, disinfectant]
+hair:
+  aisle: DRUGSTORE
+  de: [Haargel, Haarspray, Haarwachs, Haargummis, Haarfarbe]
+  en: [hair gel, hairspray, hair wax, hair ties, hair dye]

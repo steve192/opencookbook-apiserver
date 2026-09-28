@@ -22,24 +22,22 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.jayway.jsonpath.JsonPath;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFoodName;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFoodPortion;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFood;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFoodName;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFoodPortion;
 import com.sterul.opencookbookapiserver.entities.nutrition.NutrientValues;
 import com.sterul.opencookbookapiserver.repositories.CatalogueFoodRepository;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 import com.sterul.opencookbookapiserver.repositories.ShareRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
-import com.sterul.opencookbookapiserver.services.nutrition.catalogue.NutritionDatasetImporter;
-import com.sterul.opencookbookapiserver.services.nutrition.matching.CatalogueIndexUpdater;
+import com.sterul.opencookbookapiserver.services.catalogue.matching.CatalogueIndexUpdater;
 
 /** Estimated nutrients of recipes, and how owners correct what their ingredients are. */
-@SpringBootTest(properties = "opencookbook.nutrition.enabled=true")
+@SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
 class NutritionApiIntegrationTest extends IntegrationTestBase {
@@ -53,10 +51,6 @@ class NutritionApiIntegrationTest extends IntegrationTestBase {
                 { "amount": 2, "unit": "", "ingredient": { "name": "Eier" } },
                 { "amount": 50, "unit": "g", "ingredient": { "name": "Zauberpulver" } } ] }
             """;
-
-    /** No background import of the shipped dataset. */
-    @MockitoBean
-    private NutritionDatasetImporter backgroundImporter;
 
     @Autowired
     private MockMvc mockMvc;

@@ -1,94 +1,168 @@
 package com.sterul.opencookbookapiserver.integration;
 
-import static com.sterul.opencookbookapiserver.integration.TestUtils.whenAuthenticated;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Arrays;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
-import com.sterul.opencookbookapiserver.controllers.BringExportController;
-import com.sterul.opencookbookapiserver.controllers.BringExportController.ExportCreationRequest;
+import com.jayway.jsonpath.JsonPath;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
-import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
+import com.sterul.opencookbookapiserver.entities.shopping.ShoppingStaple;
+import com.sterul.opencookbookapiserver.repositories.BringExportRepository;
+import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
+import com.sterul.opencookbookapiserver.repositories.ShoppingStapleRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
+/** The page Bring fetches without a token, and the two ways of filling it. */
 @SpringBootTest
+@AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
 class BringExportAPITest extends IntegrationTestBase {
-        @Autowired
-        private BringExportController cut;
 
-        @MockitoBean
-        RecipeRepository recipeRepository;
+    private static final String COOK = "bring-cook@example.invalid";
+    private static final String STRANGER = "bring-stranger@example.invalid";
 
-        @Autowired
-        UserRepository userRepository;
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private RecipeRepository recipeRepository;
+    @Autowired
+    private IngredientRepository ingredientRepository;
+    @Autowired
+    private BringExportRepository exportRepository;
+    @Autowired
+    private ShoppingStapleRepository stapleRepository;
 
-        @Test
-        @Transactional
-        void testBringExportCreation() {
-                var testRecipe = Recipe.builder().servings(10)
-                                .owner(new CookpalUser(1l, "test@test.com", "dskid", true, null, null, null, false))
-                                .neededIngredients(Arrays.asList(
-                                                IngredientNeed.builder().amount(10f).unit("Pcs")
-                                                                .ingredient(Ingredient.builder().name("Apple").build())
-                                                                .build(),
-                                                IngredientNeed.builder().amount(500f).unit("g")
-                                                                .ingredient(Ingredient.builder().name("Banana").build())
-                                                                .build()))
-                                .build();
+    private Long recipeId;
 
-                whenAuthenticated(userRepository);
-                when(recipeRepository.findById(any())).thenReturn(Optional.of(testRecipe));
+    @BeforeEach
+    void setup() {
+        exportRepository.deleteAll();
+        stapleRepository.deleteAll();
+        recipeRepository.deleteAll();
+        ingredientRepository.deleteAll();
+        var cook = TestAccounts.ensure(userRepository, COOK);
+        TestAccounts.ensure(userRepository, STRANGER);
+        var apple = ingredientRepository.save(Ingredient.builder().name("Apple").owner(cook).build());
+        var trap = ingredientRepository.save(Ingredient.builder().name("<img src=x onerror=alert(1)>").owner(cook).build());
+        recipeId = recipeRepository.save(Recipe.builder()
+                .title("Apfel & Co").owner(cook).servings(4)
+                .images(new ArrayList<>()).preparationSteps(new ArrayList<>()).recipeGroups(new ArrayList<>())
+                .neededIngredients(new ArrayList<>(List.of(
+                        IngredientNeed.builder().amount(10f).unit("Pcs").ingredient(apple).build(),
+                        IngredientNeed.builder().amount(1f).unit("g").ingredient(trap).build())))
+                .build()).getId();
+    }
 
-                var result = cut.createBringExport(new ExportCreationRequest(123456789l));
+    @Test
+    void aRecipeBecomesAPageBringCanRead() throws Exception {
+        var exportId = exportOfRecipe(COOK);
 
-                assertEquals( HttpStatus.OK, result.getStatusCode());
+        mockMvc.perform(get("/api/v1/bringexport").param("exportId", exportId))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("<span itemProp='yield'>4</span>")))
+                .andExpect(content().string(containsString("<h1 itemProp='name'>Apfel &amp; Co</h1>")))
+                .andExpect(content().string(containsString("<li itemProp='ingredients'>10 Pcs Apple</li>")));
+    }
 
-                var result2 = cut.getExportData(result.getBody().exportId());
-                assertEquals(HttpStatus.OK, result2.getStatusCode());
+    @Test
+    void whatPeopleTypedIsShownAndNeverRun() throws Exception {
+        var exportId = exportOfRecipe(COOK);
 
-                var expectedResult = """
-                                <div itemType='http://schema.org/Recipe'><span itemProp='yield'>10</span><h1 itemProp='name'>Cookpal Import</h1><img itemprop="image" src="favicon.ico"/><ul><li itemProp='ingredients'>10 Pcs Apple</li><li itemProp='ingredients'>500 g Banana</li></ul></div>""";
+        mockMvc.perform(get("/api/v1/bringexport").param("exportId", exportId))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML))
+                .andExpect(header().string("X-Content-Type-Options", "nosniff"))
+                .andExpect(header().string("Content-Security-Policy", containsString("default-src 'none'")))
+                .andExpect(content().string(not(containsString("<img src=x"))))
+                .andExpect(content().string(containsString("&lt;img src=x onerror=alert(1)&gt;")));
+    }
 
-                assertEquals(expectedResult, result2.getBody());
+    @Test
+    void aRecipeWithALongTitleCanBeExported() throws Exception {
+        var recipe = recipeRepository.findById(recipeId).orElseThrow();
+        recipe.setTitle("Omas ".repeat(40).strip());
+        recipeRepository.save(recipe);
+
+        mockMvc.perform(get("/api/v1/bringexport").param("exportId", exportOfRecipe(COOK)))
+                .andExpect(content().string(containsString(recipe.getTitle())));
+    }
+
+    @Test
+    void aRecipeSomebodyCannotReadIsNotFound() throws Exception {
+        mockMvc.perform(post("/api/v1/bringexport").with(asUser(STRANGER))
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"recipeId\": " + recipeId + "}"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void finishedLinesGoToBringUnderTheirOwnTitle() throws Exception {
+        var body = mockMvc.perform(post("/api/v1/bringexport/lines").with(asUser(COOK))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(linesRequest("\"Brot\", \"<b>Butter</b>\"", "")))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        mockMvc.perform(get("/api/v1/bringexport").param("exportId", (String) JsonPath.read(body, "$.exportId")))
+                .andExpect(content().string(containsString("<h1 itemProp='name'>Woche 40</h1>")))
+                .andExpect(content().string(containsString("<li itemProp='ingredients'>&lt;b&gt;Butter&lt;/b&gt;</li>")));
+    }
+
+    @Test
+    void aLineLeftOutThreeTimesInARowBecomesAStaple() throws Exception {
+        var saltLeftOut = "{\"name\": \"Salz\", \"ticked\": false}";
+        for (var import_ = 0; import_ < 3; import_++) {
+            mockMvc.perform(post("/api/v1/bringexport/lines").with(asUser(COOK))
+                            .contentType(MediaType.APPLICATION_JSON).content(linesRequest("\"Brot\"", saltLeftOut)))
+                    .andExpect(status().isOk());
         }
 
-        @Test
-        void cannotGenerateExportForOtherUser() {
-                var testRecipe = Recipe.builder()
-                                .owner(new CookpalUser(123l, "tester_other@test.invalid", "dpsadjopsad", true, null, null, null, false))
-                                .servings(10)
-                                .neededIngredients(Arrays.asList(
-                                                IngredientNeed.builder().amount(10f).unit("Pcs")
-                                                                .ingredient(Ingredient.builder().name("Apple").build())
-                                                                .build(),
-                                                IngredientNeed.builder().amount(500f).unit("g")
-                                                                .ingredient(Ingredient.builder().name("Banana").build())
-                                                                .build()))
-                                .build();
-                whenAuthenticated(userRepository);
-                when(recipeRepository.findById(any())).thenReturn(Optional.of(testRecipe));
+        var staples = stapleRepository.findAllByUserAndStapleTrueOrderByName(userRepository.findByEmailAddress(COOK));
+        assertEquals(List.of("Salz"), staples.stream().map(ShoppingStaple::getName).toList());
+    }
 
-                // "Not found" rather than "not allowed", so that this cannot be used to find
-                // out which recipe ids exist.
-                var request = new ExportCreationRequest(123456789l);
+    @Test
+    void creatingAnExportNeedsAToken() throws Exception {
+        mockMvc.perform(post("/api/v1/bringexport/lines")
+                        .contentType(MediaType.APPLICATION_JSON).content(linesRequest("\"Brot\"", "")))
+                .andExpect(status().isUnauthorized());
+    }
 
-                assertThrows(ElementNotFound.class, () -> cut.createBringExport(request));
-        }
+    private String exportOfRecipe(String user) throws Exception {
+        var body = mockMvc.perform(post("/api/v1/bringexport").with(asUser(user))
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"recipeId\": " + recipeId + "}"))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        return JsonPath.read(body, "$.exportId");
+    }
+
+    private static String linesRequest(String lines, String shown) {
+        return "{\"title\": \"Woche 40\", \"servings\": 2, \"lines\": [" + lines + "], \"shown\": [" + shown + "]}";
+    }
+
+    private static RequestPostProcessor asUser(String name) {
+        return SecurityMockMvcRequestPostProcessors.user(name);
+    }
 }

@@ -84,8 +84,7 @@ public class AdminRecipeClassificationController extends BaseController {
     @Operation(summary = "Preview a classification run",
             description = "Reads every recipe in scope and records what it would make of it; changes no recipe. "
                     + "A value a person set is never in scope, and a recipe that cannot be read is recorded as "
-                    + "skipped with a reason rather than guessed at. A kind this instance cannot classify is not "
-                    + "found; diets need nutrition estimation.")
+                    + "skipped with a reason rather than guessed at. A kind no classifier exists for is not found.")
     @PostMapping
     public RunResponse preview(@Valid @RequestBody PreviewRequest request) {
         return RunResponse.fromEntity(

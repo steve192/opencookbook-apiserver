@@ -7,10 +7,10 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 import com.sterul.opencookbookapiserver.entities.Ingredient;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFoodPortion;
-import com.sterul.opencookbookapiserver.services.nutrition.UnitLexicon;
-import com.sterul.opencookbookapiserver.services.nutrition.dataset.NutritionDataset;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFood;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFoodPortion;
+import com.sterul.opencookbookapiserver.services.catalogue.UnitLexicon;
+import com.sterul.opencookbookapiserver.services.catalogue.dataset.CatalogueDataset;
 
 /**
  * Converts a line's amount and unit into grams of its food. Variants without own portions or density use
@@ -66,7 +66,7 @@ public class GramsResolver {
         });
     }
 
-    private static AmountInGrams volume(float amount, NutritionDataset.Unit unit, CatalogueFood food) {
+    private static AmountInGrams volume(float amount, CatalogueDataset.Unit unit, CatalogueFood food) {
         return millilitres(amount * unit.millilitres(), food);
     }
 
@@ -78,7 +78,7 @@ public class GramsResolver {
     }
 
     /** Order: owner's weight, food portion, scaled ordinary portion, typical container content. */
-    private AmountInGrams pieces(float amount, NutritionDataset.Unit unit, CatalogueFood food, Map<String, Float> ownPortions) {
+    private AmountInGrams pieces(float amount, CatalogueDataset.Unit unit, CatalogueFood food, Map<String, Float> ownPortions) {
         var factor = unit.sizeOf() == null ? 1 : unit.factor();
         if (ownPortions.containsKey(unit.key())) {
             return AmountInGrams.byOwnPortion(amount * ownPortions.get(unit.key()));
@@ -108,7 +108,7 @@ public class GramsResolver {
                 .orElseGet(() -> AmountInGrams.unresolved(LineStatus.NO_PORTION));
     }
 
-    private static Optional<AmountInGrams> typicalContent(NutritionDataset.Unit container, CatalogueFood food) {
+    private static Optional<AmountInGrams> typicalContent(CatalogueDataset.Unit container, CatalogueFood food) {
         if (container.typicalGrams() != null) {
             return Optional.of(AmountInGrams.resolved(container.typicalGrams(), EnumSet.noneOf(LineFlag.class)));
         }

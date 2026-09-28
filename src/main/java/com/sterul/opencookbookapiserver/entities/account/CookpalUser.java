@@ -2,6 +2,7 @@ package com.sterul.opencookbookapiserver.entities.account;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sterul.opencookbookapiserver.entities.AuditableEntity;
+import com.sterul.opencookbookapiserver.entities.shopping.ShoppingProvider;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -48,6 +49,10 @@ public class CookpalUser extends AuditableEntity {
 
     /** Whether the first-run screen was completed; clearing the name later does not undo it. */
     private boolean onboarded;
+
+    /** Null until the first shopping import asked. */
+    @Enumerated(EnumType.STRING)
+    private ShoppingProvider shoppingProvider;
 
     @Override
     public String toString() {

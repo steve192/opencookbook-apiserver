@@ -12,7 +12,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFood;
 import com.sterul.opencookbookapiserver.repositories.projections.IngredientUseCount;
 import com.sterul.opencookbookapiserver.repositories.projections.OwnerCount;
 

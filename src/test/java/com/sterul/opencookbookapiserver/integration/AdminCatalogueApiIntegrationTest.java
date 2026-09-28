@@ -20,25 +20,23 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 import com.jayway.jsonpath.JsonPath;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFoodName;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueNameRule;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFood;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFoodName;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueNameRule;
 import com.sterul.opencookbookapiserver.entities.nutrition.NutrientValues;
 import com.sterul.opencookbookapiserver.repositories.CatalogueFoodRepository;
 import com.sterul.opencookbookapiserver.repositories.CatalogueNameRuleRepository;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
-import com.sterul.opencookbookapiserver.services.nutrition.catalogue.NutritionDatasetImporter;
 
 /** What an administrator can do with the nutrition catalogue. */
-@SpringBootTest(properties = "opencookbook.nutrition.enabled=true")
+@SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
 class AdminCatalogueApiIntegrationTest extends IntegrationTestBase {
@@ -50,10 +48,6 @@ class AdminCatalogueApiIntegrationTest extends IntegrationTestBase {
              "nutrients":{"energyKcal":250,"fat":2,"carbohydrates":45,"protein":8}, "negligible":false,
              "portions":[{"unitKey":"slice","grams":40}]}
             """;
-
-    /** No background import of the shipped dataset. */
-    @MockitoBean
-    private NutritionDatasetImporter backgroundImporter;
 
     @Autowired
     private MockMvc mockMvc;

@@ -1,7 +1,7 @@
 package com.sterul.opencookbookapiserver.controllers.admin.responses;
 
-import com.sterul.opencookbookapiserver.entities.nutrition.IngredientRelinkProposal;
-import com.sterul.opencookbookapiserver.services.nutrition.matching.ConfidenceBand;
+import com.sterul.opencookbookapiserver.entities.catalogue.IngredientRelinkProposal;
+import com.sterul.opencookbookapiserver.services.catalogue.matching.ConfidenceBand;
 
 /** @param band null when the proposal unlinks */
 public record AdminRelinkProposalResponse(

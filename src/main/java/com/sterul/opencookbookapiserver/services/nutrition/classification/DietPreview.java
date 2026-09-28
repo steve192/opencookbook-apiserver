@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
-import com.sterul.opencookbookapiserver.configurations.nutrition.ConditionalOnNutritionEnabled;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Diet;
@@ -14,7 +13,6 @@ import com.sterul.opencookbookapiserver.services.IngredientService;
 
 /** The diet a recipe being written would have, read from its ingredients as saving would link them. */
 @Component
-@ConditionalOnNutritionEnabled
 public class DietPreview {
 
     private final IngredientService ingredientService;

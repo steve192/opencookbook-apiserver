@@ -14,7 +14,6 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
@@ -22,24 +21,22 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFoodName;
-import com.sterul.opencookbookapiserver.entities.nutrition.IngredientRelinkProposal;
-import com.sterul.opencookbookapiserver.entities.nutrition.IngredientRelinkRun;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFood;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFoodName;
+import com.sterul.opencookbookapiserver.entities.catalogue.IngredientRelinkProposal;
+import com.sterul.opencookbookapiserver.entities.catalogue.IngredientRelinkRun;
 import com.sterul.opencookbookapiserver.entities.nutrition.NutrientValues;
 import com.sterul.opencookbookapiserver.repositories.CatalogueFoodRepository;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
-import com.sterul.opencookbookapiserver.services.nutrition.catalogue.NutritionDatasetImporter;
-import com.sterul.opencookbookapiserver.services.nutrition.linking.NameRuleService;
-import com.sterul.opencookbookapiserver.services.nutrition.matching.CatalogueIndexUpdater;
-import com.sterul.opencookbookapiserver.services.nutrition.relinking.RelinkService;
+import com.sterul.opencookbookapiserver.services.catalogue.linking.NameRuleService;
+import com.sterul.opencookbookapiserver.services.catalogue.matching.CatalogueIndexUpdater;
+import com.sterul.opencookbookapiserver.services.catalogue.relinking.RelinkService;
 
 /** Relink runs and name rules on the migrated schema, including its cascades. */
 @SpringBootTest(properties = {
         "spring.flyway.enabled=true",
-        "spring.jpa.hibernate.ddl-auto=none",
-        "opencookbook.nutrition.enabled=true"
+        "spring.jpa.hibernate.ddl-auto=none"
 })
 @ActiveProfiles("integration-test")
 @DirtiesContext
@@ -54,10 +51,6 @@ class RelinkMigrationIntegrationTest {
             .withUsername("cookpal")
             .withPassword("password")
             .waitingFor(Wait.forListeningPort());
-
-    /** No background import of the shipped dataset. */
-    @MockitoBean
-    private NutritionDatasetImporter backgroundImporter;
 
     @Autowired
     private JdbcTemplate jdbc;

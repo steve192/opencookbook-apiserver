@@ -1,0 +1,218 @@
+package com.sterul.opencookbookapiserver.services.catalogue;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFood;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFoodName;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFoodPortion;
+import com.sterul.opencookbookapiserver.entities.nutrition.NutrientValues;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueDatasetImport;
+import com.sterul.opencookbookapiserver.entities.recipe.Diet;
+import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
+import com.sterul.opencookbookapiserver.errors.ApiException;
+import com.sterul.opencookbookapiserver.repositories.CatalogueFoodRepository;
+import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
+import com.sterul.opencookbookapiserver.repositories.CatalogueDatasetImportRepository;
+import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
+import com.sterul.opencookbookapiserver.services.catalogue.UnitLexicon;
+import com.sterul.opencookbookapiserver.services.catalogue.dataset.CatalogueDataset;
+
+import lombok.extern.slf4j.Slf4j;
+
+/** Catalogue lookups, and administration: dataset foods only get names; custom foods can be edited, merged and deleted. */
+@Service
+@Transactional(rollbackFor = ApiException.class)
+@Slf4j
+public class CatalogueService {
+
+    private final CatalogueFoodRepository foodRepository;
+    private final IngredientRepository ingredientRepository;
+    private final CatalogueFoodReferences references;
+    private final CatalogueDatasetImportRepository importRepository;
+    private final UnitLexicon unitLexicon;
+    private final ApplicationEventPublisher events;
+
+    public CatalogueService(CatalogueFoodRepository foodRepository, IngredientRepository ingredientRepository,
+            CatalogueFoodReferences references, CatalogueDatasetImportRepository importRepository, UnitLexicon unitLexicon,
+            ApplicationEventPublisher events) {
+        this.foodRepository = foodRepository;
+        this.ingredientRepository = ingredientRepository;
+        this.references = references;
+        this.importRepository = importRepository;
+        this.unitLexicon = unitLexicon;
+        this.events = events;
+    }
+
+    public record CustomFood(List<CatalogueFoodName> names, NutrientValues nutrients, Float densityGPerMl,
+            boolean negligible, List<CatalogueFoodPortion> portions) {
+    }
+
+    public List<CatalogueFood> getAllFoods() {
+        return foodRepository.findAll();
+    }
+
+    public CatalogueFood getFood(Long id) {
+        return foodRepository.findById(id).orElseThrow(ElementNotFound::new);
+    }
+
+    public Optional<CatalogueFood> findFood(String catalogueKey) {
+        return foodRepository.findByCatalogueKey(catalogueKey);
+    }
+
+    /** The foods a shopping list offers to tap, with their names. */
+    public List<CatalogueFood> getShoppingTiles() {
+        return foodRepository.findAllByShoppingTileTrueAndRetiredFalse();
+    }
+
+    public long countLinkedIngredients(CatalogueFood food) {
+        return ingredientRepository.countByCatalogueFood(food);
+    }
+
+    public List<CatalogueDatasetImport> getImports() {
+        return importRepository.findAllByOrderByStartedAtDesc();
+    }
+
+    public CatalogueFood createCustomFood(CustomFood custom) {
+        var food = CatalogueFood.builder()
+                .catalogueKey("custom-" + UUID.randomUUID())
+                .origin(CatalogueFood.Origin.CUSTOM)
+                .build();
+        applyCustom(food, custom);
+        log.info("Admin: Creating custom catalogue food {}", food.getCatalogueKey());
+        var created = foodRepository.save(food);
+        changed("created " + created.getCatalogueKey());
+        return created;
+    }
+
+    public CatalogueFood updateCustomFood(Long id, CustomFood custom) {
+        var food = requireCustom(getFood(id));
+        applyCustom(food, custom);
+        log.info("Admin: Updating custom catalogue food {}", food.getCatalogueKey());
+        changed("updated " + food.getCatalogueKey());
+        return food;
+    }
+
+    public void deleteCustomFood(Long id) {
+        var food = requireCustom(getFood(id));
+        if (countLinkedIngredients(food) > 0 || foodRepository.existsByVariantOf(food)) {
+            throw new ApiException(ApiErrorCode.CONFLICT, "Catalogue food " + id + " is still referred to; merge it instead");
+        }
+        log.info("Admin: Deleting custom catalogue food {}", food.getCatalogueKey());
+        foodRepository.delete(food);
+        changed("deleted " + food.getCatalogueKey());
+    }
+
+    public CatalogueFood addName(Long id, String languageIsoCode, String name) {
+        var food = getFood(id);
+        var trimmed = name.trim();
+        var added = CatalogueFoodName.adminAlias(languageIsoCode, trimmed);
+        if (food.getNames().stream().anyMatch(added::sameAs)) {
+            throw new ApiException(ApiErrorCode.CONFLICT, "Catalogue food " + food.getCatalogueKey() + " already has the name '" + trimmed + "'");
+        }
+        requireNameFree(languageIsoCode, trimmed, food);
+        food.getNames().add(added);
+        log.info("Admin: Adding name '{}' ({}) to catalogue food {}", trimmed, languageIsoCode, food.getCatalogueKey());
+        changed("named " + food.getCatalogueKey());
+        return food;
+    }
+
+    /** Only administrator names can be removed. */
+    public CatalogueFood removeName(Long id, String languageIsoCode, String name) {
+        var food = getFood(id);
+        var unwanted = CatalogueFoodName.adminAlias(languageIsoCode, name);
+        var removed = food.getNames()
+                .removeIf(existing -> existing.getOrigin() == CatalogueFoodName.Origin.ADMIN && existing.sameAs(unwanted));
+        if (!removed) {
+            throw new ElementNotFound();
+        }
+        changed("unnamed " + food.getCatalogueKey());
+        return food;
+    }
+
+    /**
+     * Corrects what a food counts as for a diet. Unlike names and nutrients, this may be corrected
+     * on a dataset food too: the shipped class is a reading of a description, and an operator who
+     * knows the food better outranks it. The correction is marked and survives later releases.
+     */
+    public CatalogueFood classifyByAdmin(Long id, Diet dietClass) {
+        var food = getFood(id);
+        log.info("Classifying catalogue food {} as {}", food.getCatalogueKey(), dietClass);
+        food.classifyByAdmin(dietClass);
+        return foodRepository.save(food);
+    }
+
+    public CatalogueFood mergeCustomFood(Long sourceId, Long targetId) {
+        var source = requireCustom(getFood(sourceId));
+        var target = getFood(targetId);
+        if (source.equals(target)) {
+            throw new ApiException(ApiErrorCode.CONFLICT, "A catalogue food cannot be merged into itself");
+        }
+        var relinked = references.move(source, target);
+        var movedNames = source.getNames().stream()
+                .filter(name -> target.getNames().stream().noneMatch(name::sameAs))
+                .map(name -> CatalogueFoodName.adminAlias(name.getLanguageIsoCode(), name.getName()))
+                .toList();
+        source.getNames().clear();
+        foodRepository.saveAndFlush(source);
+        target.getNames().addAll(movedNames);
+        foodRepository.delete(source);
+        log.info("Admin: Merged catalogue food {} into {}, {} ingredients relinked", source.getCatalogueKey(),
+                target.getCatalogueKey(), relinked);
+        changed("merged " + source.getCatalogueKey() + " into " + target.getCatalogueKey());
+        return target;
+    }
+
+    private void changed(String reason) {
+        events.publishEvent(new CatalogueChangedEvent(reason));
+    }
+
+    private void applyCustom(CatalogueFood food, CustomFood custom) {
+        var names = new ArrayList<CatalogueFoodName>();
+        for (var name : custom.names()) {
+            if (names.stream().anyMatch(name::sameAs)) {
+                throw new ApiException(ApiErrorCode.VALIDATION_FAILED, "The name '" + name.getName() + "' is given twice");
+            }
+            requireNameFree(name.getLanguageIsoCode(), name.getName().trim(), food);
+            names.add(CatalogueFoodName.builder().languageIsoCode(name.getLanguageIsoCode()).name(name.getName().trim())
+                    .display(name.isDisplay()).origin(CatalogueFoodName.Origin.ADMIN).build());
+        }
+        for (var portion : custom.portions()) {
+            var unit = unitLexicon.unit(portion.getUnitKey());
+            if (unit.isEmpty() || unit.get().kind() != CatalogueDataset.UnitKind.COUNT || unit.get().sizeOf() != null) {
+                throw new ApiException(ApiErrorCode.VALIDATION_FAILED, "'" + portion.getUnitKey() + "' is not a count unit");
+            }
+        }
+        food.getNames().clear();
+        food.getNames().addAll(names);
+        food.setNutrients(custom.nutrients());
+        food.setDensityGPerMl(custom.densityGPerMl());
+        food.setNegligible(custom.negligible());
+        food.getPortions().clear();
+        food.getPortions().addAll(custom.portions().stream()
+                .map(portion -> CatalogueFoodPortion.builder().unitKey(portion.getUnitKey()).grams(portion.getGrams())
+                        .origin(CatalogueFoodPortion.Origin.ADMIN).build())
+                .toList());
+    }
+
+    private void requireNameFree(String languageIsoCode, String name, CatalogueFood food) {
+        var owner = foodRepository.findByName(languageIsoCode, name);
+        if (owner.isPresent() && !owner.get().equals(food)) {
+            throw new ApiException(ApiErrorCode.CONFLICT,
+                    "The name '" + name + "' belongs to catalogue food " + owner.get().getCatalogueKey());
+        }
+    }
+
+    private static CatalogueFood requireCustom(CatalogueFood food) {
+        if (food.isReadOnly()) {
+            throw new ApiException(ApiErrorCode.CONFLICT, "Catalogue food " + food.getCatalogueKey() + " ships with the dataset and is read-only");
+        }
+        return food;
+    }
+}

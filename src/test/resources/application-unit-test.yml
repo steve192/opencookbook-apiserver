@@ -12,3 +12,8 @@ spring:
     url: jdbc:h2:mem:testdb
     username: sa
     password: ""
+
+opencookbook:
+  catalogue:
+    # Tests import the catalogue foods they need themselves.
+    import-on-startup: false

@@ -15,7 +15,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFood;
 import com.sterul.opencookbookapiserver.services.selection.MatchTarget;
 import com.sterul.opencookbookapiserver.services.selection.RecipeMatcher;
 

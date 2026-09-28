@@ -37,6 +37,8 @@ build/
 recipe-images/
 database/
 src/main/resources/static
+# Written by the admin panel build; see cookpal-admin-frontend/scripts/build-if-changed.mjs
+src/main/resources/META-INF/sbom/
 
 **.code-workspace
 

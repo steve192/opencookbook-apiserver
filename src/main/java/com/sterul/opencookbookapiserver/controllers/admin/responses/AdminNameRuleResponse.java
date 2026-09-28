@@ -2,7 +2,7 @@ package com.sterul.opencookbookapiserver.controllers.admin.responses;
 
 import java.time.Instant;
 
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueNameRule;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueNameRule;
 
 public record AdminNameRuleResponse(Long id, String name, CatalogueNameRule.Kind kind, AdminFoodReference food,
         String createdByEmailAddress, Instant createdOn) {

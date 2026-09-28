@@ -10,15 +10,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sterul.opencookbookapiserver.configurations.nutrition.ConditionalOnNutritionEnabled;
 import com.sterul.opencookbookapiserver.controllers.BaseController;
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminRecipeResponse;
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminRelinkProposalResponse;
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminRelinkRunResponse;
-import com.sterul.opencookbookapiserver.entities.nutrition.IngredientRelinkProposal;
-import com.sterul.opencookbookapiserver.entities.nutrition.IngredientRelinkRun;
+import com.sterul.opencookbookapiserver.entities.catalogue.IngredientRelinkProposal;
+import com.sterul.opencookbookapiserver.entities.catalogue.IngredientRelinkRun;
 import com.sterul.opencookbookapiserver.services.SignedInUserService;
-import com.sterul.opencookbookapiserver.services.nutrition.relinking.RelinkService;
+import com.sterul.opencookbookapiserver.services.catalogue.relinking.RelinkService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,7 +30,6 @@ import jakarta.validation.constraints.NotNull;
 @RestController
 @RequestMapping("/api/v1/admin/nutrition/relink-runs")
 @Tag(name = "Nutrition relinking", description = "Relink runs: preview, decide, apply, revert")
-@ConditionalOnNutritionEnabled
 @PreAuthorize("hasAuthority('ADMIN')")
 public class AdminRelinkController extends BaseController {
 

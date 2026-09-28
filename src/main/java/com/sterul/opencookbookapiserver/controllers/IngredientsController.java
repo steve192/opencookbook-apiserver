@@ -2,7 +2,6 @@ package com.sterul.opencookbookapiserver.controllers;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -19,7 +18,7 @@ import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.services.IngredientService;
 import com.sterul.opencookbookapiserver.services.SignedInUserService;
 import com.sterul.opencookbookapiserver.services.mail.MailLanguages;
-import com.sterul.opencookbookapiserver.services.nutrition.linking.CatalogueSearchService;
+import com.sterul.opencookbookapiserver.services.catalogue.linking.CatalogueSearchService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,12 +29,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class IngredientsController extends BaseController {
 
     private final IngredientService ingredientService;
-    private final Optional<CatalogueSearchService> catalogueSearch;
+    private final CatalogueSearchService catalogueSearch;
     private final MailLanguages languages;
 
-    public IngredientsController(IngredientService ingredientService, Optional<CatalogueSearchService> catalogueSearch,
-            MailLanguages languages,
-            SignedInUserService signedInUser) {
+    public IngredientsController(IngredientService ingredientService, CatalogueSearchService catalogueSearch,
+            MailLanguages languages, SignedInUserService signedInUser) {
         super(signedInUser);
         this.ingredientService = ingredientService;
         this.catalogueSearch = catalogueSearch;
@@ -43,15 +41,14 @@ public class IngredientsController extends BaseController {
     }
 
     @Operation(summary = "The logged in user's ingredients, and names to suggest",
-            description = "With nutrition estimation turned on, the catalogue's names in the user's language follow, without ids: "
+            description = "The catalogue's names in the user's language follow, without ids: "
                     + "a recipe saved with one of them creates the user's own ingredient of that name.")
     @GetMapping("")
     public List<IngredientResponse> all() {
         var user = getLoggedInUser();
         var own = ingredientService.getIngredientsOfUser(user).stream().map(this::entityToResponse).toList();
         var ownNames = own.stream().map(ingredient -> ingredient.getName().toLowerCase(Locale.ROOT)).collect(Collectors.toSet());
-        var suggestions = catalogueSearch.stream()
-                .flatMap(search -> search.names(languages.forUser(user).getLanguage()).stream())
+        var suggestions = catalogueSearch.names(languages.forUser(user).getLanguage()).stream()
                 .filter(name -> !ownNames.contains(name.toLowerCase(Locale.ROOT)))
                 .map(name -> IngredientResponse.builder().name(name).build());
         return Stream.concat(own.stream(), suggestions).toList();

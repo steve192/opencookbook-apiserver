@@ -13,7 +13,6 @@ import {FieldDefinition, RowAction} from './collection/types';
 import {ConfirmDialog, Confirmation} from './ConfirmDialog';
 import {EntityFormDialog} from './form/EntityFormDialog';
 import {FormFieldDefinition, FormValues} from './form/types';
-import {NutritionTurnedOff} from './NutritionTurnedOff';
 
 // Shared by every run that changes many rows under review: preview, decide, apply, revert.
 
@@ -108,10 +107,6 @@ function RunHistory<Run extends ReviewedRun, Proposal, Form extends FormValues<F
       onRun: (run) => runner.run('Discarded run ' + run.id, () => api.discard(run.id)),
     },
   ], [api, runner, onReview, revertMessage]);
-
-  if (runs.errorStatus === 404) {
-    return <NutritionTurnedOff />;
-  }
 
   return (
     <>

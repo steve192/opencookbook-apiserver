@@ -5,11 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers.IngredientExtractor;
-import com.sterul.opencookbookapiserver.unit.services.nutrition.ShippedNutritionDataset;
+import com.sterul.opencookbookapiserver.unit.services.catalogue.ShippedCatalogueDataset;
 
 class IngredientExtractorTest {
 
-    private final IngredientExtractor cut = ShippedNutritionDataset.ingredientExtractor();
+    private final IngredientExtractor cut = ShippedCatalogueDataset.ingredientExtractor();
 
     @Test
     void amountsAreExtractedCorrectly()  {

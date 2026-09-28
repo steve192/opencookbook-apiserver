@@ -1,6 +1,6 @@
 package com.sterul.opencookbookapiserver.controllers.admin.responses;
 
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFood;
 
 public record AdminFoodReference(Long id, String catalogueKey, String displayNameDe, String displayNameEn, Float energyKcal,
         boolean retired) {

@@ -15,15 +15,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sterul.opencookbookapiserver.configurations.nutrition.ConditionalOnNutritionEnabled;
 import com.sterul.opencookbookapiserver.controllers.admin.requests.AdminCustomFoodRequest;
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminCatalogueFoodResponse;
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminCatalogueFoodSummary;
-import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminNutritionDatasetResponse;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
+import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminCatalogueDatasetResponse;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFood;
 import com.sterul.opencookbookapiserver.entities.recipe.Diet;
-import com.sterul.opencookbookapiserver.services.nutrition.catalogue.CatalogueService;
-import com.sterul.opencookbookapiserver.services.nutrition.dataset.NutritionDatasetReader;
+import com.sterul.opencookbookapiserver.services.catalogue.CatalogueService;
+import com.sterul.opencookbookapiserver.services.catalogue.dataset.CatalogueDatasetReader;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,14 +33,13 @@ import jakarta.validation.constraints.NotNull;
 @RestController
 @RequestMapping("/api/v1/admin/catalogue")
 @Tag(name = "Nutrition catalogue", description = "Foods ingredients link to for their nutrients")
-@ConditionalOnNutritionEnabled
 @PreAuthorize("hasAuthority('ADMIN')")
 public class AdminCatalogueController {
 
     private final CatalogueService catalogueService;
-    private final NutritionDatasetReader datasetReader;
+    private final CatalogueDatasetReader datasetReader;
 
-    public AdminCatalogueController(CatalogueService catalogueService, NutritionDatasetReader datasetReader) {
+    public AdminCatalogueController(CatalogueService catalogueService, CatalogueDatasetReader datasetReader) {
         this.catalogueService = catalogueService;
         this.datasetReader = datasetReader;
     }
@@ -117,8 +115,8 @@ public class AdminCatalogueController {
 
     @Operation(summary = "The shipped dataset and its imports into this instance")
     @GetMapping("/dataset")
-    public AdminNutritionDatasetResponse getDataset() {
-        return AdminNutritionDatasetResponse.of(datasetReader.manifest(), catalogueService.getImports());
+    public AdminCatalogueDatasetResponse getDataset() {
+        return AdminCatalogueDatasetResponse.of(datasetReader.manifest(), catalogueService.getImports());
     }
 
     private AdminCatalogueFoodResponse response(CatalogueFood food) {

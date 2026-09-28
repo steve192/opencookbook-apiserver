@@ -1,0 +1,1630 @@
+{
+ "items": [
+  {
+   "aisle": "HOUSEHOLD",
+   "key": "bags",
+   "names": [
+    {
+     "display": true,
+     "language": "de",
+     "name": "Müllbeutel"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Müllsäcke"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Mülltüten"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Gefrierbeutel"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Frühstücksbeutel"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Zipbeutel"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Biomüllbeutel"
+    },
+    {
+     "display": true,
+     "language": "en",
+     "name": "bin bags"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "trash bags"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "garbage bags"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "freezer bags"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "sandwich bags"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "zip bags"
+    }
+   ]
+  },
+  {
+   "aisle": "HOUSEHOLD",
+   "icon": "roll_of_paper",
+   "key": "baking-paper",
+   "names": [
+    {
+     "display": true,
+     "language": "de",
+     "name": "Backpapier"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Backförmchen"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Muffinförmchen"
+    },
+    {
+     "display": true,
+     "language": "en",
+     "name": "baking paper"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "parchment paper"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "muffin cases"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "cupcake liners"
+    }
+   ]
+  },
+  {
+   "aisle": "HOUSEHOLD",
+   "icon": "battery",
+   "key": "batteries",
+   "names": [
+    {
+     "display": true,
+     "language": "de",
+     "name": "Batterien"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Batterie"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "AA-Batterien"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "AAA-Batterien"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Knopfzelle"
+    },
+    {
+     "display": true,
+     "language": "en",
+     "name": "batteries"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "battery"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "aa batteries"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "aaa batteries"
+    }
+   ]
+  },
+  {
+   "aisle": "HOUSEHOLD",
+   "icon": "candle",
+   "key": "candles",
+   "names": [
+    {
+     "display": true,
+     "language": "de",
+     "name": "Kerzen"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Teelichter"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Kerze"
+    },
+    {
+     "display": true,
+     "language": "en",
+     "name": "candles"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "tea lights"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "candle"
+    }
+   ]
+  },
+  {
+   "aisle": "HOUSEHOLD",
+   "icon": "bubbles",
+   "key": "cleaner",
+   "names": [
+    {
+     "display": true,
+     "language": "de",
+     "name": "Reiniger"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Allzweckreiniger"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Badreiniger"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "WC-Reiniger"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Glasreiniger"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Entkalker"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Scheuermilch"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Essigreiniger"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Putzmittel"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Kalkreiniger"
+    },
+    {
+     "display": true,
+     "language": "en",
+     "name": "cleaner"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "all-purpose cleaner"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "bathroom cleaner"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "toilet cleaner"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "glass cleaner"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "descaler"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "cleaning spray"
+    }
+   ]
+  },
+  {
+   "aisle": "DRUGSTORE",
+   "key": "cotton",
+   "names": [
+    {
+     "display": true,
+     "language": "de",
+     "name": "Wattepads"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Wattestäbchen"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Watte"
+    },
+    {
+     "display": true,
+     "language": "en",
+     "name": "cotton pads"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "cotton buds"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "cotton swabs"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "q-tips"
+    }
+   ]
+  },
+  {
+   "aisle": "DRUGSTORE",
+   "icon": "lotion_bottle",
+   "key": "cream-body",
+   "names": [
+    {
+     "display": true,
+     "language": "de",
+     "name": "Creme"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Handcreme"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Bodylotion"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Gesichtscreme"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Sonnencreme"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Sonnenmilch"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Lippenpflege"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Labello"
+    },
+    {
+     "display": true,
+     "language": "en",
+     "name": "lotion"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "body lotion"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "hand cream"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "face cream"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "sunscreen"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "sun cream"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "lip balm"
+    }
+   ]
+  },
+  {
+   "aisle": "DRUGSTORE",
+   "icon": "lotion_bottle",
+   "key": "deodorant",
+   "names": [
+    {
+     "display": true,
+     "language": "de",
+     "name": "Deo"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Deodorant"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Deoroller"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Deospray"
+    },
+    {
+     "display": true,
+     "language": "en",
+     "name": "deodorant"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "deo"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "antiperspirant"
+    }
+   ]
+  },
+  {
+   "aisle": "HOUSEHOLD",
+   "icon": "bubbles",
+   "key": "detergent",
+   "names": [
+    {
+     "display": true,
+     "language": "de",
+     "name": "Waschmittel"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Waschpulver"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Flüssigwaschmittel"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Colorwaschmittel"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Vollwaschmittel"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Weichspüler"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Fleckentferner"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Waschmittel-Pods"
+    },
+    {
+     "display": true,
+     "language": "en",
+     "name": "laundry detergent"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "detergent"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "washing powder"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "fabric softener"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "stain remover"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "laundry pods"
+    }
+   ]
+  },
+  {
+   "aisle": "DRUGSTORE",
+   "icon": "baby_bottle",
+   "key": "diapers",
+   "names": [
+    {
+     "display": true,
+     "language": "de",
+     "name": "Windeln"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Babywindeln"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Feuchttücher Baby"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Babynahrung"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Babybrei"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Gläschen"
+    },
+    {
+     "display": true,
+     "language": "en",
+     "name": "diapers"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "nappies"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "baby wipes"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "baby food"
+    }
+   ]
+  },
+  {
+   "aisle": "HOUSEHOLD",
+   "icon": "bubbles",
+   "key": "dish-soap",
+   "names": [
+    {
+     "display": true,
+     "language": "de",
+     "name": "Spülmittel"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Handspülmittel"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Spüli"
+    },
+    {
+     "display": true,
+     "language": "en",
+     "name": "washing-up liquid"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "dish soap"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "dishwashing liquid"
+    }
+   ]
+  },
+  {
+   "aisle": "HOUSEHOLD",
+   "icon": "bubbles",
+   "key": "dishwasher-tabs",
+   "names": [
+    {
+     "display": true,
+     "language": "de",
+     "name": "Spülmaschinentabs"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Geschirrspültabs"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Tabs"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Klarspüler"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Spülmaschinensalz"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Regeneriersalz"
+    },
+    {
+     "display": true,
+     "language": "en",
+     "name": "dishwasher tablets"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "dishwasher tabs"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "rinse aid"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "dishwasher salt"
+    }
+   ]
+  },
+  {
+   "aisle": "HOUSEHOLD",
+   "icon": "bouquet",
+   "key": "flowers",
+   "names": [
+    {
+     "display": true,
+     "language": "de",
+     "name": "Blumen"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Blumenstrauß"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Tulpen"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Rosen"
+    },
+    {
+     "display": true,
+     "language": "en",
+     "name": "flowers"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "bouquet"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "tulips"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "roses"
+    }
+   ]
+  },
+  {
+   "aisle": "HOUSEHOLD",
+   "icon": "roll_of_paper",
+   "key": "foil",
+   "names": [
+    {
+     "display": true,
+     "language": "de",
+     "name": "Alufolie"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Aluminiumfolie"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Frischhaltefolie"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Klarsichtfolie"
+    },
+    {
+     "display": true,
+     "language": "en",
+     "name": "aluminium foil"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "aluminum foil"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "tin foil"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "cling film"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "plastic wrap"
+    }
+   ]
+  },
+  {
+   "aisle": "DRUGSTORE",
+   "key": "hair",
+   "names": [
+    {
+     "display": true,
+     "language": "de",
+     "name": "Haargel"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Haarspray"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Haarwachs"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Haargummis"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Haarfarbe"
+    },
+    {
+     "display": true,
+     "language": "en",
+     "name": "hair gel"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "hairspray"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "hair wax"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "hair ties"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "hair dye"
+    }
+   ]
+  },
+  {
+   "aisle": "DRUGSTORE",
+   "key": "hygiene",
+   "names": [
+    {
+     "display": true,
+     "language": "de",
+     "name": "Tampons"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Binden"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Slipeinlagen"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Damenbinden"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Menstruationstasse"
+    },
+    {
+     "display": true,
+     "language": "en",
+     "name": "tampons"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "pads"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "sanitary pads"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "panty liners"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "sanitary towels"
+    }
+   ]
+  },
+  {
+   "aisle": "HOUSEHOLD",
+   "icon": "roll_of_paper",
+   "key": "kitchen-roll",
+   "names": [
+    {
+     "display": true,
+     "language": "de",
+     "name": "Küchenrolle"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Küchenpapier"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Haushaltsrolle"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Servietten"
+    },
+    {
+     "display": true,
+     "language": "en",
+     "name": "kitchen roll"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "paper towels"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "kitchen paper"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "napkins"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "serviettes"
+    }
+   ]
+  },
+  {
+   "aisle": "HOUSEHOLD",
+   "icon": "light_bulb",
+   "key": "light-bulb",
+   "names": [
+    {
+     "display": true,
+     "language": "de",
+     "name": "Glühbirne"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Glühbirnen"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Leuchtmittel"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "LED-Lampe"
+    },
+    {
+     "display": true,
+     "language": "en",
+     "name": "light bulb"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "light bulbs"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "bulb"
+    }
+   ]
+  },
+  {
+   "aisle": "HOUSEHOLD",
+   "icon": "fire",
+   "key": "matches",
+   "names": [
+    {
+     "display": true,
+     "language": "de",
+     "name": "Streichhölzer"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Feuerzeug"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Grillanzünder"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Grillkohle"
+    },
+    {
+     "display": true,
+     "language": "en",
+     "name": "matches"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "lighter"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "firelighters"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "charcoal"
+    }
+   ]
+  },
+  {
+   "aisle": "DRUGSTORE",
+   "icon": "pill",
+   "key": "medicine",
+   "names": [
+    {
+     "display": true,
+     "language": "de",
+     "name": "Medikamente"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Tabletten"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Schmerztabletten"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Ibuprofen"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Paracetamol"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Vitamine"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Vitamintabletten"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Nahrungsergänzung"
+    },
+    {
+     "display": true,
+     "language": "en",
+     "name": "medicine"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "tablets"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "painkillers"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "ibuprofen"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "paracetamol"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "vitamins"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "supplements"
+    }
+   ]
+  },
+  {
+   "aisle": "HOUSEHOLD",
+   "icon": "paw_prints",
+   "key": "pet-food",
+   "names": [
+    {
+     "display": true,
+     "language": "de",
+     "name": "Katzenfutter"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Hundefutter"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Katzenstreu"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Tierfutter"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Leckerli"
+    },
+    {
+     "display": true,
+     "language": "en",
+     "name": "cat food"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "dog food"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "cat litter"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "pet food"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "pet treats"
+    }
+   ]
+  },
+  {
+   "aisle": "DRUGSTORE",
+   "icon": "adhesive_bandage",
+   "key": "plasters",
+   "names": [
+    {
+     "display": true,
+     "language": "de",
+     "name": "Pflaster"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Verband"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Desinfektionsmittel"
+    },
+    {
+     "display": true,
+     "language": "en",
+     "name": "plasters"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "band-aids"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "bandage"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "disinfectant"
+    }
+   ]
+  },
+  {
+   "aisle": "DRUGSTORE",
+   "icon": "razor",
+   "key": "razor",
+   "names": [
+    {
+     "display": true,
+     "language": "de",
+     "name": "Rasierer"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Rasierklingen"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Rasierschaum"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Rasiergel"
+    },
+    {
+     "display": true,
+     "language": "en",
+     "name": "razor"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "razors"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "razor blades"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "shaving foam"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "shaving gel"
+    }
+   ]
+  },
+  {
+   "aisle": "DRUGSTORE",
+   "icon": "lotion_bottle",
+   "key": "shampoo",
+   "names": [
+    {
+     "display": true,
+     "language": "de",
+     "name": "Shampoo"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Spülung"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Haarspülung"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Conditioner"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Haarkur"
+    },
+    {
+     "display": true,
+     "language": "en",
+     "name": "shampoo"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "conditioner"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "hair conditioner"
+    }
+   ]
+  },
+  {
+   "aisle": "DRUGSTORE",
+   "icon": "lotion_bottle",
+   "key": "shower-gel",
+   "names": [
+    {
+     "display": true,
+     "language": "de",
+     "name": "Duschgel"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Duschbad"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Badezusatz"
+    },
+    {
+     "display": true,
+     "language": "en",
+     "name": "shower gel"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "body wash"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "bubble bath"
+    }
+   ]
+  },
+  {
+   "aisle": "DRUGSTORE",
+   "icon": "soap",
+   "key": "soap",
+   "names": [
+    {
+     "display": true,
+     "language": "de",
+     "name": "Seife"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Handseife"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Flüssigseife"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Seifenspender"
+    },
+    {
+     "display": true,
+     "language": "en",
+     "name": "soap"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "hand soap"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "liquid soap"
+    }
+   ]
+  },
+  {
+   "aisle": "HOUSEHOLD",
+   "icon": "sponge",
+   "key": "sponge",
+   "names": [
+    {
+     "display": true,
+     "language": "de",
+     "name": "Schwamm"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Schwämme"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Spülschwamm"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Spültuch"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Spültücher"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Putzlappen"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Mikrofasertuch"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Lappen"
+    },
+    {
+     "display": true,
+     "language": "en",
+     "name": "sponge"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "sponges"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "dishcloth"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "cleaning cloth"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "microfibre cloth"
+    }
+   ]
+  },
+  {
+   "aisle": "HOUSEHOLD",
+   "icon": "roll_of_paper",
+   "key": "tissues",
+   "names": [
+    {
+     "display": true,
+     "language": "de",
+     "name": "Taschentücher"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Tempo"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Kosmetiktücher"
+    },
+    {
+     "display": true,
+     "language": "en",
+     "name": "tissues"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "paper tissues"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "facial tissues"
+    }
+   ]
+  },
+  {
+   "aisle": "HOUSEHOLD",
+   "icon": "roll_of_paper",
+   "key": "toilet-paper",
+   "names": [
+    {
+     "display": true,
+     "language": "de",
+     "name": "Toilettenpapier"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Klopapier"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Feuchttücher"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "feuchtes Toilettenpapier"
+    },
+    {
+     "display": true,
+     "language": "en",
+     "name": "toilet paper"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "toilet roll"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "toilet rolls"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "wet wipes"
+    }
+   ]
+  },
+  {
+   "aisle": "DRUGSTORE",
+   "icon": "toothbrush",
+   "key": "toothpaste",
+   "names": [
+    {
+     "display": true,
+     "language": "de",
+     "name": "Zahnpasta"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Zahncreme"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Zahnbürste"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Zahnbürsten"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Zahnseide"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Mundspülung"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Aufsteckbürsten"
+    },
+    {
+     "display": true,
+     "language": "en",
+     "name": "toothpaste"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "toothbrush"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "toothbrushes"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "dental floss"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "floss"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "mouthwash"
+    }
+   ]
+  }
+ ]
+}

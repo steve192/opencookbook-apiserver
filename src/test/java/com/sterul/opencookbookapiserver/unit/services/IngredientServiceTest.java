@@ -39,7 +39,7 @@ class IngredientServiceTest {
 
     @BeforeEach
     void setup() {
-        cut = new IngredientService(ingredientRepository, Optional.of(linker));
+        cut = new IngredientService(ingredientRepository, linker);
     }
 
     @Test
@@ -56,17 +56,6 @@ class IngredientServiceTest {
         assertSame(owner, saved.getValue().getOwner());
         assertEquals(null, saved.getValue().getId());
         verify(linker).linkNew(saved.getValue());
-    }
-
-    @Test
-    void withoutNutritionEstimationANewIngredientStaysUnlinked() {
-        var withoutLinker = new IngredientService(ingredientRepository, Optional.empty());
-        when(ingredientRepository.findByNameAndOwner("Mehl", owner)).thenReturn(Optional.empty());
-        when(ingredientRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
-
-        var created = withoutLinker.createOrGetIngredient(Ingredient.builder().name("Mehl").build(), owner);
-
-        assertEquals(null, created.getCatalogueFood());
     }
 
     @Test

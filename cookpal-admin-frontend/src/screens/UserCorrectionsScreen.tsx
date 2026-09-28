@@ -6,7 +6,6 @@ import {CatalogueApi, NameRulesApi, NutritionReportsApi, UserCorrection} from '.
 import {CollectionScreen} from '../components/collection/CollectionScreen';
 import {FieldDefinition, RowAction} from '../components/collection/types';
 import {describeFood, formatConfidence} from '../components/foodLabels';
-import {NutritionTurnedOff} from '../components/NutritionTurnedOff';
 import {useActionRunner} from '../hooks/useActionRunner';
 import {useCollection} from '../hooks/useAsyncData';
 
@@ -48,10 +47,6 @@ export const UserCorrectionsScreen = () => {
           () => NameRulesApi.add(correction.name, 'NOT_A_FOOD', null)),
     },
   ], [runner]);
-
-  if (corrections.errorStatus === 404) {
-    return <NutritionTurnedOff />;
-  }
 
   return (
     <CollectionScreen

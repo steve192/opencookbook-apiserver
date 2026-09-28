@@ -17,7 +17,9 @@ import com.sterul.opencookbookapiserver.controllers.support.PlanScopes;
 import com.sterul.opencookbookapiserver.entities.PlanScope;
 import com.sterul.opencookbookapiserver.entities.household.Household;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
+import com.sterul.opencookbookapiserver.repositories.ShoppingListRepository;
 import com.sterul.opencookbookapiserver.services.RecipeService;
+import com.sterul.opencookbookapiserver.services.shopping.sync.ShoppingHousekeeping;
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaAnnotation;
 import com.tngtech.archunit.core.domain.JavaMethod;
@@ -64,6 +66,14 @@ class AccessRuleArchitectureTest {
                     (JavaMethodCall call) -> call.getTargetOwner().isAssignableTo(RecipeRepository.class)
                             && call.getName().matches("findById|findAllById|getReferenceById|getById")))
             .because("RecipeService is where a recipe id meets the access rule");
+
+    @ArchTest
+    static final ArchRule shoppingListsAreLoadedUnscopedOnlyByHousekeeping = noClasses()
+            .that().doNotBelongToAnyOf(ShoppingHousekeeping.class)
+            .should().callMethodWhere(DescribedPredicate.describe("a ShoppingListRepository lookup by id alone",
+                    (JavaMethodCall call) -> call.getTargetOwner().isAssignableTo(ShoppingListRepository.class)
+                            && call.getName().matches("findById|findLockedById|findAllById|getReferenceById|getById")))
+            .because("every other caller acts for somebody and finds a list within their scope");
 
     @ArchTest
     static final ArchRule householdsDoNotReachIntoRecipesOrPlanning = noClasses()

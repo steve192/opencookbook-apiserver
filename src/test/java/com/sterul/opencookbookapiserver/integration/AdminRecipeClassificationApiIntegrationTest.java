@@ -19,14 +19,13 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.jayway.jsonpath.JsonPath;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFoodName;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFood;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFoodName;
 import com.sterul.opencookbookapiserver.entities.nutrition.NutrientValues;
 import com.sterul.opencookbookapiserver.entities.recipe.ClassificationKind;
 import com.sterul.opencookbookapiserver.entities.recipe.Diet;
@@ -39,11 +38,10 @@ import com.sterul.opencookbookapiserver.repositories.RecipeClassificationRunRepo
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 import com.sterul.opencookbookapiserver.repositories.ShareRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
-import com.sterul.opencookbookapiserver.services.nutrition.catalogue.NutritionDatasetImporter;
-import com.sterul.opencookbookapiserver.services.nutrition.matching.CatalogueIndexUpdater;
+import com.sterul.opencookbookapiserver.services.catalogue.matching.CatalogueIndexUpdater;
 
 /** Deriving recipe diets under review, and the rules that make a run safe to run. */
-@SpringBootTest(properties = "opencookbook.nutrition.enabled=true")
+@SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
 class AdminRecipeClassificationApiIntegrationTest extends IntegrationTestBase {
@@ -68,10 +66,6 @@ class AdminRecipeClassificationApiIntegrationTest extends IntegrationTestBase {
                 { "amount": 200, "unit": "g", "ingredient": { "name": "Hackfleisch" } },
                 { "amount": 5, "unit": "g", "ingredient": { "name": "Omas Gewuerz" } } ] }
             """;
-
-    /** No background import of the shipped dataset. */
-    @MockitoBean
-    private NutritionDatasetImporter backgroundImporter;
 
     @Autowired
     private MockMvc mockMvc;

@@ -9,20 +9,18 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sterul.opencookbookapiserver.configurations.nutrition.ConditionalOnNutritionEnabled;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFood;
 import com.sterul.opencookbookapiserver.repositories.CatalogueFoodRepository;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
-import com.sterul.opencookbookapiserver.services.nutrition.IngredientNames;
-import com.sterul.opencookbookapiserver.services.nutrition.linking.LinkSuggester;
-import com.sterul.opencookbookapiserver.services.nutrition.linking.NameRuleService;
-import com.sterul.opencookbookapiserver.services.nutrition.linking.RuleBook;
-import com.sterul.opencookbookapiserver.services.nutrition.matching.MatchCandidate;
+import com.sterul.opencookbookapiserver.services.catalogue.IngredientNames;
+import com.sterul.opencookbookapiserver.services.catalogue.linking.LinkSuggester;
+import com.sterul.opencookbookapiserver.services.catalogue.linking.NameRuleService;
+import com.sterul.opencookbookapiserver.services.catalogue.linking.RuleBook;
+import com.sterul.opencookbookapiserver.services.catalogue.matching.MatchCandidate;
 
 /** Owner decisions the matcher would not make, as hints for what the catalogue should learn. */
 @Service
-@ConditionalOnNutritionEnabled
 @Transactional(readOnly = true)
 public class UserCorrectionReport {
 

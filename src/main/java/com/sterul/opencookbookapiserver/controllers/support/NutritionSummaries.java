@@ -4,15 +4,13 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
-import com.sterul.opencookbookapiserver.configurations.nutrition.ConditionalOnNutritionEnabled;
 import com.sterul.opencookbookapiserver.controllers.responses.NutritionSummaryResponse;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.NutritionCalculator;
-import com.sterul.opencookbookapiserver.services.nutrition.matching.CatalogueMatcher;
+import com.sterul.opencookbookapiserver.services.catalogue.matching.CatalogueMatcher;
 
 /** Empty until the catalogue is ready, so recipes don't warn about ingredients about to be matched. */
 @Component
-@ConditionalOnNutritionEnabled
 public class NutritionSummaries {
 
     private final NutritionCalculator calculator;

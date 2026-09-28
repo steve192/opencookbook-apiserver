@@ -39,6 +39,9 @@ public class BringExport extends AuditableEntity {
     @ManyToOne
     private CookpalUser owner;
 
+    /** Null for exports made before titles; rendered as the default. */
+    private String title;
+
     private int baseAmount;
 
     @ElementCollection

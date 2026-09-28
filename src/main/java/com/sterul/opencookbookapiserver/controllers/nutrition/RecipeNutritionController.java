@@ -5,31 +5,29 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sterul.opencookbookapiserver.configurations.nutrition.ConditionalOnNutritionEnabled;
 import com.sterul.opencookbookapiserver.controllers.BaseController;
 import com.sterul.opencookbookapiserver.controllers.responses.RecipeNutritionResponse;
 import com.sterul.opencookbookapiserver.services.RecipeService;
 import com.sterul.opencookbookapiserver.services.SignedInUserService;
 import com.sterul.opencookbookapiserver.services.mail.MailLanguages;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.NutritionCalculator;
-import com.sterul.opencookbookapiserver.services.nutrition.dataset.NutritionDatasetReader;
+import com.sterul.opencookbookapiserver.services.catalogue.dataset.CatalogueDatasetReader;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/v1/recipes")
-@ConditionalOnNutritionEnabled
 @Tag(name = "Nutrition", description = "Estimated nutrients of recipes, and the links behind them")
 public class RecipeNutritionController extends BaseController {
 
     private final RecipeService recipeService;
     private final NutritionCalculator calculator;
-    private final NutritionDatasetReader datasetReader;
+    private final CatalogueDatasetReader datasetReader;
     private final MailLanguages languages;
 
     public RecipeNutritionController(RecipeService recipeService, NutritionCalculator calculator,
-            NutritionDatasetReader datasetReader, MailLanguages languages,
+            CatalogueDatasetReader datasetReader, MailLanguages languages,
             SignedInUserService signedInUser) {
         super(signedInUser);
         this.recipeService = recipeService;

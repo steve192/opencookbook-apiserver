@@ -15,7 +15,6 @@ import {FieldDefinition, RowAction} from '../components/collection/types';
 import {DIET_COLORS, DIET_LABELS, DIETS} from '../components/diets';
 import {EntityFormDialog} from '../components/form/EntityFormDialog';
 import {FormFieldDefinition, PairListEntry} from '../components/form/types';
-import {NutritionTurnedOff} from '../components/NutritionTurnedOff';
 import {StatTiles} from '../components/StatTiles';
 import {useActionRunner} from '../hooks/useActionRunner';
 import {useAsyncData, useCollection} from '../hooks/useAsyncData';
@@ -272,10 +271,6 @@ export const CatalogueScreen = () => {
       },
     ];
   }, [runner, openWithFood]);
-
-  if (foods.errorStatus === 404) {
-    return <NutritionTurnedOff />;
-  }
 
   return (
     <>
