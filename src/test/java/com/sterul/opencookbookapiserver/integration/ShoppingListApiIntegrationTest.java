@@ -84,8 +84,8 @@ class ShoppingListApiIntegrationTest extends IntegrationTestBase {
                 .build());
         indexUpdater.rebuild();
         List.of(ANNA, BERT, STRANGER).forEach(name -> TestAccounts.ensure(userRepository, name));
-        householdId = HouseholdsForTests.start(mockMvc, ANNA, "Familie Test");
-        HouseholdsForTests.join(mockMvc, householdId, ANNA, BERT);
+        householdId = TestHouseholds.start(mockMvc, ANNA, "Familie Test");
+        TestHouseholds.join(mockMvc, householdId, ANNA, BERT);
     }
 
     @Test

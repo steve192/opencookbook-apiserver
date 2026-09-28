@@ -23,6 +23,8 @@ import tools.jackson.databind.json.JsonMapper;
 public class CycloneDxBoms {
 
     private static final String MAVEN_PURL = "pkg:maven/";
+    private static final String LICENSES = "licenses";
+    private static final String LICENSE = "license";
 
     private final ObjectMapper json = JsonMapper.builder().build();
 
@@ -59,21 +61,29 @@ public class CycloneDxBoms {
         var group = node.path("group").asString("");
         var name = node.path("name").asString("");
         var maven = node.path("purl").asString("").startsWith(MAVEN_PURL);
-        var licenses = elements(node.path("licenses"));
+        var licenses = elements(node.path(LICENSES));
         return new BomComponent(
-                group.isEmpty() ? name : group + (maven ? ":" : "/") + name,
+                qualifiedName(group, name, maven),
                 maven ? name + "-" + node.path("version").asString("") + ".jar" : null,
                 licenses.stream().map(CycloneDxBoms::licenseName).filter(text -> !text.isEmpty()).distinct()
                         .collect(Collectors.joining(" OR ")),
-                licenses.stream().map(entry -> entry.path("license").path("url").asString("")).filter(url -> !url.isEmpty())
+                licenses.stream().map(entry -> entry.path(LICENSE).path("url").asString("")).filter(url -> !url.isEmpty())
                         .findFirst().orElse(""),
                 firstText(node.path("author"), node.path("publisher"), node.path("supplier").path("name")),
                 homepageOf(node),
                 texts(node));
     }
 
+    /** Maven writes "group:artifact", npm "@scope/package". */
+    private static String qualifiedName(String group, String name, boolean maven) {
+        if (group.isEmpty()) {
+            return name;
+        }
+        return group + (maven ? ":" : "/") + name;
+    }
+
     private static String licenseName(JsonNode entry) {
-        var license = entry.path("license");
+        var license = entry.path(LICENSE);
         return firstText(license.path("id"), license.path("name"), entry.path("expression"));
     }
 
@@ -90,11 +100,11 @@ public class CycloneDxBoms {
     /** The declared licenses' texts, and those found in the package itself (npm's "evidence"). */
     private static String texts(JsonNode node) {
         var texts = new LinkedHashSet<String>();
-        for (var entry : elements(node.path("licenses"))) {
-            textOf(entry.path("license").path("text")).ifPresent(texts::add);
+        for (var entry : elements(node.path(LICENSES))) {
+            textOf(entry.path(LICENSE).path("text")).ifPresent(texts::add);
         }
-        for (var entry : elements(node.path("evidence").path("licenses"))) {
-            textOf(entry.path("license").path("text")).ifPresent(texts::add);
+        for (var entry : elements(node.path("evidence").path(LICENSES))) {
+            textOf(entry.path(LICENSE).path("text")).ifPresent(texts::add);
         }
         return String.join("\n\n", texts);
     }

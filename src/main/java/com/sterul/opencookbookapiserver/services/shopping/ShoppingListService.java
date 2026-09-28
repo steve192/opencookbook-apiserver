@@ -41,7 +41,7 @@ public class ShoppingListService {
     /** Somebody else's list is not found. */
     @Transactional(readOnly = true)
     public ShoppingList listIn(Long listId, PlanScope scope) {
-        return listRepository.findIn(listId, scope).orElseThrow(ElementNotFound::new);
+        return find(listId, scope);
     }
 
     public ShoppingList create(PlanScope scope, String name) {
@@ -52,18 +52,22 @@ public class ShoppingListService {
     }
 
     public ShoppingList rename(Long listId, PlanScope scope, String name) {
-        var list = listIn(listId, scope);
+        var list = find(listId, scope);
         list.setName(name.strip());
         return listRepository.save(list);
     }
 
     public void delete(Long listId, PlanScope scope) {
-        var list = listIn(listId, scope);
+        var list = find(listId, scope);
         if (list.isDefaultList()) {
             throw new ApiException(ApiErrorCode.CONFLICT, "The default shopping list cannot be deleted");
         }
         log.info("Deleting shopping list {}", listId);
         listRepository.delete(list);
+    }
+
+    private ShoppingList find(Long listId, PlanScope scope) {
+        return listRepository.findIn(listId, scope).orElseThrow(ElementNotFound::new);
     }
 
     private ShoppingList save(PlanScope scope, String name, boolean defaultList) {

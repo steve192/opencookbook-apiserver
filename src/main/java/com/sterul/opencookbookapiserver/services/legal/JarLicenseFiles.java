@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
+import java.util.Optional;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -17,7 +17,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class JarLicenseFiles {
 
-    private static final Pattern JAR_NAME = Pattern.compile("([^/!]+\\.jar)!/META-INF/");
+    private static final String JAR_SUFFIX = ".jar";
+    private static final String IN_JAR = JAR_SUFFIX + "!/META-INF/";
 
     private final PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 
@@ -35,15 +36,25 @@ public class JarLicenseFiles {
         var byJar = new HashMap<String, String>();
         try {
             for (var file : filesNamed(names)) {
-                var jar = JAR_NAME.matcher(file.getURL().toString());
-                if (jar.find()) {
-                    byJar.merge(jar.group(1), headed(file), (first, second) -> first + "\n\n" + second);
+                var jar = jarNameOf(file.getURL().toString());
+                if (jar.isPresent()) {
+                    byJar.merge(jar.get(), headed(file), (first, second) -> first + "\n\n" + second);
                 }
             }
         } catch (IOException exception) {
             throw new UncheckedIOException("The license files on the classpath cannot be read", exception);
         }
         return byJar;
+    }
+
+    /** "jar:nested:/app.jar/!BOOT-INF/lib/spring-core-7.0.jar!/META-INF/LICENSE" is spring-core-7.0.jar. */
+    public static Optional<String> jarNameOf(String url) {
+        var inJar = url.indexOf(IN_JAR);
+        if (inJar < 0) {
+            return Optional.empty();
+        }
+        var start = Math.max(url.lastIndexOf('/', inJar), url.lastIndexOf('!', inJar)) + 1;
+        return Optional.of(url.substring(start, inJar + JAR_SUFFIX.length()));
     }
 
     private List<Resource> filesNamed(String... names) throws IOException {

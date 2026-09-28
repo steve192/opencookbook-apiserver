@@ -15,7 +15,7 @@ public record ImportLineRequest(
         @NotBlank @Size(max = 120) String name,
         @Size(max = 200) String spec,
         Aisle aisle,
-        @Pattern(regexp = ShoppingOpRequest.ICON) String icon,
+        @Pattern(regexp = ShoppingOpRequest.ICON_PATTERN) String icon,
         @Size(max = 20) List<@Valid ItemSourceRequest> sources) {
 
     public ShoppingOp.Add toAdd() {

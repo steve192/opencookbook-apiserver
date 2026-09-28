@@ -3,6 +3,7 @@ package com.sterul.opencookbookapiserver.services.catalogue;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -38,6 +39,6 @@ public class NonFoodItems {
         var others = byLanguageAndName.entrySet().stream()
                 .filter(names -> !names.getKey().equals(language))
                 .map(Map.Entry::getValue);
-        return Stream.concat(preferred, others).map(names -> names.get(key)).filter(item -> item != null).findFirst();
+        return Stream.concat(preferred, others).map(names -> names.get(key)).filter(Objects::nonNull).findFirst();
     }
 }

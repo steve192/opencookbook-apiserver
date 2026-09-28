@@ -10,9 +10,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.jayway.jsonpath.JsonPath;
 
 /** Starts and joins households the way people do, through the API. */
-final class HouseholdsForTests {
+final class TestHouseholds {
 
-    private HouseholdsForTests() {
+    private TestHouseholds() {
     }
 
     /** @return the new household's id */

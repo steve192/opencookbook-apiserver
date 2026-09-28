@@ -47,7 +47,8 @@ public class StapleService {
 
     @Transactional(readOnly = true)
     public Set<String> stapleKeysOf(CookpalUser user) {
-        return staplesOf(user).stream().map(ShoppingStaple::getNameKey).collect(Collectors.toSet());
+        return stapleRepository.findAllByUserAndStapleTrueOrderByName(user).stream()
+                .map(ShoppingStaple::getNameKey).collect(Collectors.toSet());
     }
 
     /** Starts counting again, so the line is offered ticked next time. */

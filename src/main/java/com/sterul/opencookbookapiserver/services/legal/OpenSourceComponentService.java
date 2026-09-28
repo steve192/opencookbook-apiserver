@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
+import org.springframework.util.function.SingletonSupplier;
 
 import com.sterul.opencookbookapiserver.services.catalogue.dataset.CatalogueDatasetReader;
 
@@ -21,7 +22,8 @@ public class OpenSourceComponentService {
     private final CycloneDxBoms boms;
     private final JarLicenseFiles jarFiles;
     private final CatalogueDatasetReader catalogue;
-    private volatile List<OpenSourceComponent> server;
+    private final SingletonSupplier<List<OpenSourceComponent>> server =
+            SingletonSupplier.of(this::readServerComponents);
 
     public OpenSourceComponentService(CycloneDxBoms boms, JarLicenseFiles jarFiles, CatalogueDatasetReader catalogue) {
         this.boms = boms;
@@ -31,14 +33,7 @@ public class OpenSourceComponentService {
 
     /** Read once: what a running server ships does not change. */
     public List<OpenSourceComponent> serverComponents() {
-        if (server == null) {
-            synchronized (this) {
-                if (server == null) {
-                    server = readServerComponents();
-                }
-            }
-        }
-        return server;
+        return server.obtain();
     }
 
     /** The data the food catalogue is built from. */

@@ -73,7 +73,7 @@ class ShoppingLiveIntegrationTest extends IntegrationTestBase {
     private WebSocketSession socket;
 
     @BeforeEach
-    void setup() throws Exception {
+    void setup() {
         listRepository.deleteAll();
         membershipRepository.deleteAll();
         householdRepository.deleteAll();
@@ -113,8 +113,8 @@ class ShoppingLiveIntegrationTest extends IntegrationTestBase {
 
     @Test
     void somebodyWhoLeftAHouseholdHearsNoMoreOfItsList() throws Exception {
-        var household = HouseholdsForTests.start(mockMvc, ANNA, "Familie Test");
-        HouseholdsForTests.join(mockMvc, household, ANNA, BERT);
+        var household = TestHouseholds.start(mockMvc, ANNA, "Familie Test");
+        TestHouseholds.join(mockMvc, household, ANNA, BERT);
         var shared = listOf(BERT, household);
         connect(BERT);
         subscribe("{\"listId\":" + shared + ",\"householdId\":\"" + household + "\"}");

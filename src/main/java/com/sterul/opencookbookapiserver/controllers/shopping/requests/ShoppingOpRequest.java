@@ -12,17 +12,17 @@ import jakarta.validation.constraints.Size;
 
 /** One op as a device sends it; which fields count depends on the type. */
 public record ShoppingOpRequest(
-        @NotNull @Pattern(regexp = UUID) String opId,
+        @NotNull @Pattern(regexp = UUID_PATTERN) String opId,
         @NotNull Type type,
-        @NotNull @Pattern(regexp = UUID) String itemId,
+        @NotNull @Pattern(regexp = UUID_PATTERN) String itemId,
         @Size(max = 120) String name,
         @Size(max = 200) String spec,
         Aisle aisle,
-        @Pattern(regexp = ICON) String icon,
+        @Pattern(regexp = ICON_PATTERN) String icon,
         @Size(max = 20) List<@Valid ItemSourceRequest> sources) {
 
-    static final String UUID = "[0-9a-fA-F-]{36}";
-    static final String ICON = "[a-z0-9_-]{1,64}";
+    static final String UUID_PATTERN = "[0-9a-fA-F-]{36}";
+    static final String ICON_PATTERN = "[a-z0-9_-]{1,64}";
 
     public enum Type {
         ADD, UPDATE, BUY, RESTORE, DELETE

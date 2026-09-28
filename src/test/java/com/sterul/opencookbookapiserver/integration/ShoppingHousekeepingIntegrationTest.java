@@ -18,6 +18,7 @@ import com.sterul.opencookbookapiserver.entities.PlanScope;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.catalogue.Aisle;
 import com.sterul.opencookbookapiserver.entities.shopping.ItemStatus;
+import com.sterul.opencookbookapiserver.entities.shopping.ShoppingItem;
 import com.sterul.opencookbookapiserver.repositories.ShoppingItemRepository;
 import com.sterul.opencookbookapiserver.repositories.ShoppingListRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
@@ -89,6 +90,6 @@ class ShoppingHousekeepingIntegrationTest extends IntegrationTestBase {
         assertTrue(itemRepository.findById(gone).isEmpty());
         var changes = sync.changesSince(listId, scope, afterAdding);
         assertTrue(changes.full());
-        assertEquals(List.of(kept), changes.items().stream().map(item -> item.getId()).toList());
+        assertEquals(List.of(kept), changes.items().stream().map(ShoppingItem::getId).toList());
     }
 }
