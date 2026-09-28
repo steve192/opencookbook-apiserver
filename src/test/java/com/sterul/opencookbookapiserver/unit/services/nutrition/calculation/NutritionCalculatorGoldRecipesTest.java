@@ -17,21 +17,21 @@ import org.junit.jupiter.api.Test;
 
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFood;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.LineStatus;
-import com.sterul.opencookbookapiserver.services.nutrition.catalogue.DatasetFoods;
-import com.sterul.opencookbookapiserver.services.nutrition.matching.CatalogueMatcher;
-import com.sterul.opencookbookapiserver.unit.services.nutrition.ShippedNutritionDataset;
-import com.sterul.opencookbookapiserver.unit.services.nutrition.matching.ShippedCatalogueMatcher;
+import com.sterul.opencookbookapiserver.services.catalogue.DatasetFoods;
+import com.sterul.opencookbookapiserver.services.catalogue.matching.CatalogueMatcher;
+import com.sterul.opencookbookapiserver.unit.services.catalogue.ShippedCatalogueDataset;
+import com.sterul.opencookbookapiserver.unit.services.catalogue.matching.ShippedCatalogueMatcher;
 
 /**
- * Median energy error per serving against nutrition-data/local/gold-recipes.tsv (Chefkoch data, never committed;
+ * Median energy error per serving against catalogue-data/local/gold-recipes.tsv (Chefkoch data, never committed;
  * written by fetch_gold_recipes.py). Release criterion: 20 %; the ceiling is the measured value and only goes down.
  */
 class NutritionCalculatorGoldRecipesTest {
 
-    private static final Path GOLD_RECIPES = Path.of("nutrition-data", "local", "gold-recipes.tsv");
+    private static final Path GOLD_RECIPES = Path.of("catalogue-data", "local", "gold-recipes.tsv");
     // Measured with matcher version 2 on 40 gold recipes: 0.11. The release criteria ask for 0.20.
     private static final double MEDIAN_ERROR_CEILING = 0.12;
     private static final double MISS_WORTH_EXPLAINING = 0.5;
@@ -43,7 +43,7 @@ class NutritionCalculatorGoldRecipesTest {
     void theMedianErrorPerServingStaysWithinTheCeiling() throws IOException {
         assumeTrue(Files.exists(GOLD_RECIPES), "no gold recipes at " + GOLD_RECIPES);
         var foods = catalogueFoods();
-        var calculator = ShippedNutritionDataset.calculator();
+        var calculator = ShippedCatalogueDataset.calculator();
 
         var errors = new ArrayList<Double>();
         var report = new StringBuilder();
@@ -69,7 +69,7 @@ class NutritionCalculatorGoldRecipesTest {
 
     /** Every food of the shipped dataset as a catalogue food, with its base. */
     private static Map<String, CatalogueFood> catalogueFoods() {
-        var shipped = ShippedNutritionDataset.READER.catalogue().foods();
+        var shipped = ShippedCatalogueDataset.READER.catalogue().foods();
         var foods = new HashMap<String, CatalogueFood>();
         for (var food : shipped) {
             var entity = CatalogueFood.builder().catalogueKey(food.key()).origin(CatalogueFood.Origin.DATASET).build();

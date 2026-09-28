@@ -12,7 +12,6 @@ import {FieldDefinition, RowAction} from '../components/collection/types';
 import {describeFood, formatConfidence} from '../components/foodLabels';
 import {EntityFormDialog} from '../components/form/EntityFormDialog';
 import {FormFieldDefinition} from '../components/form/types';
-import {NutritionTurnedOff} from '../components/NutritionTurnedOff';
 import {StatTiles} from '../components/StatTiles';
 import {useActionRunner} from '../hooks/useActionRunner';
 import {useCollection} from '../hooks/useAsyncData';
@@ -125,10 +124,6 @@ export const UnmatchedNamesScreen = () => {
       setLinking(undefined);
     }
   };
-
-  if (names.errorStatus === 404) {
-    return <NutritionTurnedOff />;
-  }
 
   const initialChoice = (name?: UnmatchedName): FoodChoiceForm => ({
     food: name?.candidates[0] ? String(name.candidates[0].food.id) : OTHER_FOOD,

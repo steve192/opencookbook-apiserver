@@ -9,11 +9,11 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import com.sterul.opencookbookapiserver.services.ingredients.IngredientNameSplitter;
 import com.sterul.opencookbookapiserver.services.ingredients.IngredientNameSplitter.SplitName;
-import com.sterul.opencookbookapiserver.unit.services.nutrition.ShippedNutritionDataset;
+import com.sterul.opencookbookapiserver.unit.services.catalogue.ShippedCatalogueDataset;
 
 class IngredientNameSplitterTest {
 
-    private final IngredientNameSplitter splitter = new IngredientNameSplitter(ShippedNutritionDataset.UNIT_LEXICON);
+    private final IngredientNameSplitter splitter = new IngredientNameSplitter(ShippedCatalogueDataset.UNIT_LEXICON);
 
     @ParameterizedTest
     @CsvSource(delimiter = '|', nullValues = "-", value = {

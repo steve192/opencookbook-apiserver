@@ -55,7 +55,7 @@ public class RecipeResponse {
     @Builder.Default
     private List<RecipeGroupResponse> recipeGroups = new ArrayList<>();
 
-    /** Absent while nutrition is off, and for unsaved recipes. */
+    /** Absent while the catalogue is not ready, and for unsaved recipes. */
     private NutritionSummaryResponse nutrition;
 
     /** Whether the reader may edit it; null without a reader, as in a share. */

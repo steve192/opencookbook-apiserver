@@ -14,17 +14,17 @@ import org.junit.jupiter.api.Test;
 
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFood;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.LineFlag;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.LineStatus;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.NutritionCalculator;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.RecipeNutrition;
-import com.sterul.opencookbookapiserver.unit.services.nutrition.ShippedNutritionDataset;
+import com.sterul.opencookbookapiserver.unit.services.catalogue.ShippedCatalogueDataset;
 
 class NutritionCalculatorTest {
 
-    private final NutritionCalculator calculator = ShippedNutritionDataset.calculator();
+    private final NutritionCalculator calculator = ShippedCatalogueDataset.calculator();
 
     private static final CatalogueFood FLOUR = food("flour", 350);
     private static final CatalogueFood SUGAR = food("sugar", 400);

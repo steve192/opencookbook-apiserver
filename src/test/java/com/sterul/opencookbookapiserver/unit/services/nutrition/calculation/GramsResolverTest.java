@@ -11,16 +11,16 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFood;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.AmountInGrams;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.GramsResolver;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.LineFlag;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.LineStatus;
-import com.sterul.opencookbookapiserver.unit.services.nutrition.ShippedNutritionDataset;
+import com.sterul.opencookbookapiserver.unit.services.catalogue.ShippedCatalogueDataset;
 
 class GramsResolverTest {
 
-    private final GramsResolver resolver = new GramsResolver(ShippedNutritionDataset.UNIT_LEXICON);
+    private final GramsResolver resolver = new GramsResolver(ShippedCatalogueDataset.UNIT_LEXICON);
 
     @Test
     void massUnitsAreConvertedByTheirFactor() {

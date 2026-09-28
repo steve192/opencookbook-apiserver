@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
-import com.sterul.opencookbookapiserver.configurations.nutrition.ConditionalOnNutritionEnabled;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.recipe.Diet;
@@ -13,18 +12,17 @@ import com.sterul.opencookbookapiserver.services.classification.ClassifiedAttrib
 import com.sterul.opencookbookapiserver.services.classification.DietAttribute;
 import com.sterul.opencookbookapiserver.services.classification.Reading;
 import com.sterul.opencookbookapiserver.services.classification.RecipeClassifier;
-import com.sterul.opencookbookapiserver.services.nutrition.dataset.NutritionDatasetReader;
+import com.sterul.opencookbookapiserver.services.catalogue.dataset.CatalogueDatasetReader;
 
 /** Reads recipe diets off the catalogue. */
 @Component
-@ConditionalOnNutritionEnabled
 public class DietClassifier implements RecipeClassifier<Diet> {
 
     private final DietAttribute attribute;
     private final RecipeDietDeriver deriver;
-    private final NutritionDatasetReader dataset;
+    private final CatalogueDatasetReader dataset;
 
-    public DietClassifier(DietAttribute attribute, RecipeDietDeriver deriver, NutritionDatasetReader dataset) {
+    public DietClassifier(DietAttribute attribute, RecipeDietDeriver deriver, CatalogueDatasetReader dataset) {
         this.attribute = attribute;
         this.deriver = deriver;
         this.dataset = dataset;

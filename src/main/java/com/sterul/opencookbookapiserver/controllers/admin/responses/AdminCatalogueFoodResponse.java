@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Set;
 
 import com.sterul.opencookbookapiserver.controllers.responses.Nutrients;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFoodName;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFoodPortion;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFood;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFoodName;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFoodPortion;
 import com.sterul.opencookbookapiserver.entities.recipe.Diet;
 
 public record AdminCatalogueFoodResponse(

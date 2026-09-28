@@ -1,6 +1,6 @@
 package com.sterul.opencookbookapiserver.controllers.admin.responses;
 
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFood;
 import com.sterul.opencookbookapiserver.entities.recipe.Diet;
 
 public record AdminCatalogueFoodSummary(

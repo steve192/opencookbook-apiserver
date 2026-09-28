@@ -6,11 +6,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sterul.opencookbookapiserver.configurations.nutrition.ConditionalOnNutritionEnabled;
 import com.sterul.opencookbookapiserver.controllers.responses.RecipeNutritionResponse;
 import com.sterul.opencookbookapiserver.services.mail.MailLanguages;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.NutritionCalculator;
-import com.sterul.opencookbookapiserver.services.nutrition.dataset.NutritionDatasetReader;
+import com.sterul.opencookbookapiserver.services.catalogue.dataset.CatalogueDatasetReader;
 import com.sterul.opencookbookapiserver.services.sharing.ShareService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,18 +20,17 @@ import jakarta.validation.constraints.NotBlank;
 /** Read-only and without ids; does not count as opening the share. */
 @RestController
 @ConditionalOnProperty(prefix = "opencookbook.sharing", name = "enabled", havingValue = "true", matchIfMissing = true)
-@ConditionalOnNutritionEnabled
 @RequestMapping(SharePaths.PUBLIC_BASE)
 @Tag(name = "Shared recipes", description = "Reading a recipe somebody shared with you")
 public class SharedRecipeNutritionController {
 
     private final ShareService shareService;
     private final NutritionCalculator calculator;
-    private final NutritionDatasetReader datasetReader;
+    private final CatalogueDatasetReader datasetReader;
     private final MailLanguages languages;
 
     public SharedRecipeNutritionController(ShareService shareService, NutritionCalculator calculator,
-            NutritionDatasetReader datasetReader, MailLanguages languages) {
+            CatalogueDatasetReader datasetReader, MailLanguages languages) {
         this.shareService = shareService;
         this.calculator = calculator;
         this.datasetReader = datasetReader;

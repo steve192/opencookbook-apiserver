@@ -40,13 +40,13 @@ public class PlanningPool {
     private final IngredientTargetResolver targetResolver;
     private final RecipeMatcher matcher;
     private final GramsResolver gramsResolver;
-    private final Optional<RecipeNutritionSummaries> summaries;
+    private final RecipeNutritionSummaries summaries;
     private final CookbookAccess cookbookAccess;
     private final HouseholdMembershipService householdMemberships;
 
     public PlanningPool(RecipeRepository recipeRepository, IngredientRepository ingredientRepository,
             IngredientTargetResolver targetResolver, RecipeMatcher matcher, GramsResolver gramsResolver,
-            Optional<RecipeNutritionSummaries> summaries, CookbookAccess cookbookAccess,
+            RecipeNutritionSummaries summaries, CookbookAccess cookbookAccess,
             HouseholdMembershipService householdMemberships) {
         this.recipeRepository = recipeRepository;
         this.ingredientRepository = ingredientRepository;
@@ -77,7 +77,7 @@ public class PlanningPool {
         var pantry = pantryBudget(ingredientOwners, profile.getPantry());
         var effort = EffortScale.rank(allowed);
         var candidates = allowed.stream()
-                .map(recipe -> new PlanCandidate(recipe, summaries.map(cache -> cache.of(recipe)).orElse(null),
+                .map(recipe -> new PlanCandidate(recipe, summaries.of(recipe),
                         effort.get(recipe.getId()), pantryUse(recipe, pantry)))
                 .toList();
         return new Pool(candidates, pantry);

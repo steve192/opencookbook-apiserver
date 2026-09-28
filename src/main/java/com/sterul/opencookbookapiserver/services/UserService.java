@@ -16,6 +16,7 @@ import com.sterul.opencookbookapiserver.entities.account.ActivationLink;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.account.PasswordResetLink;
 import com.sterul.opencookbookapiserver.entities.account.Role;
+import com.sterul.opencookbookapiserver.entities.shopping.ShoppingProvider;
 import com.sterul.opencookbookapiserver.repositories.ActivationLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.PasswordResetLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
@@ -196,6 +197,11 @@ public class UserService {
         var tidied = displayName == null || displayName.isBlank() ? null : displayName.strip();
         log.info("Changing the display name of user {}", user.getUserId());
         user.setDisplayName(tidied);
+        return userRepository.save(user);
+    }
+
+    public CookpalUser setShoppingProvider(CookpalUser user, ShoppingProvider provider) {
+        user.setShoppingProvider(provider);
         return userRepository.save(user);
     }
 

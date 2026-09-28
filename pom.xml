@@ -129,6 +129,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc</artifactId>
         </dependency>
+        <!-- Pushes "this list changed" to open apps; the data itself always goes over REST -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
@@ -237,6 +242,18 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
             <!--
+                Lists every dependency with its license in META-INF/sbom/application.cdx.json, which
+                the open-source licenses endpoint reads. Configured by the Spring Boot parent.
+            -->
+            <plugin>
+                <groupId>org.cyclonedx</groupId>
+                <artifactId>cyclonedx-maven-plugin</artifactId>
+                <configuration>
+                    <!-- The standard text, for the dependencies whose jar carries none of its own -->
+                    <includeLicenseText>true</includeLicenseText>
+                </configuration>
+            </plugin>
+            <!--
                 Builds the admin panel into src/main/resources/static before the resources are
                 copied, so a jar always carries the panel that belongs to it. The npm script
                 does nothing when neither the sources nor the dependencies have changed.
@@ -323,7 +340,7 @@
     <profiles>
         <!--
             Also measures the catalogue matcher on the production gold set, which is never committed
-            (nutrition-data/local/names-production.tsv). The test skips itself where the file is absent.
+            (catalogue-data/local/names-production.tsv). The test skips itself where the file is absent.
         -->
         <profile>
             <id>production-gold</id>
@@ -332,7 +349,7 @@
             </properties>
         </profile>
         <!--
-            Only writes the admin reports of a local copy of an instance's database to nutrition-data/local/,
+            Only writes the admin reports of a local copy of an instance's database to catalogue-data/local/,
             reading it: mvn test -DskipAdminUi -Plocal-instance-reports -Dlocal.instance.url=jdbc:postgresql://...
         -->
         <profile>
@@ -344,7 +361,7 @@
         </profile>
         <!--
             Only fits the catalogue matcher's weights to the gold sets and writes them to
-            src/main/resources/nutrition/matcher-weights.json: mvn test -Pcalibrate-matcher -DskipAdminUi
+            src/main/resources/catalogue/matcher-weights.json: mvn test -Pcalibrate-matcher -DskipAdminUi
         -->
         <profile>
             <id>calibrate-matcher</id>

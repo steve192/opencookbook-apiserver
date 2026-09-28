@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.sterul.opencookbookapiserver.entities.nutrition.IngredientRelinkProposal;
-import com.sterul.opencookbookapiserver.entities.nutrition.IngredientRelinkRun;
+import com.sterul.opencookbookapiserver.entities.catalogue.IngredientRelinkProposal;
+import com.sterul.opencookbookapiserver.entities.catalogue.IngredientRelinkRun;
 
 public interface IngredientRelinkProposalRepository extends JpaRepository<IngredientRelinkProposal, Long> {
 

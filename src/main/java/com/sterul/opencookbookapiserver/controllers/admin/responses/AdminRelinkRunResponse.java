@@ -3,7 +3,7 @@ package com.sterul.opencookbookapiserver.controllers.admin.responses;
 import java.time.Instant;
 
 import com.sterul.opencookbookapiserver.entities.ReviewedRun;
-import com.sterul.opencookbookapiserver.entities.nutrition.IngredientRelinkRun;
+import com.sterul.opencookbookapiserver.entities.catalogue.IngredientRelinkRun;
 
 /** @param skippedCount ingredients changed after the preview, left alone by apply */
 public record AdminRelinkRunResponse(

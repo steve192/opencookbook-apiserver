@@ -12,7 +12,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFood;
 
 public interface CatalogueFoodRepository extends JpaRepository<CatalogueFood, Long> {
 
@@ -27,6 +27,9 @@ public interface CatalogueFoodRepository extends JpaRepository<CatalogueFood, Lo
     /** With what matching needs loaded at once. */
     @EntityGraph(attributePaths = {"names", "states", "variantOf"})
     List<CatalogueFood> findAllByRetiredFalse();
+
+    @EntityGraph(attributePaths = {"names"})
+    List<CatalogueFood> findAllByShoppingTileTrueAndRetiredFalse();
 
     List<CatalogueFood> findAllByCatalogueKeyIn(Collection<String> catalogueKeys);
 

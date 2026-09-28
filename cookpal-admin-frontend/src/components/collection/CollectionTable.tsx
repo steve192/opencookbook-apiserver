@@ -1,11 +1,11 @@
 import {Box, IconButton, Tooltip, useMediaQuery, useTheme} from '@mui/material';
-import {DataGrid, GridColDef, GridRowSelectionModel, GridToolbar} from '@mui/x-data-grid';
+import {DataGrid, GridColDef, GridRowSelectionModel, GridToolbar, GridValidRowModel} from '@mui/x-data-grid';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import {useEffect, useMemo, useState} from 'react';
 import {formatFieldValue, importanceOf, valueOf} from './fieldValues';
 import {FieldDefinition, RowAction, RowId} from './types';
 
-export function CollectionTable<T>(props: {
+export function CollectionTable<T extends GridValidRowModel>(props: {
   rows: T[],
   fields: FieldDefinition<T>[],
   getRowId: (row: T) => RowId,
@@ -19,23 +19,23 @@ export function CollectionTable<T>(props: {
   const roomForEverything = useMediaQuery(theme.breakpoints.up('lg'));
   const {fields, rowActions, onShowDetails, getRowId} = props;
 
-  const columns = useMemo<GridColDef[]>(() => {
+  const columns = useMemo<GridColDef<T>[]>(() => {
     const fieldColumns = fields
         .filter((field) => importanceOf(field) !== 'reference')
-        .map((field) => ({
+        .map((field): GridColDef<T> => ({
           field: field.key,
           headerName: field.label,
           minWidth: field.width ?? 140,
           flex: 1,
           type: columnTypeOf(field),
-          valueGetter: (params: {row: T}) => valueOf(field, params.row),
+          valueGetter: (_value, row) => valueOf(field, row),
           renderCell: field.render ?
-            (params: {row: T}) => field.render?.(params.row) :
+            (params) => field.render?.(params.row) :
             undefined,
           valueFormatter: field.kind === 'datetime' ?
-            (params: {value: unknown}) => formatFieldValue(field.kind, params.value) :
+            (value) => formatFieldValue(field.kind, value) :
             undefined,
-        } as GridColDef));
+        }));
 
     return [...fieldColumns, {
       field: '__actions',

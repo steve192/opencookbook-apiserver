@@ -10,21 +10,19 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sterul.opencookbookapiserver.configurations.nutrition.ConditionalOnNutritionEnabled;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFood;
 import com.sterul.opencookbookapiserver.repositories.CatalogueFoodRepository;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.repositories.projections.IngredientUseCount;
-import com.sterul.opencookbookapiserver.services.nutrition.IngredientNames;
-import com.sterul.opencookbookapiserver.services.nutrition.linking.NameRuleService;
-import com.sterul.opencookbookapiserver.services.nutrition.matching.CatalogueMatcher;
-import com.sterul.opencookbookapiserver.services.nutrition.matching.ConfidenceBand;
-import com.sterul.opencookbookapiserver.services.nutrition.matching.MatchCandidate;
+import com.sterul.opencookbookapiserver.services.catalogue.IngredientNames;
+import com.sterul.opencookbookapiserver.services.catalogue.linking.NameRuleService;
+import com.sterul.opencookbookapiserver.services.catalogue.matching.CatalogueMatcher;
+import com.sterul.opencookbookapiserver.services.catalogue.matching.ConfidenceBand;
+import com.sterul.opencookbookapiserver.services.catalogue.matching.MatchCandidate;
 
 /** The ingredient names users write, and how well the catalogue answers them. */
 @Service
-@ConditionalOnNutritionEnabled
 @Transactional(readOnly = true)
 public class IngredientNameReport {
 

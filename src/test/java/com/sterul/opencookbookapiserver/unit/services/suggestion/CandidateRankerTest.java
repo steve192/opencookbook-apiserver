@@ -6,14 +6,14 @@ import static com.sterul.opencookbookapiserver.unit.services.selection.Recipes.l
 import static com.sterul.opencookbookapiserver.unit.services.selection.Recipes.recipe;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.mockito.Mockito.mock;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFood;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.services.selection.MatchTarget;
 import com.sterul.opencookbookapiserver.services.selection.RecipeMatcher;
@@ -22,10 +22,11 @@ import com.sterul.opencookbookapiserver.services.suggestion.MatchMode;
 import com.sterul.opencookbookapiserver.services.suggestion.SuggestionCandidate;
 import com.sterul.opencookbookapiserver.services.suggestion.SuggestionCriteria;
 import com.sterul.opencookbookapiserver.services.suggestion.scoring.IngredientCoverageScorer;
+import com.sterul.opencookbookapiserver.services.nutrition.calculation.RecipeNutritionSummaries;
 import com.sterul.opencookbookapiserver.services.suggestion.scoring.JitterScorer;
 import com.sterul.opencookbookapiserver.services.suggestion.scoring.RecipeCoverageScorer;
 
-/** How the ranking orders what the pool let through, with nutrition switched off. */
+/** How the ranking orders what the pool let through, without nutrition terms. */
 class CandidateRankerTest {
 
     private static final CatalogueFood TOMATO = food(100, "bls-G123456");
@@ -34,7 +35,7 @@ class CandidateRankerTest {
     private final RecipeMatcher matcher = new RecipeMatcher();
     private final CandidateRanker cut = new CandidateRanker(
             List.of(new IngredientCoverageScorer(), new RecipeCoverageScorer(), new JitterScorer()),
-            List.of(), Optional.empty());
+            List.of(), mock(RecipeNutritionSummaries.class));
 
     private static final List<MatchTarget> TARGETS = List.of(
             new MatchTarget(1L, "Tomate", Set.of(TOMATO.getId())),

@@ -47,6 +47,10 @@ public class WebSecurityConfiguration {
         @SuppressWarnings("java:S1075") // This server's own endpoint, matched where it is served.
         private static final String REFRESH_TOKEN_PATH = "/api/v1/users/refreshToken";
 
+        /** Fetched by Bring without a token; creating an export needs one. */
+        @SuppressWarnings("java:S1075") // This server's own endpoint, matched where it is served.
+        private static final String BRING_EXPORT_PATH = "/api/v1/bringexport";
+
         private static final String[] AUTH_WHITELIST = Stream.concat(
                         Arrays.stream(UNAUTHENTICATED_USER_PATHS),
                         Stream.of(
@@ -54,7 +58,6 @@ public class WebSecurityConfiguration {
                                         "/swagger-ui/**",
                                         "/api-docs/**",
                                         "/api/v1/instance/**",
-                                        "/api/v1/bringexport/**",
                                         SharePaths.PUBLIC_PATTERN,
                                         "/error",
                                         "/actuator/health",
@@ -76,6 +79,7 @@ public class WebSecurityConfiguration {
                 // Permit whitelist and authenticated request
                 http.authorizeHttpRequests(
                                 authorize -> authorize.requestMatchers(AUTH_WHITELIST).permitAll()
+                                                .requestMatchers(HttpMethod.GET, BRING_EXPORT_PATH).permitAll()
                                                 .anyRequest().authenticated());
 
                 http.exceptionHandling(configurer -> configurer

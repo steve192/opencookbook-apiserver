@@ -122,8 +122,11 @@ public class OpencookbookConfiguration {
      */
     private Auth auth = new Auth();
 
-    /** Nutrition estimation from the shipped food catalogue. */
-    private Nutrition nutrition = new Nutrition();
+    /** The shipped food catalogue. */
+    private Catalogue catalogue = new Catalogue();
+
+    /** Shopping lists. */
+    private Shopping shopping = new Shopping();
 
     /**
      * Connection to the machine learning subsystem. Leaving the url empty is how an instance
@@ -239,10 +242,24 @@ public class OpencookbookConfiguration {
 
     @Getter
     @Setter
-    public static class Nutrition {
+    public static class Shopping {
 
-        /** Off: no catalogue import and no nutrition endpoints. The schema exists either way. */
-        private boolean enabled = false;
+        /**
+         * Tells open apps at once when a list changes. Off, or behind a proxy that does not pass
+         * WebSockets on, apps notice changes when they next sync.
+         */
+        private boolean liveEnabled = true;
+
+        /** How many devices of one account may listen at once. */
+        private int liveSocketsPerUser = 5;
+    }
+
+    @Getter
+    @Setter
+    public static class Catalogue {
+
+        /** Imports a newly shipped dataset in the background once the server is up. Tests import what they need. */
+        private boolean importOnStartup = true;
     }
 
     /**

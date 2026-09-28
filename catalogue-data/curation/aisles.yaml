@@ -1,0 +1,333 @@
+# Where a food is sold, so a shopping list reads in the order a shop is walked.
+# See scripts/cookpal_catalogue/catalogue/aisles.py.
+#
+# Decided in this order: an override, a processing state, a word in the source name, the BLS
+# subgroup (the first two characters of the code). Variants take their base's aisle unless one of
+# the first three moves them. A base none of these places stops the build.
+
+subgroupDefaults:
+  B1: BREAD_BAKERY       # Vollkornbrot, Vollkornbrot mit Ölsamen, Vollkornbrot mit Sonnenblumenkernen
+  B2: BREAD_BAKERY       # Roggenbrot, Roggenbrot mit Ölsamen, Roggenbrot mit Sonnenblumenkernen
+  B3: BREAD_BAKERY       # Weißbrot glutenfrei, Weizenbrot/Weißbrot, Weizentoastbrot/Buttertoastbrot
+  B4: BREAD_BAKERY       # Vollkornbrötchen, Vollkornbrötchen mit Ölsamen, Vollkornbrötchen mit Sonnenblumenkernen
+  B5: BREAD_BAKERY       # Weizenbrötchen, Weizenbrötchen mit Kümmel und Salz, Weizenbrötchen mit Schinkenspeck
+  B6: BREAD_BAKERY       # Knusperbrot glutenfrei, Weizenknäckebrot mit Sesam, Weizenvollkornknäckebrot mit Käse
+  B7: BREAD_BAKERY       # Dinkelbrot, Dinkelbrot mit Kürbiskernen, Dinkelbrot mit Nüssen
+  B8: BREAD_BAKERY       # Paniermehl/Semmelbrösel/Semmelmehl, Paniermehl glutenfrei, Eiweißbrot/Proteinbrot
+  C1: PASTA_RICE_GRAINS  # Weizen ganzes Korn, Weizen Flocken, Weizen Keim
+  C2: BAKING             # Weizen Vollkornmehl, Weizen Vollkornschrot, Weizen Backschrot
+  C3: PASTA_RICE_GRAINS  # Grünkern ganzes Korn, Grünkern Grütze, Buchweizen roh
+  C4: BAKING             # Grünkern Vollkornschrot, Grünkern Vollkornmehl, Mehlmischung eiweißarm
+  C5: PASTA_RICE_GRAINS  # Müsli Basismischung, Müslimischung mit Trockenfrüchten, Müslimischung Bircher Art
+  C6: DAIRY_EGGS         # Reisdrink ungesüßt, Reisdrink ungesüßt, Haferdrink ungesüßt
+  D0: BREAD_BAKERY       # Backerbsen, Dinkelzwieback ungesüßt, Vollkornzwieback ungesüßt
+  D1: BREAD_BAKERY       # Apfelkuchen, Apfelkuchen, Spiegeleierkuchen
+  D2: BREAD_BAKERY       # Erdbeerkuchen, Apfel-Quarktorte, Rhabarberkuchen
+  D3: BREAD_BAKERY       # Sachertorte, Nuss-Sahnetorte, Linzer Torte
+  D4: BREAD_BAKERY       # Schokoladen-Muffins, Englische Muffins/Toasties, Heidelbeer-Muffins
+  D5: BREAD_BAKERY       # Wiener Apfelstrudel, Apfelstrudel, Kirschstrudel
+  D6: SWEETS_SNACKS      # Russisch-Brot, Baiser, Schokoladenbaiser
+  D7: BREAD_BAKERY       # Zedernbrot, Raspeli, Haferflockenplätzchen
+  D9: BREAD_BAKERY       # Vollkornblätterteig eifrei, Vollkornhefeteig süß roh, Apfel-Streuselkuchen
+  E1: DAIRY_EGGS         # Wachtelei roh, Hühnerei roh, Hühnerei Pulver
+  E4: PASTA_RICE_GRAINS  # Teigwaren eifrei, Eierteigwaren roh, Eier-Frischteigwaren roh
+  E5: PASTA_RICE_GRAINS  # Vollkornteigwaren eifrei, Vollkorneierteigwaren roh
+  E6: PASTA_RICE_GRAINS  # Eier-Frischteigwaren Ravioli, Eierteigwaren mit Weizenkeimen, Kartoffel-Schupfnudeln roh
+  E8: PASTA_RICE_GRAINS  # Frischteigwaren eifrei
+  E9: PASTA_RICE_GRAINS  # Teigwaren eifrei, Teigwaren eifrei
+  F0: FRUIT_VEG          # Mehrfruchtsaft, Mehrfruchtnektar, Mehrfruchtnektar mit Süßungsmitteln
+  F1: FRUIT_VEG          # Apfel roh, Apfel getrocknet, Apfelsaft
+  F2: FRUIT_VEG          # Aprikose roh, Aprikose getrocknet, Aprikosensaft
+  F3: FRUIT_VEG          # Erdbeere roh, Erdbeere getrocknet, Erdbeersaft
+  F4: FRUIT_VEG          # Preiselbeere roh, Preiselbeersaft, Preiselbeere gezuckert
+  F5: FRUIT_VEG          # Ananas roh, Ananas getrocknet, Ananassaft
+  F6: FRUIT_VEG          # Zitrone roh, Zitronensaft Konzentrat, Zitronensaft
+  F8: BAKING             # Fruchtschnitte/Fruchtriegel, Rosine/Sultanine, Korinthe
+  F9: CANNED_JARS        # Rote Grütze gezuckert, Apfelkompott/Apfelmus, Apfelkompott/Apfelmark
+  G0: FRUIT_VEG          # Kapern gesäuert, Basilikum roh, Schnittlauch roh
+  G1: FRUIT_VEG          # Chicoree roh, Endivie/Escariol, Eisbergsalat roh
+  G2: FRUIT_VEG          # Gemüsesaft aus Spinat, Spinat Konserve, Spinat roh
+  G3: FRUIT_VEG          # Blumenkohl roh, Blumenkohl tiefgefroren, Blumenkohl gesäuert
+  G4: FRUIT_VEG          # Artischocke roh, Artischocke in Öl, Artischocke Konserve
+  G5: FRUIT_VEG          # Aubergine roh, Aubergine gegrillt, Gurke roh
+  G6: FRUIT_VEG          # Kohlrübe/Steckrübe, Rote Rübe/Rote Bete, Gemüsesaft aus Rote Rübe/Rote Bete
+  G7: FRUIT_VEG          # Bohne grün, Bohne grün, Bohne grün
+  G8: CANNED_JARS        # Gemüsecremesuppe Instantpulver, Röstzwiebeln, Bohne grün
+  G9: FROZEN             # Gemüsemischung Leipziger Allerlei, Gemüsemischung Leipziger Allerlei, Gemüseaufstrich
+  H0: PASTA_RICE_GRAINS  # Sojaproteinisolat, Sojalecithin, Sojawürstchen
+  H1: SWEETS_SNACKS      # Erdnuss geröstet, Erdnuss geröstet, Erdnussmus
+  H2: BAKING             # Mandel süß, Mandel süß, Mandel süß
+  H3: BAKING             # Kürbiskern, Pinienkern
+  H4: BAKING             # Leinsamen, Leinsamen geschrotet, Sesam
+  H5: CANNED_JARS        # Oliven grün, Oliven grün, Oliven grün
+  H6: FRUIT_VEG          # Bambussprossen roh, Bambussprossen Konserve, Sojabohnensprossen/Sojabohnenkeimlinge
+  H7: PASTA_RICE_GRAINS  # Augenbohne reif, Augenbohne reif, Erbsenmehl
+  H8: DAIRY_EGGS         # Mandeldrink ungesüßt, Mandeldrink ungesüßt, Mandeldrink gesüßt
+  H9: DELI               # Bohnen weiß, Tofu-Bratlinge gebraten ohne Fett, Vegetarische Bratwurst
+  K1: FRUIT_VEG          # Kartoffel geschält, Kartoffel geschält, Kartoffel ungeschält
+  K2: PASTA_RICE_GRAINS  # Kartoffelpüree Instantpulver, Kartoffelstärke, Kartoffelkloß
+  K3: FROZEN             # Kartoffeltaschen mit Frischkäsefüllung, Kartoffelrösti tiefgefroren, Kartoffel-Speck-Rösti tiefgefroren
+  K4: FRUIT_VEG          # Maniok/Cassava, Batate/Süßkartoffel, Topinambur/Erdartischocke
+  K5: BAKING             # Tapioka/Tapiokastärke, Pfeilwurzelmehl/Marantastärke
+  K7: FRUIT_VEG          # Champignon roh, Champignon tiefgefroren, Champignon getrocknet
+  K8: CANNED_JARS        # Vegetarische Pastete, Pilzcremesuppe Instantpulver
+  M0: DAIRY_EGGS         # Schafmilch mind. 4, Roquefort mind. 50 % Fett i. Tr., Feta mind. 45 % Fett i. Tr.
+  M1: DAIRY_EGGS         # Milch entrahmt, Milch fettarm, Vollmilch frisch
+  M2: DAIRY_EGGS         # Milchmischgetränk < 1 % Fett, Milchmischgetränk 1, Milchmischgetränk 3
+  M3: DAIRY_EGGS         # Hartkäse mind. 30 % Fett i. Tr., Hartkäse mind. 45 % Fett i. Tr., Hartkäse mind. 50 % Fett i. Tr.
+  M4: DAIRY_EGGS         # Schnittkäse mind. 20 % Fett i. Tr., Schnittkäse mind. 30 % Fett i. Tr., Schnittkäse mind. 40 % Fett i. Tr.
+  M5: DAIRY_EGGS         # Schnittkäse halbfest mind. 20 % Fett i. Tr., Schnittkäse halbfest mind. 30 % Fett i. Tr., Schnittkäse halbfest mind. 40 % Fett i. Tr.
+  M6: DAIRY_EGGS         # Weichkäse mind. 20 % Fett i. Tr., Weichkäse mind. 30 % Fett i. Tr., Weichkäse mind. 40 % Fett i. Tr.
+  M7: DAIRY_EGGS         # Skyr, Frischkäsezubereitung Natur, Frischkäsezubereitung Natur
+  M8: DAIRY_EGGS         # Schmelzkäsezubereitung mind. 20 % Fett i. Tr., Schmelzkäsezubereitung mind. 30 % Fett i. Tr., Schmelzkäsezubereitung mind. 40 % Fett i. Tr.
+  N0: BEVERAGES          # Nearwater/Aqua Plus Getränk, Nearwater/Aqua Plus Getränk, Aperitif alkoholfrei
+  N1: BEVERAGES          # Trinkwasser, Natürliches Mineralwasser, Natürliches Mineralwasser mit Kohlensäure
+  N2: BEVERAGES          # Fruchtsaftgetränk Apfel, Fruchtsaftgetränk Kirsche, Fruchtsaftgetränk Johannisbeere
+  N3: BEVERAGES          # Orangenlimonade, Zitronenlimonade, Limonade mit Süßungsmitteln
+  N4: BEVERAGES          # Kaffee, Kaffee, Kaffee
+  N5: BEVERAGES          # Kaffeeersatz, Kaffeeersatz, Kaffeeersatz
+  N6: BEVERAGES          # Roibusch-/Rooibos-/Rotbusch-Tee, Grüntee, Mate-Tee
+  N7: BEVERAGES          # Früchtetee, Früchtetee, Kräutertee
+  P1: BEVERAGES          # Malzgetränk, Weizenbier kristallklar, Hefeweizen/Weizenbier
+  P2: BEVERAGES          # Weißwein trocken, Eiswein, Weißwein halbtrocken
+  P3: BEVERAGES          # Perlwein/Perlwein mit zugesetzer Kohlensäure, Wermutwein trocken, Wermutwein süß
+  P4: BEVERAGES          # Portwein, Madeirawein, Sherry dry
+  P5: BEVERAGES          # Fruchtsaftlikör, Fruchtaromalikör, Mandellikör
+  P6: BEVERAGES          # Cognac, Weinbrand/Brandy, Calvados
+  P7: BEVERAGES          # Wodka, Spirituosen mit Wacholder, Gin
+  P8: BEVERAGES          # Alkopops, Eierpunsch
+  P9: BEVERAGES          # Cocktail, Cocktail, Cocktail
+  Q1: OILS_SPICES_SAUCES # Olivenöl, Haselnussöl, Palmfett/Palmöl
+  Q2: OILS_SPICES_SAUCES # Erdnussöl, Weizenkeimöl, Sesamöl
+  Q3: OILS_SPICES_SAUCES # Walnussöl, Sonnenblumenöl, Traubenkernöl
+  Q4: DAIRY_EGGS         # Pflanzenmargarine Vollfett, Pflanzenmargarine Halbfett, Backmargarine
+  Q5: OILS_SPICES_SAUCES # Sheabutter, Kakaobutter, Kokosöl
+  Q6: DAIRY_EGGS         # Butter mild gesäuert, Sauerrahmbutter, Süßrahmbutter
+  Q7: OILS_SPICES_SAUCES # Fischleberöl/Lebertran
+  Q8: OILS_SPICES_SAUCES # Entenfett, Gänsefett/Gänseschmalz, Hühnerfett
+  Q9: OILS_SPICES_SAUCES # Tahin, Schmalz/Schmelz, Bratöl/Frittieröl
+  R1: OILS_SPICES_SAUCES # Speisesalz/Siedesalz/Tafelsalz, Steinsalz, Meersalz
+  R2: OILS_SPICES_SAUCES # Ingwer/Ingwerwurzel, Basilikum getrocknet, Pfeffer schwarz
+  R3: BAKING             # Orangeat, Zitronat/Sukkade
+  R4: BAKING             # Backpulver, Hirschhornsalz, Sahnestandmittel
+  R5: BAKING             # Milchsäure 80 %, Citronensäure/Zitronensäure, Ascorbinsäure
+  R8: OILS_SPICES_SAUCES # Bouillon/Brühe/Suppe, Fleisch Bouillon/Brühe/Suppe, Gemüse Bouillon/Brühe/Suppe
+  R9: OILS_SPICES_SAUCES # Bratensoße Instantpulver, Helle Soße Instantpulver, Sushi Ingwer
+  S1: SWEETS_SNACKS      # Zucker weiß, Puderzucker, Zucker braun
+  S2: FROZEN             # Frucht-Sorbet, Speiseeis, Speiseeis
+  S3: SWEETS_SNACKS      # Hartkaramelle, Hartkaramelle, Weichkaramelle
+  S4: SWEETS_SNACKS      # Lakritze, Marzipan, Marzipan Rohmasse
+  S5: SWEETS_SNACKS      # Schokolade, Milchschokolade, Milchschokolade gefüllt mit Karamell
+  S6: SWEETS_SNACKS      # Pralinen, Pralinen gefüllt, Pralinen mit alkoholhaltiger Füllung
+  S7: BAKING             # Kakaopulver schwach entölt, Kakaopulver stark entölt, Getränkepulver kakaohaltig
+  S8: SWEETS_SNACKS      # Energieriegel gefüllt mit Nusscreme, Energieriegel angereichert mit Vitaminen und Mineralstoffen, Müsli-Riegel
+  T0: MEAT_FISH          # Tintenfisch roh, Tintenfisch tiefgefroren, Tintenfisch in Öl
+  T1: MEAT_FISH          # Hering roh, Hering gesalzen, Bückling
+  T2: MEAT_FISH          # Grenadier roh, Brosme/Lumb, Leng roh
+  T3: MEAT_FISH          # Steinbutt roh, Steinbutt tiefgefroren, Goldbutt/Scholle
+  T4: MEAT_FISH          # Stint roh, Stint tiefgefroren, Bachsaibling roh
+  T5: MEAT_FISH          # Karpfen roh, Karpfen tiefgefroren, Karpfen gesalzen
+  T6: MEAT_FISH          # Meerbarbe roh, Barsch/Flussbarsch, Barsch/Flussbarsch
+  T7: MEAT_FISH          # Edelkrebs/Flusskrebs, Edelkrebs/Flusskrebs, Edelkrebs/Flusskrebs
+  T8: CANNED_JARS        # Klippfisch 1/1 trocken, Stockfisch, Matjesfilet
+  T9: FROZEN             # Tintenfischringe paniert, Meeresfrüchtemischung roh, Fischstäbchen
+  U0: MEAT_FISH          # Rind Hackfleisch, Rind Hackfleisch, Rind Frikadelle
+  U1: MEAT_FISH          # Rind Fleisch, Rind Fleisch, Rind Ochsenschwanz
+  U2: MEAT_FISH          # Rind Muskelfleisch, Rind Fleisch, Rind Fleisch
+  U3: MEAT_FISH          # Kalb Fleisch, Kalb Kotelett, Kalb Steak
+  U4: MEAT_FISH          # Kalb Muskelfleisch, Kalb Fleisch, Kalb Fleisch
+  U5: MEAT_FISH          # Schwein Fleisch, Schwein Fettwamme, Schwein Fettbacke
+  U6: MEAT_FISH          # Schwein Muskelfleisch, Schwein Fleisch, Schwein Fleisch
+  U7: MEAT_FISH          # Schaf Filetmedaillon, Schaf Filetmedaillon, Schaf Kotelett
+  U8: MEAT_FISH          # Schaf Muskelfleisch, Schaf Fleisch, Schaf Fleisch
+  U9: CANNED_JARS        # Rindfleisch in Gelee, Rindfleisch im eigenen Saft, Rinderroulade Konserve
+  V0: MEAT_FISH          # Schnecken roh, Schnecken tiefgefroren
+  V1: MEAT_FISH          # Pferd Fleisch, Pferd Fleisch, Ziege Fleisch
+  V2: MEAT_FISH          # Hirsch Fleisch, Hirsch Fleisch, Hirsch Rücken
+  V3: MEAT_FISH          # Fasan Fleisch, Fasan Fleisch, Rebhuhn Fleisch
+  V4: MEAT_FISH          # Baby-Pute Fleisch, Hähnchen Fleisch, Hähnchen Fleisch
+  V5: MEAT_FISH          # Rind Herz, Rind Herz, Kalb Herz
+  V6: MEAT_FISH          # Hähnchen Innereien, Hähnchen Herz, Hähnchen Herz
+  V8: DELI               # Wildpaste, Hähnchencreme
+  V9: DELI               # Pastete von Hasenfleisch, Wildschweinpastete imitiert, Entenpastete gebacken
+  W0: MEAT_FISH          # Puten-Aufschnitt-Grundbrät mit Schweinefleisch, Aufschnitt-Grundbrät fettreduziert, Aufschnitt-Grundbrät
+  W1: DELI               # Braunschweiger Mettwurst Ia, Streichmettwurst/Streichmettwurst mit Zwiebeln, Braunschweiger Mettwurst
+  W2: DELI               # Geflügeljagdwurst mit Schweinefleisch, Jagdwurst fettreduziert, Knackwürstchen fettreduziert
+  W3: DELI               # Geflügelleberwurst, Feine Leberwurst fettreduziert, Thüringer Fleischrotwurst fettreduziert
+  W4: DELI               # Schwein Schinkenspeck, Schwein Speck, Schwein Bauchspeck
+  W5: DELI               # Kasseler, Kasseler Kamm, Kasseler Rippenspeer
+  W6: DELI               # Leiterchen/Rippchen/Schälrippchen, Eisbein, Rind Pökelfleisch
+  W8: DELI               # Gefüllter Schweinebauch gebraten ohne Fett, Gefüllter Schweinekamm gebraten ohne Fett, Kalbfleischgalantine gebacken
+  W9: DELI               # Fleischwurst im Blätterteig gebacken, Wurstkuchen mit Mürbeteig, Schinkentorte mit Mürbeteig
+
+# Shelved with the jars and cans, whatever they were made of.
+stateDefaults:
+  CANNED: CANNED_JARS
+  PICKLED: CANNED_JARS
+
+# Unlike a diet class, these words say how the product itself is sold, so they may decide.
+sourceNamePatterns:
+  FROZEN: 'tiefgefroren|tiefgekühlt'
+  BEVERAGES: '(?<!dick)saft\b|nektar\b|smoothie'
+
+overrides:
+  # --- BLS foods whose subgroup is shelved elsewhere ---------------------------------------------
+  bls-S111000: BAKING             # Zucker weiß (Raffinadezucker/Weißzucker)
+  bls-S111100: BAKING             # Puderzucker
+  bls-S112000: BAKING             # Zucker braun (Kandisfarin/Rohzucker)
+  bls-S114000: BAKING             # Vanillezucker
+  bls-S115100: BAKING             # Traubenzucker (Dextrose/Glukose)
+  bls-S162000: BAKING             # Sorbit Pulver (E 420)
+  bls-S163000: BAKING             # Xylit Pulver (E 967)
+  bls-S164000: BAKING             # Mannit Pulver (E 421)
+  bls-S170000: BAKING             # Tafelsüße Tabletten (Süßstoffe: Cyclamat, Saccharin)
+  bls-S171000: BAKING             # Tafelsüße Flüssigsüße (Süßstoffe: Cyclamat, Saccharin)
+  bls-S723000: BEVERAGES          # Getränkepulver kakaohaltig
+  bls-S730000: BEVERAGES          # Getränkepulver malzhaltig, angereichert mit Vitaminen und Mineralstoffen
+  bls-S740000: BEVERAGES          # Trinkschokoladenpulver
+  bls-H810000: SWEETS_SNACKS      # Studentenfutter
+  bls-H810100: SWEETS_SNACKS      # Erdnuss, im Teigmantel
+  bls-H862200: OILS_SPICES_SAUCES # Miso
+  bls-H880100: SWEETS_SNACKS      # Sonnenblumenkernaufstrich, Brotaufstrich pflanzlich
+  bls-H880200: SWEETS_SNACKS      # Erdnussbutter
+  bls-D041000: SWEETS_SNACKS      # Erdnussflips
+  bls-D050000: SWEETS_SNACKS      # Cracker
+  bls-D064000: SWEETS_SNACKS      # Salzbrezeln/Salzstangen (Laugendauergebäck)
+  bls-D071000: DAIRY_EGGS         # Ausbackteig (mit Milch) gesüßt
+  bls-D072000: DAIRY_EGGS         # Blätterteig eifrei
+  bls-D073000: DAIRY_EGGS         # Brandmasse
+  bls-D076000: DAIRY_EGGS         # Ausbackteig (mit Bier) ungesüßt
+  bls-D079000: DAIRY_EGGS         # Pizzateig (mit Hefe)
+  bls-H120100: BAKING             # Walnuss
+  bls-H120400: BAKING             # Walnuss gemahlen
+  bls-H130400: BAKING             # Haselnuss gemahlen
+  bls-H150400: BAKING             # Kokos Fruchtfleisch, geraspelt, getrocknet
+  bls-H150100: FRUIT_VEG          # Kokos Fruchtfleisch
+  bls-H154000: CANNED_JARS        # Kokosmilch
+  bls-H151000: BEVERAGES          # Kokoswasser (Fruchtwasser)
+  bls-K230000: BAKING             # Kartoffelstärke (Kartoffelmehl)
+  bls-K280100: SWEETS_SNACKS      # Kartoffelchips, diverse Sorten
+  bls-K280200: SWEETS_SNACKS      # Kartoffelsticks
+  bls-K290100: SWEETS_SNACKS      # Kartoffelchips energiereduziert
+  bls-R160000: CANNED_JARS        # Tomatenmark
+  bls-R161200: CANNED_JARS        # Tomaten passiert
+  bls-R211200: FRUIT_VEG          # Ingwer
+  bls-G345100: CANNED_JARS        # Sauerkraut abgetropft
+  bls-G570100: CANNED_JARS        # Zuckermais
+  bls-T121100: CANNED_JARS        # Thunfisch
+  bls-T410600: DELI               # Lachs geräuchert (Räucherlachs)
+  bls-U681700: DELI               # Schwein Rohschinken, mager, Rohpökelware, geräuchert
+  # --- FDC foods: no group code, so every one is placed here --------------------------------------
+  fdc-2515382: BAKING             # Coconut flour
+  fdc-2512377: BAKING             # Cassava flour
+  fdc-2710835: BAKING             # Masa harina
+  fdc-175040: BAKING             # Baking soda
+  fdc-2512372: BAKING             # Quinoa flour
+  fdc-1104705: BAKING             # Defatted soy flour
+  fdc-2512373: BAKING             # Sorghum flour
+  fdc-2710840: BAKING             # Pearled sorghum flour
+  fdc-173471: BAKING             # Vanilla extract
+  fdc-172235: BAKING             # Vanilla extract, imitation, alcohol
+  fdc-172236: BAKING             # Vanilla extract, imitation, no alcohol
+  fdc-2003594: BEVERAGES          # Cranberry juice
+  fdc-167723: BEVERAGES          # Sake
+  fdc-174913: BREAD_BAKERY       # Ciabatta
+  fdc-2346414: CANNED_JARS        # Unsweetened applesauce
+  fdc-332282: CANNED_JARS        # Marinara sauce
+  fdc-171579: CANNED_JARS        # Pesto
+  fdc-746777: CANNED_JARS        # Salsa
+  fdc-2644285: CANNED_JARS        # Black beans
+  fdc-2685579: CANNED_JARS        # Tomato sauce
+  fdc-2647443: DAIRY_EGGS         # Cotija
+  fdc-2259794: DAIRY_EGGS         # Greek yogurt
+  fdc-330137: DAIRY_EGGS         # Greek yogurt, nonfat
+  fdc-171249: DAIRY_EGGS         # Pecorino
+  fdc-2647442: DAIRY_EGGS         # Queso fresco
+  fdc-746765: DAIRY_EGGS         # Queso seco
+  fdc-746781: DELI               # Chorizo
+  fdc-746779: DELI               # Beef breakfast sausage
+  fdc-746783: DELI               # Turkey breakfast sausage
+  fdc-746780: DELI               # Italian sausage
+  fdc-2685574: FRUIT_VEG          # Collard greens
+  fdc-2003603: FRUIT_VEG          # Beech mushroom
+  fdc-172233: FRUIT_VEG          # Dill
+  fdc-2003600: FRUIT_VEG          # Enoki mushroom
+  fdc-1999626: FRUIT_VEG          # Lion's mane mushroom
+  fdc-169997: FRUIT_VEG          # Cilantro
+  fdc-2003599: FRUIT_VEG          # King oyster mushroom
+  fdc-2003602: FRUIT_VEG          # Maitake mushroom
+  fdc-173475: FRUIT_VEG          # Mint
+  fdc-173474: FRUIT_VEG          # Peppermint
+  fdc-2747660: FRUIT_VEG          # Banana pepper
+  fdc-2003604: FRUIT_VEG          # Pioppini mushroom
+  fdc-2747662: FRUIT_VEG          # Poblano pepper
+  fdc-173473: FRUIT_VEG          # Rosemary
+  fdc-2747653: FRUIT_VEG          # Beet greens
+  fdc-173470: FRUIT_VEG          # Thyme
+  fdc-168573: FRUIT_VEG          # Lemongrass
+  fdc-2727571: MEAT_FISH          # Ground bison
+  fdc-2514746: MEAT_FISH          # Ground chicken
+  fdc-2684446: MEAT_FISH          # Crab meat
+  fdc-2727570: MEAT_FISH          # Ground lamb
+  fdc-2747658: MEAT_FISH          # Mahi mahi
+  fdc-2514747: MEAT_FISH          # Ground turkey
+  fdc-2747669: MEAT_FISH          # Snapper
+  fdc-2747670: MEAT_FISH          # Snow crab
+  fdc-2747668: MEAT_FISH          # Chilean sea bass
+  fdc-2684442: MEAT_FISH          # Tilapia
+  fdc-171316: OILS_SPICES_SAUCES # Anise seed
+  fdc-174529: OILS_SPICES_SAUCES # Oyster sauce
+  fdc-171324: OILS_SPICES_SAUCES # Fenugreek seed
+  fdc-170936: OILS_SPICES_SAUCES # Savory, ground
+  fdc-170932: OILS_SPICES_SAUCES # Cayenne pepper
+  fdc-173476: OILS_SPICES_SAUCES # Chili seasoning mix
+  fdc-171319: OILS_SPICES_SAUCES # Chili powder
+  fdc-170924: OILS_SPICES_SAUCES # Curry powder
+  fdc-171322: OILS_SPICES_SAUCES # Dill weed, dried
+  fdc-170925: OILS_SPICES_SAUCES # Dill seed
+  fdc-170937: OILS_SPICES_SAUCES # Tarragon, dried
+  fdc-171323: OILS_SPICES_SAUCES # Fennel seed
+  fdc-174531: OILS_SPICES_SAUCES # Fish sauce
+  fdc-171331: OILS_SPICES_SAUCES # Poultry seasoning
+  fdc-171583: OILS_SPICES_SAUCES # Vegetable broth
+  fdc-171321: OILS_SPICES_SAUCES # Cloves, ground
+  fdc-172886: OILS_SPICES_SAUCES # Hoisin sauce
+  fdc-174536: OILS_SPICES_SAUCES # Chicken broth
+  fdc-170926: OILS_SPICES_SAUCES # Ginger, ground
+  fdc-170919: OILS_SPICES_SAUCES # Cardamom
+  fdc-171318: OILS_SPICES_SAUCES # Chervil, dried
+  fdc-170921: OILS_SPICES_SAUCES # Coriander leaf, dried
+  fdc-170922: OILS_SPICES_SAUCES # Coriander seed
+  fdc-170923: OILS_SPICES_SAUCES # Cumin
+  fdc-170918: OILS_SPICES_SAUCES # Caraway seed
+  fdc-172231: OILS_SPICES_SAUCES # Turmeric
+  fdc-170917: OILS_SPICES_SAUCES # Bay leaf
+  fdc-170928: OILS_SPICES_SAUCES # Marjoram, dried
+  fdc-172239: OILS_SPICES_SAUCES # Spearmint, dried
+  fdc-170927: OILS_SPICES_SAUCES # Mace
+  fdc-171326: OILS_SPICES_SAUCES # Nutmeg
+  fdc-171328: OILS_SPICES_SAUCES # Oregano, dried
+  fdc-171329: OILS_SPICES_SAUCES # Paprika
+  fdc-170933: OILS_SPICES_SAUCES # Pepper, white
+  fdc-171315: OILS_SPICES_SAUCES # Allspice
+  fdc-171332: OILS_SPICES_SAUCES # Pumpkin pie spice
+  fdc-171333: OILS_SPICES_SAUCES # Rosemary, dried
+  fdc-170934: OILS_SPICES_SAUCES # Saffron
+  fdc-170935: OILS_SPICES_SAUCES # Sage, ground
+  fdc-172242: OILS_SPICES_SAUCES # Seasoning mix, sazon
+  fdc-170920: OILS_SPICES_SAUCES # Celery seed
+  fdc-170929: OILS_SPICES_SAUCES # Mustard seed, ground
+  fdc-171186: OILS_SPICES_SAUCES # Sriracha
+  fdc-174528: OILS_SPICES_SAUCES # Tabasco
+  fdc-172243: OILS_SPICES_SAUCES # Taco seasoning
+  fdc-170938: OILS_SPICES_SAUCES # Thyme, dried
+  fdc-171610: OILS_SPICES_SAUCES # Worcestershire sauce
+  fdc-171320: OILS_SPICES_SAUCES # Cinnamon
+  fdc-2710829: PASTA_RICE_GRAINS  # Fonio
+  fdc-2710830: PASTA_RICE_GRAINS  # Khorasan wheat
+  fdc-2710838: PASTA_RICE_GRAINS  # Red rice
+  fdc-2710825: PASTA_RICE_GRAINS  # Black rice
+  fdc-2710842: PASTA_RICE_GRAINS  # Sorghum
+  fdc-2710841: PASTA_RICE_GRAINS  # Pearled sorghum
+  fdc-2710839: PASTA_RICE_GRAINS  # Sorghum bran
+  fdc-172094: PASTA_RICE_GRAINS  # Tortellini

@@ -1,5 +1,6 @@
 import {Alert, Box, LinearProgress, Paper, Typography, useMediaQuery, useTheme} from '@mui/material';
 import {ReactNode, useMemo, useState} from 'react';
+import {GridValidRowModel} from '@mui/x-data-grid';
 import {AsyncData} from '../../hooks/useAsyncData';
 import {ConfirmDialog, Confirmation} from '../ConfirmDialog';
 import {CollectionCards} from './CollectionCards';
@@ -10,7 +11,7 @@ import {compareValues, importanceOf, searchableText, valueOf} from './fieldValue
 import {BulkAction, FieldDefinition, RowAction, RowId} from './types';
 
 // Every list in this panel: a table where there is room for one, cards where there is not.
-export function CollectionScreen<T>(props: {
+export function CollectionScreen<T extends GridValidRowModel>(props: {
   title: string,
   fields: FieldDefinition<T>[],
   data: AsyncData<T[]>,

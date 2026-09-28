@@ -11,9 +11,8 @@ import java.util.stream.Stream;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sterul.opencookbookapiserver.configurations.nutrition.ConditionalOnNutritionEnabled;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
-import com.sterul.opencookbookapiserver.services.nutrition.IngredientNames;
+import com.sterul.opencookbookapiserver.services.catalogue.IngredientNames;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.LineNutrition;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.LineStatus;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.NutritionCalculator;
@@ -21,7 +20,6 @@ import com.sterul.opencookbookapiserver.services.nutrition.calculation.RecipeNut
 
 /** The calculator run over every recipe of this instance. */
 @Service
-@ConditionalOnNutritionEnabled
 @Transactional(readOnly = true)
 public class CoverageReport {
 

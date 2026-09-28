@@ -14,7 +14,7 @@ import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
 import com.sterul.opencookbookapiserver.services.ml.MlSubsystemException;
-import com.sterul.opencookbookapiserver.services.nutrition.UnitLexicon;
+import com.sterul.opencookbookapiserver.services.catalogue.UnitLexicon;
 import com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers.IngredientExtractor;
 
 import lombok.extern.slf4j.Slf4j;

@@ -5,8 +5,8 @@ import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Component;
 
-import com.sterul.opencookbookapiserver.services.nutrition.IngredientNames;
-import com.sterul.opencookbookapiserver.services.nutrition.dataset.NutritionDatasetReader;
+import com.sterul.opencookbookapiserver.services.catalogue.IngredientNames;
+import com.sterul.opencookbookapiserver.services.catalogue.dataset.CatalogueDatasetReader;
 
 /** Recognises names of ingredients used only a little ("Mehl für die Form"), from the lexicons. */
 @Component
@@ -14,7 +14,7 @@ public class SparingUses {
 
     private final List<Pattern> phrases;
 
-    public SparingUses(NutritionDatasetReader reader) {
+    public SparingUses(CatalogueDatasetReader reader) {
         phrases = reader.lexicons().lexicons().stream()
                 .flatMap(lexicon -> lexicon.sparingUses().stream())
                 .map(phrase -> Pattern.compile("(?<!\\p{L})" + Pattern.quote(IngredientNames.normalise(phrase)) + "(?!\\p{L})"))

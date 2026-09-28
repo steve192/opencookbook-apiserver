@@ -195,7 +195,7 @@ public class RecipeClassificationService {
         return Objects.equals(left == null ? null : left.getId(), right == null ? null : right.getId());
     }
 
-    /** A kind this instance cannot classify - diets need nutrition estimation switched on - does not exist here. */
+    /** A kind without a classifier does not exist here. */
     private RecipeClassifier<?> classifierFor(ClassificationKind kind) {
         var classifier = classifiers.get(kind);
         if (classifier == null) {

@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
-import com.sterul.opencookbookapiserver.entities.nutrition.IngredientRelinkRun;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFood;
+import com.sterul.opencookbookapiserver.entities.catalogue.IngredientRelinkRun;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;

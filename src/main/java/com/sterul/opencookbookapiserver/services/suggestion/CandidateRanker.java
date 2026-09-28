@@ -21,10 +21,10 @@ public class CandidateRanker {
 
     private final List<CandidateScorer> scorers;
     private final List<NutritionAwareScorer> nutritionScorers;
-    private final Optional<RecipeNutritionSummaries> summaries;
+    private final RecipeNutritionSummaries summaries;
 
     public CandidateRanker(List<CandidateScorer> scorers, List<NutritionAwareScorer> nutritionScorers,
-            Optional<RecipeNutritionSummaries> summaries) {
+            RecipeNutritionSummaries summaries) {
         this.scorers = scorers;
         this.nutritionScorers = nutritionScorers;
         this.summaries = summaries;
@@ -47,7 +47,7 @@ public class CandidateRanker {
     }
 
     private RankedSuggestion rescore(RankedSuggestion suggestion, SuggestionCriteria criteria) {
-        var nutrition = summaries.orElseThrow().of(suggestion.recipe());
+        var nutrition = summaries.of(suggestion.recipe());
         return suggestion.plus(nutritionScorers.stream()
                 .map(scorer -> scorer.score(suggestion.candidate(), nutrition, criteria))
                 .flatMap(Optional::stream)
@@ -55,7 +55,7 @@ public class CandidateRanker {
     }
 
     private boolean usesNutrition(SuggestionCriteria criteria) {
-        return criteria.wantsNutrition() && summaries.isPresent() && !nutritionScorers.isEmpty();
+        return criteria.wantsNutrition() && !nutritionScorers.isEmpty();
     }
 
     /** Recipe id breaks ties, so an unchanged cookbook and seed give an unchanged order. */

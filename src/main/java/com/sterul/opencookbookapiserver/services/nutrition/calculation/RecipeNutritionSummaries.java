@@ -8,15 +8,14 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sterul.opencookbookapiserver.configurations.nutrition.ConditionalOnNutritionEnabled;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFood;
 import com.sterul.opencookbookapiserver.entities.nutrition.NutritionQuality;
 import com.sterul.opencookbookapiserver.entities.nutrition.RecipeNutritionSummary;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.repositories.RecipeNutritionSummaryRepository;
 import com.sterul.opencookbookapiserver.services.RecipeChangedEvent;
-import com.sterul.opencookbookapiserver.services.nutrition.catalogue.CatalogueChangedEvent;
-import com.sterul.opencookbookapiserver.services.nutrition.dataset.NutritionDatasetReader;
+import com.sterul.opencookbookapiserver.services.catalogue.CatalogueChangedEvent;
+import com.sterul.opencookbookapiserver.services.catalogue.dataset.CatalogueDatasetReader;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,16 +26,15 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 @Transactional
-@ConditionalOnNutritionEnabled
 public class RecipeNutritionSummaries {
 
     private final RecipeNutritionSummaryRepository summaryRepository;
     private final NutritionCalculator calculator;
-    private final NutritionDatasetReader dataset;
+    private final CatalogueDatasetReader dataset;
     private final Clock clock;
 
     public RecipeNutritionSummaries(RecipeNutritionSummaryRepository summaryRepository,
-            NutritionCalculator calculator, NutritionDatasetReader dataset, Clock clock) {
+            NutritionCalculator calculator, CatalogueDatasetReader dataset, Clock clock) {
         this.summaryRepository = summaryRepository;
         this.calculator = calculator;
         this.dataset = dataset;

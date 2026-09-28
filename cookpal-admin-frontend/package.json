@@ -8,7 +8,8 @@
     "build": "tsc && vite build",
     "build:if-changed": "node scripts/build-if-changed.mjs",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "sbom": "cyclonedx-npm --omit dev --gather-license-texts --output-format JSON --output-file ../src/main/resources/META-INF/sbom/admin-panel.cdx.json"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",
@@ -25,6 +26,7 @@
     "react-toastify": "11.1.0"
   },
   "devDependencies": {
+    "@cyclonedx/cyclonedx-npm": "6.0.1",
     "@eslint/js": "9.39.5",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",

@@ -2,7 +2,6 @@ package com.sterul.opencookbookapiserver.services;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,9 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 public class IngredientService {
 
     private final IngredientRepository ingredientRepository;
-    private final Optional<IngredientLinker> linker;
+    private final IngredientLinker linker;
 
-    public IngredientService(IngredientRepository ingredientRepository, Optional<IngredientLinker> linker) {
+    public IngredientService(IngredientRepository ingredientRepository, IngredientLinker linker) {
         this.ingredientRepository = ingredientRepository;
         this.linker = linker;
     }
@@ -45,7 +44,7 @@ public class IngredientService {
         var tidy = name.trim();
         return ingredientRepository.findByNameAndOwner(tidy, owner).orElseGet(() -> {
             var ingredient = Ingredient.builder().name(tidy).additionalInfo(additionalInfo).owner(owner).build();
-            linker.ifPresent(automatic -> automatic.linkNew(ingredient));
+            linker.linkNew(ingredient);
             return ingredient;
         });
     }

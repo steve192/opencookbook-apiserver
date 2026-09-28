@@ -12,17 +12,17 @@ import com.sterul.opencookbookapiserver.controllers.support.NutritionSummaries;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.NutritionCalculator;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.RecipeNutrition;
-import com.sterul.opencookbookapiserver.services.nutrition.matching.CatalogueMatcher;
-import com.sterul.opencookbookapiserver.unit.services.nutrition.ShippedNutritionDataset;
-import com.sterul.opencookbookapiserver.unit.services.nutrition.matching.ShippedCatalogueMatcher;
+import com.sterul.opencookbookapiserver.services.catalogue.matching.CatalogueMatcher;
+import com.sterul.opencookbookapiserver.unit.services.catalogue.ShippedCatalogueDataset;
+import com.sterul.opencookbookapiserver.unit.services.catalogue.matching.ShippedCatalogueMatcher;
 
 class NutritionSummariesTest {
 
-    private final NutritionCalculator calculator = ShippedNutritionDataset.calculator();
+    private final NutritionCalculator calculator = ShippedCatalogueDataset.calculator();
 
     @Test
     void aRecipeHasNoSummaryWhileTheCatalogueIsNotReady() {
-        var notReady = new CatalogueMatcher(ShippedNutritionDataset.READER);
+        var notReady = new CatalogueMatcher(ShippedCatalogueDataset.READER);
 
         assertTrue(new NutritionSummaries(calculator, notReady).of(recipe()).isEmpty());
     }

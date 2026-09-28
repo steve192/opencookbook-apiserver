@@ -7,7 +7,6 @@ import {FieldDefinition, RowAction} from '../components/collection/types';
 import {describeFood} from '../components/foodLabels';
 import {EntityFormDialog} from '../components/form/EntityFormDialog';
 import {FormFieldDefinition} from '../components/form/types';
-import {NutritionTurnedOff} from '../components/NutritionTurnedOff';
 import {useActionRunner} from '../hooks/useActionRunner';
 import {useCollection} from '../hooks/useAsyncData';
 
@@ -67,10 +66,6 @@ export const NameRulesScreen = () => {
       setAdding(false);
     }
   };
-
-  if (rules.errorStatus === 404) {
-    return <NutritionTurnedOff />;
-  }
 
   return (
     <>

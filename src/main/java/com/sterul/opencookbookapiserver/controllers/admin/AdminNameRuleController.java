@@ -13,13 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sterul.opencookbookapiserver.configurations.nutrition.ConditionalOnNutritionEnabled;
 import com.sterul.opencookbookapiserver.controllers.BaseController;
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminNameRuleResponse;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueNameRule;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueNameRule;
 import com.sterul.opencookbookapiserver.services.SignedInUserService;
-import com.sterul.opencookbookapiserver.services.nutrition.catalogue.CatalogueService;
-import com.sterul.opencookbookapiserver.services.nutrition.linking.NameRuleService;
+import com.sterul.opencookbookapiserver.services.catalogue.CatalogueService;
+import com.sterul.opencookbookapiserver.services.catalogue.linking.NameRuleService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -32,7 +31,6 @@ import jakarta.validation.constraints.NotNull;
 @RestController
 @RequestMapping("/api/v1/admin/nutrition/name-rules")
 @Tag(name = "Nutrition name rules", description = "Names never to link, or never to link to a food")
-@ConditionalOnNutritionEnabled
 @PreAuthorize("hasAuthority('ADMIN')")
 public class AdminNameRuleController extends BaseController {
 

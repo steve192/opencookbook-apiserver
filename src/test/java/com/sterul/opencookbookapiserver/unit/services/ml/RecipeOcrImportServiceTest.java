@@ -13,7 +13,7 @@ import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.services.ml.MlSubsystemException;
 import com.sterul.opencookbookapiserver.services.ml.recipeocr.RecipeOcrImportService;
-import com.sterul.opencookbookapiserver.unit.services.nutrition.ShippedNutritionDataset;
+import com.sterul.opencookbookapiserver.unit.services.catalogue.ShippedCatalogueDataset;
 
 /**
  * Turning the subsystem's reading of a photograph into a recipe.
@@ -23,8 +23,8 @@ import com.sterul.opencookbookapiserver.unit.services.nutrition.ShippedNutrition
  */
 class RecipeOcrImportServiceTest {
 
-    private final RecipeOcrImportService cut = new RecipeOcrImportService(ShippedNutritionDataset.ingredientExtractor(),
-            ShippedNutritionDataset.UNIT_LEXICON);
+    private final RecipeOcrImportService cut = new RecipeOcrImportService(ShippedCatalogueDataset.ingredientExtractor(),
+            ShippedCatalogueDataset.UNIT_LEXICON);
     private final CookpalUser owner = new CookpalUser();
 
     private static final String FULL_RESULT = """

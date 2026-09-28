@@ -12,7 +12,7 @@ import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
  *
  * Purposely not a reuse of the response the owner gets.
  *
- * @param nutrition null while nutrition is off
+ * @param nutrition null while the catalogue is not ready
  */
 public record SharedRecipeResponse(
         String title,

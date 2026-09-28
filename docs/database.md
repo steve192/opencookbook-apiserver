@@ -1,11 +1,12 @@
-# Database: recipe classification, diets and weekplan generation
+# Database: recipe classification, diets, weekplan generation and shopping lists
 
-What the migrations `V21`-`V25` added, and why each column is there. This is not a full schema
-reference; it covers the tables and columns behind recipe suggestion, recipe diets, the
-catalogue's diet classes and generated weekplans. For the nutrition catalogue itself see [`nutrition.md`](nutrition.md).
+What the migrations `V21`-`V25`, `V31` and `V32` added, and why each column is there. This is
+not a full schema reference; it covers the tables and columns behind recipe suggestion, recipe
+diets, the catalogue's diet classes, generated weekplans and shopping lists. For the food
+catalogue itself see [`catalogue.md`](catalogue.md).
 
 Schema changes are Flyway migrations in `src/main/resources/db/migration/`, applied at startup and
-**immutable once released**. Bulk data is never shipped as a migration: the nutrition dataset,
+**immutable once released**. Bulk data is never shipped as a migration: the catalogue dataset,
 diet classes included, ships as files in the jar and is imported afterwards (§6 of the nutrition
 plan), so a dataset correction never needs a schema change.
 
@@ -91,7 +92,7 @@ and nutrients, the diet class **may be corrected on a dataset food**: the shippe
 of a text description, not a measurement, so an operator who knows the food outranks it.
 
 Where the shipped values come from (BLS food-group letters, with a curated exception list) is
-described in `nutrition-data/README.md` under *How the build decides*.
+described in `catalogue-data/README.md` under *How the build decides*.
 
 ---
 
@@ -291,6 +292,44 @@ explain itself. The key is stable and the client writes the sentence in the read
 | `slot_id` | bigint → `plan_draft_slot` | Cascades on delete |
 | `term` | varchar(32) | The term's key |
 | `term_value` | double | Its signed contribution to the score |
+
+## Shopping lists (`V31`, `V32`)
+
+`V31` gives catalogue foods an `aisle` (where a shop sells them), a `shopping_tile` flag and an
+`icon`, all owned by the dataset, and renames `nutrition_dataset_import` to
+`catalogue_dataset_import`. `V32` adds the lists.
+
+A list is synced by version rather than by time: every item change takes the list's next
+`version`, and a device asks for what changed since the version it holds. Deletes are therefore
+tombstones, so that a device learns of them; the nightly housekeeping purges old ones and records
+how far in `purged_version`.
+
+### `shopping_list`
+
+| Column | Type | Meaning |
+|---|---|---|
+| `owner_user_id`, `household_id` | bigint, varchar(36) | Exactly one is set, as for weekplan days. Both cascade |
+| `name` | varchar(64) | Null for an unrenamed default list, which the app names in the reader's language |
+| `default_list` | boolean | One per scope, by partial unique index; made the first time the scope's lists are asked for |
+| `version` | bigint | Raised by every item change; writers of one list take a row lock, so it never repeats |
+| `purged_version` | bigint | Tombstones up to here are gone: a device behind it is sent the whole list |
+
+### `shopping_item`
+
+| Column | Type | Meaning |
+|---|---|---|
+| `id` | varchar(36) | Chosen by the device, so an item added offline can be changed before it was synced |
+| `name_key` | varchar(120) | Lower case, single-spaced; unique per list among items not deleted |
+| `spec` | varchar(200) | Amount or note as free text; adding a name already on the list appends to it |
+| `aisle`, `aisle_manual` | varchar(32), boolean | Placed by the catalogue unless a person chose; a person's choice is never re-derived |
+| `status`, `bought_at` | varchar(16), timestamp | `ACTIVE` or `BOUGHT`; the newest 60 bought stay as "recently bought" |
+| `added_by_user_id` | bigint → `cookpal_user` | Set null when that account is deleted |
+| `version`, `deleted` | bigint, boolean | The list version of the item's last change; a tombstone keeps its row until purged |
+
+`shopping_item_source` holds the meals an item was imported for; `shopping_applied_op` the op ids a
+device sent, for a week, so a batch retried after a lost answer is not applied twice;
+`shopping_staple` what a person left unticked in imports, and whether three times in a row made it a
+staple. `cookpal_user.shopping_provider` says whether imports go to the Cookpal list or to Bring.
 
 ---
 

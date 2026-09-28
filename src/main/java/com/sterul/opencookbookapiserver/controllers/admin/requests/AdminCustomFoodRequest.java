@@ -3,9 +3,9 @@ package com.sterul.opencookbookapiserver.controllers.admin.requests;
 import java.util.List;
 
 import com.sterul.opencookbookapiserver.controllers.responses.Nutrients;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFoodName;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFoodPortion;
-import com.sterul.opencookbookapiserver.services.nutrition.catalogue.CatalogueService;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFoodName;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFoodPortion;
+import com.sterul.opencookbookapiserver.services.catalogue.CatalogueService;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;

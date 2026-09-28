@@ -49,6 +49,8 @@ public enum ApiErrorCode {
     INVITE_INVALID(HttpStatus.NOT_FOUND, "That invitation is not valid any more"),
     ALREADY_A_MEMBER(HttpStatus.CONFLICT, "You are already in that household"),
 
+    TOO_MANY_SHOPPING_LISTS(HttpStatus.CONFLICT, "There are as many shopping lists here as this server allows"),
+
     IMPORT_URL_INVALID(HttpStatus.BAD_REQUEST, "That is not a link this server can read"),
     IMPORT_NOT_SUPPORTED(HttpStatus.NOT_IMPLEMENTED,
             "Recipes cannot be imported from that website"),

@@ -26,6 +26,7 @@ import com.sterul.opencookbookapiserver.controllers.requests.PasswordResetExecut
 import com.sterul.opencookbookapiserver.controllers.requests.PasswordResetRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.RefreshTokenRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.ResendActivationLinkRequest;
+import com.sterul.opencookbookapiserver.controllers.requests.ShoppingProviderRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.UserCreationRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.UserLoginRequest;
 import com.sterul.opencookbookapiserver.controllers.responses.RefreshTokenResponse;
@@ -186,6 +187,7 @@ public class UserController extends BaseController {
         response.setEmail(user.getEmailAddress());
         response.setDisplayName(user.getDisplayName());
         response.setOnboarded(user.isOnboarded());
+        response.setShoppingProvider(user.getShoppingProvider());
         response.setRoles(SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority).toList());
         return response;
@@ -196,6 +198,14 @@ public class UserController extends BaseController {
     @PutMapping("/self/displayName")
     public UserInfoResponse setDisplayName(@Valid @RequestBody DisplayNameRequest request) {
         userService.setDisplayName(getLoggedInUser(), request.displayName());
+        return getOwnUserInfo();
+    }
+
+    @Operation(summary = "Choose where shopping imports go",
+            description = "The app asks on the first import and shows only the chosen provider afterwards.")
+    @PutMapping("/self/shoppingProvider")
+    public UserInfoResponse setShoppingProvider(@Valid @RequestBody ShoppingProviderRequest request) {
+        userService.setShoppingProvider(getLoggedInUser(), request.provider());
         return getOwnUserInfo();
     }
 

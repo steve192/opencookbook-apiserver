@@ -151,8 +151,8 @@ class PublicEndpointsIntegrationTest extends IntegrationTestBase {
                 .filter(this::isUnderThePublicSharePrefix)
                 .toList();
 
-        assertEquals(3, publicMappings.size(),
-                "Expected the shared recipe and its two image endpoints, found: " + publicMappings);
+        assertEquals(4, publicMappings.size(),
+                "Expected the shared recipe, its nutrition and its two image endpoints, found: " + publicMappings);
     }
 
     private boolean isUnderThePublicSharePrefix(RequestMappingInfo mapping) {

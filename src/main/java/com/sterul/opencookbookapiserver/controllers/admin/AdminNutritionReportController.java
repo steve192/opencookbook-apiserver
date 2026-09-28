@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sterul.opencookbookapiserver.configurations.nutrition.ConditionalOnNutritionEnabled;
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminCoverageResponse;
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminUnmatchedNameResponse;
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminUserCorrectionResponse;
@@ -28,7 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/v1/admin/nutrition")
 @Tag(name = "Nutrition reports", description = "Unmatched names, user corrections, the production names export and coverage")
-@ConditionalOnNutritionEnabled
 @Slf4j
 @PreAuthorize("hasAuthority('ADMIN')")
 public class AdminNutritionReportController {
@@ -60,7 +58,7 @@ public class AdminNutritionReportController {
     }
 
     @Operation(summary = "Every ingredient name used, as a draft of the production gold set",
-            description = "Tab-separated, for nutrition-data/local/names-production.tsv. Contains what users wrote: never commit it.")
+            description = "Tab-separated, for catalogue-data/local/names-production.tsv. Contains what users wrote: never commit it.")
     @GetMapping("/names-export")
     public ResponseEntity<String> exportNames() {
         log.info("Admin: Exporting the ingredient names of all users");

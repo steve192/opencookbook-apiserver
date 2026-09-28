@@ -23,18 +23,18 @@ import com.sterul.opencookbookapiserver.cronjobs.BringExportDeletionJob;
 import com.sterul.opencookbookapiserver.cronjobs.IngredientDeletionJob;
 import com.sterul.opencookbookapiserver.cronjobs.MlJobPollingCronjob;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
-import com.sterul.opencookbookapiserver.services.nutrition.IngredientNames;
+import com.sterul.opencookbookapiserver.services.catalogue.IngredientNames;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.LineFlag;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.LineNutrition;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.LineStatus;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.NutritionCalculator;
-import com.sterul.opencookbookapiserver.services.nutrition.catalogue.NutritionDatasetImporter;
-import com.sterul.opencookbookapiserver.services.nutrition.matching.CatalogueIndexUpdater;
+import com.sterul.opencookbookapiserver.services.catalogue.CatalogueDatasetImporter;
+import com.sterul.opencookbookapiserver.services.catalogue.matching.CatalogueIndexUpdater;
 import com.sterul.opencookbookapiserver.services.nutrition.reports.CoverageReport;
 import com.sterul.opencookbookapiserver.services.nutrition.reports.IngredientNameReport;
 
 /**
- * Writes the admin reports of a local database copy to nutrition-data/local/ (never committed). Read-only; skips
+ * Writes the admin reports of a local database copy to catalogue-data/local/ (never committed). Read-only; skips
  * itself without a database:
  *
  * <pre>
@@ -44,18 +44,17 @@ import com.sterul.opencookbookapiserver.services.nutrition.reports.IngredientNam
  */
 @Tag("local-instance")
 @SpringBootTest(properties = {
-        "opencookbook.nutrition.enabled=true",
         "spring.flyway.enabled=false",
         "spring.jpa.hibernate.ddl-auto=none"
 })
 class LocalInstanceReportsTest {
 
     private static final String URL = System.getProperty("local.instance.url");
-    private static final Path LOCAL = Path.of("nutrition-data", "local");
+    private static final Path LOCAL = Path.of("catalogue-data", "local");
     private static final int UNMATCHED_NAMES = 1000;
 
     @MockitoBean
-    private NutritionDatasetImporter importer;
+    private CatalogueDatasetImporter importer;
     @MockitoBean
     private MlJobPollingCronjob mlJobPolling;
     @MockitoBean

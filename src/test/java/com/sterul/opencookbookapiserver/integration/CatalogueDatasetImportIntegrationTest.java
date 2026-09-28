@@ -13,11 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -26,27 +24,27 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFoodName;
-import com.sterul.opencookbookapiserver.entities.nutrition.NutritionDatasetImport;
+import com.sterul.opencookbookapiserver.entities.catalogue.Aisle;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFood;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFoodName;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueDatasetImport;
 import com.sterul.opencookbookapiserver.entities.recipe.Diet;
 import com.sterul.opencookbookapiserver.repositories.CatalogueFoodRepository;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
-import com.sterul.opencookbookapiserver.repositories.NutritionDatasetImportRepository;
+import com.sterul.opencookbookapiserver.repositories.CatalogueDatasetImportRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
-import com.sterul.opencookbookapiserver.services.nutrition.catalogue.CatalogueDatasetApplier;
-import com.sterul.opencookbookapiserver.services.nutrition.catalogue.DatasetImportLedger;
-import com.sterul.opencookbookapiserver.services.nutrition.catalogue.NutritionDatasetImporter;
-import com.sterul.opencookbookapiserver.services.nutrition.dataset.NutritionDataset;
-import com.sterul.opencookbookapiserver.services.nutrition.dataset.NutritionDatasetReader;
-import com.sterul.opencookbookapiserver.services.nutrition.matching.CatalogueIndexUpdater;
-import com.sterul.opencookbookapiserver.services.nutrition.matching.CatalogueMatcher;
+import com.sterul.opencookbookapiserver.services.catalogue.CatalogueDatasetApplier;
+import com.sterul.opencookbookapiserver.services.catalogue.DatasetImportLedger;
+import com.sterul.opencookbookapiserver.services.catalogue.CatalogueDatasetImporter;
+import com.sterul.opencookbookapiserver.services.catalogue.dataset.CatalogueDataset;
+import com.sterul.opencookbookapiserver.services.catalogue.dataset.CatalogueDatasetReader;
+import com.sterul.opencookbookapiserver.services.catalogue.matching.CatalogueIndexUpdater;
+import com.sterul.opencookbookapiserver.services.catalogue.matching.CatalogueMatcher;
 
 /** On the migrated schema, whose case-insensitive name constraint must hold while names move between foods. */
 @SpringBootTest(properties = {
         "spring.flyway.enabled=true",
-        "spring.jpa.hibernate.ddl-auto=none",
-        "opencookbook.nutrition.enabled=true"
+        "spring.jpa.hibernate.ddl-auto=none"
 })
 @ActiveProfiles("integration-test")
 @DirtiesContext
@@ -62,12 +60,8 @@ class CatalogueDatasetImportIntegrationTest {
             .withPassword("password")
             .waitingFor(Wait.forListeningPort());
 
-    /** No background import of the shipped dataset. */
-    @MockitoBean
-    private NutritionDatasetImporter backgroundImporter;
-
     @Autowired
-    private NutritionDatasetReader reader;
+    private CatalogueDatasetReader reader;
     @Autowired
     private DatasetImportLedger ledger;
     @Autowired
@@ -77,7 +71,7 @@ class CatalogueDatasetImportIntegrationTest {
     @Autowired
     private IngredientRepository ingredientRepository;
     @Autowired
-    private NutritionDatasetImportRepository importRepository;
+    private CatalogueDatasetImportRepository importRepository;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -98,7 +92,7 @@ class CatalogueDatasetImportIntegrationTest {
         jdbcTemplate.update("DELETE FROM ingredient");
         jdbcTemplate.update("UPDATE catalogue_food SET variant_of_id = NULL");
         jdbcTemplate.update("DELETE FROM catalogue_food");
-        jdbcTemplate.update("DELETE FROM nutrition_dataset_import");
+        jdbcTemplate.update("DELETE FROM catalogue_dataset_import");
         owner = userRepository.findByEmailAddress("catalogue-import@example.com");
         if (owner == null) {
             var user = new CookpalUser();
@@ -110,13 +104,13 @@ class CatalogueDatasetImportIntegrationTest {
 
     @Test
     void theShippedDatasetIsImportedCompletelyAndOnlyOnce() {
-        var importer = new NutritionDatasetImporter(reader, ledger, applier, new SyncTaskExecutor(), events);
+        var importer = new CatalogueDatasetImporter(reader, ledger, applier, events);
         var manifest = reader.manifest();
 
         importer.importShippedDataset();
 
         var imported = importRepository.findById(manifest.checksum()).orElseThrow();
-        assertEquals(NutritionDatasetImport.Status.DONE, imported.getStatus(), imported.getReport());
+        assertEquals(CatalogueDatasetImport.Status.DONE, imported.getStatus(), imported.getReport());
         assertEquals(manifest.foods(), foodRepository.findAllByOrigin(CatalogueFood.Origin.DATASET).size());
 
         importer.importShippedDataset();
@@ -126,7 +120,7 @@ class CatalogueDatasetImportIntegrationTest {
 
     @Test
     void theMatcherFindsFoodsOfTheImportedCatalogue() {
-        new NutritionDatasetImporter(reader, ledger, applier, new SyncTaskExecutor(), events).importShippedDataset();
+        new CatalogueDatasetImporter(reader, ledger, applier, events).importShippedDataset();
 
         indexUpdater.rebuild();
 
@@ -136,11 +130,11 @@ class CatalogueDatasetImportIntegrationTest {
 
     @Test
     void aNewReleaseUpdatesItsFoodsAndRetiresTheOnesItNoLongerHas() {
-        applier.apply(new NutritionDataset.Catalogue(List.of(
+        applier.apply(new CatalogueDataset.Catalogue(List.of(
                 food("bls-1", null, name("de", "Kartoffel", true)),
                 food("bls-2", "bls-1", name("de", "Kartoffel gekocht", true)))));
 
-        var report = applier.apply(new NutritionDataset.Catalogue(List.of(
+        var report = applier.apply(new CatalogueDataset.Catalogue(List.of(
                 food("bls-1", null, name("de", "Kartoffel", true), name("en", "Potato", true)))));
 
         assertTrue(report.contains("retired bls-2 (no longer in the dataset)"), report.toString());
@@ -152,11 +146,11 @@ class CatalogueDatasetImportIntegrationTest {
 
     @Test
     void aNameMayMoveFromOneDatasetFoodToAnotherBetweenReleases() {
-        applier.apply(new NutritionDataset.Catalogue(List.of(
+        applier.apply(new CatalogueDataset.Catalogue(List.of(
                 food("bls-1", null, name("de", "Möhre", true), name("de", "Karotte", false)),
                 food("bls-2", null, name("de", "Pastinake", true)))));
 
-        applier.apply(new NutritionDataset.Catalogue(List.of(
+        applier.apply(new CatalogueDataset.Catalogue(List.of(
                 food("bls-1", null, name("de", "Möhre", true)),
                 food("bls-2", null, name("de", "Pastinake", true), name("de", "karotte", false)))));
 
@@ -176,7 +170,7 @@ class CatalogueDatasetImportIntegrationTest {
         var ingredient = ingredientRepository.save(Ingredient.builder()
                 .name("Kartoffeln").owner(owner).catalogueFood(legacy).linkSource(Ingredient.LinkSource.AUTO).build());
 
-        var report = applier.apply(new NutritionDataset.Catalogue(List.of(food("bls-1", null, name("de", "Kartoffel", true)))));
+        var report = applier.apply(new CatalogueDataset.Catalogue(List.of(food("bls-1", null, name("de", "Kartoffel", true)))));
 
         assertTrue(report.contains("merged legacy-42 into bls-1 (1 ingredients relinked)"), report.toString());
         read(() -> {
@@ -188,19 +182,19 @@ class CatalogueDatasetImportIntegrationTest {
 
     @Test
     void anAdministratorsNameIsKeptUntilAReleaseGivesItToAnotherFood() {
-        applier.apply(new NutritionDataset.Catalogue(List.of(
+        applier.apply(new CatalogueDataset.Catalogue(List.of(
                 food("bls-1", null, name("de", "Kartoffel", true)),
                 food("bls-2", null, name("de", "Süßkartoffel", true)))));
         transactionTemplate.executeWithoutResult(status -> foodRepository.findByCatalogueKey("bls-1").orElseThrow()
                 .getNames().add(adminName("de", "Batate", false)));
 
-        var keeping = applier.apply(new NutritionDataset.Catalogue(List.of(
+        var keeping = applier.apply(new CatalogueDataset.Catalogue(List.of(
                 food("bls-1", null, name("de", "Kartoffel", true)),
                 food("bls-2", null, name("de", "Süßkartoffel", true)))));
         read(() -> assertEquals(List.of("de Batate", "de Kartoffel"), names("bls-1")));
         assertTrue(keeping.stream().noneMatch(line -> line.contains("Batate")), keeping.toString());
 
-        var claiming = applier.apply(new NutritionDataset.Catalogue(List.of(
+        var claiming = applier.apply(new CatalogueDataset.Catalogue(List.of(
                 food("bls-1", null, name("de", "Kartoffel", true)),
                 food("bls-2", null, name("de", "Süßkartoffel", true), name("de", "Batate", false)))));
 
@@ -213,7 +207,7 @@ class CatalogueDatasetImportIntegrationTest {
 
     @Test
     void aDietClassComesFromTheDatasetAndAnAdministratorsCorrectionOutlivesIt() {
-        applier.apply(new NutritionDataset.Catalogue(List.of(food("bls-1", null, name("de", "Tofu", true)))));
+        applier.apply(new CatalogueDataset.Catalogue(List.of(food("bls-1", null, name("de", "Tofu", true)))));
         read(() -> {
             var imported = foodRepository.findByCatalogueKey("bls-1").orElseThrow();
             assertEquals(Diet.VEGAN, imported.getDietClass());
@@ -222,7 +216,7 @@ class CatalogueDatasetImportIntegrationTest {
 
         transactionTemplate.executeWithoutResult(status -> foodRepository.findByCatalogueKey("bls-1").orElseThrow()
                 .classifyByAdmin(Diet.VEGETARIAN));
-        applier.apply(new NutritionDataset.Catalogue(List.of(food("bls-1", null, name("de", "Tofu", true)))));
+        applier.apply(new CatalogueDataset.Catalogue(List.of(food("bls-1", null, name("de", "Tofu", true)))));
 
         read(() -> {
             var corrected = foodRepository.findByCatalogueKey("bls-1").orElseThrow();
@@ -244,14 +238,14 @@ class CatalogueDatasetImportIntegrationTest {
                 .toList();
     }
 
-    private static NutritionDataset.Food food(String key, String variantOf, NutritionDataset.Name... names) {
-        var nutrients = new NutritionDataset.Nutrients(77f, 322f, 0.1f, 0f, 15f, 0.7f, 2f, 2f, 0f);
-        return new NutritionDataset.Food(key, variantOf, new NutritionDataset.Source("BLS", key.substring(4), key),
-                List.of(), false, "VEGAN", null, nutrients, List.of(names), List.of());
+    private static CatalogueDataset.Food food(String key, String variantOf, CatalogueDataset.Name... names) {
+        var nutrients = new CatalogueDataset.Nutrients(77f, 322f, 0.1f, 0f, 15f, 0.7f, 2f, 2f, 0f);
+        return new CatalogueDataset.Food(key, variantOf, new CatalogueDataset.Source("BLS", key.substring(4), key),
+                List.of(), false, "VEGAN", null, nutrients, List.of(names), List.of(), Aisle.FRUIT_VEG, false, null);
     }
 
-    private static NutritionDataset.Name name(String language, String name, boolean display) {
-        return new NutritionDataset.Name(language, name, display);
+    private static CatalogueDataset.Name name(String language, String name, boolean display) {
+        return new CatalogueDataset.Name(language, name, display);
     }
 
     private static CatalogueFoodName adminName(String language, String name, boolean display) {

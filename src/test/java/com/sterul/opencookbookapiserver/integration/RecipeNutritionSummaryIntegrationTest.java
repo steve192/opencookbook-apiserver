@@ -17,11 +17,10 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFoodName;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFood;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFoodName;
 import com.sterul.opencookbookapiserver.entities.nutrition.NutrientValues;
 import com.sterul.opencookbookapiserver.entities.nutrition.NutritionQuality;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
@@ -32,15 +31,14 @@ import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 import com.sterul.opencookbookapiserver.repositories.ShareRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.RecipeNutritionSummaries;
-import com.sterul.opencookbookapiserver.services.nutrition.catalogue.CatalogueChangedEvent;
-import com.sterul.opencookbookapiserver.services.nutrition.catalogue.NutritionDatasetImporter;
-import com.sterul.opencookbookapiserver.services.nutrition.matching.CatalogueIndexUpdater;
+import com.sterul.opencookbookapiserver.services.catalogue.CatalogueChangedEvent;
+import com.sterul.opencookbookapiserver.services.catalogue.matching.CatalogueIndexUpdater;
 
 /**
  * The stored nutrition summary, and the promise that makes it safe to rank a cookbook by: it is a
  * cache with a provenance, so anything that could move the numbers drops the row.
  */
-@SpringBootTest(properties = "opencookbook.nutrition.enabled=true")
+@SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
 class RecipeNutritionSummaryIntegrationTest extends IntegrationTestBase {
@@ -52,10 +50,6 @@ class RecipeNutritionSummaryIntegrationTest extends IntegrationTestBase {
                 { "amount": 500, "unit": "g", "ingredient": { "name": "Tomate" } },
                 { "amount": 100, "unit": "g", "ingredient": { "name": "Sahne" } } ] }
             """;
-
-    /** No background import of the shipped dataset. */
-    @MockitoBean
-    private NutritionDatasetImporter backgroundImporter;
 
     @Autowired
     private MockMvc mockMvc;

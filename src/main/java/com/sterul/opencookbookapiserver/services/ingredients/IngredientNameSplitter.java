@@ -6,8 +6,8 @@ import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Component;
 
-import com.sterul.opencookbookapiserver.services.nutrition.IngredientNames;
-import com.sterul.opencookbookapiserver.services.nutrition.UnitLexicon;
+import com.sterul.opencookbookapiserver.services.catalogue.IngredientNames;
+import com.sterul.opencookbookapiserver.services.catalogue.UnitLexicon;
 
 /**
  * Splits amount and unit off names like "200g Schmelzkäse", "Prise Zimt" or "Mehl (ca. 200 g)". Only units the

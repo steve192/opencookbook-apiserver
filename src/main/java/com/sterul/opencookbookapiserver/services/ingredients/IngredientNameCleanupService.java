@@ -17,7 +17,7 @@ import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 import com.sterul.opencookbookapiserver.repositories.projections.RecipeLine;
 import com.sterul.opencookbookapiserver.services.ingredients.IngredientNameSplitter.SplitName;
-import com.sterul.opencookbookapiserver.services.nutrition.IngredientNames;
+import com.sterul.opencookbookapiserver.services.catalogue.IngredientNames;
 
 import lombok.extern.slf4j.Slf4j;
 

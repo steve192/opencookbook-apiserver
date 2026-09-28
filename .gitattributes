@@ -1,5 +1,9 @@
-# The shipped nutrition dataset is hashed byte for byte: the build records a checksum over these
+# The shipped catalogue dataset is hashed byte for byte: the build records a checksum over these
 # files in manifest.json, and the apiserver re-hashes them to decide whether to re-import. A
 # checkout that rewrites their line endings (core.autocrlf on Windows and WSL) changes those bytes,
 # so the checksum stops matching and the dataset no longer imports. Keep them as the build wrote them.
-src/main/resources/nutrition/*.json text eol=lf
+src/main/resources/catalogue/*.json text eol=lf
+
+# The wrapper scripts run on their own platform only with that platform's line endings.
+mvnw text eol=lf
+mvnw.cmd text eol=crlf

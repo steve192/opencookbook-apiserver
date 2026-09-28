@@ -6,3 +6,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
+
+opencookbook:
+  catalogue:
+    # Tests import the catalogue foods they need themselves.
+    import-on-startup: false

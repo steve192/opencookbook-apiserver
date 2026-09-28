@@ -3,8 +3,8 @@ package com.sterul.opencookbookapiserver.unit.services.nutrition.calculation;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFood;
-import com.sterul.opencookbookapiserver.entities.nutrition.CatalogueFoodPortion;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFood;
+import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFoodPortion;
 import com.sterul.opencookbookapiserver.entities.nutrition.NutrientValues;
 
 /** Catalogue foods for calculation tests. */
