@@ -73,6 +73,10 @@ public class ShoppingItem extends AuditableEntity {
 
     private Instant boughtAt;
 
+    /** When it was last put on the list: added, asked for again, or brought back from recently bought. */
+    @Column(nullable = false)
+    private Instant addedAt;
+
     private long version;
 
     private boolean deleted;
@@ -88,18 +92,20 @@ public class ShoppingItem extends AuditableEntity {
     }
 
     /** Adding a name that is already on the list asks for more of it. */
-    public void addMore(String moreSpec, List<ItemSource> moreSources) {
+    public void addMore(String moreSpec, List<ItemSource> moreSources, Instant at) {
         spec = joinSpecs(spec, moreSpec);
         sources.addAll(moreSources);
+        addedAt = at;
     }
 
     /** Adding a recently bought name puts it back with only what is asked for now. */
-    public void reactivate(String newSpec, List<ItemSource> newSources) {
+    public void reactivate(String newSpec, List<ItemSource> newSources, Instant at) {
         status = ItemStatus.ACTIVE;
         boughtAt = null;
         spec = blankToNull(newSpec);
         sources.clear();
         sources.addAll(newSources);
+        addedAt = at;
     }
 
     public void replaceSpec(String newSpec) {

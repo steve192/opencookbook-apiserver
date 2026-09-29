@@ -10,11 +10,11 @@ import com.sterul.opencookbookapiserver.services.shopping.preview.PreviewMeal;
 public record ImportPreviewResponse(List<Meal> meals) {
 
     public record Meal(String entryId, LocalDate date, String title, Long recipeId, boolean spontaneous,
-            int recipeServings, int defaultServings, List<PreviewLine> lines) {
+            int recipeServings, int defaultServings, LocalDate leftoverOf, List<PreviewLine> lines) {
 
         static Meal of(PreviewMeal meal) {
             return new Meal(meal.entryId(), meal.date(), meal.title(), meal.recipeId(), meal.isSpontaneous(),
-                    meal.recipeServings(), meal.defaultServings(), meal.lines());
+                    meal.recipeServings(), meal.defaultServings(), meal.leftoverOf(), meal.lines());
         }
     }
 

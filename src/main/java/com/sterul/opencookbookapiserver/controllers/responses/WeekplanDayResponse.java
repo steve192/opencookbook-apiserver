@@ -55,6 +55,8 @@ public class WeekplanDayResponse {
     public static class NormalRecipe extends MinimalRecipe {
 
         private Long id;
+        private Integer servings;
+        private LocalDate leftoverOf;
 
         public NormalRecipe() {
             super(RecipeType.NORMAL_RECIPE);

@@ -25,6 +25,9 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.jayway.jsonpath.JsonPath;
 import com.sterul.opencookbookapiserver.entities.PlanScope;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
+import com.sterul.opencookbookapiserver.entities.planning.PlanDraftSlot;
+import com.sterul.opencookbookapiserver.entities.planning.SlotKind;
+import com.sterul.opencookbookapiserver.entities.recipe.MealType;
 import com.sterul.opencookbookapiserver.repositories.PlanDraftRepository;
 import com.sterul.opencookbookapiserver.repositories.PlanningProfileRepository;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
@@ -165,6 +168,34 @@ class PlanningApiIntegrationTest extends IntegrationTestBase {
     }
 
     @Test
+    void acceptingKeepsWhatIsCookedAndWhichDayLeftoversComeFrom() throws Exception {
+        var draftId = JsonPath.<Integer>read(generate(createProfile()), "$.id");
+        var saturday = MONDAY.plusDays(5);
+        transactionTemplate.executeWithoutResult(status -> {
+            var slots = draftRepository.findById(draftId.longValue()).orElseThrow().getSlots();
+            var cooked = dinnerOn(slots, saturday);
+            cooked.setServings(4);
+            var leftover = dinnerOn(slots, saturday.plusDays(1));
+            leftover.setKind(SlotKind.LEFTOVER);
+            leftover.setRecipe(cooked.getRecipe());
+            leftover.setLeftoverOf(cooked);
+        });
+
+        mockMvc.perform(post("/api/v1/planning/drafts/" + draftId + "/accept").with(user(COOK)))
+                .andExpect(status().isOk());
+
+        transactionTemplate.executeWithoutResult(status -> {
+            var cooked = weekplanDayRepository.findSingleDay(saturday, PlanScope.of(cook())).getRecipes().get(0);
+            var leftover = weekplanDayRepository.findSingleDay(saturday.plusDays(1), PlanScope.of(cook()))
+                    .getRecipes().get(0);
+            assertThat(cooked.getServings()).isEqualTo(4);
+            assertThat(cooked.getLeftoverOf()).isNull();
+            assertThat(leftover.getServings()).isNull();
+            assertThat(leftover.getLeftoverOf()).isEqualTo(saturday);
+        });
+    }
+
+    @Test
     void anAcceptedDraftCannotBeChangedAnyMore() throws Exception {
         var draftId = JsonPath.<Integer>read(generate(createProfile()), "$.id");
         mockMvc.perform(post("/api/v1/planning/drafts/" + draftId + "/accept").with(user(COOK))).andExpect(status().isOk());
@@ -294,5 +325,10 @@ class PlanningApiIntegrationTest extends IntegrationTestBase {
 
     private CookpalUser cook() {
         return userRepository.findByEmailAddress(COOK);
+    }
+
+    private static PlanDraftSlot dinnerOn(List<PlanDraftSlot> slots, LocalDate date) {
+        return slots.stream().filter(slot -> slot.getPlanDate().equals(date) && slot.getMealType() == MealType.DINNER)
+                .findFirst().orElseThrow();
     }
 }

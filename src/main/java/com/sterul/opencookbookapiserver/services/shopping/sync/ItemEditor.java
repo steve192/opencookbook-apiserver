@@ -44,7 +44,8 @@ class ItemEditor {
             case ShoppingOp.Buy buy -> itemOf(list, buy.itemId()).stream().filter(ShoppingItem::isActive)
                     .forEach(item -> stamp(list, item, () -> item.buy(clock.instant())));
             case ShoppingOp.Restore restore -> itemOf(list, restore.itemId()).stream().filter(item -> !item.isActive())
-                    .forEach(item -> stamp(list, item, () -> item.reactivate(restore.spec(), List.of())));
+                    .forEach(item -> stamp(list, item,
+                            () -> item.reactivate(restore.spec(), List.of(), clock.instant())));
             case ShoppingOp.Delete delete -> itemOf(list, delete.itemId())
                     .forEach(item -> stamp(list, item, item::delete));
         }
@@ -60,9 +61,9 @@ class ItemEditor {
             var item = existing.get();
             stamp(list, item, () -> {
                 if (item.isActive()) {
-                    item.addMore(add.spec(), add.sources());
+                    item.addMore(add.spec(), add.sources(), clock.instant());
                 } else {
-                    item.reactivate(add.spec(), add.sources());
+                    item.reactivate(add.spec(), add.sources(), clock.instant());
                 }
             });
             return;
@@ -77,7 +78,7 @@ class ItemEditor {
         var item = ShoppingItem.builder()
                 .id(add.itemId()).list(list).name(add.name().strip()).nameKey(key)
                 .aisle(placement.aisle()).icon(placement.icon())
-                .status(ItemStatus.ACTIVE).addedBy(actor)
+                .status(ItemStatus.ACTIVE).addedBy(actor).addedAt(clock.instant())
                 .sources(new ArrayList<>(add.sources()))
                 .build();
         stamp(list, item, () -> item.replaceSpec(add.spec()));

@@ -2,15 +2,19 @@ package com.sterul.opencookbookapiserver.controllers.requests;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
 public class WeekplanDayPut {
-    private List<Recipe> recipes;
+    private List<@Valid Recipe> recipes;
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
     @JsonSubTypes({
@@ -50,6 +54,10 @@ public class WeekplanDayPut {
     public static class NormalRecipe extends Recipe {
 
         private Long id;
+        @Positive
+        @Max(100)
+        private Integer servings;
+        private LocalDate leftoverOf;
 
         NormalRecipe() {
             super(RecipeType.NORMAL_RECIPE);

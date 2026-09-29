@@ -22,6 +22,7 @@ import com.sterul.opencookbookapiserver.services.WeekplanService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/api/v1/weekplan")
@@ -63,7 +64,7 @@ public class WeekplanController extends BaseController {
     @PutMapping("/{date}")
     public WeekplanDayResponse createAndUpdate(@PathVariable @DateTimeFormat(iso = ISO.DATE) LocalDate date,
                                                @RequestParam(required = false) String household,
-                                               @RequestBody WeekplanDayPut weekplanDayPut) {
+                                               @Valid @RequestBody WeekplanDayPut weekplanDayPut) {
 
         var scope = planScopes.of(getLoggedInUser(), household);
         var weekplanDayEntity = weekplanService.dayOf(date, scope);
@@ -98,6 +99,8 @@ public class WeekplanController extends BaseController {
                 var normalRecipe = new WeekplanDayResponse.NormalRecipe();
                 normalRecipe.setId(recipe.getRecipe().getId());
                 normalRecipe.setTitle(recipe.getRecipe().getTitle());
+                normalRecipe.setServings(recipe.getServings());
+                normalRecipe.setLeftoverOf(recipe.getLeftoverOf());
                 if (!recipe.getRecipe().getImages().isEmpty()) {
                     normalRecipe.setTitleImageUuid(recipe.getRecipe().getImages().get(0).getUuid());
                 }
@@ -116,33 +119,22 @@ public class WeekplanController extends BaseController {
         // a half finished collection to that flush.
         var meals = new ArrayList<WeekplanDayRecipe>();
 
+        // Always new entries: reusing the id the client sends hands JPA a detached entity.
         for (var recipe : weekplanDayPut.getRecipes()) {
             switch (recipe.getType()) {
-                case NORMAL_RECIPE -> {
-                    var recipeId = ((WeekplanDayPut.NormalRecipe) recipe).getId();
-
-                    var recipeEntity = recipeService.getPlannableRecipe(recipeId, scope);
-                    meals.add(WeekplanDayRecipe.builder()
-                            .isSimpleRecipe(false)
-                            .recipe(recipeEntity)
-                            .build());
-                }
-                case SIMPLE_RECIPE -> {
-                    var simpleRecipe = (WeekplanDayPut.SimpleRecipe) recipe;
-
-                    // The id the client sends back identifies a row this request replaces.
-                    // Carrying it into a new instance handed JPA an entity it considers
-                    // detached, so every entry of the day is created fresh and the rows it
-                    // replaces are removed as orphans.
-                    meals.add(WeekplanDayRecipe.builder()
-                            .isSimpleRecipe(true)
-                            .simpleRecipeText(simpleRecipe.getTitle())
-                            .build());
-                }
+                case NORMAL_RECIPE -> meals.add(
+                        plannedMealOf((WeekplanDayPut.NormalRecipe) recipe, newWeekplanDay.getPlanDate(), scope));
+                case SIMPLE_RECIPE -> meals.add(
+                        WeekplanDayRecipe.simple(((WeekplanDayPut.SimpleRecipe) recipe).getTitle()));
             }
         }
 
         newWeekplanDay.getRecipes().clear();
         newWeekplanDay.getRecipes().addAll(meals);
+    }
+
+    private WeekplanDayRecipe plannedMealOf(WeekplanDayPut.NormalRecipe meal, LocalDate day, PlanScope scope) {
+        var recipe = recipeService.getPlannableRecipe(meal.getId(), scope);
+        return weekplanService.plannedMeal(recipe, meal.getServings(), meal.getLeftoverOf(), day);
     }
 }
