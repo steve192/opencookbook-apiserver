@@ -140,13 +140,21 @@ public class PlanDraftService {
                 .collect(Collectors.groupingBy(PlanDraftSlot::getPlanDate));
         byDate.forEach((date, meals) -> {
             var day = weekplanService.dayOf(date, scope);
-            meals.forEach(meal -> day.getRecipes().add(WeekplanDayRecipe.builder()
-                    .isSimpleRecipe(false).recipe(meal.getRecipe()).build()));
+            meals.forEach(meal -> day.getRecipes().add(plannedMealOf(meal)));
             weekplanService.updateWeekplanDay(day);
         });
         draft.setStatus(PlanDraft.Status.ACCEPTED);
         log.info("Accepted draft {} into the weekplan", draft.getId());
         return draft;
+    }
+
+    // A leftover slot's servings count who eats it, which the weekplan does not keep.
+    private WeekplanDayRecipe plannedMealOf(PlanDraftSlot slot) {
+        if (slot.getKind() == SlotKind.LEFTOVER && slot.getLeftoverOf() != null) {
+            return weekplanService.plannedMeal(slot.getRecipe(), null, slot.getLeftoverOf().getPlanDate(),
+                    slot.getPlanDate());
+        }
+        return weekplanService.plannedMeal(slot.getRecipe(), slot.getServings(), null, slot.getPlanDate());
     }
 
     public PlanDraft discard(PlanScope scope, Long draftId) {

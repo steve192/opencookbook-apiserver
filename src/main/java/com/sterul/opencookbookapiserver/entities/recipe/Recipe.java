@@ -108,6 +108,11 @@ public class Recipe extends AuditableEntity {
         return totalTime != null ? totalTime : preparationTime;
     }
 
+    /** What the recipe is written for; one where it states none. */
+    public int writtenServings() {
+        return Math.max(1, servings);
+    }
+
     public boolean isOwnedBy(CookpalUser user) {
         return owner.getUserId().equals(user.getUserId());
     }

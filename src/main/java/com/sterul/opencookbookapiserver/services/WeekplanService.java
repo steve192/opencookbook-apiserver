@@ -14,10 +14,14 @@ import com.sterul.opencookbookapiserver.entities.PlanScope;
 import com.sterul.opencookbookapiserver.entities.WeekplanDay;
 import com.sterul.opencookbookapiserver.entities.WeekplanDayRecipe;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
+import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
+import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
+import com.sterul.opencookbookapiserver.errors.ApiException;
 import com.sterul.opencookbookapiserver.repositories.WeekplanDayRepository;
 import com.sterul.opencookbookapiserver.services.access.CookbookAccess;
 import com.sterul.opencookbookapiserver.services.households.HouseholdEnding;
 
+import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
@@ -47,6 +51,21 @@ public class WeekplanService {
             day.setRecipes(new ArrayList<>());
             return day;
         });
+    }
+
+    /** A recipe planned on the day: cooked there, or eaten as leftovers of an earlier day. */
+    public WeekplanDayRecipe plannedMeal(Recipe recipe, @Nullable Integer servings, @Nullable LocalDate leftoverOf,
+            LocalDate day) {
+        if (leftoverOf == null) {
+            return WeekplanDayRecipe.cooked(recipe, servings);
+        }
+        if (servings != null) {
+            throw new ApiException(ApiErrorCode.VALIDATION_FAILED, "Leftovers are not cooked for servings");
+        }
+        if (!leftoverOf.isBefore(day)) {
+            throw new ApiException(ApiErrorCode.VALIDATION_FAILED, "Leftovers come from a day before");
+        }
+        return WeekplanDayRecipe.leftover(recipe, leftoverOf);
     }
 
     public WeekplanDay updateWeekplanDay(WeekplanDay weekplanDay) {

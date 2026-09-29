@@ -1,5 +1,6 @@
 package com.sterul.opencookbookapiserver.integration;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
@@ -11,6 +12,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -126,6 +128,16 @@ class ShoppingListApiIntegrationTest extends IntegrationTestBase {
         ops(ANNA, list, 0, add("Milch", "1 l"), add("milch", "500 ml"))
                 .andExpect(jsonPath("$.items", hasSize(1)))
                 .andExpect(jsonPath("$.items[0].spec").value("1 l + 500 ml"));
+    }
+
+    @Test
+    void askingForMoreCountsAsAddingItNow() throws Exception {
+        var list = ownList(ANNA);
+        ops(ANNA, list, 0, add("Milch", "1 l"));
+        ops(ANNA, list, 0, add("Brot", null));
+
+        var body = ops(ANNA, list, 0, add("Milch", "500 ml")).andReturn().getResponse().getContentAsString();
+        assertThat(addedAt(body, "Milch")).isAfter(addedAt(body, "Brot"));
     }
 
     @Test
@@ -307,5 +319,10 @@ class ShoppingListApiIntegrationTest extends IntegrationTestBase {
                 .andReturn().getResponse().getContentAsString();
         List<Number> ids = JsonPath.read(body, path);
         return ids.get(0).longValue();
+    }
+
+    private static Instant addedAt(String changes, String name) {
+        List<String> times = JsonPath.read(changes, "$.items[?(@.name == '" + name + "')].addedAt");
+        return Instant.parse(times.get(0));
     }
 }

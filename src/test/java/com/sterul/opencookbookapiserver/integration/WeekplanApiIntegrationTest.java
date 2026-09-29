@@ -62,6 +62,7 @@ class WeekplanApiIntegrationTest extends IntegrationTestBase {
         var recipe = new Recipe();
         recipe.setTitle("Weekplan recipe");
         recipe.setOwner(user);
+        recipe.setServings(3);
         recipeId = recipeRepository.save(recipe).getId();
 
         var secondRecipe = new Recipe();
@@ -76,6 +77,17 @@ class WeekplanApiIntegrationTest extends IntegrationTestBase {
                 .content("{ \"recipes\": [ " + recipesJson + " ] }"))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
+    }
+
+    private void expectRejected(String date, String recipesJson) throws Exception {
+        mockMvc.perform(put("/api/v1/weekplan/" + date)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{ \"recipes\": [ " + recipesJson + " ] }"))
+                .andExpect(status().isBadRequest());
+    }
+
+    private String leftoverOf(String cookedOn) {
+        return "{ \"type\": \"NORMAL_RECIPE\", \"id\": %d, \"leftoverOf\": \"%s\" }".formatted(recipeId, cookedOn);
     }
 
     private String normalRecipe(Long id) {
@@ -224,6 +236,46 @@ class WeekplanApiIntegrationTest extends IntegrationTestBase {
 
         assertEquals(List.of(0, 1, 2), stored.stream().map(row -> row.get("recipe_order")).toList());
         assertEquals(List.of("a", "b", "c"), stored.stream().map(row -> row.get("simple_recipe_text")).toList());
+    }
+
+    @Test
+    @WithMockUser(username = USER)
+    void plannedServingsAndLeftoversAreKept() throws Exception {
+        var cooked = putDay("2026-06-01", "{ \"type\": \"NORMAL_RECIPE\", \"id\": %d, \"servings\": 6 }"
+                .formatted(recipeId));
+        var leftover = putDay("2026-06-02", leftoverOf("2026-06-01"));
+
+        assertEquals(6, (Integer) JsonPath.read(cooked, "$.recipes[0].servings"));
+        assertEquals("2026-06-01", JsonPath.read(leftover, "$.recipes[0].leftoverOf"));
+    }
+
+    @Test
+    @WithMockUser(username = USER)
+    void aRecipePlannedWithoutServingsIsCookedAsWritten() throws Exception {
+        var day = putDay("2026-06-03", normalRecipe(recipeId));
+
+        assertEquals(3, (Integer) JsonPath.read(day, "$.recipes[0].servings"));
+    }
+
+    @Test
+    @WithMockUser(username = USER)
+    void aMealIsCookedForAtLeastOneServing() throws Exception {
+        expectRejected("2026-06-08", "{ \"type\": \"NORMAL_RECIPE\", \"id\": %d, \"servings\": 0 }"
+                .formatted(recipeId));
+    }
+
+    @Test
+    @WithMockUser(username = USER)
+    void leftoversComeFromAnEarlierDay() throws Exception {
+        expectRejected("2026-06-09", leftoverOf("2026-06-09"));
+    }
+
+    @Test
+    @WithMockUser(username = USER)
+    void leftoversAreNotCookedForServings() throws Exception {
+        expectRejected("2026-06-10", """
+                { "type": "NORMAL_RECIPE", "id": %d, "servings": 2, "leftoverOf": "2026-06-09" }"""
+                .formatted(recipeId));
     }
 
     @Test

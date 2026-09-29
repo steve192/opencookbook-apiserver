@@ -124,8 +124,8 @@ class HouseholdsDisabledIntegrationTest extends IntegrationTestBase {
         var day = new WeekplanDay();
         day.setOwner(userRepository.findByEmailAddress(BERT));
         day.setPlanDate(LocalDate.parse(DAY));
-        day.setRecipes(new ArrayList<>(List.of(WeekplanDayRecipe.builder()
-                .isSimpleRecipe(false).recipe(recipeRepository.findById(annasRecipeId).orElseThrow()).build())));
+        day.setRecipes(new ArrayList<>(List.of(
+                WeekplanDayRecipe.cooked(recipeRepository.findById(annasRecipeId).orElseThrow(), null))));
         weekplanDayRepository.save(day);
 
         mockMvc.perform(get("/api/v1/weekplan/" + DAY + "/to/" + DAY))

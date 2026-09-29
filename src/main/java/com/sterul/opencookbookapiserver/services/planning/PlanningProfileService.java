@@ -3,7 +3,6 @@ package com.sterul.opencookbookapiserver.services.planning;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.OptionalInt;
 
 import org.springframework.stereotype.Service;
 
@@ -33,14 +32,6 @@ public class PlanningProfileService {
 
     public List<PlanningProfile> getProfiles(PlanScope scope) {
         return profileRepository.findAllIn(scope);
-    }
-
-    /** How many people the plan's default profile cooks for; empty while the plan has none. */
-    public OptionalInt householdSizeOf(PlanScope scope) {
-        return profileRepository.findAllIn(scope).stream()
-                .filter(PlanningProfile::isDefaultProfile)
-                .mapToInt(PlanningProfile::getHouseholdSize)
-                .findFirst();
     }
 
     /** Somebody else's profile is not found. */

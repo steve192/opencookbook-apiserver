@@ -19,8 +19,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.jayway.jsonpath.JsonPath;
-import com.sterul.opencookbookapiserver.entities.PlanScope;
-import com.sterul.opencookbookapiserver.entities.planning.PlanningProfile;
 import com.sterul.opencookbookapiserver.entities.shopping.ShoppingStaple;
 import com.sterul.opencookbookapiserver.repositories.PlanningProfileRepository;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
@@ -37,6 +35,7 @@ class ShoppingImportPreviewIntegrationTest extends IntegrationTestBase {
     private static final String COOK = "preview-cook@example.invalid";
     private static final String STRANGER = "preview-stranger@example.invalid";
     private static final String MONDAY = "2026-10-05";
+    private static final String TUESDAY = "2026-10-06";
     private static final String RECIPE = """
             { "title": "Pfannkuchen", "servings": 4,
               "neededIngredients": [
@@ -76,7 +75,6 @@ class ShoppingImportPreviewIntegrationTest extends IntegrationTestBase {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
         recipeId = ((Number) JsonPath.read(body, "$.id")).longValue();
-        // A leftover the week generator planned is the same recipe planned a second time.
         mockMvc.perform(put("/api/v1/weekplan/" + MONDAY).with(user(COOK)).contentType(MediaType.APPLICATION_JSON)
                         .content("{\"recipes\":[{\"type\":\"NORMAL_RECIPE\",\"id\":" + recipeId + "},"
                                 + "{\"type\":\"NORMAL_RECIPE\",\"id\":" + recipeId + "},"
@@ -85,20 +83,27 @@ class ShoppingImportPreviewIntegrationTest extends IntegrationTestBase {
     }
 
     @Test
-    void everyPlannedRecipeIsShoppedForTheHouseholdSize() throws Exception {
-        var profile = PlanningProfile.builder().name("Normal").defaultProfile(true).householdSize(3).build();
-        PlanScope.of(userRepository.findByEmailAddress(COOK)).assignTo(profile);
-        profileRepository.save(profile);
-
+    void aRecipePlannedWithoutServingsIsShoppedForAsWritten() throws Exception {
         week().andExpect(jsonPath("$.meals", hasSize(3)))
                 .andExpect(jsonPath("$.meals[0].recipeServings").value(4))
-                .andExpect(jsonPath("$.meals[0].defaultServings").value(3))
-                .andExpect(jsonPath("$.meals[1].defaultServings").value(3));
+                .andExpect(jsonPath("$.meals[0].defaultServings").value(4))
+                .andExpect(jsonPath("$.meals[1].defaultServings").value(4));
     }
 
     @Test
-    void withoutAProfileARecipeIsShoppedForAsWritten() throws Exception {
-        week().andExpect(jsonPath("$.meals[0].defaultServings").value(4));
+    void aPlannedMealIsShoppedForItsServings() throws Exception {
+        plan(TUESDAY, "{\"type\":\"NORMAL_RECIPE\",\"id\":" + recipeId + ",\"servings\":6}");
+
+        week().andExpect(jsonPath("$.meals[3].defaultServings").value(6));
+    }
+
+    @Test
+    void leftoversNeverNeedAnything() throws Exception {
+        plan(TUESDAY, "{\"type\":\"NORMAL_RECIPE\",\"id\":" + recipeId + ",\"leftoverOf\":\"2026-10-03\"}");
+
+        week().andExpect(jsonPath("$.meals[3].leftoverOf").value("2026-10-03"))
+                .andExpect(jsonPath("$.meals[3].defaultServings").value(0))
+                .andExpect(jsonPath("$.meals[3].lines", hasSize(0)));
     }
 
     @Test
@@ -139,6 +144,12 @@ class ShoppingImportPreviewIntegrationTest extends IntegrationTestBase {
         mockMvc.perform(get("/api/v1/shopping/preview/week").param("from", MONDAY).param("to", "2026-12-31")
                         .with(user(COOK)))
                 .andExpect(status().isBadRequest());
+    }
+
+    private void plan(String date, String meal) throws Exception {
+        mockMvc.perform(put("/api/v1/weekplan/" + date).with(user(COOK)).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"recipes\":[" + meal + "]}"))
+                .andExpect(status().isOk());
     }
 
     private ResultActions week() throws Exception {
