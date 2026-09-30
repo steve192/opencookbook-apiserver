@@ -3,7 +3,6 @@ package com.sterul.opencookbookapiserver.controllers.admin;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,9 +28,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 @RestController
-@RequestMapping("/api/v1/admin/nutrition/name-rules")
+@RequestMapping(AdminPaths.BASE + "/nutrition/name-rules")
 @Tag(name = "Nutrition name rules", description = "Names never to link, or never to link to a food")
-@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminNameRuleController extends BaseController {
 
     private final NameRuleService nameRules;

@@ -1,10 +1,5 @@
-package com.sterul.opencookbookapiserver.services;
+package com.sterul.opencookbookapiserver.configurations.security;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -29,20 +24,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException(username);
         }
 
-        var role = foundUser.getRoles();
-        List<GrantedAuthority> authorities;
-        if (role == null) {
-            authorities = Collections.emptyList();
-        } else {
-            authorities = List.of(new SimpleGrantedAuthority(role.name()));
-        }
         return new User(foundUser.getEmailAddress(),
                 foundUser.getPasswordHash(),
                 foundUser.isActivated(),
                 true,
                 true,
                 true,
-                authorities);
+                AccountAuthorities.of(foundUser));
     }
 
 }

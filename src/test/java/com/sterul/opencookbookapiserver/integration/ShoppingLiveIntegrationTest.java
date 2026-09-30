@@ -26,7 +26,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.socket.TextMessage;
@@ -36,13 +35,13 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import com.jayway.jsonpath.JsonPath;
-import com.sterul.opencookbookapiserver.configurations.security.requestfilters.BearerTokens;
+import com.sterul.opencookbookapiserver.configurations.security.BearerTokens;
 import com.sterul.opencookbookapiserver.controllers.shopping.live.ShoppingLiveHandler;
 import com.sterul.opencookbookapiserver.repositories.HouseholdMembershipRepository;
 import com.sterul.opencookbookapiserver.repositories.HouseholdRepository;
 import com.sterul.opencookbookapiserver.repositories.ShoppingListRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
-import com.sterul.opencookbookapiserver.util.JwtTokenUtil;
+import com.sterul.opencookbookapiserver.services.AccessTokenService;
 
 /** An open app hears that a list changed, and only about lists it may use. */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -59,7 +58,7 @@ class ShoppingLiveIntegrationTest extends IntegrationTestBase {
     @Autowired
     private MockMvc mockMvc;
     @Autowired
-    private JwtTokenUtil tokens;
+    private AccessTokenService tokens;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -141,7 +140,7 @@ class ShoppingLiveIntegrationTest extends IntegrationTestBase {
 
     /** As a browser does, which cannot set an Authorization header on a WebSocket. */
     private void connect(String who) throws Exception {
-        socket = open(tokens.generateToken(User.withUsername(who).password("irrelevant").build()));
+        socket = open(tokens.issue(userRepository.findByEmailAddress(who), "live-test", null));
     }
 
     private WebSocketSession open(String token) throws Exception {

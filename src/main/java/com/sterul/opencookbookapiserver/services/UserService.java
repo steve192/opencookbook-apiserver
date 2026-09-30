@@ -46,7 +46,7 @@ public class UserService {
     private final RecipeImageService recipeImageService;
     private final WeekplanService weekplanService;
     private final HouseholdService households;
-    private final RefreshTokenService refreshTokenService;
+    private final SignInService signInService;
     private final ActivationLinkRepository activationLinkRepository;
     private final PasswordResetLinkRepository passwordResetLinkRepository;
     private final EmailService emailService;
@@ -56,7 +56,7 @@ public class UserService {
     public UserService(UserRepository userRepository, IngredientService ingredientService,
             PasswordEncoder passwordEncoder, RecipeService recipeService, RecipeGroupService recipeGroupService,
             RecipeImageService recipeImageService, WeekplanService weekplanService, HouseholdService households,
-            RefreshTokenService refreshTokenService, ActivationLinkRepository activationLinkRepository,
+            SignInService signInService, ActivationLinkRepository activationLinkRepository,
             PasswordResetLinkRepository passwordResetLinkRepository, EmailService emailService,
             OpencookbookConfiguration opencookbookConfiguration, MailLanguages mailLanguages) {
         this.userRepository = userRepository;
@@ -67,7 +67,7 @@ public class UserService {
         this.recipeImageService = recipeImageService;
         this.weekplanService = weekplanService;
         this.households = households;
-        this.refreshTokenService = refreshTokenService;
+        this.signInService = signInService;
         this.activationLinkRepository = activationLinkRepository;
         this.passwordResetLinkRepository = passwordResetLinkRepository;
         this.emailService = emailService;
@@ -149,6 +149,7 @@ public class UserService {
         var user = getUserById(userId);
         requireAnAdministratorRemains(user, activated && user.getRoles() == Role.ADMIN);
         user.setActivated(activated);
+        endSignInsUnlessActive(user);
         return userRepository.save(user);
     }
 
@@ -167,6 +168,7 @@ public class UserService {
 
         user.setActivated(activated);
         user.setRoles(role);
+        endSignInsUnlessActive(user);
         return userRepository.save(user);
     }
 
@@ -236,7 +238,7 @@ public class UserService {
         var weekplanDays = weekplanService.getWeekplanDaysByOwner(user);
         weekplanDays.forEach(day -> weekplanService.deleteWeekplanDay(day.getId()));
 
-        refreshTokenService.deleteAllRefreshTokenForUser(user);
+        signInService.endAll(user);
         activationLinkRepository.deleteAllByUser(user);
         passwordResetLinkRepository.deleteAllByUser(user);
 
@@ -253,11 +255,29 @@ public class UserService {
         return passwordEncoder.matches(password, readUser.getPasswordHash());
     }
 
-    public void changePassword(CookpalUser user, String newPassword) {
+    /**
+     * Every other sign in ends, as the reason to change a password is often that somebody else knows it.
+     *
+     * @param keptSessionId the sign in the password was changed in
+     */
+    public void changePassword(CookpalUser user, String newPassword, String keptSessionId) {
+        var changed = setPassword(user, newPassword);
+        signInService.keepOnly(changed, keptSessionId);
+    }
+
+    private CookpalUser setPassword(CookpalUser user, String newPassword) {
         log.info("Changing password for user {}", user);
         var readUser = getUserByEmail(user.getEmailAddress());
         readUser.setPasswordHash(passwordEncoder.encode(newPassword));
         userRepository.save(readUser);
+        return readUser;
+    }
+
+    /** A deactivated account keeps no sign in; its access tokens are refused as well. */
+    private void endSignInsUnlessActive(CookpalUser user) {
+        if (!user.isActivated()) {
+            signInService.endAll(user);
+        }
     }
 
     public void resendActivationLink(String emailAddress) throws MessagingException {
@@ -305,8 +325,8 @@ public class UserService {
             throw new PasswordResetLinkNotExistingException();
         }
 
-        var user = link.get().getUser();
-        changePassword(user, newPassword);
+        var changed = setPassword(link.get().getUser(), newPassword);
+        signInService.endAll(changed);
         passwordResetLinkRepository.delete(link.get());
     }
 

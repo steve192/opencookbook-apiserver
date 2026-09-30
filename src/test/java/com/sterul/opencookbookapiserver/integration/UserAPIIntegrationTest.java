@@ -33,14 +33,13 @@ import com.sterul.opencookbookapiserver.controllers.requests.PasswordResetExecut
 import com.sterul.opencookbookapiserver.controllers.requests.PasswordResetRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.UserCreationRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.UserLoginRequest;
-import com.sterul.opencookbookapiserver.entities.RefreshToken;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.account.PasswordResetLink;
 import com.sterul.opencookbookapiserver.repositories.ActivationLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.PasswordResetLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.EmailService;
-import com.sterul.opencookbookapiserver.services.RefreshTokenService;
+import com.sterul.opencookbookapiserver.services.SignInService;
 import com.sterul.opencookbookapiserver.services.exceptions.PasswordResetLinkNotExistingException;
 
 import jakarta.mail.MessagingException;
@@ -61,7 +60,7 @@ class UserAPIIntegrationTest extends IntegrationTestBase{
     PasswordEncoder passwordEncoder;
 
     @MockitoBean
-    RefreshTokenService refreshTokenService;
+    SignInService signInService;
 
     @MockitoBean
     PasswordResetLinkRepository passwordResetLinkRepository;
@@ -74,7 +73,7 @@ class UserAPIIntegrationTest extends IntegrationTestBase{
 
     CookpalUser testUser;
 
-    RefreshToken testRefreshToken;
+    SignInService.IssuedTokens testTokens;
 
     PasswordResetLink passwordResetLink;
 
@@ -82,12 +81,11 @@ class UserAPIIntegrationTest extends IntegrationTestBase{
     void setup() {
         testUser = new CookpalUser();
         testUser.setEmailAddress("test@test.com");
+        testUser.setUserId(1L);
         testUser.setPasswordHash(passwordEncoder.encode(testPassword));
 
-        testRefreshToken = new RefreshToken();
-        testRefreshToken.setToken("test123");
-        testRefreshToken.setOwner(testUser);
-        when(refreshTokenService.createRefreshTokenForUser(testUser)).thenReturn(testRefreshToken);
+        testTokens = new SignInService.IssuedTokens("test-access", "test123", testUser);
+        when(signInService.signInWithPassword(testUser)).thenReturn(testTokens);
         when(userRepository.findByEmailAddress(testUser.getEmailAddress())).thenReturn(testUser);
         when(userRepository.existsByEmailAddress(testUser.getEmailAddress())).thenReturn(true);
 
@@ -106,9 +104,10 @@ class UserAPIIntegrationTest extends IntegrationTestBase{
         var response = cut.changePassword(PasswordChangeRequest.builder()
                 .oldPassword(testPassword)
                 .newPassword("blablabla")
-                .build());
+                .build(), "test-session");
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(signInService).keepOnly(testUser, "test-session");
     }
 
     @Test
@@ -120,7 +119,7 @@ class UserAPIIntegrationTest extends IntegrationTestBase{
                 .newPassword("blablabla")
                 .build();
 
-        var thrown = assertThrows(UnauthorizedException.class, () -> cut.changePassword(request));
+        var thrown = assertThrows(UnauthorizedException.class, () -> cut.changePassword(request, "test-session"));
 
         assertEquals(ApiErrorCode.INVALID_CREDENTIALS, thrown.getErrorCode());
     }
@@ -227,7 +226,7 @@ class UserAPIIntegrationTest extends IntegrationTestBase{
         var response = cut.login(new UserLoginRequest(testUser.getEmailAddress(), testPassword));
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertTrue(response.getBody().toString().contains(testRefreshToken.getToken()));
+        assertTrue(response.getBody().toString().contains(testTokens.refreshToken()));
     }
 
 }

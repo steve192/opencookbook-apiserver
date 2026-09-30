@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sterul.opencookbookapiserver.configurations.apikeys.ApiKeyAccess;
 import com.sterul.opencookbookapiserver.controllers.BaseController;
 import com.sterul.opencookbookapiserver.controllers.shopping.requests.ImportLineRequest;
 import com.sterul.opencookbookapiserver.controllers.shopping.requests.ImportRequest;
@@ -26,6 +27,7 @@ import com.sterul.opencookbookapiserver.controllers.shopping.responses.ItemChang
 import com.sterul.opencookbookapiserver.controllers.shopping.responses.ShoppingListResponse;
 import com.sterul.opencookbookapiserver.controllers.support.PlanScopes;
 import com.sterul.opencookbookapiserver.entities.PlanScope;
+import com.sterul.opencookbookapiserver.entities.account.ApiScope;
 import com.sterul.opencookbookapiserver.services.SignedInUserService;
 import com.sterul.opencookbookapiserver.services.shopping.ShoppingListService;
 import com.sterul.opencookbookapiserver.services.shopping.ShoppingImportService;
@@ -57,6 +59,7 @@ public class ShoppingListController extends BaseController {
 
     @Operation(summary = "Every list you can use", description = "Your own and your households', default lists "
             + "first. A default list is made the first time it is asked for.")
+    @ApiKeyAccess(ApiScope.SHOPPING_READ)
     @GetMapping
     public List<ShoppingListResponse> getLists() {
         return lists.listsIn(planScopes.allVisibleTo(getLoggedInUser())).stream()
@@ -87,6 +90,7 @@ public class ShoppingListController extends BaseController {
 
     @Operation(summary = "What changed since a version",
             description = "The whole list instead, marked full, for a device that never synced or fell too far behind.")
+    @ApiKeyAccess(ApiScope.SHOPPING_READ)
     @GetMapping("/{listId}/changes")
     public ItemChangesResponse changes(@PathVariable Long listId, @RequestParam(required = false) String household,
             @RequestParam(defaultValue = "0") long since) {
@@ -96,6 +100,7 @@ public class ShoppingListController extends BaseController {
     @Operation(summary = "Apply what a device changed, possibly offline",
             description = "In the order given; an op id applied before is skipped, so a batch may be retried. "
                     + "Answers what changed since the given version, including other devices' changes.")
+    @ApiKeyAccess(ApiScope.SHOPPING_WRITE)
     @PostMapping("/{listId}/ops")
     public ItemChangesResponse applyOps(@PathVariable Long listId, @RequestParam(required = false) String household,
             @RequestParam(defaultValue = "0") long since, @Valid @RequestBody ShoppingOpsRequest request) {

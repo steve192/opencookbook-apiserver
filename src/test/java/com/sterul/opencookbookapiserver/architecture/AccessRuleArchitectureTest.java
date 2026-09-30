@@ -5,14 +5,16 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sterul.opencookbookapiserver.configurations.apikeys.ConditionalOnApiKeysEnabled;
 import com.sterul.opencookbookapiserver.configurations.households.ConditionalOnHouseholdsEnabled;
+import com.sterul.opencookbookapiserver.controllers.admin.AdminPaths;
 import com.sterul.opencookbookapiserver.controllers.support.PlanScopes;
 import com.sterul.opencookbookapiserver.entities.PlanScope;
 import com.sterul.opencookbookapiserver.entities.household.Household;
@@ -105,12 +107,20 @@ class AccessRuleArchitectureTest {
             .should().beAnnotatedWith(ConditionalOnHouseholdsEnabled.class);
 
     @ArchTest
-    static final ArchRule adminEndpointsRequireTheAdminRole = classes()
+    static final ArchRule apiKeyEndpointsGoWhenApiKeysAreOff = classes()
+            .that().resideInAPackage("..controllers.apikeys..")
+            .and().areAnnotatedWith(RestController.class)
+            .should().beAnnotatedWith(ConditionalOnApiKeysEnabled.class);
+
+    /** Where the security rules ask for the admin role and a recent password. */
+    @ArchTest
+    static final ArchRule adminEndpointsLiveUnderTheAdminApi = classes()
             .that().resideInAPackage("..controllers.admin..")
             .and().areAnnotatedWith(RestController.class)
-            .should().beAnnotatedWith(DescribedPredicate.describe("@PreAuthorize(\"hasAuthority('ADMIN')\")",
-                    (JavaAnnotation<?> annotation) -> annotation.getRawType().isEquivalentTo(PreAuthorize.class)
-                            && "hasAuthority('ADMIN')".equals(annotation.get("value").orElse(null))));
+            .should().beAnnotatedWith(DescribedPredicate.describe("@RequestMapping(AdminPaths.BASE + ...)",
+                    (JavaAnnotation<?> annotation) -> annotation.getRawType().isEquivalentTo(RequestMapping.class)
+                            && annotation.get("value").map(value -> Arrays.stream((Object[]) value)
+                                    .allMatch(path -> path.toString().startsWith(AdminPaths.BASE + "/"))).orElse(false)));
 
     @ArchTest
     static final ArchRule endpointsReturnResponseClasses = methods()

@@ -156,6 +156,7 @@ export const MlApi = {
 
 export const AccountApi = {
   signIn: (emailAddress: string, password: string) => http.signIn(emailAddress, password),
+  signOut: () => http.signOut(),
   self: () => http.get<SelfInfo>('/users/self'),
 };
 

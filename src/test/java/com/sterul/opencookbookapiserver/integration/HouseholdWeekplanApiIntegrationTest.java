@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -210,8 +209,7 @@ class HouseholdWeekplanApiIntegrationTest extends IntegrationTestBase {
         generateForHousehold(householdProfile(List.of()));
 
         mockMvc.perform(delete("/api/v1/admin/households/" + householdId)
-                        .with(SecurityMockMvcRequestPostProcessors.user("wp-admin@example.invalid")
-                                .authorities(new SimpleGrantedAuthority("ADMIN"))))
+                        .with(TestAccounts.operator("wp-admin@example.invalid")))
                 .andExpect(status().isNoContent());
 
         assertThat(householdRepository.findById(householdId)).isEmpty();

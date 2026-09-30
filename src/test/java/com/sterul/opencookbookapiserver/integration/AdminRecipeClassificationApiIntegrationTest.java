@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
@@ -295,7 +294,7 @@ class AdminRecipeClassificationApiIntegrationTest extends IntegrationTestBase {
     }
 
     private RequestPostProcessor operator() {
-        return user(OPERATOR).authorities(new SimpleGrantedAuthority("ADMIN"));
+        return TestAccounts.operator(OPERATOR);
     }
 
     /** Proposals and marks before recipes, and recipes before the runs they point back at. */

@@ -1,4 +1,4 @@
-package com.sterul.opencookbookapiserver.configurations.security.requestfilters;
+package com.sterul.opencookbookapiserver.configurations.security;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,12 +26,6 @@ public final class BearerTokens {
     public static Optional<String> of(HttpServletRequest request) {
         return of(request.getHeader(HttpHeaders.AUTHORIZATION),
                 Collections.list(request.getHeaders(WebSocketHttpHeaders.SEC_WEBSOCKET_PROTOCOL)));
-    }
-
-    /** A socket's handshake, which the request filter already let in. */
-    public static Optional<String> of(HttpHeaders handshake) {
-        return of(handshake.getFirst(HttpHeaders.AUTHORIZATION),
-                handshake.getOrEmpty(WebSocketHttpHeaders.SEC_WEBSOCKET_PROTOCOL));
     }
 
     /** @param protocols Sec-WebSocket-Protocol values, each a comma-separated list */

@@ -3,7 +3,6 @@ package com.sterul.opencookbookapiserver.controllers.admin;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,9 +30,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 @RestController
-@RequestMapping("/api/v1/admin/catalogue")
+@RequestMapping(AdminPaths.BASE + "/catalogue")
 @Tag(name = "Nutrition catalogue", description = "Foods ingredients link to for their nutrients")
-@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminCatalogueController {
 
     private final CatalogueService catalogueService;

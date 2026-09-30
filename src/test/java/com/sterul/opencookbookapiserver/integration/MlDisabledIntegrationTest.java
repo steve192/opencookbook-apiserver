@@ -45,9 +45,8 @@ class MlDisabledIntegrationTest extends IntegrationTestBase {
     }
 
     @Test
-    @WithMockUser(username = "operator@example.com", authorities = "ADMIN")
     void thereAreNoMachineLearningStatisticsToAdminister() throws Exception {
-        mockMvc.perform(get("/api/v1/admin/ml"))
+        mockMvc.perform(get("/api/v1/admin/ml").with(TestAccounts.operator("operator@example.com")))
                 .andExpect(status().isNotFound());
     }
 

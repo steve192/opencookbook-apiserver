@@ -1,6 +1,10 @@
 package com.sterul.opencookbookapiserver.configurations;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.convert.DurationUnit;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -35,14 +39,16 @@ public class OpencookbookConfiguration {
     private Long maxImageSize;
 
     /**
-     * Refresh token validity duration in seconds
+     * How long a sign in lasts without being used; a plain number counts as seconds. Every use moves it forward.
      */
-    private Long refreshTokenDuration;
+    @DurationUnit(ChronoUnit.SECONDS)
+    private Duration refreshTokenDuration;
 
     /**
-     * JWT token validity duration in seconds
+     * How long an access token (JWT) is valid; a plain number counts as seconds.
      */
-    private Long jwtDuration;
+    @DurationUnit(ChronoUnit.SECONDS)
+    private Duration jwtDuration;
 
     /**
      * Url of recipe scraper service
@@ -127,6 +133,9 @@ public class OpencookbookConfiguration {
 
     /** Shopping lists. */
     private Shopping shopping = new Shopping();
+
+    /** Long-lived keys for headless clients such as Home Assistant. */
+    private ApiKeys apiKeys = new ApiKeys();
 
     /**
      * Connection to the machine learning subsystem. Leaving the url empty is how an instance
@@ -256,6 +265,17 @@ public class OpencookbookConfiguration {
 
     @Getter
     @Setter
+    public static class ApiKeys {
+
+        /** Off rejects every key and removes the endpoints to manage them; stored keys are kept. */
+        private boolean enabled = true;
+
+        /** How many keys one account may hold. */
+        private int maxPerUser = 20;
+    }
+
+    @Getter
+    @Setter
     public static class Catalogue {
 
         /** Imports a newly shipped dataset in the background once the server is up. Tests import what they need. */
@@ -352,6 +372,12 @@ public class OpencookbookConfiguration {
          * would slip a per-caller budget.
          */
         private int mailsPerHourPerAddress = 5;
+
+        /**
+         * How long after entering the password an administrator may use the admin api. After that it
+         * asks for the password again, however long the sign in itself has been kept alive.
+         */
+        private Duration adminSignInValidity = Duration.ofHours(2);
     }
 
 }

@@ -4,7 +4,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,10 +29,9 @@ import lombok.extern.slf4j.Slf4j;
 /** What an operator can see and do about this instance's use of the subsystem. */
 @RestController
 @ConditionalOnMlConfigured
-@RequestMapping("/api/v1/admin/ml")
+@RequestMapping(AdminPaths.BASE + "/ml")
 @Tag(name = "Machine learning", description = "Admin view of this instance's ml usage")
 @Slf4j
-@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminMlController {
 
     private final MlAvailabilityService availability;

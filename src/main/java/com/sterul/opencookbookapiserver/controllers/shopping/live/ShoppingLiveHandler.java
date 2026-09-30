@@ -3,6 +3,7 @@ package com.sterul.opencookbookapiserver.controllers.shopping.live;
 import java.io.IOException;
 import java.util.List;
 
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.SubProtocolCapable;
@@ -11,14 +12,12 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
-import com.sterul.opencookbookapiserver.configurations.security.requestfilters.BearerTokens;
 import com.sterul.opencookbookapiserver.configurations.shopping.ConditionalOnShoppingLive;
 import com.sterul.opencookbookapiserver.controllers.support.PlanScopes;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.services.UserService;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.shopping.ShoppingListService;
-import com.sterul.opencookbookapiserver.util.JwtTokenUtil;
 
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.json.JsonMapper;
@@ -38,17 +37,15 @@ public class ShoppingLiveHandler extends TextWebSocketHandler implements SubProt
     private static final int MAX_MESSAGE_BYTES = 4096;
 
     private final LiveListeners listeners;
-    private final JwtTokenUtil tokens;
     private final UserService users;
     private final PlanScopes planScopes;
     private final ShoppingListService lists;
     private final OpencookbookConfiguration configuration;
     private final JsonMapper json;
 
-    public ShoppingLiveHandler(LiveListeners listeners, JwtTokenUtil tokens, UserService users, PlanScopes planScopes,
+    public ShoppingLiveHandler(LiveListeners listeners, UserService users, PlanScopes planScopes,
             ShoppingListService lists, OpencookbookConfiguration configuration, JsonMapper json) {
         this.listeners = listeners;
-        this.tokens = tokens;
         this.users = users;
         this.planScopes = planScopes;
         this.lists = lists;
@@ -64,13 +61,17 @@ public class ShoppingLiveHandler extends TextWebSocketHandler implements SubProt
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws IOException {
         session.setTextMessageSizeLimit(MAX_MESSAGE_BYTES);
-        var user = users.getUserByEmail(session.getPrincipal().getName());
+        if (!(session.getPrincipal() instanceof JwtAuthenticationToken signedIn)) {
+            session.close(CloseStatus.POLICY_VIOLATION);
+            return;
+        }
+        var user = users.getUserByEmail(signedIn.getName());
         if (listeners.devicesOf(user.getUserId()) >= configuration.getShopping().getLiveSocketsPerUser()) {
             session.close(LiveListeners.TOO_MANY_DEVICES);
             return;
         }
-        var token = BearerTokens.of(session.getHandshakeHeaders()).orElseThrow();
-        listeners.opened(session, user, tokens.getExpirationDateFromToken(token).toInstant());
+        // The socket lasts as long as the access token it was opened with.
+        listeners.opened(session, user, signedIn.getToken().getExpiresAt());
     }
 
     @Override

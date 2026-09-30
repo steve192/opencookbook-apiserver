@@ -17,13 +17,13 @@ export class Session {
   }
 
   start(authToken: string, refreshToken: string) {
-    localStorage.setItem(AUTH_TOKEN_KEY, authToken);
-    localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+    this.store(authToken, refreshToken);
     this.notify(true);
   }
 
-  renew(authToken: string) {
-    localStorage.setItem(AUTH_TOKEN_KEY, authToken);
+  // Every renewal replaces the refresh token too; the old one is spent.
+  renew(authToken: string, refreshToken: string) {
+    this.store(authToken, refreshToken);
   }
 
   end() {
@@ -35,6 +35,11 @@ export class Session {
   onChange(listener: (signedIn: boolean) => void): () => void {
     this.listeners.add(listener);
     return () => this.listeners.delete(listener);
+  }
+
+  private store(authToken: string, refreshToken: string) {
+    localStorage.setItem(AUTH_TOKEN_KEY, authToken);
+    localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
   }
 
   private notify(signedIn: boolean) {

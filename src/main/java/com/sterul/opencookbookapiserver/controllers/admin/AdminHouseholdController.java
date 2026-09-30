@@ -3,7 +3,6 @@ package com.sterul.opencookbookapiserver.controllers.admin;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,10 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 
 /** Not conditional on households being enabled, so what exists can still be seen and dissolved. */
 @RestController
-@RequestMapping("/api/v1/admin/households")
+@RequestMapping(AdminPaths.BASE + "/households")
 @Tag(name = "Households", description = "Moderating the households on this instance")
 @Slf4j
-@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminHouseholdController {
 
     private final HouseholdService householdService;

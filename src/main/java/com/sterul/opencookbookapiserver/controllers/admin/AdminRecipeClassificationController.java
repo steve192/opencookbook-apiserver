@@ -3,7 +3,6 @@ package com.sterul.opencookbookapiserver.controllers.admin;
 import java.time.Instant;
 import java.util.List;
 
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,9 +26,8 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 @RestController
-@RequestMapping("/api/v1/admin/recipes/classification-runs")
+@RequestMapping(AdminPaths.BASE + "/recipes/classification-runs")
 @Tag(name = "Recipe classification", description = "Deriving what recipes are, under review")
-@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminRecipeClassificationController extends BaseController {
 
     private final RecipeClassificationService classificationService;

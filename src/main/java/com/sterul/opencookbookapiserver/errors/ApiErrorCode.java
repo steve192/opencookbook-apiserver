@@ -25,6 +25,8 @@ public enum ApiErrorCode {
     FILE_TOO_LARGE(HttpStatus.CONTENT_TOO_LARGE, "The file is larger than this server accepts"),
 
     AUTHENTICATION_REQUIRED(HttpStatus.UNAUTHORIZED, "Sign in to do that"),
+    /** The session is fine, but this needs the password to have been entered recently. */
+    REAUTHENTICATION_REQUIRED(HttpStatus.UNAUTHORIZED, "Sign in again with your password to do that"),
     INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "The e-mail address or the password is wrong"),
     ACCOUNT_NOT_ACTIVATED(HttpStatus.UNAUTHORIZED, "The account has not been activated yet"),
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "You are not allowed to do that"),
@@ -50,6 +52,8 @@ public enum ApiErrorCode {
     ALREADY_A_MEMBER(HttpStatus.CONFLICT, "You are already in that household"),
 
     TOO_MANY_SHOPPING_LISTS(HttpStatus.CONFLICT, "There are as many shopping lists here as this server allows"),
+
+    TOO_MANY_API_KEYS(HttpStatus.CONFLICT, "You have as many api keys as this server allows"),
 
     IMPORT_URL_INVALID(HttpStatus.BAD_REQUEST, "That is not a link this server can read"),
     IMPORT_NOT_SUPPORTED(HttpStatus.NOT_IMPLEMENTED,

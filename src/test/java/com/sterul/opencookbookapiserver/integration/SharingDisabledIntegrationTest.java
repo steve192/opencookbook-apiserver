@@ -62,10 +62,9 @@ class SharingDisabledIntegrationTest extends IntegrationTestBase {
     }
 
     @Test
-    @WithMockUser(username = "operator@example.com", authorities = "ADMIN")
     void anOperatorCanStillCleanUpWhatWasSharedBefore() throws Exception {
         // The shares themselves are kept, so the way to remove them has to outlive the switch.
-        mockMvc.perform(get("/api/v1/admin/shares"))
+        mockMvc.perform(get("/api/v1/admin/shares").with(TestAccounts.operator("operator@example.com")))
                 .andExpect(status().isOk());
     }
 }
