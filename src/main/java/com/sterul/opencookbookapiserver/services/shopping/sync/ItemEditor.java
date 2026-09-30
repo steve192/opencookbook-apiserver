@@ -65,6 +65,9 @@ class ItemEditor {
                 } else {
                     item.reactivate(add.spec(), add.sources(), clock.instant());
                 }
+                if (add.prioritized()) {
+                    item.setPrioritized(true);
+                }
             });
             return;
         }
@@ -78,7 +81,7 @@ class ItemEditor {
         var item = ShoppingItem.builder()
                 .id(add.itemId()).list(list).name(add.name().strip()).nameKey(key)
                 .aisle(placement.aisle()).icon(placement.icon())
-                .status(ItemStatus.ACTIVE).addedBy(actor).addedAt(clock.instant())
+                .status(ItemStatus.ACTIVE).prioritized(add.prioritized()).addedBy(actor).addedAt(clock.instant())
                 .sources(new ArrayList<>(add.sources()))
                 .build();
         stamp(list, item, () -> item.replaceSpec(add.spec()));
@@ -94,6 +97,9 @@ class ItemEditor {
             }
             if (update.aisle() != null) {
                 item.placeManually(update.aisle());
+            }
+            if (update.prioritized() != null) {
+                item.setPrioritized(update.prioritized());
             }
         });
     }

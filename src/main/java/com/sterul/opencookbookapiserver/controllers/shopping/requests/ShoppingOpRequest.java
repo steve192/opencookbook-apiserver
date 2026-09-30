@@ -19,7 +19,8 @@ public record ShoppingOpRequest(
         @Size(max = 200) String spec,
         Aisle aisle,
         @Pattern(regexp = ICON_PATTERN) String icon,
-        @Size(max = 20) List<@Valid ItemSourceRequest> sources) {
+        @Size(max = 20) List<@Valid ItemSourceRequest> sources,
+        Boolean prioritized) {
 
     static final String UUID_PATTERN = "[0-9a-fA-F-]{36}";
     static final String ICON_PATTERN = "[a-z0-9_-]{1,64}";
@@ -31,8 +32,8 @@ public record ShoppingOpRequest(
     public ShoppingOp toOp() {
         return switch (type) {
             case ADD -> new ShoppingOp.Add(opId, itemId, name == null ? "" : name, spec, aisle, icon,
-                    ItemSourceRequest.toSources(sources));
-            case UPDATE -> new ShoppingOp.Update(opId, itemId, name, spec, aisle);
+                    ItemSourceRequest.toSources(sources), Boolean.TRUE.equals(prioritized));
+            case UPDATE -> new ShoppingOp.Update(opId, itemId, name, spec, aisle, prioritized);
             case BUY -> new ShoppingOp.Buy(opId, itemId);
             case RESTORE -> new ShoppingOp.Restore(opId, itemId, spec);
             case DELETE -> new ShoppingOp.Delete(opId, itemId);

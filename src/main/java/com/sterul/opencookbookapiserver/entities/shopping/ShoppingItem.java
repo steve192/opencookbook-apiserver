@@ -61,6 +61,9 @@ public class ShoppingItem extends AuditableEntity {
     /** Chosen by a person, so it is never re-derived from the name. */
     private boolean aisleManual;
 
+    /** Shown first within its aisle until bought. */
+    private boolean prioritized;
+
     private String icon;
 
     @Enumerated(EnumType.STRING)
@@ -120,6 +123,7 @@ public class ShoppingItem extends AuditableEntity {
     public void buy(Instant at) {
         status = ItemStatus.BOUGHT;
         boughtAt = at;
+        prioritized = false;
     }
 
     /** @param shownIcon null shows the aisle's icon */

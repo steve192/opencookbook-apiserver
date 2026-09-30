@@ -89,7 +89,7 @@ public class ShoppingSyncService {
 
     private static ShoppingOp.Add withNewItemId(ShoppingOp.Add line) {
         return new ShoppingOp.Add(null, UUID.randomUUID().toString(), line.name(), line.spec(), line.aisle(),
-                line.icon(), line.sources());
+                line.icon(), line.sources(), line.prioritized());
     }
 
     /** A device that never synced, or last synced before tombstones it missed were purged, starts over. */
