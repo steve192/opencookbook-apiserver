@@ -36,7 +36,6 @@ import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
 import com.sterul.opencookbookapiserver.services.RecipeImageService;
-import com.sterul.opencookbookapiserver.services.households.HouseholdCookbook;
 
 /**
  * The access rule from both sides: a household grants reading only, sharing off is felt on the next
@@ -113,71 +112,36 @@ class HouseholdCookbookAccessIntegrationTest extends IntegrationTestBase {
 
     @Test
     @WithMockUser(username = BERT)
-    void theHouseholdCookbookListsWhatItsSharingMembersOwn() throws Exception {
-        mockMvc.perform(get("/api/v1/households/" + householdId + "/recipes"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.recipes.length()").value(1))
-                .andExpect(jsonPath("$.recipes[0].title").value("Annas Lasagne"))
-                .andExpect(jsonPath("$.recipes[0].mine").value(false))
-                // A summary, not the whole recipe: what is not in the response cannot leak from it.
-                .andExpect(jsonPath("$.recipes[0].neededIngredients").doesNotExist());
-    }
-
-    @Test
-    @WithMockUser(username = BERT)
-    void theCookbookIsPaginated() throws Exception {
-        for (var index = 0; index < HouseholdCookbook.PAGE_SIZE; index++) {
-            plainRecipeOf(anna, "Extra " + index);
-        }
-
-        // Ten members of five hundred recipes is not a response.
-        mockMvc.perform(get("/api/v1/households/" + householdId + "/recipes").param("page", "0"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.recipes.length()").value(HouseholdCookbook.PAGE_SIZE))
-                .andExpect(jsonPath("$.last").value(false))
-                .andExpect(jsonPath("$.recipes[0].title").value("Annas Lasagne"));
-        mockMvc.perform(get("/api/v1/households/" + householdId + "/recipes").param("page", "1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.recipes.length()").value(1))
-                .andExpect(jsonPath("$.last").value(true));
-    }
-
-    @Test
-    @WithMockUser(username = BERT)
-    void theCookbookIsSearchedLikeYourOwn() throws Exception {
-        plainRecipeOf(anna, "Kartoffelgratin");
-        plainRecipeOf(anna, "Linsensuppe");
-        // Bert shares nothing, so a search must not reach his cookbook either.
+    void aMembersListIncludesTheCookbookOfAMemberWhoShares() throws Exception {
         plainRecipeOf(userNamed(BERT), "Berts Gratin");
 
-        mockMvc.perform(get("/api/v1/households/" + householdId + "/recipes").param("search", "gratin"))
+        mockMvc.perform(get("/api/v1/recipes"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.recipes.length()").value(1))
-                .andExpect(jsonPath("$.recipes[0].title").value("Kartoffelgratin"))
-                .andExpect(jsonPath("$.last").value(true));
-        mockMvc.perform(get("/api/v1/households/" + householdId + "/recipes").param("search", "lasa"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.recipes.length()").value(1))
-                .andExpect(jsonPath("$.recipes[0].title").value("Annas Lasagne"));
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[?(@.title == 'Annas Lasagne')].mine").value(false))
+                .andExpect(jsonPath("$[?(@.title == 'Annas Lasagne')].ownerDisplayName").isNotEmpty())
+                .andExpect(jsonPath("$[?(@.title == 'Annas Lasagne')].householdIds[0]").value(householdId))
+                // Bert joined without sharing, so his own recipe is in no household.
+                .andExpect(jsonPath("$[?(@.title == 'Berts Gratin')].mine").value(true))
+                .andExpect(jsonPath("$[?(@.title == 'Berts Gratin')].householdIds[0]").doesNotExist());
     }
 
     @Test
-    @WithMockUser(username = BERT)
-    void searchResultsArePaginatedToo() throws Exception {
-        for (var index = 0; index <= HouseholdCookbook.PAGE_SIZE; index++) {
-            plainRecipeOf(anna, "Extra " + index);
-        }
+    @WithMockUser(username = ANNA)
+    void anOwnRecipeListsTheHouseholdsItIsSharedWith() throws Exception {
+        mockMvc.perform(get("/api/v1/recipes"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].mine").value(true))
+                .andExpect(jsonPath("$[0].householdIds[0]").value(householdId));
+    }
 
-        mockMvc.perform(get("/api/v1/households/" + householdId + "/recipes")
-                        .param("search", "extra").param("page", "0"))
+    @Test
+    @WithMockUser(username = STRANGER)
+    void somebodyOutsideTheHouseholdListsNothingOfIt() throws Exception {
+        mockMvc.perform(get("/api/v1/recipes"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.recipes.length()").value(HouseholdCookbook.PAGE_SIZE))
-                .andExpect(jsonPath("$.last").value(false));
-        mockMvc.perform(get("/api/v1/households/" + householdId + "/recipes")
-                        .param("search", "extra").param("page", "1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.recipes.length()").value(1))
-                .andExpect(jsonPath("$.last").value(true));
+                .andExpect(jsonPath("$.length()").value(0));
     }
 
     // ------------------------------------------------------------------- sharing switched off
@@ -195,9 +159,9 @@ class HouseholdCookbookAccessIntegrationTest extends IntegrationTestBase {
 
         mockMvc.perform(get("/api/v1/recipes/" + annasRecipeId).with(asUser(BERT)))
                 .andExpect(status().isNotFound());
-        mockMvc.perform(get("/api/v1/households/" + householdId + "/recipes").with(asUser(BERT)))
+        mockMvc.perform(get("/api/v1/recipes").with(asUser(BERT)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.recipes.length()").value(0));
+                .andExpect(jsonPath("$.length()").value(0));
     }
 
     @Test

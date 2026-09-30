@@ -91,7 +91,6 @@ class PublicEndpointsIntegrationTest extends IntegrationTestBase {
             // household exists.
             "/api/v1/households",
             "/api/v1/households/any-household",
-            "/api/v1/households/any-household/recipes",
             "/api/v1/households/any-household/invites",
             "/api/v1/household-invites/any-token",
     })

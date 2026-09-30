@@ -1,5 +1,7 @@
 package com.sterul.opencookbookapiserver.integration;
 
+import static com.sterul.opencookbookapiserver.integration.TestCatalogue.food;
+import static com.sterul.opencookbookapiserver.integration.TestCatalogue.name;
 import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
@@ -12,9 +14,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +25,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.jayway.jsonpath.JsonPath;
 import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFood;
-import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFoodName;
 import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFoodPortion;
-import com.sterul.opencookbookapiserver.entities.nutrition.NutrientValues;
 import com.sterul.opencookbookapiserver.repositories.CatalogueFoodRepository;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
@@ -75,10 +72,11 @@ class NutritionApiIntegrationTest extends IntegrationTestBase {
         recipeRepository.deleteAll();
         ingredientRepository.deleteAll();
         foodRepository.deleteAll();
-        food("custom-flour", 350, null, name("de", "Weizenmehl"), name("en", "Wheat flour"));
-        food("custom-egg", 135, CatalogueFoodPortion.builder().unitKey("piece").grams(60).origin(CatalogueFoodPortion.Origin.SOURCE).build(),
+        food(foodRepository, "custom-flour", 350, null, name("de", "Weizenmehl"), name("en", "Wheat flour"));
+        food(foodRepository, "custom-egg", 135,
+                CatalogueFoodPortion.builder().unitKey("piece").grams(60).origin(CatalogueFoodPortion.Origin.SOURCE).build(),
                 name("de", "Hühnerei"), name("de", "Eier"), name("en", "Egg"));
-        sugar = food("custom-sugar", 400, null, name("de", "Zucker"), name("en", "Sugar"));
+        sugar = food(foodRepository, "custom-sugar", 400, null, name("de", "Zucker"), name("en", "Sugar"));
         indexUpdater.rebuild();
         TestAccounts.ensure(userRepository, COOK);
         TestAccounts.ensure(userRepository, STRANGER);
@@ -98,23 +96,25 @@ class NutritionApiIntegrationTest extends IntegrationTestBase {
     void theNutritionSheetExplainsEveryLine() throws Exception {
         var recipeId = createRecipe();
 
-        mockMvc.perform(get("/api/v1/recipes/" + recipeId + "/nutrition").with(user(COOK)))
+        mockMvc.perform(get("/api/v1/recipes/nutrition").with(user(COOK)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.lines[0].food.displayName").value("Weizenmehl"))
-                .andExpect(jsonPath("$.lines[0].grams").value(500.0))
-                .andExpect(jsonPath("$.lines[0].linkSource").value("AUTO"))
-                .andExpect(jsonPath("$.lines[1].grams").value(120.0))
-                .andExpect(jsonPath("$.lines[2].status").value("UNLINKED"))
-                .andExpect(jsonPath("$.lines[2].warns").value(true))
-                .andExpect(jsonPath("$.attributions[?(@.source=='BLS')].licenseUrl").value("https://creativecommons.org/licenses/by/4.0/"));
+                .andExpect(jsonPath(sheetOf(recipeId) + ".lines[0].food.displayName").value("Weizenmehl"))
+                .andExpect(jsonPath(sheetOf(recipeId) + ".lines[0].grams").value(500.0))
+                .andExpect(jsonPath(sheetOf(recipeId) + ".lines[0].linkSource").value("AUTO"))
+                .andExpect(jsonPath(sheetOf(recipeId) + ".lines[1].grams").value(120.0))
+                .andExpect(jsonPath(sheetOf(recipeId) + ".lines[2].status").value("UNLINKED"))
+                .andExpect(jsonPath(sheetOf(recipeId) + ".lines[2].warns").value(true))
+                .andExpect(jsonPath(sheetOf(recipeId) + ".attributions[?(@.source=='BLS')].licenseUrl")
+                        .value("https://creativecommons.org/licenses/by/4.0/"));
     }
 
     @Test
     void somebodyElsesRecipeHasNoNutritionSheetForYou() throws Exception {
         var recipeId = createRecipe();
 
-        mockMvc.perform(get("/api/v1/recipes/" + recipeId + "/nutrition").with(user(STRANGER)))
-                .andExpect(status().isNotFound());
+        mockMvc.perform(get("/api/v1/recipes/nutrition").with(user(STRANGER)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath(sheetOf(recipeId)).doesNotExist());
     }
 
     @Test
@@ -144,9 +144,9 @@ class NutritionApiIntegrationTest extends IntegrationTestBase {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.excluded").value(true));
 
-        mockMvc.perform(get("/api/v1/recipes/" + recipeId + "/nutrition").with(user(COOK)))
-                .andExpect(jsonPath("$.lines[2].status").value("EXCLUDED"))
-                .andExpect(jsonPath("$.summary.status").value("COMPLETE"));
+        mockMvc.perform(get("/api/v1/recipes/nutrition").with(user(COOK)))
+                .andExpect(jsonPath(sheetOf(recipeId) + ".lines[2].status").value("EXCLUDED"))
+                .andExpect(jsonPath(sheetOf(recipeId) + ".summary.status").value("COMPLETE"));
     }
 
     @Test
@@ -158,15 +158,15 @@ class NutritionApiIntegrationTest extends IntegrationTestBase {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"unit\": \"\", \"grams\": 70}"))
                 .andExpect(status().isNoContent());
-        mockMvc.perform(get("/api/v1/recipes/" + recipeId + "/nutrition").with(user(COOK)))
-                .andExpect(jsonPath("$.lines[1].grams").value(140.0))
-                .andExpect(jsonPath("$.lines[1].ownPortion").value(true));
+        mockMvc.perform(get("/api/v1/recipes/nutrition").with(user(COOK)))
+                .andExpect(jsonPath(sheetOf(recipeId) + ".lines[1].grams").value(140.0))
+                .andExpect(jsonPath(sheetOf(recipeId) + ".lines[1].ownPortion").value(true));
 
         mockMvc.perform(delete("/api/v1/ingredients/" + eggs.getId() + "/portion").with(user(COOK)))
                 .andExpect(status().isNoContent());
-        mockMvc.perform(get("/api/v1/recipes/" + recipeId + "/nutrition").with(user(COOK)))
-                .andExpect(jsonPath("$.lines[1].grams").value(120.0))
-                .andExpect(jsonPath("$.lines[1].ownPortion").value(false));
+        mockMvc.perform(get("/api/v1/recipes/nutrition").with(user(COOK)))
+                .andExpect(jsonPath(sheetOf(recipeId) + ".lines[1].grams").value(120.0))
+                .andExpect(jsonPath(sheetOf(recipeId) + ".lines[1].ownPortion").value(false));
     }
 
     @Test
@@ -241,25 +241,14 @@ class NutritionApiIntegrationTest extends IntegrationTestBase {
                 .andExpect(jsonPath("$.lines[0].ownPortion").value(nullValue()));
     }
 
+    private static String sheetOf(long recipeId) {
+        return "$[?(@.recipeId == " + recipeId + ")].nutrition";
+    }
+
     private long createRecipe() throws Exception {
         var body = mockMvc.perform(post("/api/v1/recipes").with(user(COOK)).contentType(MediaType.APPLICATION_JSON).content(RECIPE))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
         return ((Number) JsonPath.read(body, "$.id")).longValue();
-    }
-
-    private CatalogueFood food(String key, float kcal, CatalogueFoodPortion portion, CatalogueFoodName... names) {
-        return foodRepository.save(CatalogueFood.builder()
-                .catalogueKey(key)
-                .origin(CatalogueFood.Origin.CUSTOM)
-                .nutrients(NutrientValues.builder().energyKcal(kcal).build())
-                .names(new ArrayList<>(List.of(names)))
-                .portions(portion == null ? new ArrayList<>() : new ArrayList<>(List.of(portion)))
-                .build());
-    }
-
-    private static CatalogueFoodName name(String language, String name) {
-        return CatalogueFoodName.builder().languageIsoCode(language).name(name).display(true)
-                .origin(CatalogueFoodName.Origin.ADMIN).build();
     }
 }

@@ -103,56 +103,45 @@ class SignInIntegrationTest extends IntegrationTestBase {
     void aRotatingRenewalReplacesTheRefreshToken() throws Exception {
         var tokens = login();
 
-        var renewed = renew(tokens.refresh(), true).andExpect(status().isOk());
+        var renewed = renew(tokens.refresh()).andExpect(status().isOk());
         var next = JsonPath.<String>read(body(renewed), "$.refreshToken");
 
         assertThat(next).isNotEqualTo(tokens.refresh());
         mockMvc.perform(get("/api/v1/users/self").with(TestAccounts.bearer(JsonPath.read(body(renewed), "$.token"))))
                 .andExpect(status().isOk());
-        renew(next, true).andExpect(status().isOk());
+        renew(next).andExpect(status().isOk());
     }
 
     @Test
     void twoRenewalsAtOnceDoNotEndTheSignIn() throws Exception {
         var tokens = login();
 
-        renew(tokens.refresh(), true).andExpect(status().isOk());
-        renew(tokens.refresh(), true).andExpect(status().isOk());
+        renew(tokens.refresh()).andExpect(status().isOk());
+        renew(tokens.refresh()).andExpect(status().isOk());
     }
 
     @Test
     void aReplacedTokenUsedAgainLaterEndsTheSignInForEverybody() throws Exception {
         var tokens = login();
-        var next = JsonPath.<String>read(body(renew(tokens.refresh(), true)), "$.refreshToken");
+        var next = JsonPath.<String>read(body(renew(tokens.refresh())), "$.refreshToken");
         replacedAWhileAgo(tokens.refresh());
 
-        renew(tokens.refresh(), true)
+        renew(tokens.refresh())
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.code").value("AUTHENTICATION_REQUIRED"));
-        renew(next, true).andExpect(status().isUnauthorized());
+        renew(next).andExpect(status().isUnauthorized());
     }
 
     @Test
     void aReplacedTokenIsDeletedSoonYetStillEndsTheSignInWhenUsedAgain() throws Exception {
         var tokens = login();
-        var next = JsonPath.<String>read(body(renew(tokens.refresh(), true)), "$.refreshToken");
+        var next = JsonPath.<String>read(body(renew(tokens.refresh())), "$.refreshToken");
         replacedAWhileAgo(tokens.refresh());
 
         assertThat(signInService.deleteStale()).isEqualTo(1);
 
-        renew(tokens.refresh(), true).andExpect(status().isUnauthorized());
-        renew(next, true).andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    void anOlderAppThatDoesNotRotateKeepsItsToken() throws Exception {
-        var tokens = login();
-
-        renew(tokens.refresh(), false)
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").isString())
-                .andExpect(jsonPath("$.refreshToken").doesNotExist());
-        renew(tokens.refresh(), false).andExpect(status().isOk());
+        renew(tokens.refresh()).andExpect(status().isUnauthorized());
+        renew(next).andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -164,8 +153,8 @@ class SignInIntegrationTest extends IntegrationTestBase {
                         .content("{\"refreshToken\":\"" + tokens.refresh() + "\"}"))
                 .andExpect(status().isNoContent());
 
-        renew(tokens.refresh(), true).andExpect(status().isUnauthorized());
-        renew(other.refresh(), true).andExpect(status().isOk());
+        renew(tokens.refresh()).andExpect(status().isUnauthorized());
+        renew(other.refresh()).andExpect(status().isOk());
     }
 
     @Test
@@ -178,8 +167,8 @@ class SignInIntegrationTest extends IntegrationTestBase {
                         .content("{\"oldPassword\":\"" + PASSWORD + "\",\"newPassword\":\"a new password\"}"))
                 .andExpect(status().isOk());
 
-        renew(here.refresh(), true).andExpect(status().isOk());
-        renew(elsewhere.refresh(), true).andExpect(status().isUnauthorized());
+        renew(here.refresh()).andExpect(status().isOk());
+        renew(elsewhere.refresh()).andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -194,7 +183,7 @@ class SignInIntegrationTest extends IntegrationTestBase {
                         .content("{\"passwordResetId\":\"" + link.getId() + "\",\"newPassword\":\"a new password\"}"))
                 .andExpect(status().isOk());
 
-        renew(tokens.refresh(), true).andExpect(status().isUnauthorized());
+        renew(tokens.refresh()).andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -205,7 +194,7 @@ class SignInIntegrationTest extends IntegrationTestBase {
 
         mockMvc.perform(get("/api/v1/users/self").with(TestAccounts.bearer(tokens.access())))
                 .andExpect(status().isUnauthorized());
-        renew(tokens.refresh(), true).andExpect(status().isUnauthorized());
+        renew(tokens.refresh()).andExpect(status().isUnauthorized());
         assertThat(refreshTokenRepository.findAll()).isEmpty();
     }
 
@@ -241,7 +230,7 @@ class SignInIntegrationTest extends IntegrationTestBase {
         refreshTokenRepository.save(stale);
 
         assertThat(signInService.deleteStale()).isEqualTo(1);
-        renew(fresh.refresh(), true).andExpect(status().isOk());
+        renew(fresh.refresh()).andExpect(status().isOk());
     }
 
     @Test
@@ -317,9 +306,9 @@ class SignInIntegrationTest extends IntegrationTestBase {
         return new Tokens(JsonPath.read(answer, "$.token"), JsonPath.read(answer, "$.refreshToken"));
     }
 
-    private ResultActions renew(String refreshToken, boolean rotate) throws Exception {
+    private ResultActions renew(String refreshToken) throws Exception {
         return mockMvc.perform(post("/api/v1/users/refreshToken").contentType(MediaType.APPLICATION_JSON)
-                .content("{\"refreshToken\":\"" + refreshToken + "\",\"rotate\":" + rotate + "}"));
+                .content("{\"refreshToken\":\"" + refreshToken + "\"}"));
     }
 
     private void replacedAWhileAgo(String refreshToken) {

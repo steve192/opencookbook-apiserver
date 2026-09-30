@@ -81,8 +81,6 @@ spring:
     # flyway:
     #   enabled: false
     # jpa.hibernate.ddl-auto: create-drop
-
-    jpa.hibernate.ddl-auto: update
 opencookbook:
   activate-users-after-signup: true
   # The expo web dev server, which is where /share/... is a route

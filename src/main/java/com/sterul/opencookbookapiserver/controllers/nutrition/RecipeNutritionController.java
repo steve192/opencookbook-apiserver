@@ -1,17 +1,19 @@
 package com.sterul.opencookbookapiserver.controllers.nutrition;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sterul.opencookbookapiserver.controllers.BaseController;
+import com.sterul.opencookbookapiserver.controllers.responses.NutritionOfRecipeResponse;
 import com.sterul.opencookbookapiserver.controllers.responses.RecipeNutritionResponse;
 import com.sterul.opencookbookapiserver.services.RecipeService;
 import com.sterul.opencookbookapiserver.services.SignedInUserService;
+import com.sterul.opencookbookapiserver.services.catalogue.dataset.CatalogueDatasetReader;
 import com.sterul.opencookbookapiserver.services.mail.MailLanguages;
 import com.sterul.opencookbookapiserver.services.nutrition.calculation.NutritionCalculator;
-import com.sterul.opencookbookapiserver.services.catalogue.dataset.CatalogueDatasetReader;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,11 +38,15 @@ public class RecipeNutritionController extends BaseController {
         this.languages = languages;
     }
 
-    @Operation(summary = "The estimated nutrients of one of your recipes, line by line")
-    @GetMapping("/{id}/nutrition")
-    public RecipeNutritionResponse nutrition(@PathVariable Long id) {
+    @Operation(summary = "The estimated nutrients of every recipe you can read, line by line")
+    @GetMapping("/nutrition")
+    public List<NutritionOfRecipeResponse> nutrition() {
         var user = getLoggedInUser();
-        return RecipeNutritionResponse.forOwner(calculator.calculate(recipeService.getRecipeFor(id, user)),
-                languages.forUser(user).getLanguage(), datasetReader.manifest());
+        var language = languages.forUser(user).getLanguage();
+        var manifest = datasetReader.manifest();
+        return recipeService.readableBy(user).stream()
+                .map(readable -> new NutritionOfRecipeResponse(readable.recipe().getId(),
+                        RecipeNutritionResponse.forReader(calculator.calculate(readable.recipe()), language, manifest)))
+                .toList();
     }
 }

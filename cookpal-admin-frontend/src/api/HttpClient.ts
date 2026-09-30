@@ -111,7 +111,7 @@ export class HttpClient {
   private async renewToken(): Promise<void> {
     if (!this.renewal) {
       this.renewal = this.unsigned
-          .post('/users/refreshToken', {refreshToken: this.tokens.refreshToken, rotate: true})
+          .post('/users/refreshToken', {refreshToken: this.tokens.refreshToken})
           .then((response) => this.tokens.renew(response.data.token, response.data.refreshToken))
           .catch(() => {
             this.tokens.end();

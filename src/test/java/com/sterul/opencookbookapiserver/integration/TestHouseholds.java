@@ -2,6 +2,7 @@ package com.sterul.opencookbookapiserver.integration;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.springframework.http.MediaType;
@@ -33,6 +34,14 @@ final class TestHouseholds {
                         .with(user(joiner))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"shareRecipes\": false}"))
+                .andExpect(status().isOk());
+    }
+
+    /** Puts the member's cookbook into the household. */
+    static void share(MockMvc mockMvc, String householdId, String member) throws Exception {
+        mockMvc.perform(put("/api/v1/households/" + householdId + "/sharing").with(user(member))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"shareRecipes\": true}"))
                 .andExpect(status().isOk());
     }
 }

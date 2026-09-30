@@ -1,5 +1,6 @@
 package com.sterul.opencookbookapiserver.services.access;
 
+import java.util.Map;
 import java.util.Set;
 
 import com.sterul.opencookbookapiserver.entities.PlanScope;
@@ -9,8 +10,8 @@ import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 public class PersonalCookbookAccess implements CookbookAccess {
 
     @Override
-    public Set<Long> visibleOwnerIds(CookpalUser viewer) {
-        return Set.of(viewer.getUserId());
+    public ReadableCookbooks readableCookbooks(CookpalUser viewer) {
+        return new ReadableCookbooks(viewer.getUserId(), Map.of());
     }
 
     @Override

@@ -64,6 +64,9 @@ public class RecipeResponse {
     /** Who wrote it, for a recipe read through a household. Null for your own. */
     private String ownerDisplayName;
 
+    /** The reader's households whose cookbook shows it; only in the cookbook listing. */
+    private Set<String> householdIds;
+
     public record IngredientNeedResponse(Long id, Float amount, String unit, IngredientSummary ingredient) {
 
         static IngredientNeedResponse fromEntity(IngredientNeed need) {

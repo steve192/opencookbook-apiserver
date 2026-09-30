@@ -1,12 +1,12 @@
 package com.sterul.opencookbookapiserver.controllers.support;
 
-
 import org.springframework.stereotype.Component;
 
 import com.sterul.opencookbookapiserver.controllers.responses.NutritionSummaryResponse;
 import com.sterul.opencookbookapiserver.controllers.responses.RecipeResponse;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
+import com.sterul.opencookbookapiserver.services.ReadableRecipe;
 
 @Component
 public class RecipeResponses {
@@ -29,6 +29,12 @@ public class RecipeResponses {
         var mine = recipe.isOwnedBy(reader);
         response.setMine(mine);
         response.setOwnerDisplayName(mine ? null : DisplayNames.of(recipe.getOwner()));
+        return response;
+    }
+
+    public RecipeResponse inCookbookOf(ReadableRecipe readable, CookpalUser reader) {
+        var response = forReader(readable.recipe(), reader);
+        response.setHouseholdIds(readable.householdIds());
         return response;
     }
 

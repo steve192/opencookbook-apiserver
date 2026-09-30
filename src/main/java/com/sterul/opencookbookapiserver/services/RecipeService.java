@@ -1,10 +1,7 @@
 package com.sterul.opencookbookapiserver.services;
 
-import static com.intuit.fuzzymatcher.domain.ElementType.NAME;
-
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -12,10 +9,8 @@ import java.util.function.Predicate;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.intuit.fuzzymatcher.component.MatchService;
-import com.intuit.fuzzymatcher.domain.Document;
-import com.intuit.fuzzymatcher.domain.Element;
 import com.sterul.opencookbookapiserver.entities.PlanScope;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Diet;
@@ -28,15 +23,12 @@ import com.sterul.opencookbookapiserver.services.classification.ClassificationPr
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.sharing.ShareService;
 
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
 @Transactional
 public class RecipeService {
-
-    public static final String SEARCH_DOCUMENT = "searchDocument";
 
     private final RecipeReferenceResolver recipeReferenceResolver;
     private final RecipeRepository recipeRepository;
@@ -104,6 +96,15 @@ public class RecipeService {
             }
         });
         recipeRepository.deleteById(id);
+    }
+
+    /** Everything {@link #getRecipeFor} would hand this viewer, each with the viewer's households showing it. */
+    @Transactional(readOnly = true)
+    public List<ReadableRecipe> readableBy(CookpalUser viewer) {
+        var cookbooks = cookbookAccess.readableCookbooks(viewer);
+        return recipeRepository.findByOwnerUserIdIn(cookbooks.ownerIds()).stream()
+                .map(recipe -> new ReadableRecipe(recipe, cookbooks.householdsShowing(recipe.getOwner().getUserId())))
+                .toList();
     }
 
     /** Own or household-readable. "Not found" rather than "not allowed", so ids cannot be walked. */
@@ -206,58 +207,6 @@ public class RecipeService {
      */
     public Recipe getRecipeForUpdate(Long id) {
         return recipeRepository.findForUpdateById(id).orElseThrow(ElementNotFound::new);
-    }
-
-    public List<Recipe> searchUserRecipes(CookpalUser user, String searchString, List<Diet> categories) {
-        if ((searchString == null || searchString.equals("")) && (categories == null || categories.isEmpty())) {
-            return getRecipesByOwner(user);
-        }
-        if (searchString == null || searchString.equals("")) {
-            return recipeRepository.findByOwnerAndRecipeTypeIn(user, categories);
-        }
-
-        return searchByStringAndType(user, searchString, categories);
-    }
-
-    private List<Recipe> searchByStringAndType(CookpalUser user, String searchString, List<Diet> categories) {
-        List<Recipe> allRecipes;
-        if (categories == null || categories.isEmpty()) {
-            allRecipes = recipeRepository.findByOwner(user);
-        } else {
-            allRecipes = recipeRepository.findByOwnerAndRecipeTypeIn(user, categories);
-        }
-
-        var documents = allRecipes.stream().map(recipe -> new Document.Builder(recipe.getId().toString())
-                .addElement(new Element.Builder<String>()
-                        .setValue(recipe.getTitle())
-                        .setType(NAME)
-                        .createElement())
-                .createDocument()).toList();
-
-        MatchService matchService = new MatchService();
-
-        var newDocument = new Document.Builder(SEARCH_DOCUMENT)
-                .addElement(new Element.Builder<String>()
-                        .setValue(searchString)
-                        .setType(NAME)
-                        .setThreshold(0.01)
-                        .createElement())
-                .setThreshold(0.01)
-                .createDocument();
-
-        var matches = matchService.applyMatchByDocId(newDocument, documents);
-
-        if (matches.size() == 0 || matches.get(SEARCH_DOCUMENT) == null) {
-            // None found
-            return Arrays.asList();
-        }
-
-        var results = matches.get(SEARCH_DOCUMENT);
-        return results.stream().map(result -> allRecipes.stream()
-                .filter(recipe -> recipe.getId().equals(Long.valueOf(result.getMatchedWith().getKey())))
-                .findFirst()
-                .get())
-                .toList();
     }
 
     public List<Recipe> getAllRecipes() {

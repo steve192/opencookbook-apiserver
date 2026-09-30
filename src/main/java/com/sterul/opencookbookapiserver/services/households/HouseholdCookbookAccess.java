@@ -1,12 +1,17 @@
 package com.sterul.opencookbookapiserver.services.households;
 
-import java.util.HashSet;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toSet;
+
 import java.util.Set;
 
 import com.sterul.opencookbookapiserver.entities.PlanScope;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.repositories.HouseholdMembershipRepository;
+import com.sterul.opencookbookapiserver.repositories.projections.SharedCookbook;
 import com.sterul.opencookbookapiserver.services.access.CookbookAccess;
+import com.sterul.opencookbookapiserver.services.access.ReadableCookbooks;
 
 /**
  * Your own cookbook, plus those of everyone sharing one with a household you are in.
@@ -22,10 +27,9 @@ public class HouseholdCookbookAccess implements CookbookAccess {
     }
 
     @Override
-    public Set<Long> visibleOwnerIds(CookpalUser viewer) {
-        var visible = new HashSet<>(memberships.findOwnerIdsVisibleTo(viewer));
-        visible.add(viewer.getUserId());
-        return visible;
+    public ReadableCookbooks readableCookbooks(CookpalUser viewer) {
+        return new ReadableCookbooks(viewer.getUserId(), memberships.findCookbooksShownTo(viewer).stream()
+                .collect(groupingBy(SharedCookbook::ownerId, mapping(SharedCookbook::householdId, toSet()))));
     }
 
     @Override

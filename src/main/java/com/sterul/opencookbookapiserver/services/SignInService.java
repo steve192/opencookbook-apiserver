@@ -48,7 +48,6 @@ public class SignInService {
         this.clock = clock;
     }
 
-    /** @param refreshToken null when a renewal kept the refresh token the client has */
     public record IssuedTokens(String accessToken, String refreshToken, CookpalUser user) {
     }
 
@@ -68,14 +67,6 @@ public class SignInService {
             token.setReplacedAt(clock.instant());
         }
         return issue(token.getOwner(), token.getSessionId(), token.getPasswordAt());
-    }
-
-    /** Renews for apps from before rotation: they keep their refresh token, and only its expiry moves. */
-    public IssuedTokens extend(String refreshToken) {
-        var token = requireUsable(refreshToken);
-        token.setValidUntil(clock.instant().plus(configuration.getRefreshTokenDuration()));
-        var accessToken = accessTokens.issue(token.getOwner(), token.getSessionId(), token.getPasswordAt());
-        return new IssuedTokens(accessToken, null, token.getOwner());
     }
 
     /** Signing out: the sign in the token belongs to ends. Unknown tokens are ignored. */
