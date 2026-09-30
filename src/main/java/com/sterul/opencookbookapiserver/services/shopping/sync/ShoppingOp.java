@@ -21,13 +21,15 @@ public sealed interface ShoppingOp {
      * Adding a name already on the list asks for more of it.
      *
      * @param aisle null or {@code OTHER} to have the server place it
+     * @param prioritized also prioritizes a name already on the list, never clears it
      */
     record Add(String opId, String itemId, String name, String spec, Aisle aisle, String icon,
-            List<ItemSource> sources) implements ShoppingOp {
+            List<ItemSource> sources, boolean prioritized) implements ShoppingOp {
     }
 
     /** Null leaves a field as it is; a blank spec clears it; an aisle is a person's choice. */
-    record Update(String opId, String itemId, String name, String spec, Aisle aisle) implements ShoppingOp {
+    record Update(String opId, String itemId, String name, String spec, Aisle aisle, Boolean prioritized)
+            implements ShoppingOp {
     }
 
     record Buy(String opId, String itemId) implements ShoppingOp {

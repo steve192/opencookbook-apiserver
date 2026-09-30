@@ -19,6 +19,6 @@ public record ImportLineRequest(
         @Size(max = 20) List<@Valid ItemSourceRequest> sources) {
 
     public ShoppingOp.Add toAdd() {
-        return new ShoppingOp.Add(null, null, name, spec, aisle, icon, ItemSourceRequest.toSources(sources));
+        return new ShoppingOp.Add(null, null, name, spec, aisle, icon, ItemSourceRequest.toSources(sources), false);
     }
 }

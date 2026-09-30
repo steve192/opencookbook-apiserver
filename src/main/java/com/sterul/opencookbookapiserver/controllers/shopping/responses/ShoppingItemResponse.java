@@ -11,15 +11,16 @@ import com.sterul.opencookbookapiserver.entities.shopping.ShoppingItem;
 
 /** @param addedBy a display name; null once that account is gone */
 public record ShoppingItemResponse(String id, String name, String spec, Aisle aisle, boolean aisleManual, String icon,
-        ItemStatus status, Instant boughtAt, Instant addedAt, String addedBy, List<Source> sources, boolean deleted,
-        long version) {
+        boolean prioritized, ItemStatus status, Instant boughtAt, Instant addedAt, String addedBy, List<Source> sources,
+        boolean deleted, long version) {
 
     public record Source(String title, LocalDate planDate) {
     }
 
     public static ShoppingItemResponse of(ShoppingItem item) {
         return new ShoppingItemResponse(item.getId(), item.getName(), item.getSpec(), item.getAisle(),
-                item.isAisleManual(), item.getIcon(), item.getStatus(), item.getBoughtAt(), item.getAddedAt(),
+                item.isAisleManual(), item.getIcon(), item.isPrioritized(), item.getStatus(), item.getBoughtAt(),
+                item.getAddedAt(),
                 item.getAddedBy() == null ? null : DisplayNames.of(item.getAddedBy()),
                 item.getSources().stream().map(source -> new Source(source.getTitle(), source.getPlanDate())).toList(),
                 item.isDeleted(), item.getVersion());

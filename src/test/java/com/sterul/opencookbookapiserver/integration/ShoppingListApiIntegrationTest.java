@@ -205,11 +205,35 @@ class ShoppingListApiIntegrationTest extends IntegrationTestBase {
         var list = ownList(ANNA);
         var item = UUID.randomUUID().toString();
         ops(ANNA, list, 0, add(item, "Weizenmehl", null),
-                new Op(UUID.randomUUID().toString(), "UPDATE", item, null, null, "DRUGSTORE"),
-                new Op(UUID.randomUUID().toString(), "UPDATE", item, "Dinkelmehl", null, null))
+                new Op(UUID.randomUUID().toString(), "UPDATE", item, null, null, "DRUGSTORE", null),
+                new Op(UUID.randomUUID().toString(), "UPDATE", item, "Dinkelmehl", null, null, null))
                 .andExpect(jsonPath("$.items[0].name").value("Dinkelmehl"))
                 .andExpect(jsonPath("$.items[0].aisle").value("DRUGSTORE"))
                 .andExpect(jsonPath("$.items[0].aisleManual").value(true));
+    }
+
+    @Test
+    void aPrioritizedItemStaysSoUntilBought() throws Exception {
+        var list = ownList(ANNA);
+        var milk = UUID.randomUUID().toString();
+        ops(ANNA, list, 0, add(milk, "Milch", null), prioritize(milk, true))
+                .andExpect(jsonPath("$.items[0].prioritized").value(true));
+
+        ops(ANNA, list, 0, op("BUY", milk), op("RESTORE", milk))
+                .andExpect(jsonPath("$.items[0].status").value("ACTIVE"))
+                .andExpect(jsonPath("$.items[0].prioritized").value(false));
+    }
+
+    @Test
+    void addingAPrioritizedNameAlreadyOnTheListPrioritizesIt() throws Exception {
+        var list = ownList(ANNA);
+        ops(ANNA, list, 0, add("Milch", "1 l"));
+
+        ops(ANNA, list, 0, new Op(UUID.randomUUID().toString(), "ADD", UUID.randomUUID().toString(), "Milch", "1 l",
+                null, true))
+                .andExpect(jsonPath("$.items", hasSize(1)))
+                .andExpect(jsonPath("$.items[0].spec").value("1 l + 1 l"))
+                .andExpect(jsonPath("$.items[0].prioritized").value(true));
     }
 
     @Test
@@ -259,11 +283,13 @@ class ShoppingListApiIntegrationTest extends IntegrationTestBase {
                 .andExpect(jsonPath("$.unitWords", hasItems("kg", "netz", "dosen", "cans")));
     }
 
-    private record Op(String opId, String type, String itemId, String name, String spec, String aisle) {
+    private record Op(String opId, String type, String itemId, String name, String spec, String aisle,
+            Boolean prioritized) {
 
         String json() {
-            return "{\"opId\":\"%s\",\"type\":\"%s\",\"itemId\":\"%s\"%s%s%s}".formatted(opId, type, itemId,
-                    field("name", name), field("spec", spec), field("aisle", aisle));
+            return "{\"opId\":\"%s\",\"type\":\"%s\",\"itemId\":\"%s\"%s%s%s%s}".formatted(opId, type, itemId,
+                    field("name", name), field("spec", spec), field("aisle", aisle),
+                    prioritized == null ? "" : ",\"prioritized\":" + prioritized);
         }
 
         private static String field(String key, String value) {
@@ -276,11 +302,15 @@ class ShoppingListApiIntegrationTest extends IntegrationTestBase {
     }
 
     private static Op add(String itemId, String name, String spec) {
-        return new Op(UUID.randomUUID().toString(), "ADD", itemId, name, spec, null);
+        return new Op(UUID.randomUUID().toString(), "ADD", itemId, name, spec, null, null);
+    }
+
+    private static Op prioritize(String itemId, boolean prioritized) {
+        return new Op(UUID.randomUUID().toString(), "UPDATE", itemId, null, null, null, prioritized);
     }
 
     private static Op op(String type, String itemId) {
-        return new Op(UUID.randomUUID().toString(), type, itemId, null, null, null);
+        return new Op(UUID.randomUUID().toString(), type, itemId, null, null, null, null);
     }
 
     private ResultActions ops(String who, long list, long since, Op... ops) throws Exception {
