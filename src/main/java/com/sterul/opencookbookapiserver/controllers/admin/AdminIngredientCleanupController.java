@@ -3,7 +3,6 @@ package com.sterul.opencookbookapiserver.controllers.admin;
 import java.time.Instant;
 import java.util.List;
 
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,9 +21,8 @@ import jakarta.validation.constraints.NotNull;
 
 /** Moves amounts and units out of ingredient names. */
 @RestController
-@RequestMapping("/api/v1/admin/ingredients/name-cleanup")
+@RequestMapping(AdminPaths.BASE + "/ingredients/name-cleanup")
 @Tag(name = "Ingredients", description = "Admin ingredient api")
-@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminIngredientCleanupController {
 
     private final IngredientNameCleanupService cleanupService;

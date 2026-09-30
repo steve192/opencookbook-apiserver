@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
@@ -112,7 +111,7 @@ class AdminShareApiIntegrationTest extends IntegrationTestBase {
     }
 
     private static RequestPostProcessor operator() {
-        return user(OPERATOR).authorities(new SimpleGrantedAuthority("ADMIN"));
+        return TestAccounts.operator(OPERATOR);
     }
 
     private Share shareOf(Recipe recipe, Duration validity, long accessCount) {

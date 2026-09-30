@@ -46,6 +46,7 @@ public class InstanceInfoController extends BaseController {
                 .termsOfService(instanceInfoService.getTermsOfSerivice())
                 .sharingEnabled(opencookbookConfiguration.getSharing().isEnabled())
                 .householdsEnabled(opencookbookConfiguration.getHouseholds().isEnabled())
+                .apiKeysEnabled(opencookbookConfiguration.getApiKeys().isEnabled())
                 .ocrImportEnabled(isOcrImportEnabled())
                 .build();
     }

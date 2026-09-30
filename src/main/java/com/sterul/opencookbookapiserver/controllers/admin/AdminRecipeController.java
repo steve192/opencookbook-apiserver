@@ -3,7 +3,6 @@ package com.sterul.opencookbookapiserver.controllers.admin;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,10 +23,9 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/api/v1/admin/recipes")
+@RequestMapping(AdminPaths.BASE + "/recipes")
 @Tag(name = "Recipes", description = "Admin recipe api")
 @Slf4j
-@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminRecipeController {
 
     private final RecipeService recipeService;

@@ -32,15 +32,13 @@ springdoc:
         supported-submit-methods:
 opencookbook:
   # instanceURL: https://cookpal.io
-  jwtSecret: default-jwt-secret
   uploadDir: recipe-images
   thumbnailDir: recipe-images/thumbnails
   # 10MB
   maxImageSize: 10485760 
-  # 10 minutes
-  jwtDuration: 600 
-  # 1 year
-  refreshTokenDuration: 31536000 
+  jwtDuration: 10m
+  # A sign in ends after this long without use
+  refreshTokenDuration: 90d
   recipeScaperServiceUrl: http://recipe-scrapers:9090
   ml:
     # Empty means this instance has no machine learning subsystem, and every feature that

@@ -4,7 +4,6 @@ import java.time.Clock;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,10 +19,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/api/v1/admin/bringexports")
+@RequestMapping(AdminPaths.BASE + "/bringexports")
 @Tag(name = "Bring exports", description = "Bring exports admin api")
 @Slf4j
-@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminBringExportController {
 
     private final BringExportService bringExportService;

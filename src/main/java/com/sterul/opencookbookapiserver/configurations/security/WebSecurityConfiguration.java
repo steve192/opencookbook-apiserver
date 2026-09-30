@@ -7,24 +7,46 @@ import java.util.stream.Stream;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authorization.AllRequiredFactorsAuthorizationManager;
+import org.springframework.security.authorization.AuthorityAuthorizationManager;
+import org.springframework.security.authorization.AuthorizationManager;
+import org.springframework.security.authorization.AuthorizationManagers;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.authority.FactorGrantedAuthority;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
+import org.springframework.security.web.header.writers.ContentSecurityPolicyHeaderWriter;
+import org.springframework.security.web.header.writers.DelegatingRequestMatcherHeaderWriter;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 
-import com.sterul.opencookbookapiserver.configurations.security.requestfilters.JwtRequestFilter;
+import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
+import com.sterul.opencookbookapiserver.controllers.admin.AdminPaths;
+import com.sterul.opencookbookapiserver.controllers.errors.ApiErrorWriter;
 import com.sterul.opencookbookapiserver.controllers.sharing.SharePaths;
+import com.sterul.opencookbookapiserver.entities.account.Role;
+import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
+@SuppressWarnings("java:S1075") // Paths of this server's own endpoints, matched where they are served.
 public class WebSecurityConfiguration {
 
         /**
@@ -44,54 +66,114 @@ public class WebSecurityConfiguration {
          * Public as well, but left out of the budget: the app renews every few minutes, so a
          * household behind one address would exhaust any sane limit in normal use.
          */
-        @SuppressWarnings("java:S1075") // This server's own endpoint, matched where it is served.
         private static final String REFRESH_TOKEN_PATH = "/api/v1/users/refreshToken";
 
+        /** Signs out with the refresh token alone, as the access token may have run out. */
+        private static final String LOGOUT_PATH = "/api/v1/users/logout";
+
         /** Fetched by Bring without a token; creating an export needs one. */
-        @SuppressWarnings("java:S1075") // This server's own endpoint, matched where it is served.
         private static final String BRING_EXPORT_PATH = "/api/v1/bringexport";
+
+        private static final String ADMIN_PANEL = "/admin/**";
 
         private static final String[] AUTH_WHITELIST = Stream.concat(
                         Arrays.stream(UNAUTHENTICATED_USER_PATHS),
                         Stream.of(
                                         REFRESH_TOKEN_PATH,
+                                        LOGOUT_PATH,
                                         "/swagger-ui/**",
                                         "/api-docs/**",
                                         "/api/v1/instance/**",
                                         SharePaths.PUBLIC_PATTERN,
                                         "/error",
                                         "/actuator/health",
-                                        "/admin/**"))
+                                        ADMIN_PANEL))
                         .toArray(String[]::new);
 
+        private static final RequestMatcher PUBLIC_REQUESTS = new OrRequestMatcher(Stream.concat(
+                        Arrays.stream(AUTH_WHITELIST).map(PathPatternRequestMatcher.withDefaults()::matcher),
+                        Stream.of(PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.GET, BRING_EXPORT_PATH)))
+                        .toList());
+
+        /** The admin panel's bundle; everything it loads comes from this server. */
+        private static final String ADMIN_PANEL_POLICY = "default-src 'self'; script-src 'self'; "
+                        + "style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; "
+                        + "connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; "
+                        + "frame-ancestors 'self'";
+
+        /** Applied by Spring Security to every filter chain, the api key one included. */
         @Bean
+        Customizer<HttpSecurity> statelessApi(AuthenticationEntryPoint authenticationRequired) {
+                return http -> http
+                                .csrf(csrf -> csrf.disable())
+                                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .exceptionHandling(exceptions -> exceptions.authenticationEntryPoint(authenticationRequired));
+        }
+
+        @Bean
+        AuthenticationEntryPoint authenticationRequired(ApiErrorWriter errorWriter) {
+                return errorWriter.entryPoint(ApiErrorCode.AUTHENTICATION_REQUIRED);
+        }
+
+        @Bean
+        AccessDeniedHandler accessDenied(ApiErrorWriter errorWriter) {
+                return errorWriter.deniedHandler(ApiErrorCode.ACCESS_DENIED);
+        }
+
+        @Bean
+        @Order(Ordered.LOWEST_PRECEDENCE)
         public SecurityFilterChain filterChain(HttpSecurity http,
-                        UnauthorizedEntryPoint unauthorizedEntryPoint,
-                        JwtRequestFilter jwtRequestFilter) {
+                        AuthenticationEntryPoint authenticationRequired,
+                        AccessDeniedHandler accessDenied,
+                        ApiErrorWriter errorWriter,
+                        AccessTokenAuthenticationConverter accessTokenConverter,
+                        OpencookbookConfiguration configuration) {
 
-                // Cors and csrf not needed in an api server
+                // Cors not needed in an api server
                 http.cors(configurer -> configurer.configurationSource(c -> allowAllCorsConfig()));
-                http.csrf(conf -> conf.disable());
 
-                // Allow frames needed for h2 console
-                http.headers(config -> config.frameOptions(FrameOptionsConfig::sameOrigin));
+                // Allow frames needed for h2 console; the admin panel may only run what it ships
+                http.headers(config -> config.frameOptions(FrameOptionsConfig::sameOrigin)
+                                .addHeaderWriter(new DelegatingRequestMatcherHeaderWriter(
+                                                PathPatternRequestMatcher.withDefaults().matcher(ADMIN_PANEL),
+                                                new ContentSecurityPolicyHeaderWriter(ADMIN_PANEL_POLICY))));
 
-                // Permit whitelist and authenticated request
+                // The role first, so that anybody else is refused rather than asked for a password
                 http.authorizeHttpRequests(
-                                authorize -> authorize.requestMatchers(AUTH_WHITELIST).permitAll()
-                                                .requestMatchers(HttpMethod.GET, BRING_EXPORT_PATH).permitAll()
+                                authorize -> authorize.requestMatchers(PUBLIC_REQUESTS).permitAll()
+                                                .requestMatchers(AdminPaths.BASE + "/**").access(AuthorizationManagers.allOf(
+                                                                AuthorityAuthorizationManager.hasRole(Role.ADMIN.name()),
+                                                                recentPassword(configuration)))
                                                 .anyRequest().authenticated());
 
-                http.exceptionHandling(configurer -> configurer
-                                .authenticationEntryPoint(unauthorizedEntryPoint));
+                http.oauth2ResourceServer(resourceServer -> resourceServer
+                                .bearerTokenResolver(WebSecurityConfiguration::accessTokenOf)
+                                .jwt(jwt -> jwt.jwtAuthenticationConverter(accessTokenConverter))
+                                .authenticationEntryPoint(authenticationRequired)
+                                // Not in exceptionHandling: a handler set there bypasses the one for a missing password
+                                .accessDeniedHandler(accessDenied));
 
-                // Disable sessions since auth/session token is passed in every request
-                http.sessionManagement(configurer -> configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
-                // Add a filter to check the sent token and authenticate
-                http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+                http.exceptionHandling(configurer -> configurer.defaultDeniedHandlerForMissingAuthority(
+                                errorWriter.entryPoint(ApiErrorCode.REAUTHENTICATION_REQUIRED),
+                                FactorGrantedAuthority.PASSWORD_AUTHORITY));
 
                 return http.build();
+        }
+
+        private static AuthorizationManager<RequestAuthorizationContext> recentPassword(
+                        OpencookbookConfiguration configuration) {
+                var validFor = configuration.getAuth().getAdminSignInValidity();
+                return AllRequiredFactorsAuthorizationManager.<RequestAuthorizationContext>builder()
+                                .requireFactor(factor -> factor.passwordAuthority().validDuration(validFor))
+                                .build();
+        }
+
+        /**
+         * From the header, or a socket's subprotocol. Public endpoints never look at a token, so one that
+         * has run out cannot turn them away.
+         */
+        private static String accessTokenOf(HttpServletRequest request) {
+                return PUBLIC_REQUESTS.matches(request) ? null : BearerTokens.of(request).orElse(null);
         }
 
         private CorsConfiguration allowAllCorsConfig() {

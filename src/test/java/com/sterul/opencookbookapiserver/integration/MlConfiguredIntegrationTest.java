@@ -88,18 +88,16 @@ class MlConfiguredIntegrationTest extends IntegrationTestBase {
     }
 
     @Test
-    @WithMockUser(username = "operator@example.com", authorities = "ADMIN")
     void anOperatorCanSeeThisInstancesUsage() throws Exception {
-        mockMvc.perform(get("/api/v1/admin/ml"))
+        mockMvc.perform(get("/api/v1/admin/ml").with(TestAccounts.operator("operator@example.com")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalJobs").exists())
                 .andExpect(jsonPath("$.available").value(false));
     }
 
     @Test
-    @WithMockUser(username = "operator@example.com", authorities = "ADMIN")
     void anOperatorCanSeeWhoHasUsedTodaysScanAllowance() throws Exception {
-        mockMvc.perform(get("/api/v1/admin/ml/quota"))
+        mockMvc.perform(get("/api/v1/admin/ml/quota").with(TestAccounts.operator("operator@example.com")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.dailyLimit").exists())
                 .andExpect(jsonPath("$.users").isArray());

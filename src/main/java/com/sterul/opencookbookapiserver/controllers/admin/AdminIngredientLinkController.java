@@ -1,9 +1,9 @@
 package com.sterul.opencookbookapiserver.controllers.admin;
 
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminIngredientResponse;
@@ -15,8 +15,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
+@RequestMapping(AdminPaths.BASE + "/ingredients")
 @Tag(name = "Ingredients", description = "Admin ingredient api")
-@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminIngredientLinkController {
 
     private final IngredientLinkService linkService;
@@ -26,7 +26,7 @@ public class AdminIngredientLinkController {
     }
 
     @Operation(summary = "Say what an ingredient is", description = "Automatic matching never overrides it.")
-    @PutMapping("/api/v1/admin/ingredients/{id}/link")
+    @PutMapping("/{id}/link")
     public AdminIngredientResponse link(@PathVariable Long id, @Valid @RequestBody IngredientLinkRequest request) {
         var ingredient = request.isExcluded()
                 ? linkService.excludeByAdmin(id)

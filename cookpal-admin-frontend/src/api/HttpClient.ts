@@ -19,10 +19,13 @@ const API_ROUTE = '/api/v1';
 // ApiError.
 export class HttpClient {
   private readonly client: AxiosInstance;
+  // Signing in, renewing and signing out carry no access token.
+  private readonly unsigned: AxiosInstance;
   private renewal: Promise<void> | null = null;
 
   constructor(private readonly tokens: Session, baseURL: string) {
     this.client = axios.create({baseURL});
+    this.unsigned = axios.create({baseURL});
     this.client.interceptors.request.use((config) => {
       const token = this.tokens.authToken;
       if (token) {
@@ -57,11 +60,19 @@ export class HttpClient {
     return 'data:image/jpg;base64,' + Buffer.from(response.data).toString('base64');
   }
 
-  // The one call carrying no token, so it goes around the signing client.
   async signIn(emailAddress: string, password: string): Promise<void> {
-    const response = await axios.post(BACKEND_URL + API_ROUTE + '/users/login',
-        {emailAddress, password});
+    const response = await this.unsigned.post('/users/login', {emailAddress, password});
     this.tokens.start(response.data.token, response.data.refreshToken);
+  }
+
+  // Ends the sign in on the server too, without waiting for it: an unreachable server only means
+  // the sign in runs out on its own.
+  signOut(): void {
+    const refreshToken = this.tokens.refreshToken;
+    this.tokens.end();
+    if (refreshToken) {
+      this.unsigned.post('/users/logout', {refreshToken}).catch(() => undefined);
+    }
   }
 
   private async unwrap<T>(request: Promise<AxiosResponse<T>>): Promise<T> {
@@ -75,6 +86,12 @@ export class HttpClient {
 
     if (!response) {
       throw new ApiError('The server cannot be reached');
+    }
+
+    // The admin api wants the password entered recently; a renewed token would not change that.
+    if (response.status === 401 && errorBody(response).code === 'REAUTHENTICATION_REQUIRED') {
+      this.signOut();
+      throw new ApiError('Please sign in again with your password', 401);
     }
 
     // 403 is a denied permission, not an expired token; renewing would not help.
@@ -93,10 +110,9 @@ export class HttpClient {
   /** Concurrent requests that all expire at once must not each renew the token. */
   private async renewToken(): Promise<void> {
     if (!this.renewal) {
-      this.renewal = axios
-          .post(BACKEND_URL + API_ROUTE + '/users/refreshToken',
-              {refreshToken: this.tokens.refreshToken})
-          .then((response) => this.tokens.renew(response.data.token))
+      this.renewal = this.unsigned
+          .post('/users/refreshToken', {refreshToken: this.tokens.refreshToken, rotate: true})
+          .then((response) => this.tokens.renew(response.data.token, response.data.refreshToken))
           .catch(() => {
             this.tokens.end();
             throw new ApiError('The session has ended, please sign in again', 401);
@@ -109,13 +125,23 @@ export class HttpClient {
   }
 }
 
+interface ApiErrorBody {
+  code?: string;
+  message?: string;
+}
+
+function errorBody(response: AxiosResponse): ApiErrorBody {
+  return response.data && typeof response.data === 'object' ? response.data as ApiErrorBody : {};
+}
+
 function describe(response: AxiosResponse): string {
-  const data = response.data as {message?: string} | string | undefined;
+  const data: unknown = response.data;
   if (typeof data === 'string' && data.length > 0 && data.length < 300) {
     return data;
   }
-  if (data && typeof data === 'object' && data.message) {
-    return data.message;
+  const message = errorBody(response).message;
+  if (message) {
+    return message;
   }
   switch (response.status) {
     case 400: return 'The server refused the request as invalid';

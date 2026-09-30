@@ -36,7 +36,7 @@ export const AppContextProvider = (props: {children: ReactNode}) => {
           setEmailAddress(self.email);
           setSignedIn(true);
         })
-        .catch(() => session.end())
+        .catch(() => AccountApi.signOut())
         .finally(() => setChecking(false));
   }, []);
 
@@ -56,13 +56,13 @@ export const AppContextProvider = (props: {children: ReactNode}) => {
       setEmailAddress(self.email);
       setSignedIn(true);
     } catch (cause) {
-      session.end();
+      AccountApi.signOut();
       throw cause;
     }
   }, []);
 
   // Nothing else to do: ending the session notifies the listener above, which clears the state.
-  const signOut = useCallback(() => session.end(), []);
+  const signOut = useCallback(() => AccountApi.signOut(), []);
 
   return (
     <AppContext.Provider value={{signedIn, checking, emailAddress, signIn, signOut}}>

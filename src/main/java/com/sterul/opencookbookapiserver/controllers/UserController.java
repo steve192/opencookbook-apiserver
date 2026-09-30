@@ -1,12 +1,13 @@
 package com.sterul.opencookbookapiserver.controllers;
 
+import java.util.stream.Stream;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,12 +16,15 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sterul.opencookbookapiserver.controllers.exceptions.NotAuthorizedException;
+import com.sterul.opencookbookapiserver.configurations.security.CurrentSignIn;
+import com.sterul.opencookbookapiserver.configurations.security.NotForDemoAccounts;
 import com.sterul.opencookbookapiserver.controllers.exceptions.UnauthorizedException;
 import com.sterul.opencookbookapiserver.controllers.exceptions.UserNotActiveException;
 import com.sterul.opencookbookapiserver.controllers.requests.DisplayNameRequest;
+import com.sterul.opencookbookapiserver.controllers.requests.LogoutRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.PasswordChangeRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.PasswordResetExecutionRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.PasswordResetRequest;
@@ -34,8 +38,8 @@ import com.sterul.opencookbookapiserver.controllers.responses.UserInfoResponse;
 import com.sterul.opencookbookapiserver.controllers.responses.UserLoginResponse;
 import com.sterul.opencookbookapiserver.entities.account.Role;
 import com.sterul.opencookbookapiserver.services.AuthRateLimiter;
-import com.sterul.opencookbookapiserver.services.AuthTokenService;
 import com.sterul.opencookbookapiserver.services.EmailService;
+import com.sterul.opencookbookapiserver.services.SignInService;
 import com.sterul.opencookbookapiserver.services.SignedInUserService;
 import com.sterul.opencookbookapiserver.services.UserService;
 import com.sterul.opencookbookapiserver.services.mail.MailLanguages;
@@ -53,18 +57,18 @@ import lombok.extern.slf4j.Slf4j;
 public class UserController extends BaseController {
 
     private final AuthenticationManager authenticationManager;
-    private final AuthTokenService authTokenService;
+    private final SignInService signIns;
     private final UserService userService;
     private final EmailService emailService;
     private final MailLanguages mailLanguages;
     private final AuthRateLimiter authRateLimiter;
 
-    public UserController(AuthenticationManager authenticationManager, AuthTokenService authTokenService,
+    public UserController(AuthenticationManager authenticationManager, SignInService signIns,
             UserService userService, EmailService emailService, MailLanguages mailLanguages,
             AuthRateLimiter authRateLimiter, SignedInUserService signedInUser) {
         super(signedInUser);
         this.authenticationManager = authenticationManager;
-        this.authTokenService = authTokenService;
+        this.signIns = signIns;
         this.userService = userService;
         this.emailService = emailService;
         this.mailLanguages = mailLanguages;
@@ -111,7 +115,7 @@ public class UserController extends BaseController {
         // Signing in is the clearest statement a client makes about which language it is in.
         userService.rememberLanguageOfCurrentRequest(user);
 
-        var tokens = authTokenService.issueFor(user);
+        var tokens = signIns.signInWithPassword(user);
         var response = UserLoginResponse.builder()
                 .token(tokens.accessToken())
                 .userActive(true)
@@ -144,15 +148,17 @@ public class UserController extends BaseController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "Sets a new password")
+    @Operation(summary = "Sets a new password", description = "Every other sign in of the account ends.")
+    @NotForDemoAccounts
     @PostMapping("/changePassword")
-    public ResponseEntity<Void> changePassword(@Valid @RequestBody PasswordChangeRequest request) {
+    public ResponseEntity<Void> changePassword(@Valid @RequestBody PasswordChangeRequest request,
+            @CurrentSignIn String sessionId) {
         var loggedInUser = this.getLoggedInUser();
         if (!userService.isPasswordCorrect(loggedInUser.getEmailAddress(), request.getOldPassword())) {
             throw new UnauthorizedException();
         }
 
-        userService.changePassword(loggedInUser, request.getNewPassword());
+        userService.changePassword(loggedInUser, request.getNewPassword(), sessionId);
         return ResponseEntity.ok().build();
     }
 
@@ -161,7 +167,7 @@ public class UserController extends BaseController {
     public ResponseEntity<UserLoginResponse> activateUser(@Valid @RequestParam String activationId) {
         var user = userService.activateUser(activationId);
 
-        var tokens = authTokenService.issueFor(user);
+        var tokens = signIns.signInByActivationLink(user);
         var response = UserLoginResponse.builder()
                 .token(tokens.accessToken())
                 .userActive(true)
@@ -188,8 +194,8 @@ public class UserController extends BaseController {
         response.setDisplayName(user.getDisplayName());
         response.setOnboarded(user.isOnboarded());
         response.setShoppingProvider(user.getShoppingProvider());
-        response.setRoles(SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority).toList());
+        // The account's role, not the request's authorities, which also say how it signed in.
+        response.setRoles(Stream.ofNullable(user.getRoles()).map(Role::name).toList());
         return response;
     }
 
@@ -221,29 +227,38 @@ public class UserController extends BaseController {
     @Operation(summary = "Delete authenticated user account",
             description = "The last administrator who can sign in cannot delete themselves; the "
                     + "instance would be left with nobody able to administer it.")
+    @NotForDemoAccounts
     @DeleteMapping("/self")
     public ResponseEntity<Void> deleteOwnUser() {
-        var user = getLoggedInUser();
-        if (Role.DEMO.equals(user.getRoles())) {
-            throw new NotAuthorizedException();
-        }
-        userService.deleteUser(user);
+        userService.deleteUser(getLoggedInUser());
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "Generate a JWT token from a refresh token", description = "The JWT token is used to authenticate against all apis using the \"Authentication: Bearer < token >\" header field")
+    @Operation(summary = "Generate a JWT token from a refresh token",
+            description = "The JWT token is used to authenticate against all apis using the \"Authorization: Bearer "
+                    + "<token>\" header field. With rotate, the answer also carries the refresh token to use from now "
+                    + "on; presenting a replaced one again ends the sign in.")
     @PostMapping("/refreshToken")
     public RefreshTokenResponse renewToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
-        var refreshToken = authTokenService.requireValidRefreshToken(refreshTokenRequest.getRefreshToken());
+        var refreshToken = refreshTokenRequest.getRefreshToken();
+        var tokens = refreshTokenRequest.isRotate() ? signIns.rotate(refreshToken) : signIns.extend(refreshToken);
         // The app renews its token every few minutes, which makes this the place where a change
         // of app language is noticed without waiting for the next sign in. It only writes when
         // the answer is different from the stored one.
-        userService.rememberLanguageOfCurrentRequest(refreshToken.getOwner());
-        var jwtToken = authTokenService.accessTokenFor(refreshToken.getOwner());
+        userService.rememberLanguageOfCurrentRequest(tokens.user());
 
         var response = new RefreshTokenResponse();
-        response.setToken(jwtToken);
+        response.setToken(tokens.accessToken());
+        response.setRefreshToken(tokens.refreshToken());
         return response;
+    }
+
+    @Operation(summary = "Sign out", description = "Ends the sign in the refresh token belongs to, on this device. "
+            + "Answers the same for a token that is unknown or already spent.")
+    @PostMapping("/logout")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void logout(@Valid @RequestBody LogoutRequest request) {
+        signIns.end(request.refreshToken());
     }
 
     private void resendActivationLinkWithinBudget(String emailAddress) throws MessagingException {

@@ -3,6 +3,8 @@ package com.sterul.opencookbookapiserver.controllers.errors;
 import java.io.IOException;
 
 import org.springframework.http.MediaType;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
 import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
@@ -29,5 +31,13 @@ public class ApiErrorWriter {
         response.setStatus(body.status());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         objectMapper.writeValue(response.getWriter(), body);
+    }
+
+    public AuthenticationEntryPoint entryPoint(ApiErrorCode code) {
+        return (request, response, exception) -> write(response, code);
+    }
+
+    public AccessDeniedHandler deniedHandler(ApiErrorCode code) {
+        return (request, response, exception) -> write(response, code);
     }
 }

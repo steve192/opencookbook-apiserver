@@ -5,7 +5,6 @@ import java.time.Duration;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,10 +27,9 @@ import lombok.extern.slf4j.Slf4j;
  * Moderating what this instance publishes.
  */
 @RestController
-@RequestMapping("/api/v1/admin/shares")
+@RequestMapping(AdminPaths.BASE + "/shares")
 @Tag(name = "Recipe shares", description = "Moderating what this instance publishes")
 @Slf4j
-@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminShareController {
 
     /** How far ahead the overview counts a share as expiring soon. */

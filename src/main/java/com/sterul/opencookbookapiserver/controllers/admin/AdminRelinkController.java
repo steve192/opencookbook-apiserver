@@ -2,7 +2,6 @@ package com.sterul.opencookbookapiserver.controllers.admin;
 
 import java.util.List;
 
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,9 +27,8 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 @RestController
-@RequestMapping("/api/v1/admin/nutrition/relink-runs")
+@RequestMapping(AdminPaths.BASE + "/nutrition/relink-runs")
 @Tag(name = "Nutrition relinking", description = "Relink runs: preview, decide, apply, revert")
-@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminRelinkController extends BaseController {
 
     private final RelinkService relinkService;

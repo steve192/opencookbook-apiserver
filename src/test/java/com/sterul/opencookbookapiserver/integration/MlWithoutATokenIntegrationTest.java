@@ -60,11 +60,10 @@ class MlWithoutATokenIntegrationTest extends IntegrationTestBase {
     }
 
     @Test
-    @WithMockUser(username = "operator@example.com", authorities = "ADMIN")
     void anOperatorCanStillSeeThatItIsNotAvailable() throws Exception {
         // The endpoints exist, because a subsystem is configured; only the credential is
         // missing, and that is exactly what an operator needs to be told.
-        mockMvc.perform(get("/api/v1/admin/ml"))
+        mockMvc.perform(get("/api/v1/admin/ml").with(TestAccounts.operator("operator@example.com")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.available").value(false));
     }
