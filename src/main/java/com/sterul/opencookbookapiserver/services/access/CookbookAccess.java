@@ -11,8 +11,12 @@ import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
  */
 public interface CookbookAccess {
 
+    ReadableCookbooks readableCookbooks(CookpalUser viewer);
+
     /** Always contains the viewer. */
-    Set<Long> visibleOwnerIds(CookpalUser viewer);
+    default Set<Long> visibleOwnerIds(CookpalUser viewer) {
+        return readableCookbooks(viewer).ownerIds();
+    }
 
     /** Whose recipes every reader of this plan can open; for a household, its cookbook. */
     Set<Long> plannableOwnerIds(PlanScope plan);

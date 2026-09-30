@@ -236,12 +236,11 @@ public class UserController extends BaseController {
 
     @Operation(summary = "Generate a JWT token from a refresh token",
             description = "The JWT token is used to authenticate against all apis using the \"Authorization: Bearer "
-                    + "<token>\" header field. With rotate, the answer also carries the refresh token to use from now "
-                    + "on; presenting a replaced one again ends the sign in.")
+                    + "<token>\" header field. The answer also carries the refresh token to use from now on; "
+                    + "presenting a replaced one again ends the sign in.")
     @PostMapping("/refreshToken")
     public RefreshTokenResponse renewToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
-        var refreshToken = refreshTokenRequest.getRefreshToken();
-        var tokens = refreshTokenRequest.isRotate() ? signIns.rotate(refreshToken) : signIns.extend(refreshToken);
+        var tokens = signIns.rotate(refreshTokenRequest.getRefreshToken());
         // The app renews its token every few minutes, which makes this the place where a change
         // of app language is noticed without waiting for the next sign in. It only writes when
         // the answer is different from the stored one.

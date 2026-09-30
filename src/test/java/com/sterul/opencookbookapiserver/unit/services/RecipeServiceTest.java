@@ -1,7 +1,6 @@
 package com.sterul.opencookbookapiserver.unit.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -11,7 +10,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +21,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.entities.WeekplanDay;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
-import com.sterul.opencookbookapiserver.entities.recipe.Diet;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
@@ -36,8 +33,6 @@ import com.sterul.opencookbookapiserver.services.sharing.ShareService;
 
 @ExtendWith(MockitoExtension.class)
 class RecipeServiceTest {
-
-    private static final List<Diet> MEAT_ONLY = List.of(Diet.MEAT);
 
     @Mock
     private ApplicationEventPublisher events;
@@ -66,8 +61,6 @@ class RecipeServiceTest {
     private CookpalUser testUser;
 
     private static final String TEST_RECIPE_IMAGE_UUID = "duniwqndiu2u912nd9";
-
-    private final AtomicLong ids = new AtomicLong();
 
     @Test
     void recipeCreatedWithItsReferencesResolvedForItsOwner() {
@@ -138,34 +131,6 @@ class RecipeServiceTest {
         verify(weekplanService, times(1)).updateWeekplanDay(mockWeekplanDay);
     }
 
-    @Test
-    void recipesAreFuzzySearched() {
-        var expectedRecipe = recipe("Poké-Bowl mit Räucherlachs und Gemüse");
-        whenSearchableRecipesAre(expectedRecipe,
-                recipe("Gebackene Laugen-Käse-Knödel"),
-                recipe("Räucherlachs Aprikosen-Curry Sauce"));
-
-        var results = cut.searchUserRecipes(testUser, "Gemüs", MEAT_ONLY);
-
-        assertEquals(expectedRecipe, results.get(0));
-    }
-
-    @Test
-    void fuzzySearchFindsNoResults() {
-        whenSearchableRecipesAre(
-                recipe("Poké-Bowl mit Räucherlachs und Gemüse"),
-                recipe("Gebackene Laugen-Käse-Knödel"),
-                recipe("Räucherlachs Aprikosen-Curry Sauce"));
-
-        var results = cut.searchUserRecipes(testUser, "Tomats", MEAT_ONLY);
-
-        assertTrue(results.isEmpty());
-    }
-
-    private Recipe recipe(String title) {
-        return recipe(title, ids.incrementAndGet());
-    }
-
     private Recipe recipe(String title, Long id) {
         return Recipe.builder()
                 .title(title)
@@ -177,9 +142,4 @@ class RecipeServiceTest {
     private void whenRecipeIsLoadableById(Recipe recipe) {
         when(recipeRepository.findById(recipe.getId())).thenReturn(Optional.of(recipe));
     }
-
-    private void whenSearchableRecipesAre(Recipe... recipes) {
-        when(recipeRepository.findByOwnerAndRecipeTypeIn(testUser, MEAT_ONLY)).thenReturn(List.of(recipes));
-    }
-
 }

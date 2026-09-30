@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.household.HouseholdMembership;
+import com.sterul.opencookbookapiserver.repositories.projections.SharedCookbook;
 
 public interface HouseholdMembershipRepository extends JpaRepository<HouseholdMembership, Long> {
 
@@ -35,11 +36,12 @@ public interface HouseholdMembershipRepository extends JpaRepository<HouseholdMe
             + "where membership.household.id = :householdId")
     Set<Long> findMemberIds(@Param("householdId") String householdId);
 
-    /** Every member sharing a cookbook with a household the viewer is in. */
-    @Query("select distinct sharing.member.userId from HouseholdMembership sharing "
+    /** Every cookbook shown in a household the viewer is in, the viewer's own included. */
+    @Query("select new com.sterul.opencookbookapiserver.repositories.projections.SharedCookbook("
+            + "sharing.household.id, sharing.member.userId) from HouseholdMembership sharing "
             + "where sharing.shareRecipes and sharing.household in "
             + "(select mine.household from HouseholdMembership mine where mine.member = :viewer)")
-    Set<Long> findOwnerIdsVisibleTo(@Param("viewer") CookpalUser viewer);
+    List<SharedCookbook> findCookbooksShownTo(@Param("viewer") CookpalUser viewer);
 
     @Query("select membership.member.userId from HouseholdMembership membership "
             + "where membership.household.id = :householdId and membership.shareRecipes")

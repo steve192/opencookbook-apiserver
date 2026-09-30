@@ -71,11 +71,6 @@ public class HouseholdMembershipService {
         return membershipRepository.findMemberIds(householdId);
     }
 
-    @Transactional(readOnly = true)
-    public Set<Long> sharingMemberIdsOf(String householdId) {
-        return membershipRepository.findSharingMemberIds(householdId);
-    }
-
     public HouseholdMembership join(Household household, CookpalUser user, boolean shareRecipes) {
         if (membershipRepository.findByHouseholdIdAndMember(household.getId(), user).isPresent()) {
             throw new ApiException(ApiErrorCode.ALREADY_A_MEMBER, "Already a member");

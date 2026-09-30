@@ -31,7 +31,7 @@ public record RecipeNutritionResponse(NutritionSummaryResponse summary, List<Lin
         }
     }
 
-    public static RecipeNutritionResponse forOwner(RecipeNutrition nutrition, String language, CatalogueDataset.Manifest manifest) {
+    public static RecipeNutritionResponse forReader(RecipeNutrition nutrition, String language, CatalogueDataset.Manifest manifest) {
         return of(nutrition, line -> line(line, language, true), manifest);
     }
 
@@ -45,23 +45,23 @@ public record RecipeNutritionResponse(NutritionSummaryResponse summary, List<Lin
                 manifest.attributions());
     }
 
-    private static Line line(LineNutrition line, String language, boolean forOwner) {
+    private static Line line(LineNutrition line, String language, boolean withLinkDetails) {
         var need = line.need();
         var ingredient = need.getIngredient();
         return new Line(
-                forOwner ? need.getId() : null,
-                forOwner ? ingredient.getId() : null,
+                withLinkDetails ? need.getId() : null,
+                withLinkDetails ? ingredient.getId() : null,
                 ingredient.getName(),
                 need.getAmount(),
                 need.getUnit(),
                 line.grams() == null ? null : Math.round(line.grams() * 10) / 10.0,
                 Nutrients.of(line.values()),
                 Food.of(ingredient.getCatalogueFood(), language),
-                forOwner ? ingredient.getLinkSource() : null,
-                forOwner ? ingredient.getLinkConfidence() : null,
+                withLinkDetails ? ingredient.getLinkSource() : null,
+                withLinkDetails ? ingredient.getLinkConfidence() : null,
                 line.status(),
                 line.flags(),
-                forOwner ? line.ownPortion() : null,
+                withLinkDetails ? line.ownPortion() : null,
                 line.warns());
     }
 }

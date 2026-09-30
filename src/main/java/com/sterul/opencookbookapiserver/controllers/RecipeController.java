@@ -27,7 +27,6 @@ import com.sterul.opencookbookapiserver.controllers.support.RecipeResponses;
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
-import com.sterul.opencookbookapiserver.entities.recipe.Diet;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
 import com.sterul.opencookbookapiserver.services.RecipeCopier;
@@ -59,13 +58,14 @@ public class RecipeController extends BaseController {
         this.recipeResponses = recipeResponses;
     }
 
-    @Operation(summary = "Search or get recipes")
+    @Operation(summary = "Every recipe you can read",
+            description = "Your own and those of household members who share their cookbook, each with the ids of "
+                    + "your households showing it.")
     @GetMapping("")
-    public List<RecipeResponse> searchRecipe(@RequestParam(required = false) String searchString,
-            @RequestParam(required = false) List<Diet> categories) {
-        var user = getLoggedInUser();
-        return recipeService.searchUserRecipes(user, searchString, categories).stream()
-                .map(recipeResponses::of)
+    public List<RecipeResponse> readableRecipes() {
+        var reader = getLoggedInUser();
+        return recipeService.readableBy(reader).stream()
+                .map(readable -> recipeResponses.inCookbookOf(readable, reader))
                 .toList();
     }
 

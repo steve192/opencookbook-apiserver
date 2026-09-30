@@ -138,7 +138,6 @@ class HouseholdsDisabledIntegrationTest extends IntegrationTestBase {
             "GET,    /api/v1/households",
             "POST,   /api/v1/households",
             "GET,    /api/v1/households/any-household",
-            "GET,    /api/v1/households/any-household/recipes",
             "PUT,    /api/v1/households/any-household/sharing",
             "POST,   /api/v1/households/any-household/invites",
             "GET,    /api/v1/household-invites/any-token",

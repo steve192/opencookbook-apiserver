@@ -90,7 +90,7 @@ class ApiDocumentationIntegrationTest extends IntegrationTestBase {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.paths['/api/v1/households']").exists())
                 .andExpect(jsonPath("$.paths['/api/v1/household-invites/{token}/accept']").exists())
-                .andExpect(jsonPath("$.paths['/api/v1/households/{householdId}/recipes']").exists());
+                .andExpect(jsonPath("$.paths['/api/v1/households/{householdId}/invites']").exists());
     }
 
     private static boolean isBlank(Object summary) {

@@ -6,18 +6,15 @@ import org.springframework.stereotype.Component;
 
 import com.sterul.opencookbookapiserver.controllers.households.responses.HouseholdResponse;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
-import com.sterul.opencookbookapiserver.services.households.HouseholdCookbook;
 import com.sterul.opencookbookapiserver.services.households.HouseholdMembershipService;
 
 @Component
 public class HouseholdResponses {
 
     private final HouseholdMembershipService memberships;
-    private final HouseholdCookbook cookbook;
 
-    public HouseholdResponses(HouseholdMembershipService memberships, HouseholdCookbook cookbook) {
+    public HouseholdResponses(HouseholdMembershipService memberships) {
         this.memberships = memberships;
-        this.cookbook = cookbook;
     }
 
     public List<HouseholdResponse> summariesFor(CookpalUser viewer) {
@@ -29,7 +26,6 @@ public class HouseholdResponses {
 
     public HouseholdResponse detailFor(String householdId, CookpalUser viewer) {
         var mine = memberships.requireMembership(householdId, viewer);
-        return HouseholdResponse.detailOf(mine, memberships.membersOf(householdId),
-                cookbook.recipeCountOf(householdId, viewer));
+        return HouseholdResponse.detailOf(mine, memberships.membersOf(householdId));
     }
 }
