@@ -86,7 +86,7 @@ class HouseholdInviteApiIntegrationTest extends IntegrationTestBase {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.token").isNotEmpty())
                 .andExpect(jsonPath("$.link").value(org.hamcrest.Matchers
-                        .containsString("/household-invite/")))
+                        .containsString("/app/household-invite/")))
                 .andExpect(jsonPath("$.expiresAt").isNotEmpty());
     }
 

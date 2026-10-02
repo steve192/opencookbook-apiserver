@@ -6,7 +6,6 @@ import lombok.Data;
 @Data
 @Builder
 public class InstanceInfoResponse {
-    private String termsOfService;
     private boolean sharingEnabled;
 
     private boolean householdsEnabled;

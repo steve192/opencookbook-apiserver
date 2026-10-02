@@ -31,7 +31,10 @@ springdoc:
         disable-swagger-default-url: true
         supported-submit-methods:
 opencookbook:
-  # instanceURL: https://cookpal.io
+  # Public address without /app, where the web app is served (e.g. https://cookbook.example.com)
+  # instanceURL: https://cookbook.example.com
+  # Directory with terms.html, privacy.html and imprint.html; a missing file shows a placeholder.
+  legalDirectory: /opencookbook/legal
   uploadDir: recipe-images
   thumbnailDir: recipe-images/thumbnails
   # 10MB
@@ -83,7 +86,7 @@ spring:
     # jpa.hibernate.ddl-auto: create-drop
 opencookbook:
   activate-users-after-signup: true
-  # The expo web dev server, which is where /share/... is a route
+  # The expo web dev server, where the app lives under /app (links look like /app/share/...)
   instanceURL: http://localhost:8081
   ml:
     # The subsystem's own compose stack, published on this port by its .env.

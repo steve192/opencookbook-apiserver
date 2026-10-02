@@ -19,7 +19,7 @@ public class OpencookbookConfiguration {
 
 
     /**
-     * URL where this instance is reachable (e.g. https://cookpal.io)
+     * Public address of this instance, without the {@code /app} the web app is served under (e.g. https://cookbook.example.com)
      */
     private String instanceURL = "";
 
@@ -91,9 +91,10 @@ public class OpencookbookConfiguration {
     private String mailFrom = "";
 
     /**
-     * The location where the terms of service file is located
+     * The directory holding {@code terms.html}, {@code privacy.html} and {@code imprint.html}.
+     * A missing or empty file shows a placeholder.
      */
-    private String termsOfServiceFileLocation = "";
+    private String legalDirectory = "";
 
     /**
      * The width thumbnails are scaled down to (height is calculated by preserving width/height ratio)

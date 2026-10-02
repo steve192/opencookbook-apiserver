@@ -37,6 +37,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.controllers.admin.AdminPaths;
 import com.sterul.opencookbookapiserver.controllers.errors.ApiErrorWriter;
+import com.sterul.opencookbookapiserver.controllers.legal.LegalPaths;
 import com.sterul.opencookbookapiserver.controllers.sharing.SharePaths;
 import com.sterul.opencookbookapiserver.entities.account.Role;
 import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
@@ -85,6 +86,7 @@ public class WebSecurityConfiguration {
                                         "/api-docs/**",
                                         "/api/v1/instance/**",
                                         SharePaths.PUBLIC_PATTERN,
+                                        LegalPaths.PUBLIC_PATTERN,
                                         "/error",
                                         "/actuator/health",
                                         ADMIN_PANEL))

@@ -97,7 +97,7 @@ class EmailServiceTest {
         cut.sendPasswordResetMail(passwordResetLinkFor(user("someone@cookpal.invalid", "en")));
 
         var raw = rawMessage(captureSentMessage());
-        assertTrue(raw.contains("https://cookpal.example/resetPassword?id=reset-id"), "the link is wrong");
+        assertTrue(raw.contains("https://cookpal.example/app/resetPassword?id=reset-id"), "the link is wrong");
         assertTrue(!raw.contains("cookpal.example//"), "the link has a doubled slash");
     }
 
