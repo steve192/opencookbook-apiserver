@@ -119,7 +119,7 @@ class ShareApiIntegrationTest extends IntegrationTestBase {
                 .andExpect(jsonPath("$.recipeId").value(recipeId))
                 .andExpect(jsonPath("$.expiresAt").isNotEmpty())
                 .andExpect(jsonPath("$.accessCount").value(0))
-                .andExpect(jsonPath("$.shareUrl").value(Matchers.containsString("/share/")));
+                .andExpect(jsonPath("$.shareUrl").value(Matchers.containsString("/app/share/")));
     }
 
     @Test

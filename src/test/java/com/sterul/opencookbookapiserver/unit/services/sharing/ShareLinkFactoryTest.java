@@ -35,14 +35,14 @@ class ShareLinkFactoryTest {
     void aLinkIsBuiltFromTheConfiguredInstanceAddress() {
         configuration.setInstanceURL("https://cookpal.io");
 
-        assertEquals("https://cookpal.io/share/" + SHARE_ID, cut.linkTo(SHARE_ID));
+        assertEquals("https://cookpal.io/app/share/" + SHARE_ID, cut.linkTo(SHARE_ID));
     }
 
     @Test
     void anInstanceAddressWrittenWithATrailingSlashDoesNotDoubleIt() {
         configuration.setInstanceURL("https://cookpal.io/");
 
-        assertEquals("https://cookpal.io/share/" + SHARE_ID, cut.linkTo(SHARE_ID));
+        assertEquals("https://cookpal.io/app/share/" + SHARE_ID, cut.linkTo(SHARE_ID));
     }
 
     @Test
@@ -52,14 +52,14 @@ class ShareLinkFactoryTest {
         givenARequestTo("localhost", 8080);
         configuration.setInstanceURL("http://localhost:8081");
 
-        assertEquals("http://localhost:8081/share/" + SHARE_ID, cut.linkTo(SHARE_ID));
+        assertEquals("http://localhost:8081/app/share/" + SHARE_ID, cut.linkTo(SHARE_ID));
     }
 
     @Test
     void withNothingConfiguredTheLinkFallsBackToTheAddressTheRequestCameInOn() {
         givenARequestTo("localhost", 8080);
 
-        assertEquals("http://localhost:8080/share/" + SHARE_ID, cut.linkTo(SHARE_ID));
+        assertEquals("http://localhost:8080/app/share/" + SHARE_ID, cut.linkTo(SHARE_ID));
     }
 
     private void givenARequestTo(String host, int port) {

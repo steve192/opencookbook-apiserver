@@ -20,10 +20,15 @@ import lombok.extern.slf4j.Slf4j;
  *
  * Share links and the links in mails are the same problem and were once solved twice, which is
  * why the trailing slash was handled in one of them and not the other.
+ *
+ * The app is served under {@code /app} on the instance address, which is added to every path.
  */
 @Component
 @Slf4j
 public class AppLinkFactory {
+
+    @SuppressWarnings("java:S1075") // Where the web app is mounted on the instance address.
+    private static final String APP_PATH = "/app";
 
     private final OpencookbookConfiguration configuration;
 
@@ -46,7 +51,7 @@ public class AppLinkFactory {
      * @param path an absolute path within the app, leading slash and all
      */
     public String linkTo(String path) {
-        return trimTrailingSlash(baseUrl()) + path;
+        return trimTrailingSlash(baseUrl()) + APP_PATH + path;
     }
 
     private String baseUrl() {

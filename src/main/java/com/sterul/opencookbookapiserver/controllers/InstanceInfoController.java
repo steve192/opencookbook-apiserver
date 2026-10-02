@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.controllers.responses.InstanceInfoResponse;
-import com.sterul.opencookbookapiserver.services.InstanceInfoService;
 import com.sterul.opencookbookapiserver.services.SignedInUserService;
 import com.sterul.opencookbookapiserver.services.ml.MlAvailabilityService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class InstanceInfoController extends BaseController {
 
-    private final InstanceInfoService instanceInfoService;
     private final OpencookbookConfiguration opencookbookConfiguration;
 
     /**
@@ -28,12 +26,10 @@ public class InstanceInfoController extends BaseController {
      */
     private final Optional<MlAvailabilityService> mlAvailabilityService;
 
-    public InstanceInfoController(InstanceInfoService instanceInfoService,
-            OpencookbookConfiguration opencookbookConfiguration,
+    public InstanceInfoController(OpencookbookConfiguration opencookbookConfiguration,
             Optional<MlAvailabilityService> mlAvailabilityService,
             SignedInUserService signedInUser) {
         super(signedInUser);
-        this.instanceInfoService = instanceInfoService;
         this.opencookbookConfiguration = opencookbookConfiguration;
         this.mlAvailabilityService = mlAvailabilityService;
     }
@@ -43,7 +39,6 @@ public class InstanceInfoController extends BaseController {
     @GetMapping("")
     public InstanceInfoResponse getInstanceInfo() {
         return InstanceInfoResponse.builder()
-                .termsOfService(instanceInfoService.getTermsOfSerivice())
                 .sharingEnabled(opencookbookConfiguration.getSharing().isEnabled())
                 .householdsEnabled(opencookbookConfiguration.getHouseholds().isEnabled())
                 .apiKeysEnabled(opencookbookConfiguration.getApiKeys().isEnabled())

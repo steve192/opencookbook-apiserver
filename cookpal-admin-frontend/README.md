@@ -14,7 +14,7 @@ cd .. && mvn spring-boot:run          # the api server on :8080
 npm install && npm run dev            # the panel on http://localhost:5173/admin/
 ```
 
-Point the proxy somewhere else with `BACKEND_URL=https://beta.cookpal.io npm run dev`.
+Point the proxy somewhere else with `BACKEND_URL=https://cookbook.example.com npm run dev`.
 
 The panel refuses anybody without the `ADMIN` role, so the first account has to be given it
 directly after signing up:
