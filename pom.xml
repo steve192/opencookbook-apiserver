@@ -11,7 +11,7 @@
     </parent>
     <groupId>com.sterul</groupId>
     <artifactId>opencookbook-apiserver</artifactId>
-    <version>1.22.0</version>
+    <version>1.23.0</version>
     <name>opencookbook-apiserver</name>
     <description>opencookbook api-server</description>
 
