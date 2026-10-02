@@ -1,6 +1,9 @@
 package com.sterul.opencookbookapiserver.controllers.legal;
 
+import java.nio.charset.StandardCharsets;
+
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,9 +29,10 @@ public class LegalDocumentController extends BaseController {
 
     @Operation(summary = "A legal text of this instance: terms, privacy or imprint",
             description = "HTML, public. A placeholder until the operator has published it.")
-    @GetMapping(value = LegalPaths.BASE + "/{document}",
-            produces = MediaType.TEXT_HTML_VALUE + ";charset=UTF-8")
-    public String getDocument(@PathVariable LegalDocument document) {
-        return documents.render(document);
+    @GetMapping(LegalPaths.BASE + "/{document}")
+    public ResponseEntity<String> getDocument(@PathVariable LegalDocument document) {
+        return ResponseEntity.ok()
+                .contentType(new MediaType(MediaType.TEXT_HTML, StandardCharsets.UTF_8))
+                .body(documents.render(document));
     }
 }
