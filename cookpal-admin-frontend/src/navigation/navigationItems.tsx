@@ -1,11 +1,13 @@
 import BlockIcon from '@mui/icons-material/Block';
 import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
+import DnsIcon from '@mui/icons-material/Dns';
 import DocumentScannerIcon from '@mui/icons-material/DocumentScanner';
 import EggIcon from '@mui/icons-material/Egg';
 import EnergySavingsLeafIcon from '@mui/icons-material/EnergySavingsLeaf';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import LocalDiningIcon from '@mui/icons-material/LocalDining';
 import LocalPizzaIcon from '@mui/icons-material/LocalPizza';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonIcon from '@mui/icons-material/Person';
 import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
@@ -19,6 +21,8 @@ import {ClassificationScreen} from '../screens/ClassificationScreen';
 import {HouseholdsScreen} from '../screens/HouseholdsScreen';
 import {IngredientCleanupScreen} from '../screens/IngredientCleanupScreen';
 import {IngredientsScreen} from '../screens/IngredientsScreen';
+import {InstanceScreen} from '../screens/InstanceScreen';
+import {InvitationsScreen} from '../screens/InvitationsScreen';
 import {NameRulesScreen} from '../screens/NameRulesScreen';
 import {OcrJobsScreen} from '../screens/OcrJobsScreen';
 import {RecipesScreen} from '../screens/RecipesScreen';
@@ -41,7 +45,10 @@ export interface NavigationItem {
 
 // The one list: the router builds its pages from it and the drawer builds its entries.
 export const navigationItems: NavigationItem[] = [
+  {route: 'instance', label: 'Instance', icon: <DnsIcon />, element: <InstanceScreen />},
   {route: 'users', label: 'Users', icon: <PersonIcon />, element: <UsersScreen />},
+  {route: 'invitations', label: 'Invitations', icon: <PersonAddIcon />,
+    element: <InvitationsScreen />},
   {route: 'recipes', label: 'Recipes', icon: <LocalDiningIcon />, element: <RecipesScreen />},
   {route: 'ingredients', label: 'Ingredients', icon: <LocalPizzaIcon />,
     element: <IngredientsScreen />},

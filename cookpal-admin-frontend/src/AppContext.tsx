@@ -1,6 +1,7 @@
 import {ReactNode, createContext, useCallback, useContext, useEffect, useState} from 'react';
-import {AccountApi, ApiError, SelfInfo} from './api';
+import {AccountApi, ApiError, InstanceApi, InstanceInfo, SelfInfo} from './api';
 import {session} from './api/session';
+import {AsyncData, useAsyncData} from './hooks/useAsyncData';
 
 interface AppSession {
   signedIn: boolean;
@@ -8,7 +9,10 @@ interface AppSession {
   emailAddress?: string;
   signIn: (emailAddress: string, password: string) => Promise<void>;
   signOut: () => void;
+  instance: AsyncData<InstanceInfo | undefined>;
 }
+
+const loadInstance = () => InstanceApi.info();
 
 const AppContext = createContext<AppSession | undefined>(undefined);
 
@@ -20,10 +24,13 @@ export const useSession = (): AppSession => {
   return context;
 };
 
+export const useInstance = () => useSession().instance;
+
 export const AppContextProvider = (props: {children: ReactNode}) => {
   const [signedIn, setSignedIn] = useState(false);
   const [checking, setChecking] = useState(session.hasCredentials);
   const [emailAddress, setEmailAddress] = useState<string>();
+  const instance = useAsyncData<InstanceInfo | undefined>(loadInstance, undefined);
 
   // A reload should not ask for the password again while the tokens are still good.
   useEffect(() => {
@@ -65,7 +72,7 @@ export const AppContextProvider = (props: {children: ReactNode}) => {
   const signOut = useCallback(() => AccountApi.signOut(), []);
 
   return (
-    <AppContext.Provider value={{signedIn, checking, emailAddress, signIn, signOut}}>
+    <AppContext.Provider value={{signedIn, checking, emailAddress, signIn, signOut, instance}}>
       {props.children}
     </AppContext.Provider>
   );

@@ -1,0 +1,5 @@
+#heading($i18n.get("mail.test.heading"))
+#paragraph($i18n.get("mail.common.greeting"))
+#paragraph($i18n.get("mail.test.intro"))
+#divider()
+#note($i18n.get("mail.test.note"))

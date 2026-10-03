@@ -8,7 +8,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sterul.opencookbookapiserver.configurations.security.CurrentSignIn;
 import com.sterul.opencookbookapiserver.configurations.security.NotForDemoAccounts;
 import com.sterul.opencookbookapiserver.controllers.exceptions.UnauthorizedException;
-import com.sterul.opencookbookapiserver.controllers.exceptions.UserNotActiveException;
 import com.sterul.opencookbookapiserver.controllers.requests.DisplayNameRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.LogoutRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.PasswordChangeRequest;
@@ -34,82 +32,54 @@ import com.sterul.opencookbookapiserver.controllers.requests.ShoppingProviderReq
 import com.sterul.opencookbookapiserver.controllers.requests.UserCreationRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.UserLoginRequest;
 import com.sterul.opencookbookapiserver.controllers.responses.RefreshTokenResponse;
+import com.sterul.opencookbookapiserver.controllers.responses.SignupResponse;
 import com.sterul.opencookbookapiserver.controllers.responses.UserInfoResponse;
 import com.sterul.opencookbookapiserver.controllers.responses.UserLoginResponse;
 import com.sterul.opencookbookapiserver.entities.account.Role;
-import com.sterul.opencookbookapiserver.services.AuthRateLimiter;
-import com.sterul.opencookbookapiserver.services.EmailService;
+import com.sterul.opencookbookapiserver.errors.ApiException;
 import com.sterul.opencookbookapiserver.services.SignInService;
 import com.sterul.opencookbookapiserver.services.SignedInUserService;
+import com.sterul.opencookbookapiserver.services.SignupService;
 import com.sterul.opencookbookapiserver.services.UserService;
-import com.sterul.opencookbookapiserver.services.mail.MailLanguages;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/v1/users")
 @Tag(name = "Users", description = "Authentication and management of own user")
-@Slf4j
 public class UserController extends BaseController {
 
     private final AuthenticationManager authenticationManager;
     private final SignInService signIns;
     private final UserService userService;
-    private final EmailService emailService;
-    private final MailLanguages mailLanguages;
-    private final AuthRateLimiter authRateLimiter;
+    private final SignupService signupService;
 
     public UserController(AuthenticationManager authenticationManager, SignInService signIns,
-            UserService userService, EmailService emailService, MailLanguages mailLanguages,
-            AuthRateLimiter authRateLimiter, SignedInUserService signedInUser) {
+            UserService userService, SignupService signupService,
+            SignedInUserService signedInUser) {
         super(signedInUser);
         this.authenticationManager = authenticationManager;
         this.signIns = signIns;
         this.userService = userService;
-        this.emailService = emailService;
-        this.mailLanguages = mailLanguages;
-        this.authRateLimiter = authRateLimiter;
+        this.signupService = signupService;
     }
 
-    @Operation(summary = "Creates a new user")
+    @Operation(summary = "Creates a new user",
+            description = "With an invitation the account is active at once. Without one it waits for "
+                    + "the mailed confirmation link, or for an administrator on an instance without mail.")
     @PostMapping("/signup")
-    @Transactional
-    public void signup(@Valid @RequestBody UserCreationRequest userCreationRequest) {
-        // Whatever the client asked for in Accept-Language, which is the only thing known about
-        // a person who does not have an account yet.
-        var createdUser = userService.createUser(userCreationRequest.emailAddress(),
-                userCreationRequest.password(), mailLanguages.fromCurrentRequest().orElse(null));
-        var activationLink = userService.createActivationLink(createdUser);
-        try {
-            emailService.sendActivationMail(activationLink);
-        } catch (MessagingException e) {
-            // The account exists either way, and the link can be sent again from the login
-            // screen, so a mail server that is down must not undo a signup.
-            log.error("Error sending activation mail", e);
-        }
+    public SignupResponse signup(@Valid @RequestBody UserCreationRequest request) {
+        return new SignupResponse(signupService.signup(request.emailAddress(), request.password(),
+                request.invitation()));
     }
 
     @Operation(summary = "Logs a user in", description = "Logs in and generates tokens for authentication")
     @PostMapping("/login")
     public ResponseEntity<UserLoginResponse> login(@Valid @RequestBody UserLoginRequest authenticationRequest) {
-
-        try {
-            login(authenticationRequest.emailAddress(), authenticationRequest.password());
-        } catch (UserNotActiveException e) {
-            // Somebody trying to sign in has lost or never received the link, so send it again
-            // before saying why they cannot. A mail server that is down must not turn that into
-            // a different answer than the one they need to read.
-            try {
-                resendActivationLinkWithinBudget(authenticationRequest.emailAddress());
-            } catch (MessagingException e1) {
-                log.error("Error re-sending activation link for user", e1);
-            }
-            throw e;
-        }
+        authenticate(authenticationRequest.emailAddress(), authenticationRequest.password());
 
         var user = userService.getUserByEmail(authenticationRequest.emailAddress());
         // Signing in is the clearest statement a client makes about which language it is in.
@@ -127,17 +97,14 @@ public class UserController extends BaseController {
 
     @Operation(summary = "Request a password reset for the given user",
             description = "Answers 200 whether or not the address belongs to an account, so that "
-                    + "this cannot be used to find out which addresses are registered. The one "
-                    + "exception is a mail server that will not accept the message, which is "
-                    + "reported rather than silently swallowed.")
+                    + "this cannot be used to find out which addresses are registered. The "
+                    + "exceptions are an instance without mail and a mail server that will not "
+                    + "accept the message, which are reported rather than silently swallowed.")
     @PostMapping("/requestPasswordReset")
     public ResponseEntity<Void> requestPasswordReset(
             @Valid @RequestBody PasswordResetRequest passwordResetRequest)
             throws MessagingException {
-        var emailAddress = passwordResetRequest.getEmailAddress();
-        if (userService.userExists(emailAddress) && mayMail(emailAddress)) {
-            userService.requestPasswordReset(emailAddress);
-        }
+        userService.requestPasswordReset(passwordResetRequest.getEmailAddress());
         return ResponseEntity.ok().build();
     }
 
@@ -177,11 +144,11 @@ public class UserController extends BaseController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Resends an activation link to the users email address. Ignores requests for when users are already active or users do not exist")
+    @Operation(summary = "Resends an activation link to the users email address. Ignores requests for accounts that do not wait for the confirmation, addresses without an account and instances without mail")
     @PostMapping("/resendActivationLink")
     public ResponseEntity<Void> resendActivationLink(
             @Valid @RequestBody ResendActivationLinkRequest request) throws MessagingException {
-        resendActivationLinkWithinBudget(request.getEmailAddress());
+        userService.resendActivationLink(request.getEmailAddress());
         return ResponseEntity.ok().build();
     }
 
@@ -260,35 +227,13 @@ public class UserController extends BaseController {
         signIns.end(request.refreshToken());
     }
 
-    private void resendActivationLinkWithinBudget(String emailAddress) throws MessagingException {
-        if (userService.userExists(emailAddress) && mayMail(emailAddress)) {
-            userService.resendActivationLink(emailAddress);
-        }
-    }
-
-    /**
-     * Whether one more mail may be sent to an address. A spent budget is not reported: these
-     * endpoints answer the same whether or not an account exists.
-     *
-     * @param emailAddress who would be written to
-     * @return whether to send
-     */
-    private boolean mayMail(String emailAddress) {
-        if (authRateLimiter.mayMail(emailAddress)) {
-            return true;
-        }
-        log.warn("Not sending another mail to a recipient who has had their hourly allowance");
-        return false;
-    }
-
-    private void login(String username, String password) {
+    private void authenticate(String username, String password) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         } catch (BadCredentialsException e) {
             throw new UnauthorizedException();
         } catch (DisabledException e) {
-            throw new UserNotActiveException();
+            throw new ApiException(userService.explainLockedAccount(username));
         }
     }
-
 }

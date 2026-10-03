@@ -19,6 +19,9 @@ public class ApiException extends RuntimeException {
 
     private final ApiErrorCode errorCode;
 
+    /** Told to the caller in place of the code's message; null for everybody not trusted with it. */
+    private final String reason;
+
     public ApiException(ApiErrorCode errorCode) {
         this(errorCode, errorCode.getMessage());
     }
@@ -26,10 +29,21 @@ public class ApiException extends RuntimeException {
     public ApiException(ApiErrorCode errorCode, String internalMessage) {
         super(internalMessage);
         this.errorCode = errorCode;
+        this.reason = null;
     }
 
     public ApiException(ApiErrorCode errorCode, String internalMessage, Throwable cause) {
+        this(errorCode, internalMessage, cause, null);
+    }
+
+    private ApiException(ApiErrorCode errorCode, String internalMessage, Throwable cause, String reason) {
         super(internalMessage, cause);
         this.errorCode = errorCode;
+        this.reason = reason;
+    }
+
+    /** A failure whose reason the caller may read, such as a mail server's answer shown to an administrator. */
+    public static ApiException withReason(ApiErrorCode errorCode, String reason, Throwable cause) {
+        return new ApiException(errorCode, reason, cause, reason);
     }
 }

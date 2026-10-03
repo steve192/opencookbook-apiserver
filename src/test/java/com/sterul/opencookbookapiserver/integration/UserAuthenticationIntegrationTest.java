@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.UUID;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,9 +27,12 @@ import com.sterul.opencookbookapiserver.repositories.ActivationLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.EmailService;
 
-// Pinned rather than inherited: these tests are about activation, and config/application.yml is
-// read over the packaged configuration, so a developer's local convenience would decide them.
-@SpringBootTest(properties = "opencookbook.activate-users-after-signup=false")
+// With mail configured an open signup waits for its mailed activation link, which is what these are about.
+@SpringBootTest(properties = {
+        "opencookbook.smtp-host=smtp.cookpal.invalid",
+        "opencookbook.instanceURL=https://cookpal.invalid",
+        "opencookbook.mail-from=cookpal@cookpal.invalid"
+})
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
 class UserAuthenticationIntegrationTest extends IntegrationTestBase {
@@ -48,12 +52,18 @@ class UserAuthenticationIntegrationTest extends IntegrationTestBase {
     @MockitoBean
     private EmailService emailService;
 
+    @BeforeEach
+    void setUpInstance() {
+        TestInstance.setUp(userRepository);
+    }
+
     @Test
     void userCanSignUpActivateAndLogin() throws Exception {
         var credentials = newCredentials();
 
         signUp(credentials.emailAddress(), credentials.password())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.state").value("AWAITING_CONFIRMATION"));
 
         var createdUser = userRepository.findByEmailAddress(credentials.emailAddress());
         assertNotNull(createdUser);

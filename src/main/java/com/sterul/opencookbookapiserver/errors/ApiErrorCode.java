@@ -29,10 +29,17 @@ public enum ApiErrorCode {
     REAUTHENTICATION_REQUIRED(HttpStatus.UNAUTHORIZED, "Sign in again with your password to do that"),
     INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "The e-mail address or the password is wrong"),
     ACCOUNT_NOT_ACTIVATED(HttpStatus.UNAUTHORIZED, "The account has not been activated yet"),
+    /** Locked on an instance without mail: only an administrator can activate it. */
+    ACCOUNT_AWAITING_APPROVAL(HttpStatus.UNAUTHORIZED,
+            "The account is waiting for an administrator to activate it"),
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "You are not allowed to do that"),
 
+    SETUP_REQUIRED(HttpStatus.CONFLICT, "This instance has not been set up yet"),
+    SETUP_COMPLETED(HttpStatus.CONFLICT, "This instance has already been set up"),
     EMAIL_ALREADY_REGISTERED(HttpStatus.CONFLICT, "That e-mail address is already registered"),
     SIGNUP_DISABLED(HttpStatus.FORBIDDEN, "This instance does not accept new accounts"),
+    /** One code for expired, revoked, used and never-existed, so a token cannot be probed. */
+    INVITATION_INVALID(HttpStatus.GONE, "That invitation is not valid any more"),
     ACTIVATION_LINK_INVALID(HttpStatus.NOT_FOUND, "The activation link is not valid any more"),
     PASSWORD_RESET_LINK_INVALID(HttpStatus.NOT_FOUND,
             "The password reset link is not valid any more"),
@@ -42,7 +49,9 @@ public enum ApiErrorCode {
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "That does not exist, or is not yours"),
     CONFLICT(HttpStatus.CONFLICT, "That conflicts with something that already exists"),
     RATE_LIMITED(HttpStatus.TOO_MANY_REQUESTS, "Too many requests, please try again later", true),
+    /** Administrators who asked for the mail are told the mail server's reason as well. */
     MAIL_DELIVERY_FAILED(HttpStatus.BAD_GATEWAY, "The e-mail could not be sent", true),
+    MAIL_NOT_CONFIGURED(HttpStatus.CONFLICT, "This instance cannot send e-mail"),
 
     HOUSEHOLD_FULL(HttpStatus.CONFLICT, "That household has no room for another member"),
     TOO_MANY_HOUSEHOLDS(HttpStatus.CONFLICT, "You are in as many households as this server allows"),

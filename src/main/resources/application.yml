@@ -85,7 +85,6 @@ spring:
     #   enabled: false
     # jpa.hibernate.ddl-auto: create-drop
 opencookbook:
-  activate-users-after-signup: true
   # The expo web dev server, where the app lives under /app (links look like /app/share/...)
   instanceURL: http://localhost:8081
   ml:

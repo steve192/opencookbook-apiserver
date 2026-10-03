@@ -9,7 +9,8 @@ import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
  * The body of every failed request.
  *
  * Carries no exception message, no class name and no stack trace: what went wrong inside the
- * server is written to the log, and what the caller may know is the code.
+ * server is written to the log, and what the caller may know is the code. The one exception is
+ * a reason that was explicitly handed over for the caller to read, see {@link #withReason}.
  *
  * @param code      what went wrong, as a stable identifier clients can translate
  * @param message   the same thing in English, for callers that do not translate
@@ -48,6 +49,12 @@ public record ApiErrorResponse(
      */
     public static ApiErrorResponse of(ApiErrorCode code, int status) {
         return new ApiErrorResponse(code.name(), code.getMessage(), status, code.isRetryable(),
+                null);
+    }
+
+    /** With a reason in place of the code's message, for a caller allowed to read it. */
+    public static ApiErrorResponse withReason(ApiErrorCode code, String reason) {
+        return new ApiErrorResponse(code.name(), reason, code.getStatus().value(), code.isRetryable(),
                 null);
     }
 

@@ -1,6 +1,7 @@
 package com.sterul.opencookbookapiserver.services;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.Map;
 
 import jakarta.mail.MessagingException;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.sterul.opencookbookapiserver.entities.account.ActivationLink;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
+import com.sterul.opencookbookapiserver.entities.account.Invitation;
 import com.sterul.opencookbookapiserver.entities.account.PasswordResetLink;
 import com.sterul.opencookbookapiserver.services.mail.MailFrom;
 import com.sterul.opencookbookapiserver.services.mail.MailKind;
@@ -34,36 +36,51 @@ public class EmailService {
 
     private final JavaMailSender javaMailSender;
     private final MailFrom mailFrom;
-    private final AppLinkFactory appLinkFactory;
+    private final AccountLinkFactory accountLinks;
     private final MailRenderer mailRenderer;
     private final MailLanguages mailLanguages;
 
-    public EmailService(JavaMailSender javaMailSender, MailFrom mailFrom, AppLinkFactory appLinkFactory,
+    public EmailService(JavaMailSender javaMailSender, MailFrom mailFrom, AccountLinkFactory accountLinks,
             MailRenderer mailRenderer, MailLanguages mailLanguages) {
         this.javaMailSender = javaMailSender;
         this.mailFrom = mailFrom;
-        this.appLinkFactory = appLinkFactory;
+        this.accountLinks = accountLinks;
         this.mailRenderer = mailRenderer;
         this.mailLanguages = mailLanguages;
     }
 
     public void sendActivationMail(ActivationLink activationLink) throws MessagingException {
         send(MailKind.ACTIVATION, activationLink.getUser(), Map.of(
-                "activationLink", appLinkFactory.linkTo("/activateAccount?activationId=" + activationLink.getId())));
+                "activationLink", accountLinks.activation(activationLink)));
     }
 
     public void sendPasswordResetMail(PasswordResetLink link) throws MessagingException {
         send(MailKind.PASSWORD_RESET, link.getUser(), Map.of(
-                "resetLink", appLinkFactory.linkTo("/resetPassword?id=" + link.getId())));
+                "resetLink", accountLinks.passwordReset(link)));
     }
 
-    public void sendAccountDeletedMail(CookpalUser user) throws MessagingException {
-        send(MailKind.ACCOUNT_DELETED, user, Map.of());
+    public void sendAccountDeletedMail(String emailAddress, Locale language) throws MessagingException {
+        send(MailKind.ACCOUNT_DELETED, emailAddress, language, Map.of());
+    }
+
+    /** Nobody owns the address yet, so it is written in the inviting administrator's language. */
+    public void sendInvitationMail(Invitation invitation, int validForDays, String receiver)
+            throws MessagingException {
+        send(MailKind.INVITATION, receiver, mailLanguages.forUser(invitation.getCreatedBy()), Map.of(
+                "invitationLink", accountLinks.invitation(invitation),
+                "validForDays", validForDays));
+    }
+
+    public void sendTestMail(CookpalUser administrator) throws MessagingException {
+        send(MailKind.TEST, administrator, Map.of());
     }
 
     private void send(MailKind kind, CookpalUser user, Map<String, Object> model) throws MessagingException {
-        var receiver = user.getEmailAddress();
-        var language = mailLanguages.forUser(user);
+        send(kind, user.getEmailAddress(), mailLanguages.forUser(user), model);
+    }
+
+    private void send(MailKind kind, String receiver, Locale language, Map<String, Object> model)
+            throws MessagingException {
         log.info("Sending {} mail in {} to {}", kind, language.getLanguage(), receiver);
 
         var mail = mailRenderer.render(kind, language, receiver, model);

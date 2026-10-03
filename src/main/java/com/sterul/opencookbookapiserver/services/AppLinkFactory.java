@@ -39,11 +39,10 @@ public class AppLinkFactory {
     @PostConstruct
     void warnWhenTheInstanceAddressIsUnknown() {
         if (configuredInstanceUrl().isEmpty()) {
-            log.warn("opencookbook.instanceURL is not set, so share links and the links in mails "
-                    + "will point at whatever address the api is reached on. That is only correct "
-                    + "when the web app is served from the same origin - otherwise every link "
-                    + "handed out leads to a server that has no such route. Set it to the address "
-                    + "people open the app on.");
+            log.warn("opencookbook.instanceURL is not set, so this instance sends no mail at all. "
+                    + "Share links shown to an administrator are built from the address the api is "
+                    + "reached on, which is only correct when the web app is served from the same "
+                    + "origin. Set it to the address people open the app on.");
         }
     }
 
@@ -51,15 +50,16 @@ public class AppLinkFactory {
      * @param path an absolute path within the app, leading slash and all
      */
     public String linkTo(String path) {
-        return trimTrailingSlash(baseUrl()) + APP_PATH + path;
+        return instanceUrl() + APP_PATH + path;
     }
 
-    private String baseUrl() {
-        return configuredInstanceUrl()
-                .orElseGet(() -> ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString());
+    /** The address links are built on, without the app path and without a trailing slash. */
+    public String instanceUrl() {
+        return trimTrailingSlash(configuredInstanceUrl()
+                .orElseGet(() -> ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString()));
     }
 
-    private Optional<String> configuredInstanceUrl() {
+    public Optional<String> configuredInstanceUrl() {
         var configuredUrl = configuration.getInstanceURL();
         return configuredUrl == null || configuredUrl.isBlank() ? Optional.empty() : Optional.of(configuredUrl);
     }

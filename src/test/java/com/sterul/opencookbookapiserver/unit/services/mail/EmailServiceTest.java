@@ -19,7 +19,9 @@ import com.sterul.opencookbookapiserver.configurations.EmailConfiguration;
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.entities.account.ActivationLink;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
+import com.sterul.opencookbookapiserver.entities.account.Invitation;
 import com.sterul.opencookbookapiserver.entities.account.PasswordResetLink;
+import com.sterul.opencookbookapiserver.services.AccountLinkFactory;
 import com.sterul.opencookbookapiserver.services.AppLinkFactory;
 import com.sterul.opencookbookapiserver.services.EmailService;
 import com.sterul.opencookbookapiserver.services.mail.MailFrom;
@@ -49,10 +51,11 @@ class EmailServiceTest {
         configuration.setMailFrom("hello@cookpal.example");
 
         var emailConfiguration = new EmailConfiguration();
+        var appLinks = new AppLinkFactory(configuration);
         cut = new EmailService(
                 javaMailSender,
                 new MailFrom(configuration),
-                new AppLinkFactory(configuration),
+                new AccountLinkFactory(appLinks),
                 new MailRenderer(emailConfiguration.mailVelocityEngine(),
                         new MailMessages(emailConfiguration.mailMessageSource()), configuration),
                 new MailLanguages());
@@ -103,9 +106,35 @@ class EmailServiceTest {
 
     @Test
     void anAccountDeletedMailNeedsNoLinkAtAll() throws Exception {
-        cut.sendAccountDeletedMail(user("someone@cookpal.invalid", "de"));
+        cut.sendAccountDeletedMail("someone@cookpal.invalid", Locale.GERMAN);
 
         assertEquals("Dein CookPal Account wurde gelöscht", captureSentMessage().getSubject());
+    }
+
+    @Test
+    void anInvitationGoesToTheTypedAddressInTheInvitingAdministratorsLanguage() throws Exception {
+        cut.sendInvitationMail(invitationBy(user("admin@cookpal.invalid", "de")), 7, "friend@cookpal.invalid");
+
+        var sent = captureSentMessage();
+        assertEquals("friend@cookpal.invalid", sent.getAllRecipients()[0].toString());
+        assertEquals("Du bist zu CookPal eingeladen", sent.getSubject());
+    }
+
+    @Test
+    void anInvitationCarriesItsLink() throws Exception {
+        cut.sendInvitationMail(invitationBy(user("admin@cookpal.invalid", "en")), 7, "friend@cookpal.invalid");
+
+        assertTrue(rawMessage(captureSentMessage()).contains("https://cookpal.example/app/invite/invitation-token"),
+                "the link is wrong");
+    }
+
+    @Test
+    void aTestMailGoesToTheAdministrator() throws Exception {
+        cut.sendTestMail(user("admin@cookpal.invalid", "en"));
+
+        var sent = captureSentMessage();
+        assertEquals("admin@cookpal.invalid", sent.getAllRecipients()[0].toString());
+        assertEquals("CookPal test mail", sent.getSubject());
     }
 
     private MimeMessage captureSentMessage() {
@@ -125,6 +154,10 @@ class EmailServiceTest {
         user.setEmailAddress(emailAddress);
         user.setLanguage(language);
         return user;
+    }
+
+    private Invitation invitationBy(CookpalUser administrator) {
+        return Invitation.builder().id("invitation-token").createdBy(administrator).build();
     }
 
     private ActivationLink activationLinkFor(CookpalUser user) {

@@ -1,0 +1,7 @@
+$i18n.get("mail.test.heading")
+
+$i18n.get("mail.common.greeting")
+
+$i18n.get("mail.test.intro")
+
+$i18n.get("mail.test.note")

@@ -29,6 +29,13 @@ import {
   RelinkScope,
   SelfInfo,
   Household,
+  InstanceCheck,
+  InstanceInfo,
+  InstanceOverview,
+  InstanceSettings,
+  Invitation,
+  InvitationDraft,
+  PasswordResetLink,
   Share,
   ShareStatistics,
   User,
@@ -44,7 +51,8 @@ export const UsersApi = {
     http.put<UserAccount>(`/admin/users/${userId}`, update),
   activate: (userId: number) => http.post<UserAccount>(`/admin/users/${userId}/activate`),
   deactivate: (userId: number) => http.post<UserAccount>(`/admin/users/${userId}/deactivate`),
-  sendPasswordReset: (userId: number) => http.post<void>(`/admin/users/${userId}/password-reset`),
+  createPasswordReset: (userId: number) =>
+    http.post<PasswordResetLink>(`/admin/users/${userId}/password-reset`),
   delete: (userId: number) => http.delete<void>(`/admin/users/${userId}`),
 };
 
@@ -152,6 +160,22 @@ export const MlApi = {
   getJobs: () => http.get<MlJob[]>('/admin/ml/jobs'),
   resetJob: (id: string) => http.post<MlJob>(`/admin/ml/jobs/${id}/reset`),
   deleteJob: (id: string) => http.delete<void>(`/admin/ml/jobs/${id}`),
+};
+
+export const InstanceApi = {
+  info: () => http.get<InstanceInfo>('/instance'),
+  setup: (emailAddress: string, password: string) => http.post<void>('/setup', {emailAddress, password}),
+  overview: () => http.get<InstanceOverview>('/admin/instance'),
+  checks: () => http.get<InstanceCheck[]>('/admin/instance/checks'),
+  sendTestMail: () => http.post<void>('/admin/instance/test-mail'),
+  settings: () => http.get<InstanceSettings>('/admin/settings'),
+  updateSettings: (settings: InstanceSettings) => http.put<InstanceSettings>('/admin/settings', settings),
+};
+
+export const InvitationsApi = {
+  getAll: () => http.get<Invitation[]>('/admin/invitations'),
+  create: (draft: InvitationDraft) => http.post<Invitation>('/admin/invitations', draft),
+  revoke: (id: string) => http.delete<void>(`/admin/invitations/${id}`),
 };
 
 export const AccountApi = {

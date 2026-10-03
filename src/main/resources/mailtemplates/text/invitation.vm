@@ -1,0 +1,12 @@
+$i18n.get("mail.invitation.heading")
+
+$i18n.get("mail.common.greeting")
+
+$i18n.get("mail.invitation.intro")
+
+$i18n.get("mail.invitation.button"):
+$invitationLink
+
+$i18n.get("mail.invitation.validity", $validForDays)
+
+$i18n.get("mail.invitation.ignore")

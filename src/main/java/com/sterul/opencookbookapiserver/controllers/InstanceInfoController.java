@@ -5,6 +5,9 @@ import java.util.Optional;
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.controllers.responses.InstanceInfoResponse;
 import com.sterul.opencookbookapiserver.services.SignedInUserService;
+import com.sterul.opencookbookapiserver.services.instance.Administrators;
+import com.sterul.opencookbookapiserver.services.instance.InstanceSettingsService;
+import com.sterul.opencookbookapiserver.services.mail.MailAvailability;
 import com.sterul.opencookbookapiserver.services.ml.MlAvailabilityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,12 +29,19 @@ public class InstanceInfoController extends BaseController {
      */
     private final Optional<MlAvailabilityService> mlAvailabilityService;
 
+    private final Administrators administrators;
+    private final InstanceSettingsService settings;
+    private final MailAvailability mail;
+
     public InstanceInfoController(OpencookbookConfiguration opencookbookConfiguration,
-            Optional<MlAvailabilityService> mlAvailabilityService,
-            SignedInUserService signedInUser) {
+            Optional<MlAvailabilityService> mlAvailabilityService, Administrators administrators,
+            InstanceSettingsService settings, MailAvailability mail, SignedInUserService signedInUser) {
         super(signedInUser);
         this.opencookbookConfiguration = opencookbookConfiguration;
         this.mlAvailabilityService = mlAvailabilityService;
+        this.administrators = administrators;
+        this.settings = settings;
+        this.mail = mail;
     }
 
     @Operation(summary = "What this instance offers",
@@ -43,6 +53,9 @@ public class InstanceInfoController extends BaseController {
                 .householdsEnabled(opencookbookConfiguration.getHouseholds().isEnabled())
                 .apiKeysEnabled(opencookbookConfiguration.getApiKeys().isEnabled())
                 .ocrImportEnabled(isOcrImportEnabled())
+                .setupRequired(!administrators.isSetUp())
+                .signupMode(settings.getSignupMode())
+                .mailEnabled(mail.isEnabled())
                 .build();
     }
 

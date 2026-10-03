@@ -428,3 +428,69 @@ export interface SelfInfo {
   email: string;
   roles: string[];
 }
+
+export type SignupMode = 'OPEN' | 'INVITATION_ONLY';
+
+/** The public part of the instance state, readable without signing in. */
+export interface InstanceInfo {
+  setupRequired: boolean;
+  signupMode: SignupMode;
+  mailEnabled: boolean;
+}
+
+export interface InstanceSettings {
+  signupMode: SignupMode;
+}
+
+/** What the instance is configured with. The server never includes a secret. */
+export interface InstanceOverview {
+  version: string | null;
+  instanceUrl: {configured: string | null, effective: string};
+  registration: {signupMode: SignupMode, confirmation: 'MAIL' | 'ADMIN_APPROVAL'};
+  mail: {
+    configured: boolean;
+    /** Configured and usable: mails also need INSTANCE_URL for their links. */
+    enabled: boolean;
+    host: string | null;
+    port: number | null;
+    protocol: string | null;
+    startTls: boolean | null;
+    from: string | null;
+  };
+  features: {
+    sharing: boolean;
+    households: boolean;
+    apiKeys: boolean;
+    recipeScan: {configured: boolean, enabled: boolean};
+  };
+  services: {recipeImportUrl: string | null, recipeScanUrl: string | null};
+  legal: {directory: string, documents: {document: string, published: boolean}[]};
+  limits: {maxUploadMb: number, maxImageMb: number};
+}
+
+export type InstanceCheckKind = 'MAIL' | 'RECIPE_IMPORT' | 'RECIPE_SCAN';
+
+export interface InstanceCheck {
+  check: InstanceCheckKind;
+  status: 'OK' | 'FAILED' | 'NOT_CONFIGURED';
+  detail: string | null;
+}
+
+export interface Invitation {
+  id: string;
+  link: string;
+  /** Null once the administrator who created it is deleted. */
+  createdBy: string | null;
+  createdOn: string;
+  expiresAt: string;
+}
+
+export interface InvitationDraft {
+  validForDays: number;
+  sendTo: string | null;
+}
+
+export interface PasswordResetLink {
+  link: string;
+  mailed: boolean;
+}
