@@ -1,0 +1,8 @@
+#heading($i18n.get("mail.invitation.heading"))
+#paragraph($i18n.get("mail.common.greeting"))
+#paragraph($i18n.get("mail.invitation.intro"))
+#button($invitationLink $i18n.get("mail.invitation.button"))
+#fallbackLink($invitationLink)
+#divider()
+#note($i18n.get("mail.invitation.validity", $validForDays))
+#note($i18n.get("mail.invitation.ignore"))

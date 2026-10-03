@@ -1,12 +1,15 @@
-import {Box, CircularProgress, CssBaseline, ThemeProvider} from '@mui/material';
+import {Alert, Box, Button, CircularProgress, CssBaseline, ThemeProvider} from '@mui/material';
 import {Navigate, RouterProvider, createBrowserRouter} from 'react-router-dom';
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {AppContextProvider, useSession} from './AppContext';
+import {AppContextProvider, useInstance, useSession} from './AppContext';
 import {MainMenu} from './navigation/MainMenu';
 import {ADMIN_BASE_PATH, navigationItems, pathOf} from './navigation/navigationItems';
 import {LoginScreen} from './screens/LoginScreen';
+import {SetupScreen} from './screens/SetupScreen';
 import {adminTheme} from './theme';
+
+const invitationsItem = navigationItems.find((item) => item.route === 'invitations')!;
 
 const router = createBrowserRouter([{
   path: ADMIN_BASE_PATH,
@@ -19,13 +22,31 @@ const router = createBrowserRouter([{
 
 const Panel = () => {
   const {signedIn, checking} = useSession();
+  const instance = useInstance();
 
-  if (checking) {
+  // The next step of the use case: invite the first people.
+  const finishSetup = () => {
+    router.navigate(pathOf(invitationsItem));
+    instance.reload();
+  };
+
+  if (instance.error && !instance.data) {
+    return (
+      <Alert severity="error" sx={{m: 2}} action={<Button color="inherit" onClick={instance.reload}>Retry</Button>}>
+        {instance.error}
+      </Alert>
+    );
+  }
+  if (checking || !instance.data) {
     return (
       <Box sx={{display: 'flex', height: '100dvh', alignItems: 'center', justifyContent: 'center'}}>
         <CircularProgress />
       </Box>
     );
+  }
+  // The setup stays up after the account is created: its second step needs the signed in session.
+  if (instance.data.setupRequired) {
+    return <SetupScreen onFinish={finishSetup} reloadInstance={instance.reload} />;
   }
   return signedIn ? <RouterProvider router={router} /> : <LoginScreen />;
 };

@@ -1,5 +1,7 @@
 package com.sterul.opencookbookapiserver.controllers.responses;
 
+import com.sterul.opencookbookapiserver.entities.instance.SignupMode;
+
 import lombok.Builder;
 import lombok.Data;
 
@@ -19,4 +21,12 @@ public class InstanceInfoResponse {
      * letting people find out one failed scan at a time.
      */
     private boolean ocrImportEnabled;
+
+    /** No activated administrator yet: the app stays closed until the setup in the admin panel is done. */
+    private boolean setupRequired;
+
+    private SignupMode signupMode;
+
+    /** Without mail, signups wait for an administrator and reset links come from the admin panel. */
+    private boolean mailEnabled;
 }

@@ -30,10 +30,20 @@ public class LegalDocumentService {
     /** The document, or a placeholder naming the file the operator still has to provide. */
     @Cacheable("legal_documents")
     public String render(LegalDocument document) {
-        var path = Path.of(configuration.getLegalDirectory(), document.fileName());
-        return read(path)
-                .filter(content -> !content.isBlank())
-                .orElseGet(() -> placeholder(document, path));
+        return published(document).orElseGet(() -> placeholder(document, pathOf(document)));
+    }
+
+    /** Whether the operator has put the file in place, as it is on disk now. */
+    public boolean isPublished(LegalDocument document) {
+        return published(document).isPresent();
+    }
+
+    private Optional<String> published(LegalDocument document) {
+        return read(pathOf(document)).filter(content -> !content.isBlank());
+    }
+
+    private Path pathOf(LegalDocument document) {
+        return Path.of(configuration.getLegalDirectory(), document.fileName());
     }
 
     private Optional<String> read(Path path) {

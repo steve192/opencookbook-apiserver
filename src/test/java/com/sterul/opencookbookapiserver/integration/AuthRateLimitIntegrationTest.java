@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.UUID;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
+import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.EmailService;
 
 /**
@@ -36,7 +38,10 @@ import com.sterul.opencookbookapiserver.services.EmailService;
  */
 @SpringBootTest(properties = {
         "opencookbook.auth.attempts-per-hour-per-ip=3",
-        "opencookbook.auth.mails-per-hour-per-address=2"
+        "opencookbook.auth.mails-per-hour-per-address=2",
+        "opencookbook.smtp-host=smtp.cookpal.invalid",
+        "opencookbook.instanceURL=https://cookpal.invalid",
+        "opencookbook.mail-from=cookpal@cookpal.invalid"
 })
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
@@ -45,8 +50,29 @@ class AuthRateLimitIntegrationTest extends IntegrationTestBase {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @MockitoBean
     private EmailService emailService;
+
+    @BeforeEach
+    void setUpInstance() {
+        TestInstance.setUp(userRepository);
+    }
+
+    /** Reachable by anybody until an administrator exists, so counted like signing in. */
+    @Test
+    void theSetupIsCountedAgainstTheBudget() throws Exception {
+        var client = fromClient("203.0.113.17");
+        for (var attempt = 0; attempt < 3; attempt++) {
+            runSetup(client).andExpect(status().isConflict());
+        }
+
+        runSetup(client)
+                .andExpect(status().isTooManyRequests())
+                .andExpect(jsonPath("$.code").value("RATE_LIMITED"));
+    }
 
     @Test
     void guessingIsRefusedOnceTheBudgetIsSpent() throws Exception {
@@ -134,6 +160,15 @@ class AuthRateLimitIntegrationTest extends IntegrationTestBase {
                 .content("""
                         {"emailAddress": "%s", "password": "%s"}
                         """.formatted(emailAddress, password)));
+    }
+
+    private ResultActions runSetup(RequestPostProcessor client) throws Exception {
+        return mockMvc.perform(post("/api/v1/setup")
+                .with(client)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {"emailAddress": "late@example.com", "password": "test-password"}
+                        """));
     }
 
     private ResultActions signUp(String emailAddress, RequestPostProcessor client)

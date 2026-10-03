@@ -26,12 +26,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sterul.opencookbookapiserver.controllers.UserController;
 import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
+import com.sterul.opencookbookapiserver.errors.ApiException;
 import com.sterul.opencookbookapiserver.controllers.exceptions.UnauthorizedException;
-import com.sterul.opencookbookapiserver.controllers.exceptions.UserNotActiveException;
 import com.sterul.opencookbookapiserver.controllers.requests.PasswordChangeRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.PasswordResetExecutionRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.PasswordResetRequest;
-import com.sterul.opencookbookapiserver.controllers.requests.UserCreationRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.UserLoginRequest;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.account.PasswordResetLink;
@@ -44,7 +43,12 @@ import com.sterul.opencookbookapiserver.services.exceptions.PasswordResetLinkNot
 
 import jakarta.mail.MessagingException;
 
-@SpringBootTest
+// Mail configured, so a locked account is sent its link again and a reset can be asked for.
+@SpringBootTest(properties = {
+        "opencookbook.smtp-host=smtp.cookpal.invalid",
+        "opencookbook.instanceURL=https://cookpal.invalid",
+        "opencookbook.mail-from=cookpal@cookpal.invalid"
+})
 @ActiveProfiles("integration-test")
 class UserAPIIntegrationTest extends IntegrationTestBase{
 
@@ -138,19 +142,13 @@ class UserAPIIntegrationTest extends IntegrationTestBase{
 
     @Test
     @Transactional
-    void registrationEmailSent() throws MessagingException {
-        cut.signup(new UserCreationRequest("testi@cookpal.io", "12345"));
-        verify(emailService, times(1)).sendActivationMail(any());
-    }
-
-    @Test
-    @Transactional
     void nonActivatedUserCannotLogin() {
         whenTestUserExists(false);
+        when(activationLinkRepository.existsByUser(testUser)).thenReturn(true);
 
         var request = new UserLoginRequest(testUser.getEmailAddress(), testPassword);
 
-        var thrown = assertThrows(UserNotActiveException.class, () -> cut.login(request));
+        var thrown = assertThrows(ApiException.class, () -> cut.login(request));
 
         // The link is sent again on the way out, because somebody trying to sign in is somebody
         // who never received it or lost it.

@@ -1,6 +1,7 @@
 package com.sterul.opencookbookapiserver.configurations;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Properties;
 
 import org.apache.velocity.app.VelocityEngine;
@@ -16,9 +17,19 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 @Configuration
 public class EmailConfiguration {
 
+    private static final Duration MAIL_SERVER_TIMEOUT = Duration.ofSeconds(10);
+
     @Bean
     public JavaMailSender getJavaMailSender(OpencookbookConfiguration opencookbookConfiguration) {
+        return createMailSender(opencookbookConfiguration, MAIL_SERVER_TIMEOUT);
+    }
 
+    /**
+     * @param timeout how long connecting, reading and writing may each take. Without one a mail
+     *                server that never answers holds a request for minutes.
+     */
+    public static JavaMailSenderImpl createMailSender(OpencookbookConfiguration opencookbookConfiguration,
+            Duration timeout) {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost(opencookbookConfiguration.getSmtpHost());
         mailSender.setPort(opencookbookConfiguration.getSmtpPort());
@@ -27,10 +38,16 @@ public class EmailConfiguration {
         mailSender.setPassword(opencookbookConfiguration.getSmtpPassword());
         mailSender.setDefaultEncoding(StandardCharsets.UTF_8.name());
 
+        var protocol = opencookbookConfiguration.getSmtpProtocol();
         Properties props = mailSender.getJavaMailProperties();
-        props.put("mail.transport.protocol", opencookbookConfiguration.getSmtpProtocol());
+        props.put("mail.transport.protocol", protocol);
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", opencookbookConfiguration.getSmtpStartTLS());
+        var timeoutMillis = Long.toString(timeout.toMillis());
+        var protocolPrefix = "mail." + protocol + ".";
+        props.put(protocolPrefix + "connectiontimeout", timeoutMillis);
+        props.put(protocolPrefix + "timeout", timeoutMillis);
+        props.put(protocolPrefix + "writetimeout", timeoutMillis);
         // props.put("mail.debug", "true");
 
         return mailSender;

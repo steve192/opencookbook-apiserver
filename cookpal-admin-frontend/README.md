@@ -1,7 +1,7 @@
 # Cookpal admin panel
 
 The administration panel for a cookpal instance: accounts, recipes, ingredients, public shares,
-recipe scans and Bring exports. It is a React app that the api server serves under `/admin`, and
+recipe scans, Bring exports, invitations and the instance configuration. It is a React app that the api server serves under `/admin`, and
 it talks to the `/api/v1/admin/...` endpoints as a signed in user holding the `ADMIN` role.
 
 ## Working on it
@@ -16,12 +16,10 @@ npm install && npm run dev            # the panel on http://localhost:5173/admin
 
 Point the proxy somewhere else with `BACKEND_URL=https://cookbook.example.com npm run dev`.
 
-The panel refuses anybody without the `ADMIN` role, so the first account has to be given it
-directly after signing up:
-
-```
-psql -c "update cookpal_user set roles = 'ADMIN' where email_address = 'me@example.com'"
-```
+The panel refuses anybody without the `ADMIN` role. On an instance without an active
+administrator it shows the setup instead of the login: the first step creates the administrator
+account, the second shows how the instance is configured and asks who may sign up. Whoever opens
+the panel first becomes the administrator, so run the setup right after the first start.
 
 ## Building it
 

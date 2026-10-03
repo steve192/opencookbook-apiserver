@@ -91,6 +91,10 @@ class MailRendererTest {
         var reset = cut.render(MailKind.PASSWORD_RESET, Locale.ENGLISH, RECIPIENT, model(MailKind.PASSWORD_RESET));
         assertTrue(reset.html().contains("https://cookpal.example/resetPassword?id=abc"));
         assertTrue(reset.text().contains("https://cookpal.example/resetPassword?id=abc"));
+
+        var invitation = cut.render(MailKind.INVITATION, Locale.ENGLISH, RECIPIENT, model(MailKind.INVITATION));
+        assertTrue(invitation.html().contains("https://cookpal.example/app/invite/abc"));
+        assertTrue(invitation.text().contains("https://cookpal.example/app/invite/abc"));
     }
 
     @Test
@@ -140,7 +144,8 @@ class MailRendererTest {
         return switch (kind) {
             case ACTIVATION -> Map.of("activationLink", "https://cookpal.example/activateAccount?activationId=abc");
             case PASSWORD_RESET -> Map.of("resetLink", "https://cookpal.example/resetPassword?id=abc");
-            case ACCOUNT_DELETED -> Map.of();
+            case INVITATION -> Map.of("invitationLink", "https://cookpal.example/app/invite/abc");
+            case ACCOUNT_DELETED, TEST -> Map.of();
         };
     }
 

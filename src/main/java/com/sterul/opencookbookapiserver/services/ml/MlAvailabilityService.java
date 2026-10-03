@@ -65,18 +65,38 @@ public class MlAvailabilityService {
         }
         try {
             // The holder of the lock may have finished while this call was waiting for it.
-            if (isFresh()) {
-                return available;
+            if (!isFresh()) {
+                probe(proxy::health);
             }
-            proxy.health();
-            recordReachability(true);
         } catch (MlSubsystemException e) {
             log.warn("The machine learning subsystem is not available: {}", e.getMessage());
-            recordReachability(false);
         } finally {
             refreshing.unlock();
         }
         return available;
+    }
+
+    /**
+     * Asks the subsystem now rather than trusting the last answer, for an administrator checking it.
+     * The health endpoint needs no token, so a wrong one is not noticed here.
+     *
+     * @throws MlSubsystemException saying why it is not usable
+     */
+    public void check(Duration timeout) {
+        if (!hasCredential()) {
+            throw new MlUnavailableException("No api token is set");
+        }
+        probe(() -> proxy.health(timeout));
+    }
+
+    private void probe(Runnable health) {
+        try {
+            health.run();
+            recordReachability(true);
+        } catch (MlSubsystemException e) {
+            recordReachability(false);
+            throw e;
+        }
     }
 
     private boolean isFresh() {

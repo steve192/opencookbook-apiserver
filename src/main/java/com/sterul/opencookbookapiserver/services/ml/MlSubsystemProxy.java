@@ -3,6 +3,7 @@ package com.sterul.opencookbookapiserver.services.ml;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -187,24 +188,34 @@ public class MlSubsystemProxy {
      * @throws MlSubsystemException when the subsystem cannot be reached or refuses
      */
     public void health() {
-        execute(new HttpGet(url(HEALTH_PATH)), false);
+        var ml = configuration.getMl();
+        health(Timeout.of(ml.getConnectTimeoutSeconds(), TimeUnit.SECONDS),
+                Timeout.of(ml.getRequestTimeoutSeconds(), TimeUnit.SECONDS));
+    }
+
+    /** The same, with the time allowed to connect and, separately, to read; not a limit on the whole call. */
+    public void health(Duration timeout) {
+        var limit = Timeout.of(timeout);
+        health(limit, limit);
+    }
+
+    private void health(Timeout connectTimeout, Timeout responseTimeout) {
+        execute(new HttpGet(url(HEALTH_PATH)), connectTimeout, responseTimeout);
     }
 
     // -- transport -----------------------------------------------------------
 
     private RawResponse execute(HttpUriRequestBase request) {
-        return execute(request, true);
+        var ml = configuration.getMl();
+        request.addHeader("Authorization", "Bearer " + ml.getApiToken());
+        return execute(request, Timeout.of(ml.getConnectTimeoutSeconds(), TimeUnit.SECONDS),
+                Timeout.of(ml.getRequestTimeoutSeconds(), TimeUnit.SECONDS));
     }
 
-    private RawResponse execute(HttpUriRequestBase request, boolean authenticated) {
-
-        var ml = configuration.getMl();
-        if (authenticated) {
-            request.addHeader("Authorization", "Bearer " + ml.getApiToken());
-        }
+    private RawResponse execute(HttpUriRequestBase request, Timeout connectTimeout, Timeout responseTimeout) {
         request.setConfig(RequestConfig.custom()
-                .setConnectTimeout(Timeout.of(ml.getConnectTimeoutSeconds(), TimeUnit.SECONDS))
-                .setResponseTimeout(Timeout.of(ml.getRequestTimeoutSeconds(), TimeUnit.SECONDS))
+                .setConnectTimeout(connectTimeout)
+                .setResponseTimeout(responseTimeout)
                 .build());
 
         RawResponse response;

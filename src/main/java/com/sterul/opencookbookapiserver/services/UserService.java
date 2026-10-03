@@ -7,26 +7,27 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.entities.account.ActivationLink;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.account.PasswordResetLink;
 import com.sterul.opencookbookapiserver.entities.account.Role;
 import com.sterul.opencookbookapiserver.entities.shopping.ShoppingProvider;
+import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
 import com.sterul.opencookbookapiserver.repositories.ActivationLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.PasswordResetLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.exceptions.InvalidActivationLinkException;
-import com.sterul.opencookbookapiserver.services.exceptions.LastAdministratorException;
 import com.sterul.opencookbookapiserver.services.exceptions.PasswordResetLinkNotExistingException;
-import com.sterul.opencookbookapiserver.services.exceptions.SignupDisabledException;
 import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
 import com.sterul.opencookbookapiserver.services.households.HouseholdService;
+import com.sterul.opencookbookapiserver.services.instance.Administrators;
+import com.sterul.opencookbookapiserver.services.mail.MailAvailability;
 import com.sterul.opencookbookapiserver.services.mail.MailLanguages;
 
 import jakarta.mail.MessagingException;
@@ -50,15 +51,20 @@ public class UserService {
     private final ActivationLinkRepository activationLinkRepository;
     private final PasswordResetLinkRepository passwordResetLinkRepository;
     private final EmailService emailService;
-    private final OpencookbookConfiguration opencookbookConfiguration;
+    private final MailAvailability mail;
+    private final AccountLinkFactory accountLinks;
     private final MailLanguages mailLanguages;
+    private final Administrators administrators;
+    private final AuthRateLimiter authRateLimiter;
+    private final ApplicationEventPublisher events;
 
     public UserService(UserRepository userRepository, IngredientService ingredientService,
             PasswordEncoder passwordEncoder, RecipeService recipeService, RecipeGroupService recipeGroupService,
             RecipeImageService recipeImageService, WeekplanService weekplanService, HouseholdService households,
             SignInService signInService, ActivationLinkRepository activationLinkRepository,
             PasswordResetLinkRepository passwordResetLinkRepository, EmailService emailService,
-            OpencookbookConfiguration opencookbookConfiguration, MailLanguages mailLanguages) {
+            MailAvailability mail, AccountLinkFactory accountLinks, MailLanguages mailLanguages,
+            Administrators administrators, AuthRateLimiter authRateLimiter, ApplicationEventPublisher events) {
         this.userRepository = userRepository;
         this.ingredientService = ingredientService;
         this.passwordEncoder = passwordEncoder;
@@ -71,8 +77,12 @@ public class UserService {
         this.activationLinkRepository = activationLinkRepository;
         this.passwordResetLinkRepository = passwordResetLinkRepository;
         this.emailService = emailService;
-        this.opencookbookConfiguration = opencookbookConfiguration;
+        this.mail = mail;
+        this.accountLinks = accountLinks;
         this.mailLanguages = mailLanguages;
+        this.administrators = administrators;
+        this.authRateLimiter = authRateLimiter;
+        this.events = events;
     }
 
     public CookpalUser getUserByEmail(String username) {
@@ -80,27 +90,26 @@ public class UserService {
     }
 
     /**
-     * @param language the language to write to this account in, or null when the client did not
-     *                 say - which leaves the account on the default rather than pinning it to a
-     *                 guess it can never be talked out of
+     * Whether somebody may create an account is decided by the callers: the setup and signing up.
+     *
+     * The language is whatever the client asked for in Accept-Language, the only thing known about
+     * a person who does not have an account yet. When it said nothing the account stays on the
+     * default rather than being pinned to a guess it can never be talked out of.
+     *
+     * @param role null for an ordinary account
      */
-    public com.sterul.opencookbookapiserver.entities.account.CookpalUser createUser(String emailAddress,
-            String unencryptedPassword, Locale language) {
-        if (!opencookbookConfiguration.isAllowSignup()) {
-            throw new SignupDisabledException();
-        }
+    public CookpalUser createUser(String emailAddress, String unencryptedPassword, boolean activated, Role role) {
         log.info("Creating user for {}", emailAddress);
         if (userExists(emailAddress)) {
             throw new UserAlreadyExistsException("User already exists");
         }
-        var createdUser = new com.sterul.opencookbookapiserver.entities.account.CookpalUser();
+        var createdUser = new CookpalUser();
         createdUser.setEmailAddress(emailAddress);
         createdUser.setPasswordHash(passwordEncoder.encode(unencryptedPassword));
-        createdUser.setActivated(opencookbookConfiguration.isActivateUsersAfterSignup());
-        createdUser.setLanguage(language == null ? null : language.getLanguage());
-        createdUser = userRepository.save(createdUser);
-
-        return createdUser;
+        createdUser.setActivated(activated);
+        createdUser.setRoles(role);
+        createdUser.setLanguage(mailLanguages.fromCurrentRequest().map(Locale::getLanguage).orElse(null));
+        return userRepository.save(createdUser);
     }
 
     /**
@@ -147,16 +156,15 @@ public class UserService {
 
     public CookpalUser setUserActivation(Long userId, boolean activated) {
         var user = getUserById(userId);
-        requireAnAdministratorRemains(user, activated && user.getRoles() == Role.ADMIN);
-        user.setActivated(activated);
-        endSignInsUnlessActive(user);
+        administrators.requireOneRemains(user, activated && user.getRoles() == Role.ADMIN);
+        applyActivation(user, activated);
         return userRepository.save(user);
     }
 
     /** Everything given replaces what was there, so a role of null takes the role away. */
     public CookpalUser updateUser(Long userId, String emailAddress, boolean activated, Role role) {
         var user = getUserById(userId);
-        requireAnAdministratorRemains(user, activated && role == Role.ADMIN);
+        administrators.requireOneRemains(user, activated && role == Role.ADMIN);
 
         if (!emailAddress.equalsIgnoreCase(user.getEmailAddress())) {
             if (userExists(emailAddress)) {
@@ -164,22 +172,17 @@ public class UserService {
             }
             log.info("Changing the address of user {} to {}", userId, emailAddress);
             user.setEmailAddress(emailAddress);
+            // Links were sent to the old address; whoever owns it must not be able to use them.
+            activationLinkRepository.deleteAllByUser(user);
+            passwordResetLinkRepository.deleteAllByUser(user);
         }
 
-        user.setActivated(activated);
+        // Saving the form must not take the confirmation link from an account that still waits for it.
+        if (user.isActivated() != activated) {
+            applyActivation(user, activated);
+        }
         user.setRoles(role);
-        endSignInsUnlessActive(user);
         return userRepository.save(user);
-    }
-
-    /** Only the admin panel gives the role back, so losing the last one is final. */
-    private void requireAnAdministratorRemains(CookpalUser user, boolean staysAnAdministrator) {
-        if (staysAnAdministrator || user.getRoles() != Role.ADMIN || !user.isActivated()) {
-            return;
-        }
-        if (userRepository.countByRolesAndActivated(Role.ADMIN, true) <= 1) {
-            throw new LastAdministratorException();
-        }
     }
 
     public CookpalUser activateUser(String activationId) {
@@ -213,7 +216,7 @@ public class UserService {
     }
 
     public void deleteUser(CookpalUser user) {
-        requireAnAdministratorRemains(user, false);
+        administrators.requireOneRemains(user, false);
         log.info("Deleting user {}", user);
         // Explicitly rather than by cascade, so the households hear of it.
         households.leaveAll(user);
@@ -243,11 +246,7 @@ public class UserService {
         passwordResetLinkRepository.deleteAllByUser(user);
 
         userRepository.delete(user);
-        try {
-            emailService.sendAccountDeletedMail(user);
-        } catch (MessagingException e) {
-            log.error("Error sending account deletion mail to {}, ignoring", user);
-        }
+        events.publishEvent(new AccountDeletedEvent(user.getEmailAddress(), mailLanguages.forUser(user)));
     }
 
     public boolean isPasswordCorrect(String emailAddress, String password) {
@@ -273,33 +272,107 @@ public class UserService {
         return readUser;
     }
 
-    /** A deactivated account keeps no sign in; its access tokens are refused as well. */
-    private void endSignInsUnlessActive(CookpalUser user) {
-        if (!user.isActivated()) {
+    /**
+     * An administrator's decision replaces a confirmation that was still pending, so a locked
+     * account cannot unlock itself through its link. A deactivated account keeps no sign in; its
+     * access tokens are refused as well.
+     */
+    private void applyActivation(CookpalUser user, boolean activated) {
+        user.setActivated(activated);
+        activationLinkRepository.deleteAllByUser(user);
+        if (!activated) {
             signInService.endAll(user);
         }
     }
 
+    /**
+     * Mails the activation link again to an account that waits for its address to be confirmed.
+     * Every other address is answered the same way, so this cannot tell which ones are registered.
+     */
     public void resendActivationLink(String emailAddress) throws MessagingException {
-        log.info("Resending activation link for user {}", emailAddress);
         var user = getUserByEmail(emailAddress);
-
-        if (user.isActivated()) {
-            return;
+        if (user != null && awaitsConfirmation(user)) {
+            mailActivationLink(user);
         }
-        var activationLink = createActivationLink(user);
-        emailService.sendActivationMail(activationLink);
     }
 
-    public void requestPasswordReset(String emailAddress) throws MessagingException {
-        log.info("Requesting password reset for user {}", emailAddress);
+    /**
+     * Why somebody who proved their password still cannot sign in. An account waiting for its
+     * confirmation gets the link again on the way, as they have lost it or never received it; a
+     * mail server that is down must not turn that into a different answer than the one they need.
+     */
+    public ApiErrorCode explainLockedAccount(String emailAddress) {
         var user = getUserByEmail(emailAddress);
-
-        var link = createPasswordResetLink(user);
-        emailService.sendPasswordResetMail(link);
+        if (!awaitsConfirmation(user)) {
+            return ApiErrorCode.ACCOUNT_AWAITING_APPROVAL;
+        }
+        try {
+            mailActivationLink(user);
+        } catch (MessagingException e) {
+            log.error("Error re-sending activation link for user {}", user, e);
+        }
+        return ApiErrorCode.ACCOUNT_NOT_ACTIVATED;
     }
 
-    public PasswordResetLink createPasswordResetLink(CookpalUser user) {
+    /** Otherwise the account is locked until an administrator unlocks it. */
+    private boolean awaitsConfirmation(CookpalUser user) {
+        return mail.isEnabled() && !user.isActivated() && activationLinkRepository.existsByUser(user);
+    }
+
+    private void mailActivationLink(CookpalUser user) throws MessagingException {
+        if (mayMail(user.getEmailAddress())) {
+            log.info("Resending activation link for user {}", user);
+            emailService.sendActivationMail(createActivationLink(user));
+        }
+    }
+
+    /** Answers the same whether or not an address belongs to an account, except for an instance that cannot mail. */
+    public void requestPasswordReset(String emailAddress) throws MessagingException {
+        mail.requireEnabled();
+        var user = getUserByEmail(emailAddress);
+        if (user != null && mayMail(emailAddress)) {
+            log.info("Requesting password reset for user {}", emailAddress);
+            emailService.sendPasswordResetMail(createPasswordResetLink(user));
+        }
+    }
+
+    /**
+     * Whether one more mail may be sent to an address. A spent allowance is not reported: the
+     * callers answer the same whether or not an account exists.
+     */
+    private boolean mayMail(String emailAddress) {
+        if (authRateLimiter.mayMail(emailAddress)) {
+            return true;
+        }
+        log.warn("Not sending another mail to a recipient who has had their hourly allowance");
+        return false;
+    }
+
+    /** A reset link for an administrator to hand over. */
+    public record HandedOverPasswordReset(String link, boolean mailed) {
+    }
+
+    /** The same link as a reset asked for at the login screen, and mailed as well when this instance can. */
+    public HandedOverPasswordReset createPasswordResetForAdministrator(Long userId) {
+        var link = createPasswordResetLink(getUserById(userId));
+        return new HandedOverPasswordReset(accountLinks.passwordReset(link), mailIfPossible(link));
+    }
+
+    /** A mail server that is down must not hide the link: the administrator can still hand it over. */
+    private boolean mailIfPossible(PasswordResetLink link) {
+        if (!mail.isEnabled()) {
+            return false;
+        }
+        try {
+            emailService.sendPasswordResetMail(link);
+            return true;
+        } catch (MessagingException e) {
+            log.warn("Could not mail the password reset link to user {}", link.getUser(), e);
+            return false;
+        }
+    }
+
+    private PasswordResetLink createPasswordResetLink(CookpalUser user) {
         log.info("Creating password reset link for user {}", user);
         passwordResetLinkRepository.deleteAllByUser(user);
         // Flushed before the insert, as the activation links are: a user may hold only one reset

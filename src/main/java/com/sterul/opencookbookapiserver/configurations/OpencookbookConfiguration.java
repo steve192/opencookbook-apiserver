@@ -56,7 +56,8 @@ public class OpencookbookConfiguration {
     private String recipeScaperServiceUrl;
 
     /**
-     * SMTP Host
+     * SMTP Host. Empty means this instance sends no mail: signups wait for an administrator, and
+     * invitation and password reset links are handed over from the admin panel.
      */
     private String smtpHost = "";
 
@@ -104,17 +105,6 @@ public class OpencookbookConfiguration {
      * The width images are scaled down to (height is calculated by preserving width/height ratio)
      */
     private int imageThumbnailScaleWidth = 512;
-
-
-    /**
-     * Immediatly activate users upon signup. Useful for local development or where no mailserver is available
-     */
-    private boolean activateUsersAfterSignup = false;
-
-    /**
-     * Disables / enabled signups
-     */
-    private boolean allowSignup = true;
 
     /**
      * Settings for recipe sharing

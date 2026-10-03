@@ -22,6 +22,6 @@ public class AuthRateLimitConfiguration implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new AuthRateLimitInterceptor(rateLimiter))
-                .addPathPatterns(WebSecurityConfiguration.UNAUTHENTICATED_USER_PATHS);
+                .addPathPatterns(WebSecurityConfiguration.UNAUTHENTICATED_ACCOUNT_PATHS);
     }
 }

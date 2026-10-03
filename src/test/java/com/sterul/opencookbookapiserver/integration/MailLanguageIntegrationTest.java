@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.io.ByteArrayOutputStream;
 import java.util.UUID;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,11 @@ import jakarta.mail.internet.MimeMessage;
  * comes back out as the language of the mail - including on the endpoints nobody is signed in
  * for, which are all of the ones that send a mail to somebody who is not currently looking.
  */
-@SpringBootTest
+@SpringBootTest(properties = {
+        "opencookbook.smtp-host=smtp.cookpal.invalid",
+        "opencookbook.instanceURL=https://cookpal.invalid",
+        "opencookbook.mail-from=cookpal@cookpal.invalid"
+})
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
 class MailLanguageIntegrationTest extends IntegrationTestBase {
@@ -53,6 +58,11 @@ class MailLanguageIntegrationTest extends IntegrationTestBase {
     /** Mocked at the boundary, so that everything above it - templates included - really runs. */
     @MockitoBean
     private JavaMailSender javaMailSender;
+
+    @BeforeEach
+    void setUpInstance() {
+        TestInstance.setUp(userRepository);
+    }
 
     @Test
     void aGermanBrowserSigningUpIsRememberedAndGetsAGermanMail() throws Exception {

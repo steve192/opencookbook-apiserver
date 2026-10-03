@@ -60,6 +60,13 @@ class ApiDocumentationIntegrationTest extends IntegrationTestBase {
                 .andExpect(jsonPath("$.paths['/api/v1/recipes']").exists());
     }
 
+    @Test
+    void theInvitationRequestOffersItsValidityAsAnInteger() throws Exception {
+        mockMvc.perform(get("/api-docs/swagger-config"))
+                .andExpect(jsonPath("$.components.schemas.AdminInvitationRequest.properties.validForDays.type")
+                        .value("integer"));
+    }
+
     /**
      * Every endpoint carries a summary, so the document stays something a reader can use rather
      * than a list of paths. Asked of the generated document rather than of the annotations, so an

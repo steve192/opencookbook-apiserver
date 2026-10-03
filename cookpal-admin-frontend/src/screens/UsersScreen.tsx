@@ -6,11 +6,12 @@ import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import PasswordIcon from '@mui/icons-material/Password';
 import {Chip} from '@mui/material';
 import {useCallback, useMemo, useState} from 'react';
-import {Role, User, UsersApi} from '../api';
+import {PasswordResetLink, Role, User, UsersApi} from '../api';
 import {BulkAction, FieldDefinition, RowAction} from '../components/collection/types';
 import {CollectionScreen} from '../components/collection/CollectionScreen';
 import {EntityFormDialog} from '../components/form/EntityFormDialog';
 import {FormFieldDefinition} from '../components/form/types';
+import {LinkDialog} from '../components/LinkDialog';
 import {StatTiles} from '../components/StatTiles';
 import {useActionRunner} from '../hooks/useActionRunner';
 import {useCollection} from '../hooks/useAsyncData';
@@ -68,10 +69,20 @@ export const UsersScreen = () => {
   const runner = useActionRunner(users.reload);
   const [editing, setEditing] = useState<User>();
   const [assigningRoleTo, setAssigningRoleTo] = useState<User[]>();
+  const [resetLink, setResetLink] = useState<{user: User, reset: PasswordResetLink}>();
+
+  const resetDialog = useMemo(() => resetLink && {
+    title: 'Password reset for ' + resetLink.user.emailAddress,
+    link: resetLink.reset.link,
+    note: resetLink.reset.mailed ?
+      'The link was mailed to the user. It works for one hour.' :
+      'No mail was sent. Hand this link to the user. It works for one hour.',
+  }, [resetLink]);
 
   const stats = useMemo(() => [
     {label: 'Accounts', value: users.data.length},
     {label: 'Activated', value: users.data.filter((user) => user.activated).length},
+    {label: 'Not activated', value: users.data.filter((user) => !user.activated).length},
     {label: 'Administrators', value: users.data.filter((user) => user.roles === 'ADMIN').length},
     {label: 'Recipes held', value: users.data.reduce((sum, user) => sum + user.recipeCount, 0)},
   ], [users.data]);
@@ -105,11 +116,12 @@ export const UsersScreen = () => {
       onRun: (user) => setActivation([user], false),
     },
     {
-      label: 'Send password reset',
+      label: 'Password reset',
       icon: <PasswordIcon fontSize="small" />,
-      confirm: (user) => 'Send a password reset mail to ' + user.emailAddress + '?',
-      onRun: (user) => runner.run('Sent a password reset mail',
-          () => UsersApi.sendPasswordReset(user.userId)),
+      confirm: (user) => 'Create a password reset link for ' + user.emailAddress + '?',
+      onRun: (user) => runner.run('Created a password reset link', async () => {
+        setResetLink({user, reset: await UsersApi.createPasswordReset(user.userId)});
+      }),
     },
     {
       label: 'Delete',
@@ -197,6 +209,8 @@ export const UsersScreen = () => {
           }
         }}
       />
+
+      <LinkDialog content={resetDialog} onClose={() => setResetLink(undefined)} />
     </>
   );
 };

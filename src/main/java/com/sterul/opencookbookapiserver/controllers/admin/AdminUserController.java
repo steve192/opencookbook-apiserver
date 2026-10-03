@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sterul.opencookbookapiserver.controllers.admin.requests.AdminUserRequest;
+import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminPasswordResetResponse;
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminUserOverviewResponse;
 import com.sterul.opencookbookapiserver.controllers.admin.responses.AdminUserResponse;
 import com.sterul.opencookbookapiserver.services.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
@@ -84,12 +84,12 @@ public class AdminUserController {
         return AdminUserResponse.fromEntity(userService.setUserActivation(id, false));
     }
 
-    @Operation(summary = "Send somebody a password reset mail")
+    @Operation(summary = "Create a password reset link to hand over",
+            description = "The same link, valid for an hour, as one asked for at the login screen. Mailed "
+                    + "as well when this instance can send mail.")
     @PostMapping("/{id}/password-reset")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void sendPasswordReset(@PathVariable Long id) throws MessagingException {
-        var user = userService.getUserById(id);
-        log.info("Admin: Sending a password reset mail to user {}", id);
-        userService.requestPasswordReset(user.getEmailAddress());
+    public AdminPasswordResetResponse createPasswordReset(@PathVariable Long id) {
+        var reset = userService.createPasswordResetForAdministrator(id);
+        return new AdminPasswordResetResponse(reset.link(), reset.mailed());
     }
 }

@@ -10,19 +10,23 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.authorization.AllRequiredFactorsAuthorizationManager;
 import org.springframework.security.authorization.AuthorityAuthorizationManager;
 import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.authorization.AuthorizationManagers;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.authority.FactorGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -38,6 +42,7 @@ import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration
 import com.sterul.opencookbookapiserver.controllers.admin.AdminPaths;
 import com.sterul.opencookbookapiserver.controllers.errors.ApiErrorWriter;
 import com.sterul.opencookbookapiserver.controllers.legal.LegalPaths;
+import com.sterul.opencookbookapiserver.controllers.setup.SetupPaths;
 import com.sterul.opencookbookapiserver.controllers.sharing.SharePaths;
 import com.sterul.opencookbookapiserver.entities.account.Role;
 import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
@@ -51,10 +56,11 @@ import jakarta.servlet.http.HttpServletRequest;
 public class WebSecurityConfiguration {
 
         /**
-         * Everything under /users a stranger can reach. Also what the auth rate limit counts,
-         * so the two cannot drift apart and leave a new endpoint uncounted.
+         * Everything a stranger can reach to set up, sign up or sign in. Also what the auth rate
+         * limit counts, so the two cannot drift apart and leave a new endpoint uncounted.
          */
-        static final String[] UNAUTHENTICATED_USER_PATHS = {
+        static final String[] UNAUTHENTICATED_ACCOUNT_PATHS = {
+                        SetupPaths.BASE,
                         "/api/v1/users/signup",
                         "/api/v1/users/activate",
                         "/api/v1/users/resendActivationLink",
@@ -78,7 +84,7 @@ public class WebSecurityConfiguration {
         private static final String ADMIN_PANEL = "/admin/**";
 
         private static final String[] AUTH_WHITELIST = Stream.concat(
-                        Arrays.stream(UNAUTHENTICATED_USER_PATHS),
+                        Arrays.stream(UNAUTHENTICATED_ACCOUNT_PATHS),
                         Stream.of(
                                         REFRESH_TOKEN_PATH,
                                         LOGOUT_PATH,
@@ -192,9 +198,19 @@ public class WebSecurityConfiguration {
 
         }
 
+        /**
+         * The state of an account is only checked once the password is right, so that it is told to
+         * whoever holds the password and to nobody who merely knows the address.
+         */
         @Bean
-        public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) {
-                return authenticationConfiguration.getAuthenticationManager();
+        AuthenticationManager authenticationManager(UserDetailsService userDetailsService,
+                        PasswordEncoder passwordEncoder) {
+                var provider = new DaoAuthenticationProvider(userDetailsService);
+                provider.setPasswordEncoder(passwordEncoder);
+                provider.setPreAuthenticationChecks(user -> {
+                });
+                provider.setPostAuthenticationChecks(new AccountStatusUserDetailsChecker());
+                return new ProviderManager(provider);
         }
 
 }
