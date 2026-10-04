@@ -34,7 +34,7 @@ import jakarta.validation.constraints.Size;
 @Tag(name = "Bring Export", description = "Data for bring ingredient export")
 public class BringExportController extends BaseController {
 
-    private static final String DEFAULT_TITLE = "Cookpal Import";
+    private static final String DEFAULT_TITLE = "CookPal Import";
 
     /** Served unauthenticated on the app's origin, so nothing on it may run. */
     private static final String CONTENT_SECURITY_POLICY = "default-src 'none'; img-src 'self'";

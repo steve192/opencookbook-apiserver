@@ -30,7 +30,7 @@ export const LoginScreen = () => {
   return (
     <CenteredPage width="xs">
       <Stack spacing={1} sx={{mb: 3}}>
-        <Typography variant="h5" component="h1">Cookpal admin</Typography>
+        <Typography variant="h5" component="h1">CookPal admin</Typography>
         <Typography variant="body2" color="text.secondary">
           Sign in with an account that has the administrator role.
         </Typography>

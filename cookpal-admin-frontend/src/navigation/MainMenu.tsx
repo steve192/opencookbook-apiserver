@@ -20,7 +20,7 @@ export const MainMenu = () => {
   const drawer = (
     <Box sx={{backgroundColor: NAVIGATION_BACKGROUND, height: '100%', color: 'white'}}>
       <Toolbar>
-        <Typography variant="h6" noWrap>Cookpal admin</Typography>
+        <Typography variant="h6" noWrap>CookPal admin</Typography>
       </Toolbar>
       <Divider sx={{borderColor: 'rgba(255,255,255,0.15)'}} />
       <List>
@@ -67,7 +67,7 @@ export const MainMenu = () => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap sx={{flexGrow: 1}}>
-            {current?.label ?? 'Cookpal admin'}
+            {current?.label ?? 'CookPal admin'}
           </Typography>
           <Typography variant="body2" sx={{mr: 1, display: {xs: 'none', sm: 'block'}}}>
             {emailAddress}

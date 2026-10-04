@@ -1,6 +1,7 @@
 package com.sterul.opencookbookapiserver.unit.services.recipeimport;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -82,6 +83,31 @@ class IngredientExtractorTest {
         assertAmount("1/2½ Butter", 0.5F);
         assertAmount("⅟ Butter", 0F);
         assertAmount("2² Butter", 2F);
+    }
+
+    @Test
+    void ofARangeTheLowerBoundIsTheAmount() {
+        assertAmount("2-3 EL Öl", 2F);
+        assertAmount("1/2-1 Knoblauchzehe", 0.5F);
+        assertUnit("200 - 300 ml Brühe", "ml");
+        assertEquals("Öl", cut.extractName("2-3 EL Öl"));
+        assertEquals("Brühe", cut.extractName("200 - 300 ml Brühe"));
+    }
+
+    @Test
+    void aLineBecomesOneIngredientNeed() {
+        var need = cut.toNeed("1 1/2 EL Butter, weich").orElseThrow();
+
+        assertEquals(1.5F, need.getAmount());
+        assertEquals("EL", need.getUnit());
+        assertEquals("Butter", need.getIngredient().getName());
+        assertEquals(", weich", need.getIngredient().getAdditionalInfo());
+    }
+
+    @Test
+    void aLineThatNamesNothingIsNoIngredient() {
+        assertTrue(cut.toNeed("200 g").isEmpty());
+        assertTrue(cut.toNeed("").isEmpty());
     }
 
     private void assertAmount(String ingredient, float expectedAmount) {

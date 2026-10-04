@@ -11,4 +11,9 @@ public interface IRecipeImporter {
     Recipe importRecipe(String url, CookpalUser owner);
 
     List<String> getSupportedHostnames() throws IOException;
+
+    /** True where the import is a draft for the editor rather than a recipe to save as it is. */
+    default boolean needsReview() {
+        return false;
+    }
 }

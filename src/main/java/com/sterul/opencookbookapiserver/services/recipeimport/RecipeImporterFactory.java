@@ -1,17 +1,17 @@
 package com.sterul.opencookbookapiserver.services.recipeimport;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
 import com.sterul.opencookbookapiserver.errors.ApiException;
+import com.sterul.opencookbookapiserver.services.recipeimport.instagram.InstagramImporter;
 import com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers.RecipeScrapersWebserviceImporter;
 
 import lombok.extern.slf4j.Slf4j;
@@ -20,14 +20,18 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RecipeImporterFactory {
 
+    private static final Set<String> INSTAGRAM = Set.of("instagram", "instagr");
+
     private final ChefkochImporter chefkochImporter;
+    private final InstagramImporter instagramImporter;
     private final RecipeScrapersWebserviceImporter recipeScrapersWebserviceImporter;
     private final OpencookbookConfiguration opencookbookConfiguration;
 
-    public RecipeImporterFactory(ChefkochImporter chefkochImporter,
+    public RecipeImporterFactory(ChefkochImporter chefkochImporter, InstagramImporter instagramImporter,
             RecipeScrapersWebserviceImporter recipeScrapersWebserviceImporter,
             OpencookbookConfiguration opencookbookConfiguration) {
         this.chefkochImporter = chefkochImporter;
+        this.instagramImporter = instagramImporter;
         this.recipeScrapersWebserviceImporter = recipeScrapersWebserviceImporter;
         this.opencookbookConfiguration = opencookbookConfiguration;
     }
@@ -35,14 +39,18 @@ public class RecipeImporterFactory {
     public IRecipeImporter getRecipeImporter(String url) {
         // Checked before anything is chosen, so that a link nobody could follow is refused here
         // rather than handed on to a scraper service that would fail on it in its own way.
-        var host = hostOf(url);
+        var site = registrableName(hostOf(url));
+        if (INSTAGRAM.contains(site)) {
+            // The scraper service cannot read Instagram.
+            return instagramImporter;
+        }
 
         var scraperUrl = opencookbookConfiguration.getRecipeScaperServiceUrl();
         if (scraperUrl != null && !scraperUrl.isEmpty()) {
             return recipeScrapersWebserviceImporter;
         }
 
-        return switch (registrableName(host)) {
+        return switch (site) {
             case "chefkoch" -> chefkochImporter;
             default -> throw new ImportNotSupportedException();
         };
@@ -61,17 +69,8 @@ public class RecipeImporterFactory {
      * @throws ApiException when it names none
      */
     private static String hostOf(String url) {
-        String host = null;
-        try {
-            host = new URI(url).getHost();
-        } catch (URISyntaxException | IllegalArgumentException e) {
-            log.debug("Refusing an import of something that is not a url", e);
-        }
-        if (host == null || host.isBlank()) {
-            throw new ApiException(ApiErrorCode.IMPORT_URL_INVALID,
-                    "Not a url an import can be attempted from");
-        }
-        return host;
+        return Links.host(url).orElseThrow(() -> new ApiException(ApiErrorCode.IMPORT_URL_INVALID,
+                "Not a url an import can be attempted from"));
     }
 
     /** The name a site is known by, with any subdomains and the top level domain dropped. */
@@ -82,7 +81,7 @@ public class RecipeImporterFactory {
 
     public List<String> getAllImporter() {
         var hostlist = new LinkedList<String>();
-        var importerList = Arrays.asList(chefkochImporter, recipeScrapersWebserviceImporter);
+        var importerList = Arrays.asList(chefkochImporter, instagramImporter, recipeScrapersWebserviceImporter);
         for (var importer : importerList) {
             try {
                 hostlist.addAll(importer.getSupportedHostnames());

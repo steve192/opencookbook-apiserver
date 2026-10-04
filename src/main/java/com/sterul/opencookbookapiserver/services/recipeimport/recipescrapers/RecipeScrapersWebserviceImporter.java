@@ -10,11 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.JsonSyntaxException;
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
-import com.sterul.opencookbookapiserver.entities.Ingredient;
-import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
-import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
 import com.sterul.opencookbookapiserver.services.RecipeImageService;
 import com.sterul.opencookbookapiserver.services.recipeimport.AbstractRecipeImporter;
 import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImportFailedException;
@@ -88,7 +85,7 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
                 .recipeSource(url)
                 .build();
 
-        extractImage(owner, scrapedRecipe, importRecipe);
+        addImage(importRecipe, scrapedRecipe.image, owner);
         extractIngredients(scrapedRecipe, importRecipe);
 
         log.info("Recipe imported");
@@ -96,39 +93,9 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
     }
 
     private void extractIngredients(ScrapedRecipe scrapedRecipe, Recipe importRecipe) {
-        var needs = scrapedRecipe.ingredients.stream().map(ingredient -> {
-            var unit = ingredientExtractor.extractUnit(ingredient);
-            var amount = ingredientExtractor.extractAmount(ingredient);
-            var name = ingredientExtractor.extractName(ingredient);
-            var additionalInfo = ingredientExtractor.extractAdditionalInfo(ingredient);
-
-            var newIngredient = Ingredient.builder()
-                    .name(name)
-                    .additionalInfo(additionalInfo)
-                    .build();
-            return IngredientNeed.builder()
-                    .amount(amount)
-                    .unit(unit)
-                    .ingredient(newIngredient)
-                    .build();
-        }).toList();
-
-        importRecipe.setNeededIngredients(needs);
-    }
-
-    private void extractImage(CookpalUser owner, ScrapedRecipe scrapedRecipe, Recipe importRecipe) {
-        log.info("Fetching image if present " + scrapedRecipe.image);
-        if (scrapedRecipe.image != null) {
-
-            try {
-                var image = fetchImage(scrapedRecipe.image, owner);
-                importRecipe.getImages().add(image);
-            } catch (UnsupportedOperationException | IllegalFiletypeException | IOException e) {
-                // Ignore image errros
-                log.error("Error importing recipe image from " + scrapedRecipe.image);
-            }
-            log.info("Image fetched:" + importRecipe.getImages().size());
-        }
+        importRecipe.setNeededIngredients(scrapedRecipe.ingredients.stream()
+                .flatMap(line -> ingredientExtractor.toNeed(line).stream())
+                .toList());
     }
 
     private List<String> extractPraparationSteps(ScrapedRecipe scrapedRecipe) {

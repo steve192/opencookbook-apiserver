@@ -14,17 +14,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sterul.opencookbookapiserver.controllers.requests.IngredientNeedRequest;
+import com.sterul.opencookbookapiserver.controllers.requests.RecipeImportRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.RecipeRequest;
 import com.sterul.opencookbookapiserver.controllers.responses.ImportHostsResponse;
 import com.sterul.opencookbookapiserver.controllers.responses.RecipeDeletionImpactResponse;
+import com.sterul.opencookbookapiserver.controllers.responses.RecipeImportResponse;
 import com.sterul.opencookbookapiserver.controllers.responses.RecipeResponse;
 import com.sterul.opencookbookapiserver.controllers.support.RecipeResponses;
-import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
@@ -119,11 +119,13 @@ public class RecipeController extends BaseController {
         recipeService.deleteRecipe(recipeService.getOwnRecipe(id, getLoggedInUser()));
     }
 
-    @Operation(summary = "Import a recipe from a recipe website")
-    @GetMapping("/import")
-    public RecipeResponse importRecipe(@RequestParam String importUrl) {
-        var owner = getLoggedInUser();
-        return recipeResponses.of(recipeImportService.importRecipe(importUrl, owner));
+    @Operation(summary = "Import a recipe from a link or a text",
+            description = "A recipe website is imported and saved. A text, or the caption of an Instagram post, "
+                    + "is read into a draft that is not saved; its images may hold the post's photo.")
+    @PostMapping("/import")
+    public RecipeImportResponse importFromLinkOrText(@RequestBody @Valid RecipeImportRequest request) {
+        var imported = recipeImportService.importRecipe(request.input(), getLoggedInUser());
+        return new RecipeImportResponse(recipeResponses.of(imported.recipe()), imported.saved());
     }
 
     @Operation(summary = "Get a list of supported websites", description = "Additional websites are supported by a generic import. Quality can vary")
@@ -161,11 +163,7 @@ public class RecipeController extends BaseController {
     }
 
     private IngredientNeed needToEntity(IngredientNeedRequest need) {
-        return IngredientNeed.builder()
-                .amount(need.getAmount())
-                .unit(need.getUnit())
-                .ingredient(Ingredient.builder().name(need.getIngredient().getName()).build())
-                .build();
+        return IngredientNeed.detached(need.getAmount(), need.getUnit(), need.getIngredient().getName(), null);
     }
 
 }

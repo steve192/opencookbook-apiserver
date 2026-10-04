@@ -128,6 +128,9 @@ public class OpencookbookConfiguration {
     /** Long-lived keys for headless clients such as Home Assistant. */
     private ApiKeys apiKeys = new ApiKeys();
 
+    /** Importing recipes from links and texts. */
+    private RecipeImport recipeImport = new RecipeImport();
+
     /**
      * Connection to the machine learning subsystem. Leaving the url empty is how an instance
      * says it has none, and every feature that would need one disappears rather than failing.
@@ -263,6 +266,17 @@ public class OpencookbookConfiguration {
 
         /** How many keys one account may hold. */
         private int maxPerUser = 20;
+    }
+
+    @Getter
+    @Setter
+    public static class RecipeImport {
+
+        /**
+         * How many Instagram posts one user may have read per hour. Instagram sees every read as
+         * coming from this server, and blocking it would end Instagram imports for everybody.
+         */
+        private int instagramReadsPerHourPerUser = 30;
     }
 
     @Getter

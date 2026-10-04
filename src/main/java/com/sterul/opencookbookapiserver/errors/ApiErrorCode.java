@@ -68,6 +68,10 @@ public enum ApiErrorCode {
     IMPORT_NOT_SUPPORTED(HttpStatus.NOT_IMPLEMENTED,
             "Recipes cannot be imported from that website"),
     IMPORT_FAILED(HttpStatus.BAD_GATEWAY, "The recipe could not be read from that website", true),
+    /** Carries the link a caption points to as {@code link}, where it has one. */
+    IMPORT_NO_RECIPE(HttpStatus.UNPROCESSABLE_CONTENT, "No recipe was found in that text"),
+    /** The post is private, deleted or blocked, or has no caption. */
+    IMPORT_SOURCE_UNAVAILABLE(HttpStatus.BAD_GATEWAY, "That post could not be read"),
 
     SCAN_TOO_MANY_PAGES(HttpStatus.BAD_REQUEST,
             "A recipe may span fewer photographs than that"),

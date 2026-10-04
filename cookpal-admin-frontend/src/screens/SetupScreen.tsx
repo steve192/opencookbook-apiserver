@@ -35,7 +35,7 @@ const AdministratorForm = (props: {onFailure: () => void}) => {
   return (
     <CenteredPage width="xs">
       <Stack spacing={1} sx={{mb: 3}}>
-        <Typography variant="h5" component="h1">Set up Cookpal</Typography>
+        <Typography variant="h5" component="h1">Set up CookPal</Typography>
         <Typography variant="body2" color="text.secondary">
           This instance has no administrator yet. Create the account that manages it.
         </Typography>

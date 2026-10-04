@@ -1,4 +1,4 @@
-# Cookpal admin panel
+# CookPal admin panel
 
 The administration panel for a cookpal instance: accounts, recipes, ingredients, public shares,
 recipe scans, Bring exports, invitations and the instance configuration. It is a React app that the api server serves under `/admin`, and

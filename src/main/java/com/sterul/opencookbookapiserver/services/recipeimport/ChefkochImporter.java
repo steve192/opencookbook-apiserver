@@ -7,11 +7,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
-import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
-import com.sterul.opencookbookapiserver.services.IllegalFiletypeException;
 import com.sterul.opencookbookapiserver.services.RecipeImageService;
 
 import org.apache.hc.client5.http.classic.methods.HttpGet;
@@ -46,11 +44,9 @@ public class ChefkochImporter extends AbstractRecipeImporter {
 
         extractGeneralInformation(importRecipe, publicRecipe);
         extractPreparationSteps(importRecipe, publicRecipe);
-
-        try {
-            extractAndSaveImages(importRecipe, recipeId, publicRecipe, owner);
-        } catch (IOException e) {
-            throw new RecipeImportFailedException("Could not save images of recipe " + recipeId, e);
+        for (var image : publicRecipe.recipeImages) {
+            addImage(importRecipe,
+                    "https://api.chefkoch.de/v2/recipes/" + recipeId + "/images/" + image.id + "/crop-960x640", owner);
         }
         extractIngredientNeeds(importRecipe, publicRecipe);
 
@@ -65,35 +61,8 @@ public class ChefkochImporter extends AbstractRecipeImporter {
         for (var ingredientGroup : publicRecipe.recipe.ingredientGroups) {
             // Ingredient groups are not supported for now, just import all
             for (var ingredient : ingredientGroup.ingredients) {
-
-                // Detached on purpose. RecipeReferenceResolver swaps this for the owner's own
-                // ingredient of the same name while the recipe is being saved.
-                var importIngredient = Ingredient.builder()
-                        .name(ingredient.name)
-                        .build();
-
-                var importIngredientNeed = IngredientNeed.builder()
-                        .ingredient(importIngredient)
-                        .amount(ingredient.amount)
-                        .unit(ingredient.unit)
-                        .build();
-
-                importedRecipe.getNeededIngredients().add(importIngredientNeed);
-            }
-        }
-    }
-
-    private void extractAndSaveImages(Recipe importedRecipe, String recipeId, ChefkochPublicRecipe publicRecipe,
-            CookpalUser owner) throws IOException {
-        importedRecipe.setImages(new ArrayList<>());
-        for (var image : publicRecipe.recipeImages) {
-            try {
-                var fetchedImage = fetchImage(
-                        "https://api.chefkoch.de/v2/recipes/" + recipeId + "/images/" + image.id + "/crop-960x640",
-                        owner);
-                importedRecipe.getImages().add(fetchedImage);
-            } catch (UnsupportedOperationException | IllegalFiletypeException | IOException e) {
-                // Error fetching image, ignore
+                importedRecipe.getNeededIngredients()
+                        .add(IngredientNeed.detached(ingredient.amount, ingredient.unit, ingredient.name, null));
             }
         }
     }

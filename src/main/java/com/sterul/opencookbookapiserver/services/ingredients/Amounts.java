@@ -9,6 +9,9 @@ public final class Amounts {
     /** Matches one amount; possessive, so it never backtracks. */
     public static final String REGEX = "(?:\\d++(?:[.,]\\d++)?(?:/\\d++|\\s++\\d++/\\d++|\\s*+\\p{No})?|\\p{No})";
 
+    /** After an amount, the rest of a range ("-3" of "2-3"), or nothing. */
+    public static final String OPTIONAL_RANGE_END = "(?:\\s*+[-\\u2013]\\s*+" + REGEX + ")?+";
+
     private static final Pattern WHITESPACE = Pattern.compile("\\s++");
     private static final Pattern VULGAR_FRACTION = Pattern.compile("\\p{No}");
     private static final Pattern NUMBER_WITH_VULGAR_FRACTION = Pattern.compile("(\\d++(?:\\.\\d++)?)(\\p{No})");

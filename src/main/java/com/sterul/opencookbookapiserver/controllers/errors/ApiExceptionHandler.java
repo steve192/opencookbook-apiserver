@@ -42,10 +42,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ApiErrorResponse> handleApiException(ApiException e) {
         var status = e.getErrorCode().getStatus();
         logAtSeverityOf(status, e);
-        var body = e.getReason() == null
-                ? ApiErrorResponse.of(e.getErrorCode())
-                : ApiErrorResponse.withReason(e.getErrorCode(), e.getReason());
-        return ResponseEntity.status(status).body(body);
+        return ResponseEntity.status(status).body(ApiErrorResponse.of(e));
     }
 
     /**

@@ -329,7 +329,7 @@ how far in `purged_version`.
 `shopping_item_source` holds the meals an item was imported for; `shopping_applied_op` the op ids a
 device sent, for a week, so a batch retried after a lost answer is not applied twice;
 `shopping_staple` what a person left unticked in imports, and whether three times in a row made it a
-staple. `cookpal_user.shopping_provider` says whether imports go to the Cookpal list or to Bring.
+staple. `cookpal_user.shopping_provider` says whether imports go to the CookPal list or to Bring.
 
 ---
 

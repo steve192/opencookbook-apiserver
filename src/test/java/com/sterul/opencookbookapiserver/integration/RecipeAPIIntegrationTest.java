@@ -2,7 +2,6 @@ package com.sterul.opencookbookapiserver.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -14,7 +13,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.Authentication;
@@ -35,9 +33,6 @@ import com.sterul.opencookbookapiserver.controllers.requests.RecipeRequest;
 import com.sterul.opencookbookapiserver.controllers.responses.RecipeResponse;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
-import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
-import com.sterul.opencookbookapiserver.errors.ApiException;
-import com.sterul.opencookbookapiserver.services.recipeimport.ImportNotSupportedException;
 import com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers.RecipeScraperServiceProxy;
 
 @SpringBootTest
@@ -146,36 +141,6 @@ class RecipeAPIIntegrationTest extends IntegrationTestBase {
 
         assertTrue(newRecipeResponse.getImages().isEmpty());
 
-    }
-
-    private void whenImportWebsiteNotSupported() {
-        try {
-            when(recipeScraperServiceProxy.scrapeRecipe(Mockito.any()))
-                    .thenThrow(new ImportNotSupportedException());
-        } catch (IOException | ImportNotSupportedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Test
-    void errorWhenRecipeWebsiteImportNotSupported() {
-        whenImportWebsiteNotSupported();
-
-        var thrown = assertThrows(ApiException.class,
-                () -> cut.importRecipe("https://doesnotmatter.com/"));
-
-        assertEquals(ApiErrorCode.IMPORT_NOT_SUPPORTED, thrown.getErrorCode());
-    }
-
-    /**
-     * Somebody pasting something that is not a link at all. It never reaches an importer, so
-     * this is the controller answering for itself - and it must not be a server error.
-     */
-    @Test
-    void errorWhenTheUrlIsNotAUrl() {
-        var thrown = assertThrows(ApiException.class, () -> cut.importRecipe("not a url"));
-
-        assertEquals(ApiErrorCode.IMPORT_URL_INVALID, thrown.getErrorCode());
     }
 
     @Test

@@ -31,6 +31,18 @@ public class IngredientNeed extends AuditableEntity {
     private Float amount;
     private String unit;
 
+    /**
+     * Of an ingredient known by its name only. RecipeReferenceResolver swaps it for the owner's own
+     * ingredient of that name when the recipe is saved.
+     */
+    public static IngredientNeed detached(Float amount, String unit, String name, String additionalInfo) {
+        return IngredientNeed.builder()
+                .amount(amount)
+                .unit(unit)
+                .ingredient(Ingredient.builder().name(name).additionalInfo(additionalInfo).build())
+                .build();
+    }
+
     /** One shopping list line: "500 g Flour". What is not known is left out. */
     public String describe() {
         return Stream.of(formatAmount(), unit, ingredient == null ? null : ingredient.getName())

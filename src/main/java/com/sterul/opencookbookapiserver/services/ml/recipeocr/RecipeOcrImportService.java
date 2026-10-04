@@ -1,14 +1,13 @@
 package com.sterul.opencookbookapiserver.services.ml.recipeocr;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.sterul.opencookbookapiserver.configurations.ml.ConditionalOnMlConfigured;
-import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
@@ -72,42 +71,27 @@ public class RecipeOcrImportService {
     }
 
     private List<IngredientNeed> ingredientsOf(RecipeOcrResult result) {
-        var needs = new ArrayList<IngredientNeed>();
-        for (var parsed : result.getIngredients()) {
-            var need = toNeed(parsed);
-            if (need != null) {
-                needs.add(need);
-            }
-        }
-        return needs;
+        return result.getIngredients().stream()
+                .flatMap(parsed -> toNeed(parsed).stream())
+                .toList();
     }
 
     /** One ingredient, with the unit checked against what this instance understands. */
-    private IngredientNeed toNeed(RecipeOcrResult.Ingredient parsed) {
-        var name = trimmed(parsed.getName());
+    private Optional<IngredientNeed> toNeed(RecipeOcrResult.Ingredient parsed) {
         var unit = trimmed(parsed.getUnit());
-        var amount = parsed.getAmount() == null ? 0f : parsed.getAmount().floatValue();
-        var additionalInfo = trimmed(parsed.getAdditionalInfo());
-
         if (!unit.isEmpty() && !unitLexicon.isKnownUnit(unit)) {
             var raw = trimmed(parsed.getRaw());
             log.debug("Unknown unit '{}' from the subsystem, re-reading '{}'", unit, raw);
-            unit = ingredientExtractor.extractUnit(raw);
-            amount = ingredientExtractor.extractAmount(raw);
-            name = ingredientExtractor.extractName(raw);
-            additionalInfo = ingredientExtractor.extractAdditionalInfo(raw);
+            return ingredientExtractor.toNeed(raw);
         }
 
+        var name = trimmed(parsed.getName());
         if (name.isEmpty()) {
             // Nothing to put in the cookbook; an amount without a name is not an ingredient.
-            return null;
+            return Optional.empty();
         }
-
-        return IngredientNeed.builder()
-                .amount(amount)
-                .unit(unit)
-                .ingredient(Ingredient.builder().name(name).additionalInfo(additionalInfo).build())
-                .build();
+        var amount = parsed.getAmount() == null ? 0f : parsed.getAmount().floatValue();
+        return Optional.of(IngredientNeed.detached(amount, unit, name, trimmed(parsed.getAdditionalInfo())));
     }
 
     private List<String> stepsOf(RecipeOcrResult result) {

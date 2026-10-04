@@ -15,11 +15,13 @@ import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
 import com.sterul.opencookbookapiserver.errors.ApiException;
 import com.sterul.opencookbookapiserver.services.recipeimport.ChefkochImporter;
 import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImporterFactory;
+import com.sterul.opencookbookapiserver.services.recipeimport.instagram.InstagramImporter;
 import com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers.RecipeScrapersWebserviceImporter;
 
 class RecipeImporterFactoryTest {
 
     private final ChefkochImporter chefkoch = mock(ChefkochImporter.class);
+    private final InstagramImporter instagram = mock(InstagramImporter.class);
     private final RecipeScrapersWebserviceImporter scrapers =
             mock(RecipeScrapersWebserviceImporter.class);
     private final OpencookbookConfiguration configuration = mock(OpencookbookConfiguration.class);
@@ -28,7 +30,7 @@ class RecipeImporterFactoryTest {
 
     @BeforeEach
     void setup() {
-        cut = new RecipeImporterFactory(chefkoch, scrapers, configuration);
+        cut = new RecipeImporterFactory(chefkoch, instagram, scrapers, configuration);
     }
 
     /**
@@ -62,6 +64,19 @@ class RecipeImporterFactoryTest {
         when(configuration.getRecipeScaperServiceUrl()).thenReturn("http://recipe-scrapers:9090");
 
         assertEquals(scrapers, cut.getRecipeImporter("https://www.example.com/some/recipe"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "https://www.instagram.com/p/AbC123/",
+        "https://instagram.com/reel/AbC123/?igsh=x",
+        "https://M.INSTAGRAM.COM/p/AbC123/",
+        "https://instagr.am/p/AbC123/",
+    })
+    void instagramIsReadByItsOwnImporterEvenWithAScraperService(String link) {
+        when(configuration.getRecipeScaperServiceUrl()).thenReturn("http://recipe-scrapers:9090");
+
+        assertEquals(instagram, cut.getRecipeImporter(link));
     }
 
     @Test

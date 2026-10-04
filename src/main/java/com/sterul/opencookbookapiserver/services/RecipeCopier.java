@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
@@ -59,13 +58,8 @@ public class RecipeCopier {
 
     private List<IngredientNeed> copyIngredientNeeds(List<IngredientNeed> sourceNeeds) {
         return sourceNeeds.stream()
-                .map(sourceNeed -> IngredientNeed.builder()
-                        .amount(sourceNeed.getAmount())
-                        .unit(sourceNeed.getUnit())
-                        .ingredient(Ingredient.builder()
-                                .name(sourceNeed.getIngredient().getName())
-                                .build())
-                        .build())
+                .map(sourceNeed -> IngredientNeed.detached(sourceNeed.getAmount(), sourceNeed.getUnit(),
+                        sourceNeed.getIngredient().getName(), null))
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
