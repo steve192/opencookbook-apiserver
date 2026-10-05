@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sterul.opencookbookapiserver.entities.account.ActivationLink;
+import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.instance.SignupMode;
 import com.sterul.opencookbookapiserver.services.exceptions.SignupDisabledException;
 import com.sterul.opencookbookapiserver.services.instance.InstanceSettingsService;
@@ -39,18 +40,11 @@ public class SignupService {
 
     /** @param invitation the token of an invitation link, or null for an open signup */
     public SignupState signup(String emailAddress, String password, String invitation) {
-        setupService.requireSetUp();
-
-        if (invitation != null) {
-            // Redeemed first; an address already taken rolls the redemption back with the rest.
-            invitations.redeem(invitation);
+        if (admit(invitation)) {
             userService.createUser(emailAddress, password, true, null);
             return SignupState.ACTIVE;
         }
 
-        if (settings.getSignupMode() == SignupMode.INVITATION_ONLY) {
-            throw new SignupDisabledException();
-        }
         var user = userService.createUser(emailAddress, password, false, null);
         // Made even without mail, so the account can confirm itself once mail is enabled.
         var activationLink = userService.createActivationLink(user);
@@ -59,6 +53,29 @@ public class SignupService {
         }
         sendActivationLink(activationLink);
         return SignupState.AWAITING_CONFIRMATION;
+    }
+
+    /** For an address somebody else, such as Google, has verified: active at once and without a password. */
+    public CookpalUser signupVerified(String emailAddress, String invitation) {
+        admit(invitation);
+        return userService.createUser(emailAddress, null, true, null);
+    }
+
+    /**
+     * Redeems the invitation first; an address already taken rolls the redemption back with the rest.
+     *
+     * @return whether an invitation let them in, rather than an open signup
+     */
+    private boolean admit(String invitation) {
+        setupService.requireSetUp();
+        if (invitation != null) {
+            invitations.redeem(invitation);
+            return true;
+        }
+        if (settings.getSignupMode() == SignupMode.INVITATION_ONLY) {
+            throw new SignupDisabledException();
+        }
+        return false;
     }
 
     private void sendActivationLink(ActivationLink activationLink) {

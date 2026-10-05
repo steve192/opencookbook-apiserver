@@ -2,6 +2,8 @@ package com.sterul.opencookbookapiserver.configurations;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.stream.Stream;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
@@ -383,6 +385,30 @@ public class OpencookbookConfiguration {
          * asks for the password again, however long the sign in itself has been kept alive.
          */
         private Duration adminSignInValidity = Duration.ofHours(2);
+
+        /** Signing in with Google. Off unless a web client id is set. */
+        private Google google = new Google();
+
+        /** OAuth client ids from the Google Cloud console. They are public: the app sends them to Google. */
+        @Getter
+        @Setter
+        public static class Google {
+
+            /** The web application client, used by the web app and the PWA. The switch for the whole feature. */
+            private String clientId = "";
+
+            /** The Android client, for the Android app. Without it the app does not offer Google. */
+            private String androidClientId = "";
+
+            public boolean isEnabled() {
+                return !clientId.isBlank();
+            }
+
+            /** Whom an ID token may be issued to. */
+            public List<String> audiences() {
+                return Stream.of(clientId, androidClientId).filter(id -> !id.isBlank()).toList();
+            }
+        }
     }
 
 }

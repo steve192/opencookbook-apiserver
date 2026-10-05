@@ -3,9 +3,14 @@ package com.sterul.opencookbookapiserver.services.instance;
 import java.util.List;
 
 import com.sterul.opencookbookapiserver.entities.instance.SignupMode;
+import com.sterul.opencookbookapiserver.services.google.GoogleClients;
 import com.sterul.opencookbookapiserver.services.legal.LegalDocument;
 
-/** How this instance is configured, without a single secret. */
+/**
+ * How this instance is configured, without a single secret.
+ *
+ * @param googleSignIn null when the instance does not offer signing in with Google
+ */
 public record InstanceOverview(
         String version,
         InstanceUrl instanceUrl,
@@ -14,7 +19,8 @@ public record InstanceOverview(
         Features features,
         Services services,
         Legal legal,
-        Limits limits) {
+        Limits limits,
+        GoogleClients googleSignIn) {
 
     /** How an open signup is confirmed. */
     public enum Confirmation {

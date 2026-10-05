@@ -18,6 +18,7 @@ import com.sterul.opencookbookapiserver.entities.account.PasswordResetLink;
 import com.sterul.opencookbookapiserver.entities.account.Role;
 import com.sterul.opencookbookapiserver.entities.shopping.ShoppingProvider;
 import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
+import com.sterul.opencookbookapiserver.errors.ApiException;
 import com.sterul.opencookbookapiserver.repositories.ActivationLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.PasswordResetLinkRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
@@ -96,6 +97,7 @@ public class UserService {
      * a person who does not have an account yet. When it said nothing the account stays on the
      * default rather than being pinned to a guess it can never be talked out of.
      *
+     * @param unencryptedPassword null for an account that signs in with Google
      * @param role null for an ordinary account
      */
     public CookpalUser createUser(String emailAddress, String unencryptedPassword, boolean activated, Role role) {
@@ -105,7 +107,7 @@ public class UserService {
         }
         var createdUser = new CookpalUser();
         createdUser.setEmailAddress(emailAddress);
-        createdUser.setPasswordHash(passwordEncoder.encode(unencryptedPassword));
+        createdUser.setPasswordHash(unencryptedPassword == null ? null : passwordEncoder.encode(unencryptedPassword));
         createdUser.setActivated(activated);
         createdUser.setRoles(role);
         createdUser.setLanguage(mailLanguages.fromCurrentRequest().map(Locale::getLanguage).orElse(null));
@@ -195,6 +197,23 @@ public class UserService {
         user.setActivated(true);
         activationLinkRepository.delete(activationLink.get());
         return userRepository.save(user);
+    }
+
+    /**
+     * The address was proven by Google. An account still waiting for that proof is activated, and loses
+     * the password chosen without it. One an administrator locked stays locked.
+     */
+    public void confirmAddress(CookpalUser user) {
+        if (user.isActivated()) {
+            return;
+        }
+        if (!activationLinkRepository.existsByUser(user)) {
+            throw new ApiException(ApiErrorCode.ACCOUNT_AWAITING_APPROVAL);
+        }
+        log.info("Activating user {}, whose address Google confirmed", user);
+        user.setPasswordHash(null);
+        applyActivation(user, true);
+        userRepository.save(user);
     }
 
     /** Blank clears it; the account then falls back to a masked address. */

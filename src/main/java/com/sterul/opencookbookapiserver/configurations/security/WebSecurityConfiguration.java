@@ -66,7 +66,8 @@ public class WebSecurityConfiguration {
                         "/api/v1/users/resendActivationLink",
                         "/api/v1/users/requestPasswordReset",
                         "/api/v1/users/resetPassword",
-                        "/api/v1/users/login"
+                        "/api/v1/users/login",
+                        "/api/v1/users/login/google"
         };
 
         /**

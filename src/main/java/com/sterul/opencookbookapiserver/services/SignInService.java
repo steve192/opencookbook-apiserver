@@ -55,8 +55,8 @@ public class SignInService {
         return issue(user, UUID.randomUUID().toString(), clock.instant());
     }
 
-    /** Signs in without the password, so the admin api will still ask for it. */
-    public IssuedTokens signInByActivationLink(CookpalUser user) {
+    /** By activation link or Google; the admin api will still ask for the password. */
+    public IssuedTokens signInWithoutPassword(CookpalUser user) {
         return issue(user, UUID.randomUUID().toString(), null);
     }
 

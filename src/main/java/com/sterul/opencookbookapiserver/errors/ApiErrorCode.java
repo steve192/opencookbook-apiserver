@@ -32,6 +32,7 @@ public enum ApiErrorCode {
     /** Locked on an instance without mail: only an administrator can activate it. */
     ACCOUNT_AWAITING_APPROVAL(HttpStatus.UNAUTHORIZED,
             "The account is waiting for an administrator to activate it"),
+    GOOGLE_SIGN_IN_FAILED(HttpStatus.UNAUTHORIZED, "Signing in with Google did not work"),
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "You are not allowed to do that"),
 
     SETUP_REQUIRED(HttpStatus.CONFLICT, "This instance has not been set up yet"),

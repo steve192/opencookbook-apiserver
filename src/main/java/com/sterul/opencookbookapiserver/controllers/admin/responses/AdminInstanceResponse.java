@@ -3,6 +3,7 @@ package com.sterul.opencookbookapiserver.controllers.admin.responses;
 import java.util.List;
 
 import com.sterul.opencookbookapiserver.entities.instance.SignupMode;
+import com.sterul.opencookbookapiserver.services.google.GoogleClients;
 import com.sterul.opencookbookapiserver.services.instance.InstanceOverview;
 
 /** The configuration overview. Never carries a secret: no SMTP credentials, no ML token, no JWT data. */
@@ -14,7 +15,8 @@ public record AdminInstanceResponse(
         Features features,
         Services services,
         Legal legal,
-        Limits limits) {
+        Limits limits,
+        GoogleClients googleSignIn) {
 
     public record InstanceUrl(String configured, String effective) {
     }
@@ -61,6 +63,7 @@ public record AdminInstanceResponse(
                 new Legal(overview.legal().directory(), overview.legal().documents().stream()
                         .map(state -> new LegalDocument(state.document().getPathSegment(), state.published()))
                         .toList()),
-                new Limits(overview.limits().maxUploadMb(), overview.limits().maxImageMb()));
+                new Limits(overview.limits().maxUploadMb(), overview.limits().maxImageMb()),
+                overview.googleSignIn());
     }
 }
