@@ -1,6 +1,7 @@
 package com.sterul.opencookbookapiserver.controllers.responses;
 
 import com.sterul.opencookbookapiserver.entities.instance.SignupMode;
+import com.sterul.opencookbookapiserver.services.google.GoogleClients;
 
 import lombok.Builder;
 import lombok.Data;
@@ -29,4 +30,7 @@ public class InstanceInfoResponse {
 
     /** Without mail, signups wait for an administrator and reset links come from the admin panel. */
     private boolean mailEnabled;
+
+    /** Null when the instance does not offer signing in with Google. */
+    private GoogleClients googleSignIn;
 }

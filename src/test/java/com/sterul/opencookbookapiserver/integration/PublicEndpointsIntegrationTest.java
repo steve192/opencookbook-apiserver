@@ -1,9 +1,11 @@
 package com.sterul.opencookbookapiserver.integration;
 
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -18,6 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -67,6 +70,15 @@ class PublicEndpointsIntegrationTest extends IntegrationTestBase {
         mockMvc.perform(get("/api/v1/instance"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.sharingEnabled").value(true));
+    }
+
+    @Test
+    void anInstanceWithoutGoogleSaysSoAndHasNoEndpointForIt() throws Exception {
+        mockMvc.perform(get("/api/v1/instance"))
+                .andExpect(jsonPath("$.googleSignIn").value(nullValue()));
+        mockMvc.perform(post("/api/v1/users/login/google").contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"idToken\":\"a-token\"}"))
+                .andExpect(status().isNotFound());
     }
 
     @Test

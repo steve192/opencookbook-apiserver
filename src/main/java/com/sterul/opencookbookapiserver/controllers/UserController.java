@@ -85,14 +85,7 @@ public class UserController extends BaseController {
         // Signing in is the clearest statement a client makes about which language it is in.
         userService.rememberLanguageOfCurrentRequest(user);
 
-        var tokens = signIns.signInWithPassword(user);
-        var response = UserLoginResponse.builder()
-                .token(tokens.accessToken())
-                .userActive(true)
-                .refreshToken(tokens.refreshToken())
-                .build();
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(UserLoginResponse.of(signIns.signInWithPassword(user)));
     }
 
     @Operation(summary = "Request a password reset for the given user",
@@ -133,15 +126,7 @@ public class UserController extends BaseController {
     @GetMapping("/activate")
     public ResponseEntity<UserLoginResponse> activateUser(@Valid @RequestParam String activationId) {
         var user = userService.activateUser(activationId);
-
-        var tokens = signIns.signInByActivationLink(user);
-        var response = UserLoginResponse.builder()
-                .token(tokens.accessToken())
-                .userActive(true)
-                .refreshToken(tokens.refreshToken())
-                .build();
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(UserLoginResponse.of(signIns.signInWithoutPassword(user)));
     }
 
     @Operation(summary = "Resends an activation link to the users email address. Ignores requests for accounts that do not wait for the confirmation, addresses without an account and instances without mail")

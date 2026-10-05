@@ -99,6 +99,19 @@ export const InstanceOverview = (props: {overview?: Overview, loading: boolean, 
             </Stack>
           </Section>
 
+          <Section title="Sign in with Google">
+            {overview.googleSignIn ? (
+              <>
+                <Row label="Web app">{overview.googleSignIn.clientId}</Row>
+                <Row label="Android app">
+                  {overview.googleSignIn.androidClientId ?? 'Not set. The Android app does not offer Google.'}
+                </Row>
+              </>
+            ) : (
+              <Row label="Status">Off. Set GOOGLE_CLIENT_ID to offer it.</Row>
+            )}
+          </Section>
+
           <Section title="Services">
             <Row label="Recipe import">{orNotSet(overview.services.recipeImportUrl)}</Row>
             <Row label="Recipe scan">{orNotSet(overview.services.recipeScanUrl)}</Row>

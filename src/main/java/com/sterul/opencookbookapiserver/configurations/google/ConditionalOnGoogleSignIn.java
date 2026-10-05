@@ -1,4 +1,4 @@
-package com.sterul.opencookbookapiserver.configurations.ml;
+package com.sterul.opencookbookapiserver.configurations.google;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -8,10 +8,10 @@ import java.lang.annotation.Target;
 
 import com.sterul.opencookbookapiserver.configurations.ConditionalOnPropertyNotBlank;
 
-/** Registers a bean only on an instance that has a machine learning subsystem configured. */
+/** Registers a bean only on an instance that offers signing in with Google. */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ConditionalOnPropertyNotBlank("opencookbook.ml.service-url")
-public @interface ConditionalOnMlConfigured {
+@ConditionalOnPropertyNotBlank("opencookbook.auth.google.client-id")
+public @interface ConditionalOnGoogleSignIn {
 }

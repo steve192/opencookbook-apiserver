@@ -1,8 +1,10 @@
 package com.sterul.opencookbookapiserver.unit.configurations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -13,7 +15,7 @@ import org.springframework.core.env.SystemEnvironmentPropertySource;
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 
 /**
- * The machine learning names the compose file passes in.
+ * The machine learning and Google sign-in names the compose file passes in.
  *
  * These reach the application as environment variables and are bound by spring's own relaxed
  * naming rather than by a placeholder in application.yml, so nothing in this repository
@@ -34,7 +36,7 @@ class ComposeEnvironmentBindingTest {
                 "OPENCOOKBOOK_ML_JOBRETENTIONHOURS", "48",
                 "OPENCOOKBOOK_ML_RECIPEOCR_ENABLED", "false",
                 "OPENCOOKBOOK_ML_RECIPEOCR_JOBSPERUSERPERDAY", "5",
-                "OPENCOOKBOOK_ML_RECIPEOCR_MAXPAGES", "3"));
+                "OPENCOOKBOOK_ML_RECIPEOCR_MAXPAGES", "3")).getMl();
 
         assertEquals("https://ml.example.com", ml.getServiceUrl());
         assertEquals("cpml_a_token", ml.getApiToken());
@@ -48,19 +50,33 @@ class ComposeEnvironmentBindingTest {
     }
 
     @Test
+    void theGoogleClientIdsReachTheirSettings() {
+        var google = bind(Map.of(
+                "OPENCOOKBOOK_AUTH_GOOGLE_CLIENTID", "web.apps.googleusercontent.com",
+                "OPENCOOKBOOK_AUTH_GOOGLE_ANDROIDCLIENTID", "android.apps.googleusercontent.com"))
+                .getAuth().getGoogle();
+
+        assertTrue(google.isEnabled());
+        assertEquals(List.of("web.apps.googleusercontent.com", "android.apps.googleusercontent.com"),
+                google.audiences());
+    }
+
+    @Test
     void anInstallationThatSetsNoneOfThemKeepsTheDefaults() {
-        var ml = bind(Map.of());
+        var configuration = bind(Map.of(
+                "OPENCOOKBOOK_AUTH_GOOGLE_CLIENTID", "",
+                "OPENCOOKBOOK_AUTH_GOOGLE_ANDROIDCLIENTID", ""));
+        var ml = configuration.getMl();
 
         assertTrue(ml.getServiceUrl().isEmpty());
         assertTrue(ml.getRecipeOcr().isEnabled());
         assertEquals(20, ml.getRecipeOcr().getJobsPerUserPerDay());
         assertEquals(6, ml.getRecipeOcr().getMaxPages());
+        assertFalse(configuration.getAuth().getGoogle().isEnabled());
     }
 
-    private OpencookbookConfiguration.Ml bind(Map<String, Object> variables) {
-        return Binder.get(environmentWith(variables))
-                .bindOrCreate("opencookbook", OpencookbookConfiguration.class)
-                .getMl();
+    private OpencookbookConfiguration bind(Map<String, Object> variables) {
+        return Binder.get(environmentWith(variables)).bindOrCreate("opencookbook", OpencookbookConfiguration.class);
     }
 
     private StandardEnvironment environmentWith(Map<String, Object> variables) {

@@ -10,6 +10,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.services.AppLinkFactory;
+import com.sterul.opencookbookapiserver.services.google.GoogleClients;
 import com.sterul.opencookbookapiserver.services.legal.LegalDocument;
 import com.sterul.opencookbookapiserver.services.legal.LegalDocumentService;
 import com.sterul.opencookbookapiserver.services.mail.MailAvailability;
@@ -58,7 +59,8 @@ public class InstanceOverviewService {
                                 legalDocuments.isPublished(document)))
                         .toList()),
                 new InstanceOverview.Limits(multipart.getMaxRequestSize().toMegabytes(),
-                        multipart.getMaxFileSize().toMegabytes()));
+                        multipart.getMaxFileSize().toMegabytes()),
+                GoogleClients.of(configuration.getAuth().getGoogle()).orElse(null));
     }
 
     private InstanceOverview.Mail mail() {

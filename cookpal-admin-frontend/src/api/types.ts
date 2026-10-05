@@ -466,6 +466,8 @@ export interface InstanceOverview {
   services: {recipeImportUrl: string | null, recipeScanUrl: string | null};
   legal: {directory: string, documents: {document: string, published: boolean}[]};
   limits: {maxUploadMb: number, maxImageMb: number};
+  /** Null unless GOOGLE_CLIENT_ID is set. */
+  googleSignIn: {clientId: string, androidClientId: string | null} | null;
 }
 
 export type InstanceCheckKind = 'MAIL' | 'RECIPE_IMPORT' | 'RECIPE_SCAN';

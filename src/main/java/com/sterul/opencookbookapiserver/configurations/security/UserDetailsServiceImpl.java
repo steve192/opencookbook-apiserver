@@ -20,7 +20,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         var foundUser = userRepository.findByEmailAddress(username);
-        if (foundUser == null) {
+        // Without a password the account signs in with Google only.
+        if (foundUser == null || foundUser.getPasswordHash() == null) {
             throw new UsernameNotFoundException(username);
         }
 

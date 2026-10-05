@@ -12,21 +12,36 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
-import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.core.type.AnnotationMetadata;
 
-import com.sterul.opencookbookapiserver.configurations.ml.MlConfiguredCondition;
+import com.sterul.opencookbookapiserver.configurations.PropertyNotBlankCondition;
+import com.sterul.opencookbookapiserver.configurations.google.ConditionalOnGoogleSignIn;
+import com.sterul.opencookbookapiserver.configurations.ml.ConditionalOnMlConfigured;
 
 /**
- * Whether this instance has a subsystem, decided from configuration alone.
+ * Whether a feature is on, decided from configuration alone.
  *
  * The same setting reaches the application under three spellings - the camel case key in
  * application.yml, the kebab case one a test or a command line uses, and the shouty environment
  * variable the compose file passes - and getting any of them wrong would silently switch the
  * feature off on a properly configured instance, or on for everyone else.
  */
-class MlConfiguredConditionTest {
+class PropertyNotBlankConditionTest {
 
-    private final MlConfiguredCondition cut = new MlConfiguredCondition();
+    private final PropertyNotBlankCondition cut = new PropertyNotBlankCondition();
+
+    @ConditionalOnMlConfigured
+    static class NeedsMl {
+    }
+
+    @ConditionalOnGoogleSignIn
+    static class NeedsGoogle {
+    }
+
+    @ConditionalOnMlConfigured
+    @ConditionalOnGoogleSignIn
+    static class NeedsBoth {
+    }
 
     @Test
     void anInstanceWithNoSubsystemDoesNotMatch() {
@@ -62,23 +77,34 @@ class MlConfiguredConditionTest {
         assertFalse(matchesEnvironment(Map.of("OPENCOOKBOOK_ML_SERVICEURL", "")));
     }
 
+    @Test
+    void eachFeatureReadsItsOwnProperty() {
+        var environment = environmentWith(new SystemEnvironmentPropertySource("systemEnvironment",
+                Map.of("OPENCOOKBOOK_AUTH_GOOGLE_CLIENTID", "client.apps.googleusercontent.com")));
+
+        assertTrue(evaluate(environment, NeedsGoogle.class));
+        assertFalse(evaluate(environment, NeedsMl.class));
+        assertFalse(evaluate(environment, NeedsBoth.class));
+    }
+
     private boolean matches(Map<String, Object> properties) {
-        var environment = new StandardEnvironment();
-        environment.getPropertySources()
-                .addFirst(new MapPropertySource("test", properties));
-        return evaluate(environment);
+        return evaluate(environmentWith(new MapPropertySource("test", properties)), NeedsMl.class);
     }
 
     private boolean matchesEnvironment(Map<String, Object> variables) {
-        var environment = new StandardEnvironment();
-        environment.getPropertySources().addFirst(
-                new SystemEnvironmentPropertySource("systemEnvironment", variables));
-        return evaluate(environment);
+        return evaluate(environmentWith(new SystemEnvironmentPropertySource("systemEnvironment", variables)),
+                NeedsMl.class);
     }
 
-    private boolean evaluate(StandardEnvironment environment) {
+    private static StandardEnvironment environmentWith(MapPropertySource source) {
+        var environment = new StandardEnvironment();
+        environment.getPropertySources().addFirst(source);
+        return environment;
+    }
+
+    private boolean evaluate(StandardEnvironment environment, Class<?> annotated) {
         var context = mock(ConditionContext.class);
         when(context.getEnvironment()).thenReturn(environment);
-        return cut.matches(context, mock(AnnotatedTypeMetadata.class));
+        return cut.matches(context, AnnotationMetadata.introspect(annotated));
     }
 }

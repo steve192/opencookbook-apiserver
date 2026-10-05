@@ -5,6 +5,7 @@ import java.util.Optional;
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.controllers.responses.InstanceInfoResponse;
 import com.sterul.opencookbookapiserver.services.SignedInUserService;
+import com.sterul.opencookbookapiserver.services.google.GoogleClients;
 import com.sterul.opencookbookapiserver.services.instance.Administrators;
 import com.sterul.opencookbookapiserver.services.instance.InstanceSettingsService;
 import com.sterul.opencookbookapiserver.services.mail.MailAvailability;
@@ -56,6 +57,7 @@ public class InstanceInfoController extends BaseController {
                 .setupRequired(!administrators.isSetUp())
                 .signupMode(settings.getSignupMode())
                 .mailEnabled(mail.isEnabled())
+                .googleSignIn(GoogleClients.of(opencookbookConfiguration.getAuth().getGoogle()).orElse(null))
                 .build();
     }
 
