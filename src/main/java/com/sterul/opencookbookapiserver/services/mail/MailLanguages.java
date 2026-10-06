@@ -41,13 +41,7 @@ public class MailLanguages {
      * asking right now wants, else the default.
      */
     public Locale forUser(CookpalUser user) {
-        if (user != null) {
-            var stored = supported(user.getLanguage());
-            if (stored.isPresent()) {
-                return stored.get();
-            }
-        }
-        return forCurrentRequest();
+        return supported(user.getLanguage()).orElseGet(this::forCurrentRequest);
     }
 
     /**

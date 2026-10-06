@@ -67,11 +67,10 @@ public class AccountRetentionService {
             return;
         }
         switch (step.get()) {
-            case InactivityCountdown.Notice notice -> {
-                users.recordInactivityNotice(account.getUserId(), notice.number(), clock.instant());
-                emailService.sendInactivityNotice(account, notice.deletionOn());
-                log.info("Sent inactivity notice {} to user {}, deletion on {}", notice.number(), account,
-                        notice.deletionOn());
+            case InactivityCountdown.Notice(var number, var deletionOn) -> {
+                users.recordInactivityNotice(account.getUserId(), number, clock.instant());
+                emailService.sendInactivityNotice(account, deletionOn);
+                log.info("Sent inactivity notice {} to user {}, deletion on {}", number, account, deletionOn);
             }
             case InactivityCountdown.Deletion deletion -> {
                 log.info("Deleting user {}, unused since {}", account, account.lastActiveOrCreatedAt());
