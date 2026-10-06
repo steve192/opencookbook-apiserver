@@ -75,7 +75,7 @@ class HouseholdApiIntegrationTest extends IntegrationTestBase {
 
         mockMvc.perform(put("/api/v1/households/" + householdId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"name\":\"WG Sommer\",\"shareRecipes\":true}"))
+                        .content("{\"name\":\"WG Sommer\"}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("WG Sommer"));
     }

@@ -29,7 +29,7 @@ public record RecipeSuggestionRequest(
         Set<MealType> mealTypes,
         @Positive Integer targetKcalPerServing,
         MacroStyle macroStyle,
-        boolean includeHouseholdRecipes,
+        Boolean includeHouseholdRecipes,
         @Min(1) @Max(MAX_LIMIT) Integer limit,
         Long seed) {
 
@@ -40,7 +40,7 @@ public record RecipeSuggestionRequest(
     public SuggestionCriteria toCriteria() {
         return new SuggestionCriteria(mode, ingredientIds, maxTotalTimeMinutes, diet, mealTypes,
                 targetKcalPerServing, macroStyle,
-                includeHouseholdRecipes,
+                Boolean.TRUE.equals(includeHouseholdRecipes),
                 limit == null ? DEFAULT_LIMIT : limit,
                 seed == null ? Jitter.newSeed() : seed);
     }

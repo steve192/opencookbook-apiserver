@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sterul.opencookbookapiserver.configurations.households.ConditionalOnHouseholdsEnabled;
 import com.sterul.opencookbookapiserver.controllers.BaseController;
+import com.sterul.opencookbookapiserver.controllers.households.requests.HouseholdNameRequest;
 import com.sterul.opencookbookapiserver.controllers.households.requests.HouseholdRequest;
 import com.sterul.opencookbookapiserver.controllers.households.requests.SharingRequest;
 import com.sterul.opencookbookapiserver.controllers.households.responses.HouseholdInviteResponse;
@@ -78,7 +79,7 @@ public class HouseholdController extends BaseController {
     @Operation(summary = "Rename a household", description = "Any member may; there are no roles.")
     @PutMapping("/{householdId}")
     public HouseholdResponse rename(@Valid @NotBlank @PathVariable String householdId,
-            @Valid @RequestBody HouseholdRequest request) {
+            @Valid @RequestBody HouseholdNameRequest request) {
         householdService.rename(householdId, request.name(), getLoggedInUser());
         return detailOf(householdId);
     }
