@@ -97,7 +97,7 @@ class RelinkMigrationIntegrationTest {
     }
 
     @Test
-    void aRunIsAppliedAndRevertedThroughTheMigratedSchema() throws Exception {
+    void aRunIsAppliedAndRevertedThroughTheMigratedSchema() {
         var run = runWithEveryProposalAccepted();
 
         relinkService.apply(run.getId());
@@ -111,7 +111,7 @@ class RelinkMigrationIntegrationTest {
     }
 
     @Test
-    void deletingARunTakesItsProposalsAlongAndLeavesTheLinksItMade() throws Exception {
+    void deletingARunTakesItsProposalsAlongAndLeavesTheLinksItMade() {
         var run = runWithEveryProposalAccepted();
         relinkService.apply(run.getId());
 
@@ -123,7 +123,7 @@ class RelinkMigrationIntegrationTest {
     }
 
     @Test
-    void aRuleGoesWithItsFood() throws Exception {
+    void aRuleGoesWithItsFood() {
         nameRules.neverLinkTo("Zucker", sugar, cook);
         nameRules.notAFood("Zahnstocher", cook);
 
@@ -133,7 +133,7 @@ class RelinkMigrationIntegrationTest {
         assertEquals(List.of("NOT_A_FOOD"), jdbc.queryForList("SELECT kind FROM catalogue_name_rule", String.class));
     }
 
-    private IngredientRelinkRun runWithEveryProposalAccepted() throws Exception {
+    private IngredientRelinkRun runWithEveryProposalAccepted() {
         var run = relinkService.preview(new RelinkService.Scope(IngredientRelinkRun.Scope.NEVER_MATCHED_OR_UNLINKED, null), cook);
         var proposals = relinkService.getProposals(run.getId());
         assertEquals(1, proposals.size());

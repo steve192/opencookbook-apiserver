@@ -16,7 +16,7 @@ public final class Links {
 
     private static final int MAX_TITLE_LENGTH = 120;
     private static final String SEPARATORS = "[\\s\\-:|\"'\\u201C\\u201D\\u201E\\u2018\\u2019\\u00AB\\u00BB\\u2013\\u2014]+";
-    private static final Pattern SEPARATORS_AT_THE_ENDS = Pattern.compile("^" + SEPARATORS + "|" + SEPARATORS + "$");
+    private static final Pattern SEPARATORS_AT_THE_ENDS = Pattern.compile("(?:^" + SEPARATORS + ")|(?:" + SEPARATORS + "$)");
 
     private Links() {
     }

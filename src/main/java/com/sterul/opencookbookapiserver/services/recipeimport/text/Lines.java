@@ -16,8 +16,8 @@ final class Lines {
     /** Not the digits, which are emoji too. */
     private static final Pattern EMOJI = Pattern.compile(
             "[\\p{IsExtended_Pictographic}\\p{IsEmoji_Component}&&[^#*0-9]]+");
-    private static final Pattern BULLET = Pattern.compile(
-            "^(?:[-*+>\\u2022\\u00B7\\u2013\\u2014\\u2192\\u25B8\\u2713]+\\s*)+");
+    private static final String BULLETS = "-*+>\\u2022\\u00B7\\u2013\\u2014\\u2192\\u25B8\\u2713";
+    private static final Pattern BULLET = Pattern.compile("^[" + BULLETS + "][" + BULLETS + "\\s]*");
     /** "1.", "2)", "Step 3:" but not "1.5 tbsp". */
     private static final Pattern NUMBERED = Pattern.compile(
             "^(?:(?:schritt|step)\\s*\\d{1,2}\\s*[.):]?|\\d{1,2}[.)](?!\\d))\\s*(.*)$",

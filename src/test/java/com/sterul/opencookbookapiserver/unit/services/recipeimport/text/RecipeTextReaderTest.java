@@ -137,6 +137,13 @@ class RecipeTextReaderTest {
         }
 
         @Test
+        void aLineOfThousandsOfBulletsIsReadWithoutOverflowingTheStack() {
+            var recipe = read("Zutaten:\n" + "- ".repeat(4_000) + "200 g Mehl\n");
+
+            assertEquals(List.of("200 g Mehl"), recipe.ingredientLines());
+        }
+
+        @Test
         void anAmountWrittenLastIsPutFirst() {
             var recipe = read("Zutaten:\nMehl " + EM_DASH + " 1 EL\nButter: 60 g\nSahne " + EN_DASH
                     + " 200 ml\nPaprika (rot) - 2\nCrème fraîche " + EM_DASH + " 1 Packung\n");

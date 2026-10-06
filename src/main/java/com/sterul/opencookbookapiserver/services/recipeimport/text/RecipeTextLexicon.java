@@ -2,6 +2,7 @@ package com.sterul.opencookbookapiserver.services.recipeimport.text;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** The German and English words the text reader knows. Units come from UnitLexicon. */
@@ -143,7 +144,7 @@ final class RecipeTextLexicon {
     static Optional<Integer> servings(String line) {
         return SERVINGS.stream()
                 .map(pattern -> pattern.matcher(line))
-                .filter(matcher -> matcher.find())
+                .filter(Matcher::find)
                 .map(matcher -> Integer.parseInt(matcher.group(1)))
                 .findFirst();
     }

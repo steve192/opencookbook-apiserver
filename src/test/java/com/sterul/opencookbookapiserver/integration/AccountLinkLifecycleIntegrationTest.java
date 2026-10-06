@@ -3,6 +3,7 @@ package com.sterul.opencookbookapiserver.integration;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -100,13 +101,13 @@ class AccountLinkLifecycleIntegrationTest extends IntegrationTestBase {
         transaction.executeWithoutResult(status -> {
             userService.deleteUser(userService.getUserById(leaving.getUserId()));
             try {
-                verify(emailService, never()).sendAccountDeletedMail(any(), any());
+                verify(emailService, never()).sendAccountDeletedMail(any(), any(), anyBoolean());
             } catch (Exception e) {
                 throw new IllegalStateException(e);
             }
         });
 
-        verify(emailService).sendAccountDeletedMail(eq("leaving@cookpal.invalid"), any(Locale.class));
+        verify(emailService).sendAccountDeletedMail(eq("leaving@cookpal.invalid"), any(Locale.class), eq(false));
     }
 
     @Test
@@ -118,6 +119,6 @@ class AccountLinkLifecycleIntegrationTest extends IntegrationTestBase {
             throw new IllegalStateException("rolled back");
         }));
 
-        verify(emailService, never()).sendAccountDeletedMail(any(), any());
+        verify(emailService, never()).sendAccountDeletedMail(any(), any(), anyBoolean());
     }
 }

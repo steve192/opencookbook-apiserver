@@ -1,5 +1,9 @@
 package com.sterul.opencookbookapiserver.entities.account;
 
+import java.time.Instant;
+
+import org.hibernate.annotations.DynamicUpdate;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sterul.opencookbookapiserver.entities.AuditableEntity;
 import com.sterul.opencookbookapiserver.entities.shopping.ShoppingProvider;
@@ -15,6 +19,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
+// Activity is written by bulk updates; a full-row update of a stale entity would put old values back.
+@DynamicUpdate
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -53,6 +59,24 @@ public class CookpalUser extends AuditableEntity {
     /** Null until the first shopping import asked. */
     @Enumerated(EnumType.STRING)
     private ShoppingProvider shoppingProvider;
+
+    /** Has signed in with Google. */
+    private boolean googleLinked;
+
+    /** Null when not used since signing up. Precise to an hour. */
+    private Instant lastActiveAt;
+
+    private Instant lastSignInAt;
+
+    /** Sent since the account was last used. */
+    private int inactivityNotices;
+
+    private Instant lastInactivityNoticeAt;
+
+    /** When it last was used, or else when it was created. */
+    public Instant lastActiveOrCreatedAt() {
+        return lastActiveAt != null ? lastActiveAt : getCreatedOn();
+    }
 
     @Override
     public String toString() {

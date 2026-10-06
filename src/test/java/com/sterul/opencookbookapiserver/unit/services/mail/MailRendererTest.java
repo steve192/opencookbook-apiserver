@@ -95,6 +95,27 @@ class MailRendererTest {
         var invitation = cut.render(MailKind.INVITATION, Locale.ENGLISH, RECIPIENT, model(MailKind.INVITATION));
         assertTrue(invitation.html().contains("https://cookpal.example/app/invite/abc"));
         assertTrue(invitation.text().contains("https://cookpal.example/app/invite/abc"));
+
+        var notice = cut.render(MailKind.INACTIVITY_NOTICE, Locale.ENGLISH, RECIPIENT, model(MailKind.INACTIVITY_NOTICE));
+        assertTrue(notice.html().contains("https://cookpal.example/app/login"));
+        assertTrue(notice.text().contains("https://cookpal.example/app/login"));
+    }
+
+    @Test
+    void anInactivityNoticeSaysWhenTheAccountGoes() {
+        var notice = cut.render(MailKind.INACTIVITY_NOTICE, Locale.ENGLISH, RECIPIENT, model(MailKind.INACTIVITY_NOTICE));
+
+        assertTrue(notice.text().contains("will be deleted on April 6, 2027"));
+    }
+
+    @Test
+    void anAccountDeletedForDisuseIsToldWhy() {
+        var requested = cut.render(MailKind.ACCOUNT_DELETED, Locale.ENGLISH, RECIPIENT, Map.of("forInactivity", false));
+        var inactive = cut.render(MailKind.ACCOUNT_DELETED, Locale.ENGLISH, RECIPIENT, Map.of("forInactivity", true));
+
+        assertFalse(requested.text().contains("not used for a long time"));
+        assertTrue(inactive.text().contains("not used for a long time"));
+        assertTrue(inactive.html().contains("not used for a long time"));
     }
 
     @Test
@@ -145,7 +166,9 @@ class MailRendererTest {
             case ACTIVATION -> Map.of("activationLink", "https://cookpal.example/activateAccount?activationId=abc");
             case PASSWORD_RESET -> Map.of("resetLink", "https://cookpal.example/resetPassword?id=abc");
             case INVITATION -> Map.of("invitationLink", "https://cookpal.example/app/invite/abc");
-            case ACCOUNT_DELETED, TEST -> Map.of();
+            case INACTIVITY_NOTICE -> Map.of("deletionDate", "April 6, 2027", "signInLink", "https://cookpal.example/app/login");
+            case ACCOUNT_DELETED -> Map.of("forInactivity", false);
+            case TEST -> Map.of();
         };
     }
 

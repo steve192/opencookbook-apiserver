@@ -24,6 +24,10 @@ public final class MovableClock extends Clock {
         now = now.plus(duration);
     }
 
+    public void moveTo(Instant instant) {
+        now = instant;
+    }
+
     @Override
     public Instant instant() {
         return now;

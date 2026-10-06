@@ -5,13 +5,19 @@ import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.startsWith;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.time.Duration;
+import java.time.Instant;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,12 +31,17 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 import com.jayway.jsonpath.JsonPath;
+import com.sterul.opencookbookapiserver.cronjobs.AccountRetentionJob;
+import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.EmailService;
 import com.sterul.opencookbookapiserver.services.UserService;
 
 /** The admin's view of an instance with nothing but the defaults: no mail, no instance address, no services. */
-@SpringBootTest(properties = "opencookbook.recipe-scaper-service-url=")
+@SpringBootTest(properties = {
+        "opencookbook.recipe-scaper-service-url=",
+        "opencookbook.retention.inactive-account-months=6"
+})
 @AutoConfigureMockMvc
 @ActiveProfiles("integration-test")
 class InstanceWithoutMailIntegrationTest extends IntegrationTestBase {
@@ -41,6 +52,8 @@ class InstanceWithoutMailIntegrationTest extends IntegrationTestBase {
     private UserRepository userRepository;
     @Autowired
     private UserService userService;
+    @Autowired
+    private AccountRetentionJob retentionJob;
 
     @MockitoBean
     private EmailService emailService;
@@ -110,7 +123,26 @@ class InstanceWithoutMailIntegrationTest extends IntegrationTestBase {
 
         userService.deleteUser(user);
 
-        verify(emailService, never()).sendAccountDeletedMail(any(), any());
+        verify(emailService, never()).sendAccountDeletedMail(any(), any(), anyBoolean());
+    }
+
+    @Test
+    void anUnusedAccountThatCouldBeWarnedIsKeptAndALockedOneDeleted() throws Exception {
+        var active = unusedSinceLastYear(TestAccounts.recreate(userRepository, "unused@example.com", "irrelevant"));
+        var locked = TestAccounts.recreate(userRepository, "unused-locked@example.com", "irrelevant");
+        locked.setActivated(false);
+        unusedSinceLastYear(locked);
+
+        retentionJob.enforceRetention();
+
+        assertTrue(userRepository.existsById(active.getUserId()));
+        assertFalse(userRepository.existsById(locked.getUserId()));
+        verify(emailService, never()).sendInactivityNotice(any(), any());
+    }
+
+    private CookpalUser unusedSinceLastYear(CookpalUser user) {
+        user.setLastActiveAt(Instant.now().minus(Duration.ofDays(400)));
+        return userRepository.save(user);
     }
 
     private static RequestPostProcessor admin() {

@@ -9,8 +9,15 @@ export interface UserAccount {
   lastChange: string;
 }
 
-/** A row of the account list, which is the only place the counts are reported. */
+export type SignInMethod = 'PASSWORD' | 'GOOGLE';
+
+/** A row of the account list, which is the only place activity and counts are reported. */
 export interface User extends UserAccount {
+  /** Null when not used since signing up. */
+  lastActiveAt: string | null;
+  /** Null when not signed in since this was recorded. */
+  lastSignInAt: string | null;
+  signInMethods: SignInMethod[];
   recipeCount: number;
   ingredientCount: number;
 }
@@ -468,6 +475,8 @@ export interface InstanceOverview {
   limits: {maxUploadMb: number, maxImageMb: number};
   /** Null unless GOOGLE_CLIENT_ID is set. */
   googleSignIn: {clientId: string, androidClientId: string | null} | null;
+  /** 0 when accounts are never deleted for disuse. */
+  retention: {inactiveAccountMonths: number};
 }
 
 export type InstanceCheckKind = 'MAIL' | 'RECIPE_IMPORT' | 'RECIPE_SCAN';

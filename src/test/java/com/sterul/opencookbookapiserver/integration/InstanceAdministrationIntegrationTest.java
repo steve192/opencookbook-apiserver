@@ -37,8 +37,8 @@ import com.sterul.opencookbookapiserver.entities.instance.SignupMode;
 import com.sterul.opencookbookapiserver.repositories.InvitationRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.instance.InstanceSettingsService;
+import com.sterul.opencookbookapiserver.unit.MailText;
 
-import jakarta.mail.Multipart;
 import jakarta.mail.internet.MimeMessage;
 
 /**
@@ -184,8 +184,8 @@ class InstanceAdministrationIntegrationTest extends IntegrationTestBase {
         var sent = sentMail();
         assertEquals("friend@example.com", sent.getAllRecipients()[0].toString());
         var link = "https://cookbook.example.com/app/invite/" + invitationRepository.findAll().get(0).getId();
-        assertTrue(textOf(sent.getContent()).contains(link), "the mail does not carry the link");
-        assertTrue(textOf(sent.getContent()).contains("30 Tage"), "the mail does not say how long the link works");
+        assertTrue(MailText.of(sent).contains(link), "the mail does not carry the link");
+        assertTrue(MailText.of(sent).contains("30 Tage"), "the mail does not say how long the link works");
     }
 
     @Test
@@ -263,19 +263,5 @@ class InstanceAdministrationIntegrationTest extends IntegrationTestBase {
         var captor = ArgumentCaptor.forClass(MimeMessage.class);
         verify(mailSender).send(captor.capture());
         return captor.getValue();
-    }
-
-    /** Decoded, as a mail client shows it: German text travels quoted-printable. */
-    private static String textOf(Object content) throws Exception {
-        if (content instanceof String text) {
-            return text;
-        }
-        var all = new StringBuilder();
-        if (content instanceof Multipart multipart) {
-            for (var part = 0; part < multipart.getCount(); part++) {
-                all.append(textOf(multipart.getBodyPart(part).getContent()));
-            }
-        }
-        return all.toString();
     }
 }

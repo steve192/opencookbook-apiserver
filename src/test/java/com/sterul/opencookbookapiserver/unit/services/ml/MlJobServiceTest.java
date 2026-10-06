@@ -343,12 +343,12 @@ class MlJobServiceTest {
         assertEquals(3, cut.deleteTrainingData(owner));
     }
 
-    /** The submission call, which every one of these tests stubs the same way. */
     /** The submission these tests make; none of them varies its arguments. */
     private MlJob submitRecipeOcr() {
         return cut.submitRecipeOcr(owner, List.of(), new RecipeOcrPayload(), false);
     }
 
+    /** The submission call, which every one of these tests stubs the same way. */
     private String submitted() {
         return proxy.submitRecipeOcr(anyString(), any(RecipeOcrPayload.class), anyList(),
                 anyBoolean(), anyString());

@@ -1,0 +1,8 @@
+#heading($i18n.get("mail.inactivityNotice.heading"))
+#paragraph($i18n.get("mail.common.greeting"))
+#paragraph($i18n.get("mail.inactivityNotice.intro", $deletionDate))
+#paragraph($i18n.get("mail.inactivityNotice.keep"))
+#button($signInLink $i18n.get("mail.inactivityNotice.button"))
+#fallbackLink($signInLink)
+#divider()
+#note($i18n.get("mail.inactivityNotice.ignore"))

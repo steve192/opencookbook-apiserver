@@ -4,9 +4,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import LockIcon from '@mui/icons-material/Lock';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import PasswordIcon from '@mui/icons-material/Password';
-import {Chip} from '@mui/material';
+import {Chip, Stack} from '@mui/material';
 import {useCallback, useMemo, useState} from 'react';
-import {PasswordResetLink, Role, User, UsersApi} from '../api';
+import {PasswordResetLink, Role, SignInMethod, User, UsersApi} from '../api';
 import {BulkAction, FieldDefinition, RowAction} from '../components/collection/types';
 import {CollectionScreen} from '../components/collection/CollectionScreen';
 import {EntityFormDialog} from '../components/form/EntityFormDialog';
@@ -21,6 +21,11 @@ interface UserForm {
   activated: boolean;
   role: Role | '';
 }
+
+const SIGN_IN_METHODS: Record<SignInMethod, string> = {
+  PASSWORD: 'Password',
+  GOOGLE: 'Google',
+};
 
 const ROLE_OPTIONS = [
   {value: '', label: 'No role'},
@@ -47,6 +52,20 @@ const fields: FieldDefinition<User>[] = [
       <Chip size="small" label={user.roles} color={user.roles === 'ADMIN' ? 'primary' : 'default'} /> :
       <span>-</span>,
   },
+  {key: 'lastActiveAt', label: 'Last active', kind: 'datetime', width: 180},
+  {
+    key: 'signInMethods',
+    label: 'Sign in',
+    kind: 'list',
+    width: 170,
+    value: (user) => user.signInMethods.map((method) => SIGN_IN_METHODS[method]),
+    render: (user) => (
+      <Stack direction="row" spacing={0.5}>
+        {user.signInMethods.map((method) => <Chip key={method} size="small" label={SIGN_IN_METHODS[method]} />)}
+      </Stack>
+    ),
+  },
+  {key: 'lastSignInAt', label: 'Last sign in', kind: 'datetime', width: 180, importance: 'secondary'},
   {key: 'userId', label: 'Id', kind: 'number', width: 80, importance: 'secondary'},
   {key: 'recipeCount', label: 'Recipes', kind: 'number', width: 100, importance: 'secondary'},
   {key: 'ingredientCount', label: 'Ingredients', kind: 'number', width: 110, importance: 'secondary'},

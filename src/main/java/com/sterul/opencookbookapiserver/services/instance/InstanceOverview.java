@@ -20,7 +20,8 @@ public record InstanceOverview(
         Services services,
         Legal legal,
         Limits limits,
-        GoogleClients googleSignIn) {
+        GoogleClients googleSignIn,
+        Retention retention) {
 
     /** How an open signup is confirmed. */
     public enum Confirmation {
@@ -58,5 +59,9 @@ public record InstanceOverview(
     }
 
     public record Limits(long maxUploadMb, long maxImageMb) {
+    }
+
+    /** @param inactiveAccountMonths 0 when accounts are never deleted for disuse */
+    public record Retention(int inactiveAccountMonths) {
     }
 }

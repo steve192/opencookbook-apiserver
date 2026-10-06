@@ -63,15 +63,17 @@ class MlSubmitterIdsTest {
         // Configured but not usable, which is what an unreachable subsystem looks like too -
         // and not an internal error, which is what an unkeyed derivation would raise.
         configuration.getMl().setServiceUrl("https://ml.example.com");
+        var user = user(7L);
 
-        assertThrows(MlUnavailableException.class, () -> cut.of(user(7L)));
+        assertThrows(MlUnavailableException.class, () -> cut.of(user));
     }
 
     @Test
     void anApiTokenThatWasLeftOutEntirelyIsTheSameAsAnEmptyOne() {
         configuration.getMl().setApiToken(null);
+        var user = user(7L);
 
-        assertThrows(MlUnavailableException.class, () -> cut.of(user(7L)));
+        assertThrows(MlUnavailableException.class, () -> cut.of(user));
     }
 
     private CookpalUser user(Long userId) {

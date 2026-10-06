@@ -112,6 +112,24 @@ export const InstanceOverview = (props: {overview?: Overview, loading: boolean, 
             )}
           </Section>
 
+          <Section title="Data retention">
+            {overview.retention.inactiveAccountMonths > 0 ? (
+              <>
+                <Row label="Deleted after">
+                  {overview.retention.inactiveAccountMonths} months without a sign in or any use
+                </Row>
+                <Row label="Kept">Administrators and demo accounts</Row>
+                <Row label="Notices">
+                  {overview.mail.enabled ?
+                    'Mailed 14 and 7 days before; locked and unconfirmed accounts get none' :
+                    'None without mail, so only locked and unconfirmed accounts are deleted'}
+                </Row>
+              </>
+            ) : (
+              <Row label="Status">Off. Set DATA_RETENTION_INACTIVE_MONTHS to delete unused accounts.</Row>
+            )}
+          </Section>
+
           <Section title="Services">
             <Row label="Recipe import">{orNotSet(overview.services.recipeImportUrl)}</Row>
             <Row label="Recipe scan">{orNotSet(overview.services.recipeScanUrl)}</Row>

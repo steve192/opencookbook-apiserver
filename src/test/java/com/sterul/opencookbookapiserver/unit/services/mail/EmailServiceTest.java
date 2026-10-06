@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayOutputStream;
+import java.time.LocalDate;
 import java.util.Locale;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +29,7 @@ import com.sterul.opencookbookapiserver.services.mail.MailFrom;
 import com.sterul.opencookbookapiserver.services.mail.MailLanguages;
 import com.sterul.opencookbookapiserver.services.mail.MailMessages;
 import com.sterul.opencookbookapiserver.services.mail.MailRenderer;
+import com.sterul.opencookbookapiserver.unit.MailText;
 
 import jakarta.mail.internet.MimeMessage;
 
@@ -106,9 +108,18 @@ class EmailServiceTest {
 
     @Test
     void anAccountDeletedMailNeedsNoLinkAtAll() throws Exception {
-        cut.sendAccountDeletedMail("someone@cookpal.invalid", Locale.GERMAN);
+        cut.sendAccountDeletedMail("someone@cookpal.invalid", Locale.GERMAN, false);
 
         assertEquals("Dein CookPal Account wurde gelöscht", captureSentMessage().getSubject());
+    }
+
+    @Test
+    void anInactivityNoticeStatesTheDeletionDateInTheAccountsLanguage() throws Exception {
+        cut.sendInactivityNotice(user("jemand@cookpal.invalid", "de"), LocalDate.parse("2027-04-06"));
+
+        var text = MailText.of(captureSentMessage());
+        assertTrue(text.contains("am 6. April 2027 gelöscht"), text);
+        assertTrue(text.contains("https://cookpal.example/app/login"), "the sign in link is wrong");
     }
 
     @Test
