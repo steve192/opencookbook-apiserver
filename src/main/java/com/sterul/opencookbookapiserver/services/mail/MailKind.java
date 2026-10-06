@@ -12,6 +12,7 @@ public enum MailKind {
     ACTIVATION("activation"),
     PASSWORD_RESET("passwordReset"),
     ACCOUNT_DELETED("accountDeleted"),
+    INACTIVITY_NOTICE("inactivityNotice"),
     INVITATION("invitation"),
     TEST("test");
 

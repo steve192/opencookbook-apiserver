@@ -16,7 +16,8 @@ public record AdminInstanceResponse(
         Services services,
         Legal legal,
         Limits limits,
-        GoogleClients googleSignIn) {
+        GoogleClients googleSignIn,
+        Retention retention) {
 
     public record InstanceUrl(String configured, String effective) {
     }
@@ -48,6 +49,10 @@ public record AdminInstanceResponse(
     public record Limits(long maxUploadMb, long maxImageMb) {
     }
 
+    /** @param inactiveAccountMonths 0 when accounts are never deleted for disuse */
+    public record Retention(int inactiveAccountMonths) {
+    }
+
     public static AdminInstanceResponse of(InstanceOverview overview) {
         var mail = overview.mail();
         var features = overview.features();
@@ -64,6 +69,7 @@ public record AdminInstanceResponse(
                         .map(state -> new LegalDocument(state.document().getPathSegment(), state.published()))
                         .toList()),
                 new Limits(overview.limits().maxUploadMb(), overview.limits().maxImageMb()),
-                overview.googleSignIn());
+                overview.googleSignIn(),
+                new Retention(overview.retention().inactiveAccountMonths()));
     }
 }

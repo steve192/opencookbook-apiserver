@@ -177,6 +177,8 @@ public class UserService {
             // Links were sent to the old address; whoever owns it must not be able to use them.
             activationLinkRepository.deleteAllByUser(user);
             passwordResetLinkRepository.deleteAllByUser(user);
+            // Google finds an account by its address, so the old one no longer signs in here.
+            user.setGoogleLinked(false);
         }
 
         // Saving the form must not take the confirmation link from an account that still waits for it.
@@ -216,6 +218,15 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public void linkGoogle(CookpalUser user) {
+        if (user.isGoogleLinked()) {
+            return;
+        }
+        log.info("User {} signed in with Google", user);
+        user.setGoogleLinked(true);
+        userRepository.save(user);
+    }
+
     /** Blank clears it; the account then falls back to a masked address. */
     public CookpalUser setDisplayName(CookpalUser user, String displayName) {
         var tidied = displayName == null || displayName.isBlank() ? null : displayName.strip();
@@ -235,6 +246,23 @@ public class UserService {
     }
 
     public void deleteUser(CookpalUser user) {
+        delete(user);
+        announceDeletion(user, false);
+    }
+
+    /** Deleted because nobody used it for the configured time. An account that could not sign in is not told. */
+    public void deleteInactiveUser(CookpalUser user) {
+        delete(user);
+        if (user.isActivated()) {
+            announceDeletion(user, true);
+        }
+    }
+
+    private void announceDeletion(CookpalUser user, boolean forInactivity) {
+        events.publishEvent(new AccountDeletedEvent(user.getEmailAddress(), mailLanguages.forUser(user), forInactivity));
+    }
+
+    private void delete(CookpalUser user) {
         administrators.requireOneRemains(user, false);
         log.info("Deleting user {}", user);
         // Explicitly rather than by cascade, so the households hear of it.
@@ -265,7 +293,6 @@ public class UserService {
         passwordResetLinkRepository.deleteAllByUser(user);
 
         userRepository.delete(user);
-        events.publishEvent(new AccountDeletedEvent(user.getEmailAddress(), mailLanguages.forUser(user)));
     }
 
     public boolean isPasswordCorrect(String emailAddress, String password) {

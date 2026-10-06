@@ -15,6 +15,7 @@ import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
 import com.sterul.opencookbookapiserver.errors.ApiException;
 import com.sterul.opencookbookapiserver.repositories.RefreshTokenRepository;
+import com.sterul.opencookbookapiserver.services.retention.AccountActivityService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,13 +38,15 @@ public class SignInService {
 
     private final RefreshTokenRepository tokens;
     private final AccessTokenService accessTokens;
+    private final AccountActivityService activity;
     private final OpencookbookConfiguration configuration;
     private final Clock clock;
 
     public SignInService(RefreshTokenRepository tokens, AccessTokenService accessTokens,
-            OpencookbookConfiguration configuration, Clock clock) {
+            AccountActivityService activity, OpencookbookConfiguration configuration, Clock clock) {
         this.tokens = tokens;
         this.accessTokens = accessTokens;
+        this.activity = activity;
         this.configuration = configuration;
         this.clock = clock;
     }
@@ -52,12 +55,12 @@ public class SignInService {
     }
 
     public IssuedTokens signInWithPassword(CookpalUser user) {
-        return issue(user, UUID.randomUUID().toString(), clock.instant());
+        return begin(user, clock.instant());
     }
 
     /** By activation link or Google; the admin api will still ask for the password. */
     public IssuedTokens signInWithoutPassword(CookpalUser user) {
-        return issue(user, UUID.randomUUID().toString(), null);
+        return begin(user, null);
     }
 
     /** Renews with a new refresh token, which the client keeps instead of the one it sent. */
@@ -66,6 +69,7 @@ public class SignInService {
         if (token.getReplacedAt() == null) {
             token.setReplacedAt(clock.instant());
         }
+        activity.used(token.getOwner());
         return issue(token.getOwner(), token.getSessionId(), token.getPasswordAt());
     }
 
@@ -120,6 +124,11 @@ public class SignInService {
         log.warn("A replaced refresh token of user {} was used again; ending that sign in",
                 tokenOfTheSignIn.getOwner());
         tokens.deleteSession(tokenOfTheSignIn.getSessionId());
+    }
+
+    private IssuedTokens begin(CookpalUser user, Instant passwordAt) {
+        activity.signedIn(user);
+        return issue(user, UUID.randomUUID().toString(), passwordAt);
     }
 
     private IssuedTokens issue(CookpalUser owner, String sessionId, Instant passwordAt) {

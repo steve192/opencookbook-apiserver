@@ -130,6 +130,9 @@ public class OpencookbookConfiguration {
     /** Long-lived keys for headless clients such as Home Assistant. */
     private ApiKeys apiKeys = new ApiKeys();
 
+    /** Deleting accounts nobody uses any more. */
+    private Retention retention = new Retention();
+
     /** Importing recipes from links and texts. */
     private RecipeImport recipeImport = new RecipeImport();
 
@@ -279,6 +282,21 @@ public class OpencookbookConfiguration {
          * coming from this server, and blocking it would end Instagram imports for everybody.
          */
         private int instagramReadsPerHourPerUser = 30;
+    }
+
+    @Getter
+    @Setter
+    public static class Retention {
+
+        /**
+         * After this many months without a sign in or any use, an account is deleted with everything it holds.
+         * Administrators and demo accounts are kept. 0, the default, turns it off.
+         */
+        private int inactiveAccountMonths;
+
+        public boolean isEnabled() {
+            return inactiveAccountMonths > 0;
+        }
     }
 
     @Getter

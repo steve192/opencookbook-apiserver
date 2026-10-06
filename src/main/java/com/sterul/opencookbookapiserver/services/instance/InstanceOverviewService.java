@@ -60,7 +60,8 @@ public class InstanceOverviewService {
                         .toList()),
                 new InstanceOverview.Limits(multipart.getMaxRequestSize().toMegabytes(),
                         multipart.getMaxFileSize().toMegabytes()),
-                GoogleClients.of(configuration.getAuth().getGoogle()).orElse(null));
+                GoogleClients.of(configuration.getAuth().getGoogle()).orElse(null),
+                new InstanceOverview.Retention(configuration.getRetention().getInactiveAccountMonths()));
     }
 
     private InstanceOverview.Mail mail() {

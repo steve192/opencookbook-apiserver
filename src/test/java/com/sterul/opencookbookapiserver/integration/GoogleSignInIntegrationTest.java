@@ -1,5 +1,6 @@
 package com.sterul.opencookbookapiserver.integration;
 
+import static org.hamcrest.Matchers.contains;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -7,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -91,6 +93,7 @@ class GoogleSignInIntegrationTest extends IntegrationTestBase {
         var account = userRepository.findByEmailAddress("new@gmail.com");
         assertTrue(account.isActivated());
         assertNull(account.getPasswordHash());
+        assertTrue(account.isGoogleLinked());
     }
 
     @Test
@@ -103,6 +106,33 @@ class GoogleSignInIntegrationTest extends IntegrationTestBase {
                 .andExpect(jsonPath("$.email").value("existing@gmail.com"));
         assertEquals(existing.getUserId(), userRepository.findByEmailAddress("existing@gmail.com").getUserId());
         logInWithPassword("existing@gmail.com").andExpect(status().isOk());
+    }
+
+    @Test
+    void theAdministratorSeesHowAnAccountSignsIn() throws Exception {
+        TestAccounts.recreate(userRepository, "both@gmail.com", passwordEncoder.encode(PASSWORD));
+        signInAs("both@gmail.com", null).andExpect(status().isOk());
+        signInAs("only-google@gmail.com", null).andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/v1/admin/users").with(TestAccounts.operator(TestInstance.ADMINISTRATOR)))
+                .andExpect(jsonPath("$[?(@.emailAddress == 'both@gmail.com')].signInMethods[*]")
+                        .value(contains("PASSWORD", "GOOGLE")))
+                .andExpect(jsonPath("$[?(@.emailAddress == 'only-google@gmail.com')].signInMethods[*]")
+                        .value(contains("GOOGLE")));
+    }
+
+    @Test
+    void anAddressAnAdministratorChangedIsNoLongerLinked() throws Exception {
+        signInAs("renamed@gmail.com", null).andExpect(status().isOk());
+        var account = userRepository.findByEmailAddress("renamed@gmail.com");
+
+        mockMvc.perform(put("/api/v1/admin/users/" + account.getUserId())
+                        .with(TestAccounts.operator(TestInstance.ADMINISTRATOR))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"emailAddress\":\"renamed-again@gmail.com\",\"activated\":true}"))
+                .andExpect(status().isOk());
+
+        assertFalse(userRepository.findById(account.getUserId()).orElseThrow().isGoogleLinked());
     }
 
     @Test

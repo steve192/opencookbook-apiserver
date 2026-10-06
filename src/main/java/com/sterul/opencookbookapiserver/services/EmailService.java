@@ -1,6 +1,9 @@
 package com.sterul.opencookbookapiserver.services;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Locale;
 import java.util.Map;
 
@@ -59,8 +62,16 @@ public class EmailService {
                 "resetLink", accountLinks.passwordReset(link)));
     }
 
-    public void sendAccountDeletedMail(String emailAddress, Locale language) throws MessagingException {
-        send(MailKind.ACCOUNT_DELETED, emailAddress, language, Map.of());
+    public void sendAccountDeletedMail(String emailAddress, Locale language, boolean forInactivity)
+            throws MessagingException {
+        send(MailKind.ACCOUNT_DELETED, emailAddress, language, Map.of("forInactivity", forInactivity));
+    }
+
+    public void sendInactivityNotice(CookpalUser user, LocalDate deletionOn) throws MessagingException {
+        var language = mailLanguages.forUser(user);
+        send(MailKind.INACTIVITY_NOTICE, user.getEmailAddress(), language, Map.of(
+                "deletionDate", DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(language).format(deletionOn),
+                "signInLink", accountLinks.signIn()));
     }
 
     /** Nobody owns the address yet, so it is written in the inviting administrator's language. */

@@ -31,7 +31,7 @@ public class AccountDeletedMailer {
             return;
         }
         try {
-            emailService.sendAccountDeletedMail(deleted.emailAddress(), deleted.language());
+            emailService.sendAccountDeletedMail(deleted.emailAddress(), deleted.language(), deleted.forInactivity());
         } catch (MessagingException e) {
             log.error("Error sending account deletion mail to {}, ignoring", deleted.emailAddress(), e);
         }

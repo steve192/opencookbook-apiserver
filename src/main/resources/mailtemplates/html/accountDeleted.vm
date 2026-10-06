@@ -1,6 +1,10 @@
 #heading($i18n.get("mail.accountDeleted.heading"))
 #paragraph($i18n.get("mail.common.greeting"))
+#if($forInactivity)
+#paragraph($i18n.get("mail.accountDeleted.inactiveIntro"))
+#else
 #paragraph($i18n.get("mail.accountDeleted.intro"))
+#end
 #divider()
 #paragraph($i18n.get("mail.accountDeleted.comeback"))
 #if($instanceUrl)

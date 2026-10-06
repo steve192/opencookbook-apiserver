@@ -15,7 +15,7 @@ import org.springframework.core.env.SystemEnvironmentPropertySource;
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 
 /**
- * The machine learning and Google sign-in names the compose file passes in.
+ * The machine learning, Google sign-in and data retention names the compose file passes in.
  *
  * These reach the application as environment variables and are bound by spring's own relaxed
  * naming rather than by a placeholder in application.yml, so nothing in this repository
@@ -62,6 +62,14 @@ class ComposeEnvironmentBindingTest {
     }
 
     @Test
+    void theRetentionMonthsReachTheirSetting() {
+        var retention = bind(Map.of("OPENCOOKBOOK_RETENTION_INACTIVEACCOUNTMONTHS", "6")).getRetention();
+
+        assertEquals(6, retention.getInactiveAccountMonths());
+        assertTrue(retention.isEnabled());
+    }
+
+    @Test
     void anInstallationThatSetsNoneOfThemKeepsTheDefaults() {
         var configuration = bind(Map.of(
                 "OPENCOOKBOOK_AUTH_GOOGLE_CLIENTID", "",
@@ -73,6 +81,7 @@ class ComposeEnvironmentBindingTest {
         assertEquals(20, ml.getRecipeOcr().getJobsPerUserPerDay());
         assertEquals(6, ml.getRecipeOcr().getMaxPages());
         assertFalse(configuration.getAuth().getGoogle().isEnabled());
+        assertFalse(configuration.getRetention().isEnabled());
     }
 
     private OpencookbookConfiguration bind(Map<String, Object> variables) {

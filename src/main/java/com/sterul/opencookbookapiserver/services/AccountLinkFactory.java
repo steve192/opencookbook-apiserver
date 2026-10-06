@@ -7,7 +7,7 @@ import com.sterul.opencookbookapiserver.entities.account.Invitation;
 import com.sterul.opencookbookapiserver.entities.account.PasswordResetLink;
 
 /**
- * Where the links for activating, resetting and creating an account point, whether mailed or shown
+ * Where the links for activating, resetting, creating and signing in to an account point, whether mailed or shown
  * to an administrator. The routes are this class's business, the host is {@link AppLinkFactory}'s.
  */
 @Component
@@ -29,5 +29,9 @@ public class AccountLinkFactory {
 
     public String invitation(Invitation invitation) {
         return appLinkFactory.linkTo("/invite/" + invitation.getId());
+    }
+
+    public String signIn() {
+        return appLinkFactory.linkTo("/login");
     }
 }

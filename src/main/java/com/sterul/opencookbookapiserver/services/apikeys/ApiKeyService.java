@@ -17,6 +17,7 @@ import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
 import com.sterul.opencookbookapiserver.errors.ApiException;
 import com.sterul.opencookbookapiserver.repositories.ApiKeyRepository;
 import com.sterul.opencookbookapiserver.services.SecretTokens;
+import com.sterul.opencookbookapiserver.services.retention.AccountActivityService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,11 +33,14 @@ public class ApiKeyService {
     private static final Duration LAST_USED_PRECISION = Duration.ofMinutes(1);
 
     private final ApiKeyRepository keys;
+    private final AccountActivityService activity;
     private final OpencookbookConfiguration configuration;
     private final Clock clock;
 
-    public ApiKeyService(ApiKeyRepository keys, OpencookbookConfiguration configuration, Clock clock) {
+    public ApiKeyService(ApiKeyRepository keys, AccountActivityService activity, OpencookbookConfiguration configuration,
+            Clock clock) {
         this.keys = keys;
+        this.activity = activity;
         this.configuration = configuration;
         this.clock = clock;
     }
@@ -88,6 +92,7 @@ public class ApiKeyService {
         var staleBefore = now.minus(LAST_USED_PRECISION);
         if (key.getLastUsedAt() == null || key.getLastUsedAt().isBefore(staleBefore)) {
             keys.touch(key.getId(), now, staleBefore);
+            activity.used(key.getOwner());
         }
     }
 }

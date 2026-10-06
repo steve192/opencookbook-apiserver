@@ -44,6 +44,7 @@ public class GoogleSignInService {
             users.confirmAddress(user);
             users.rememberLanguageOfCurrentRequest(user);
         }
+        users.linkGoogle(user);
         return signIns.signInWithoutPassword(user);
     }
 }
