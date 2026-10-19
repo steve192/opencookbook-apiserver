@@ -8,6 +8,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
+import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
+import com.sterul.opencookbookapiserver.errors.ApiException;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
 
 /**
@@ -28,8 +30,10 @@ public class SignedInUserService {
         this.userRepository = userRepository;
     }
 
+    /** The account behind the request; a token whose account is gone has to sign in again. */
     public CookpalUser get() {
-        return find().orElse(null);
+        return find().orElseThrow(() -> new ApiException(ApiErrorCode.AUTHENTICATION_REQUIRED,
+                "No account behind the request"));
     }
 
     /** Empty for a request nobody signed in to, which only reaches public endpoints. */
@@ -44,6 +48,8 @@ public class SignedInUserService {
     /** The account's name, without reading the account; empty for a request nobody signed in to. */
     public Optional<String> signedInName() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
-        return TRUST_RESOLVER.isAuthenticated(authentication) ? Optional.of(authentication.getName()) : Optional.empty();
+        return authentication != null && TRUST_RESOLVER.isAuthenticated(authentication)
+                ? Optional.of(authentication.getName())
+                : Optional.empty();
     }
 }

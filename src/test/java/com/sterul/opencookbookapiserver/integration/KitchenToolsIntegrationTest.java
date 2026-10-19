@@ -203,7 +203,6 @@ class KitchenToolsIntegrationTest extends IntegrationTestBase {
     @Test
     void whatToCookFindsRecipesWithWhatIsInSeason() throws Exception {
         var cook = TestAccounts.ensure(userRepository, COOK);
-        var asparagus = foodRepository.findByCatalogueKey("custom-asparagus").orElseThrow();
         var linked = ingredientRepository.save(Ingredient.builder().name("Grüner Spargel").owner(cook)
                 .catalogueFood(asparagus).linkSource(Ingredient.LinkSource.USER).build());
         recipeRepository.save(recipe("Spargelrisotto", cook, linked));

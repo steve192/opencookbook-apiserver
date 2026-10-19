@@ -27,7 +27,6 @@ import com.sterul.opencookbookapiserver.controllers.requests.IngredientRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.RecipeGroupRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.RecipeRequest;
 import com.sterul.opencookbookapiserver.controllers.responses.RecipeResponse;
-import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers.RecipeScraperServiceProxy;
 
@@ -44,14 +43,12 @@ class RecipeAPIIntegrationTest extends IntegrationTestBase {
     @Autowired
     private UserRepository userRepository;
 
-    private CookpalUser testUser;
     @MockitoBean
     private RecipeScraperServiceProxy recipeScraperServiceProxy;
 
     @BeforeEach
     void setupContext() {
         TestUtils.whenAuthenticated(userRepository);
-        testUser = TestUtils.getTestUser(userRepository);
     }
 
     @Test

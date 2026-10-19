@@ -149,7 +149,8 @@ public class WebSecurityConfiguration {
                 // Tool paths stay out of PUBLIC_REQUESTS: a signed-in caller's token is still read there.
                 http.authorizeHttpRequests(authorize -> {
                         authorize.requestMatchers(PUBLIC_REQUESTS).permitAll();
-                        var tools = authorize.requestMatchers(HttpMethod.GET, CataloguePaths.TOOL_PATHS);
+                        var tools = authorize.requestMatchers(HttpMethod.GET,
+                                CataloguePaths.TOOL_PATHS.toArray(String[]::new));
                         if (configuration.getTools().isPublic()) {
                                 tools.permitAll();
                         } else {

@@ -65,6 +65,14 @@ class ApiErrorContractIntegrationTest extends IntegrationTestBase {
     }
 
     @Test
+    @WithMockUser("deleted-account@example.invalid")
+    void aTokenWhoseAccountIsGoneHasToSignInAgain() throws Exception {
+        mockMvc.perform(get("/api/v1/recipes"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value("AUTHENTICATION_REQUIRED"));
+    }
+
+    @Test
     void anUnknownPathIsNotFoundRatherThanAServerError() throws Exception {
         mockMvc.perform(get("/api/v1/instance/there-is-no-such-thing"))
                 .andExpect(status().isNotFound())
