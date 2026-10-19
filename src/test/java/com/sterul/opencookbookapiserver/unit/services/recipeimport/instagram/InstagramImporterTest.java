@@ -11,8 +11,6 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.List;
 
 import org.apache.hc.core5.http.HttpHeaders;
@@ -29,10 +27,8 @@ import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
 import com.sterul.opencookbookapiserver.errors.ApiException;
 import com.sterul.opencookbookapiserver.services.RecipeImageService;
 import com.sterul.opencookbookapiserver.services.recipeimport.instagram.InstagramImporter;
-import com.sterul.opencookbookapiserver.services.recipeimport.instagram.InstagramReadRateLimiter;
 import com.sterul.opencookbookapiserver.services.recipeimport.text.RecipeTextImporter;
 import com.sterul.opencookbookapiserver.services.recipeimport.text.RecipeTextReader;
-import com.sterul.opencookbookapiserver.unit.MovableClock;
 import com.sterul.opencookbookapiserver.unit.services.catalogue.ShippedCatalogueDataset;
 import com.sterul.opencookbookapiserver.unit.services.recipeimport.StubbedHttp;
 
@@ -43,21 +39,17 @@ class InstagramImporterTest {
     private static final String RECIPE_CAPTION = "Pancakes\n\nZutaten:\n200 g Mehl\n2 Eier\n\nAlles verrühren und ausbacken.";
 
     private final RecipeImageService recipeImageService = mock(RecipeImageService.class);
-    private MovableClock clock;
     private StubbedHttp http;
     private InstagramImporter cut;
     private CookpalUser owner;
 
     @BeforeEach
     void setup() throws IOException {
-        clock = new MovableClock(Instant.parse("2026-01-01T00:00:00Z"));
         var configuration = new OpencookbookConfiguration();
         configuration.setMaxImageSize(1_000_000L);
-        configuration.getRecipeImport().setInstagramReadsPerHourPerUser(2);
         var textImporter = new RecipeTextImporter(new RecipeTextReader(ShippedCatalogueDataset.UNIT_LEXICON),
                 ShippedCatalogueDataset.ingredientExtractor());
-        cut = new InstagramImporter(recipeImageService, configuration, textImporter,
-                new InstagramReadRateLimiter(configuration, clock));
+        cut = new InstagramImporter(recipeImageService, configuration, textImporter);
         http = new StubbedHttp().page(POST, page(RECIPE_CAPTION, PHOTO)).image(PHOTO, new byte[] { 1, 2, 3 });
         ReflectionTestUtils.setField(cut, "client", http.client());
         owner = new CookpalUser();
@@ -153,30 +145,6 @@ class InstagramImporterTest {
         var draft = cut.importRecipe(POST, owner);
 
         assertTrue(draft.getImages().isEmpty());
-    }
-
-    @Test
-    void readsBeyondTheHourlyBudgetAreRefusedWithoutAskingInstagram() {
-        cut.importRecipe(POST, owner);
-        cut.importRecipe(POST, owner);
-        var asked = http.requests().size();
-
-        var thrown = assertThrows(ApiException.class, () -> cut.importRecipe(POST, owner));
-
-        assertEquals(ApiErrorCode.RATE_LIMITED, thrown.getErrorCode());
-        assertEquals(asked, http.requests().size());
-    }
-
-    @Test
-    void theBudgetIsPerUserAndComesBackAfterAnHour() {
-        cut.importRecipe(POST, owner);
-        cut.importRecipe(POST, owner);
-        var somebodyElse = new CookpalUser();
-        somebodyElse.setUserId(8L);
-
-        assertEquals("Pancakes", cut.importRecipe(POST, somebodyElse).getTitle());
-        clock.advanceBy(Duration.ofHours(1));
-        assertEquals("Pancakes", cut.importRecipe(POST, owner).getTitle());
     }
 
     @Test

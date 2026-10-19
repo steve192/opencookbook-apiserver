@@ -1,0 +1,702 @@
+# When fruit and vegetables come from German fields, covers, greenhouses or stores, per month.
+# Read by feature_facts.py into seasonal.json, the seasonal calendar's dataset file.
+#
+# The months come from five German seasonal calendars (two articles for nuts): a month is listed when
+# at least two of them show the food in it, with the growing methods at least two of them name, or else
+# those of the most detailed calendar for that month.
+#
+# Methods: FIELD (open field), PROTECTED (fleece or foil, unheated), UNHEATED_GREENHOUSE (unheated or
+# slightly heated greenhouse), HEATED_GREENHOUSE, STORED (stored harvest).
+
+foods:
+  bls-F110100:  # Apfel
+    category: FRUIT
+    months:
+      1: [STORED]
+      2: [STORED]
+      3: [STORED]
+      4: [STORED]
+      5: [STORED]
+      6: [STORED]
+      7: [STORED]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [FIELD, STORED]
+      12: [STORED]
+  bls-F130100:  # Birne
+    category: FRUIT
+    months:
+      1: [STORED]
+      2: [STORED]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [STORED]
+      12: [STORED]
+  bls-F303100:  # Brombeere
+    category: FRUIT
+    months:
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+  bls-F301100:  # Erdbeere
+    category: FRUIT
+    months:
+      5: [FIELD, PROTECTED]
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [PROTECTED]
+  bls-F304100:  # Heidelbeere
+    category: FRUIT
+    months:
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [STORED]
+  bls-F302100:  # Himbeere
+    category: FRUIT
+    months:
+      6: [FIELD, PROTECTED]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+  bls-F321100:  # Johannisbeere rot
+    category: FRUIT
+    months:
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+  bls-F322100:  # Johannisbeere weiß
+    category: FRUIT
+    months:
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+  bls-F323100:  # Johannisbeere schwarz
+    category: FRUIT
+    months:
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+  bls-F212100:  # Sauerkirsche
+    category: FRUIT
+    months:
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+  bls-F211100:  # Süßkirsche
+    category: FRUIT
+    months:
+      6: [FIELD, PROTECTED]
+      7: [FIELD]
+      8: [FIELD]
+  bls-F224100:  # Mirabelle
+    category: FRUIT
+    months:
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+  bls-F220100:  # Pflaume
+    category: FRUIT
+    months:
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+  bls-F223100:  # Zwetschge
+    category: FRUIT
+    months:
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+  bls-F140100:  # Quitte
+    category: FRUIT
+    months:
+      10: [FIELD]
+      11: [FIELD]
+  bls-F305100:  # Stachelbeere
+    category: FRUIT
+    months:
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+  bls-G311100:  # Blumenkohl
+    category: VEGETABLE
+    months:
+      4: [PROTECTED]
+      5: [FIELD]
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [FIELD]
+      12: [FIELD]
+  bls-G710100:  # Bohne grün
+    category: VEGETABLE
+    months:
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+  bls-G312100:  # Broccoli
+    category: VEGETABLE
+    months:
+      5: [FIELD]
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [FIELD]
+  bls-G761100:  # Zuckererbse
+    category: VEGETABLE
+    months:
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+  bls-G430100:  # Gemüsefenchel
+    category: VEGETABLE
+    months:
+      5: [PROTECTED]
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [FIELD]
+  bls-G322100:  # Grünkohl
+    category: VEGETABLE
+    months:
+      1: [FIELD]
+      2: [FIELD]
+      3: [FIELD]
+      10: [FIELD]
+      11: [FIELD]
+      12: [FIELD]
+  bls-G520100:  # Gurke
+    category: VEGETABLE
+    months:
+      3: [HEATED_GREENHOUSE]
+      4: [UNHEATED_GREENHOUSE, HEATED_GREENHOUSE]
+      5: [UNHEATED_GREENHOUSE, HEATED_GREENHOUSE]
+      6: [FIELD, UNHEATED_GREENHOUSE, HEATED_GREENHOUSE]
+      7: [FIELD, UNHEATED_GREENHOUSE, HEATED_GREENHOUSE]
+      8: [FIELD, UNHEATED_GREENHOUSE, HEATED_GREENHOUSE]
+      9: [FIELD, UNHEATED_GREENHOUSE, HEATED_GREENHOUSE]
+      10: [UNHEATED_GREENHOUSE]
+  bls-K110100:  # Kartoffel geschält
+    category: VEGETABLE
+    months:
+      1: [STORED]
+      2: [STORED]
+      3: [STORED]
+      4: [STORED]
+      5: [STORED]
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [STORED]
+      12: [STORED]
+  bls-K120100:  # Kartoffel ungeschält
+    category: VEGETABLE
+    months:
+      1: [STORED]
+      2: [STORED]
+      3: [STORED]
+      4: [STORED]
+      5: [STORED]
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [STORED]
+      12: [STORED]
+  bls-G331100:  # Kohlrabi
+    category: VEGETABLE
+    months:
+      4: [PROTECTED]
+      5: [FIELD, PROTECTED]
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [FIELD, PROTECTED]
+      12: [PROTECTED]
+  bls-G341100:  # Rotkohl
+    category: VEGETABLE
+    months:
+      1: [STORED]
+      2: [STORED]
+      3: [STORED]
+      4: [STORED]
+      5: [STORED]
+      6: [PROTECTED]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [FIELD]
+      12: [STORED]
+  bls-G342100:  # Weißkohl
+    category: VEGETABLE
+    months:
+      1: [STORED]
+      2: [STORED]
+      3: [STORED]
+      4: [STORED]
+      5: [STORED]
+      6: [PROTECTED]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [FIELD]
+      12: [STORED]
+  bls-G343100:  # Wirsing
+    category: VEGETABLE
+    months:
+      1: [STORED]
+      2: [STORED]
+      3: [STORED]
+      4: [STORED]
+      5: [STORED]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [FIELD]
+      12: [STORED]
+  bls-G581000:  # Kürbis Hokkaido (C. maxima)
+    category: VEGETABLE
+    months:
+      1: [STORED]
+      2: [STORED]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [STORED]
+      12: [STORED]
+  bls-G581100:  # Kürbis Pumpkin (C. pepo)
+    category: VEGETABLE
+    months:
+      1: [STORED]
+      2: [STORED]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [STORED]
+      12: [STORED]
+  bls-G620100:  # Karotte
+    category: VEGETABLE
+    months:
+      1: [STORED]
+      2: [STORED]
+      3: [STORED]
+      4: [STORED]
+      5: [STORED]
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [FIELD]
+      12: [STORED]
+  bls-G230100:  # Mangold
+    category: VEGETABLE
+    months:
+      5: [FIELD]
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [FIELD]
+  bls-G640100:  # Pastinake
+    category: VEGETABLE
+    months:
+      1: [STORED]
+      2: [STORED]
+      3: [STORED]
+      4: [STORED]
+      9: [FIELD]
+      10: [FIELD]
+      11: [FIELD]
+      12: [STORED]
+  bls-G670100:  # Wurzelpetersilie
+    category: VEGETABLE
+    months:
+      1: [STORED]
+      2: [STORED]
+      3: [STORED]
+      4: [STORED]
+      9: [FIELD]
+      10: [FIELD]
+      11: [FIELD]
+      12: [STORED]
+  bls-G541100:  # Gemüsepaprika grün
+    category: VEGETABLE
+    months:
+      4: [HEATED_GREENHOUSE]
+      5: [HEATED_GREENHOUSE]
+      6: [UNHEATED_GREENHOUSE, HEATED_GREENHOUSE]
+      7: [UNHEATED_GREENHOUSE, HEATED_GREENHOUSE]
+      8: [UNHEATED_GREENHOUSE]
+      9: [UNHEATED_GREENHOUSE]
+      10: [UNHEATED_GREENHOUSE, HEATED_GREENHOUSE]
+  bls-G542100:  # Gemüsepaprika gelb
+    category: VEGETABLE
+    months:
+      4: [HEATED_GREENHOUSE]
+      5: [HEATED_GREENHOUSE]
+      6: [UNHEATED_GREENHOUSE, HEATED_GREENHOUSE]
+      7: [UNHEATED_GREENHOUSE, HEATED_GREENHOUSE]
+      8: [UNHEATED_GREENHOUSE]
+      9: [UNHEATED_GREENHOUSE]
+      10: [UNHEATED_GREENHOUSE, HEATED_GREENHOUSE]
+  bls-G543100:  # Gemüsepaprika rot
+    category: VEGETABLE
+    months:
+      4: [HEATED_GREENHOUSE]
+      5: [HEATED_GREENHOUSE]
+      6: [UNHEATED_GREENHOUSE, HEATED_GREENHOUSE]
+      7: [UNHEATED_GREENHOUSE, HEATED_GREENHOUSE]
+      8: [UNHEATED_GREENHOUSE]
+      9: [UNHEATED_GREENHOUSE]
+      10: [UNHEATED_GREENHOUSE, HEATED_GREENHOUSE]
+  bls-G470100:  # Porree
+    category: VEGETABLE
+    months:
+      1: [FIELD, STORED]
+      2: [FIELD, STORED]
+      3: [FIELD, STORED]
+      4: [FIELD]
+      5: [FIELD]
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [FIELD]
+      12: [FIELD]
+  bls-G691100:  # Radieschen
+    category: VEGETABLE
+    months:
+      3: [UNHEATED_GREENHOUSE]
+      4: [PROTECTED]
+      5: [FIELD, PROTECTED]
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [FIELD]
+  bls-F081100:  # Rhabarber
+    category: VEGETABLE
+    months:
+      3: [PROTECTED]
+      4: [FIELD, PROTECTED]
+      5: [FIELD]
+      6: [FIELD]
+      7: [FIELD]
+  bls-G332100:  # Rosenkohl
+    category: VEGETABLE
+    months:
+      1: [FIELD]
+      2: [FIELD]
+      3: [STORED]
+      9: [FIELD]
+      10: [FIELD]
+      11: [FIELD]
+      12: [FIELD]
+  bls-G613100:  # Rote Rübe
+    category: VEGETABLE
+    months:
+      1: [STORED]
+      2: [STORED]
+      3: [STORED]
+      4: [STORED]
+      5: [STORED]
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [FIELD]
+      12: [STORED]
+  bls-G650100:  # Schwarzwurzel
+    category: VEGETABLE
+    months:
+      1: [STORED]
+      2: [STORED]
+      3: [STORED]
+      4: [STORED]
+      9: [FIELD]
+      10: [FIELD]
+      11: [FIELD]
+      12: [STORED]
+  bls-G660100:  # Knollensellerie
+    category: VEGETABLE
+    months:
+      1: [STORED]
+      2: [STORED]
+      3: [STORED]
+      4: [STORED]
+      5: [STORED]
+      6: [FIELD, STORED]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [FIELD]
+      12: [STORED]
+  bls-G220100:  # Bleichsellerie
+    category: VEGETABLE
+    months:
+      5: [PROTECTED]
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [FIELD]
+  bls-G450100:  # Spargel
+    category: VEGETABLE
+    months:
+      4: [FIELD, PROTECTED]
+      5: [FIELD, PROTECTED]
+      6: [FIELD, PROTECTED]
+  bls-G211100:  # Spinat
+    category: VEGETABLE
+    months:
+      4: [FIELD]
+      5: [FIELD]
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [FIELD]
+  bls-G611100:  # Kohlrübe
+    category: VEGETABLE
+    months:
+      9: [FIELD]
+      10: [FIELD]
+      11: [FIELD]
+  bls-G561100:  # Tomate
+    category: VEGETABLE
+    months:
+      3: [HEATED_GREENHOUSE]
+      4: [HEATED_GREENHOUSE]
+      5: [UNHEATED_GREENHOUSE, HEATED_GREENHOUSE]
+      6: [UNHEATED_GREENHOUSE, HEATED_GREENHOUSE]
+      7: [PROTECTED, UNHEATED_GREENHOUSE, HEATED_GREENHOUSE]
+      8: [PROTECTED, UNHEATED_GREENHOUSE, HEATED_GREENHOUSE]
+      9: [PROTECTED, UNHEATED_GREENHOUSE, HEATED_GREENHOUSE]
+      10: [UNHEATED_GREENHOUSE, HEATED_GREENHOUSE]
+      11: [HEATED_GREENHOUSE]
+  bls-G582100:  # Zucchini
+    category: VEGETABLE
+    months:
+      6: [PROTECTED]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+  bls-G480100:  # Speisezwiebel
+    category: VEGETABLE
+    months:
+      1: [STORED]
+      2: [STORED]
+      3: [STORED]
+      4: [STORED]
+      5: [STORED]
+      6: [PROTECTED, STORED]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [STORED]
+      12: [STORED]
+  bls-G103100:  # Eisbergsalat
+    category: SALAD
+    months:
+      5: [FIELD, PROTECTED]
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [FIELD]
+  bls-G104100:  # Feldsalat
+    category: SALAD
+    months:
+      1: [PROTECTED]
+      2: [PROTECTED]
+      3: [FIELD, PROTECTED]
+      4: [PROTECTED]
+      5: [FIELD]
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [FIELD, PROTECTED]
+      12: [PROTECTED]
+  bls-G105100:  # Kopfsalat
+    category: SALAD
+    months:
+      3: [UNHEATED_GREENHOUSE]
+      4: [PROTECTED, UNHEATED_GREENHOUSE]
+      5: [FIELD, PROTECTED]
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [PROTECTED]
+      12: [UNHEATED_GREENHOUSE]
+  bls-G130100:  # Rucola
+    category: SALAD
+    months:
+      3: [PROTECTED, UNHEATED_GREENHOUSE]
+      4: [PROTECTED]
+      5: [FIELD]
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [FIELD, PROTECTED]
+      12: [UNHEATED_GREENHOUSE]
+  bls-F203100:  # Pfirsich
+    category: FRUIT
+    months:
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+  bls-F202100:  # Nektarine
+    category: FRUIT
+    months:
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+  bls-F201100:  # Aprikose
+    category: FRUIT
+    months:
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+  bls-F310100:  # Weintraube
+    category: FRUIT
+    months:
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+  bls-H120100:  # Walnuss
+    category: FRUIT
+    months:
+      9: [FIELD]
+      10: [FIELD]
+  bls-H130100:  # Haselnuss
+    category: FRUIT
+    months:
+      9: [FIELD]
+      10: [FIELD]
+  bls-G344100:  # Spitzkohl
+    category: VEGETABLE
+    months:
+      1: [STORED]
+      2: [STORED]
+      5: [PROTECTED]
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [FIELD]
+      12: [STORED]
+  bls-G321100:  # Chinakohl
+    category: VEGETABLE
+    months:
+      1: [STORED]
+      2: [STORED]
+      3: [STORED]
+      5: [PROTECTED]
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [FIELD]
+      12: [STORED]
+  bls-G510100:  # Aubergine
+    category: VEGETABLE
+    months:
+      6: [UNHEATED_GREENHOUSE, HEATED_GREENHOUSE]
+      7: [UNHEATED_GREENHOUSE, HEATED_GREENHOUSE]
+      8: [UNHEATED_GREENHOUSE, HEATED_GREENHOUSE]
+      9: [UNHEATED_GREENHOUSE, HEATED_GREENHOUSE]
+      10: [UNHEATED_GREENHOUSE, HEATED_GREENHOUSE]
+  bls-G482100:  # Frühlingszwiebel
+    category: VEGETABLE
+    months:
+      4: [FIELD]
+      5: [FIELD]
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+  bls-G680100:  # Rettich
+    category: VEGETABLE
+    months:
+      1: [STORED]
+      2: [STORED]
+      3: [STORED]
+      4: [PROTECTED, STORED]
+      5: [FIELD, STORED]
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [FIELD]
+      12: [STORED]
+  bls-G730100:  # Dicke Bohne
+    category: VEGETABLE
+    months:
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+  bls-G102100:  # Endivie
+    category: SALAD
+    months:
+      5: [FIELD, PROTECTED]
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [FIELD]
+  bls-G106100:  # Radicchio
+    category: SALAD
+    months:
+      6: [FIELD]
+      7: [FIELD]
+      8: [FIELD]
+      9: [FIELD]
+      10: [FIELD]
+      11: [FIELD]

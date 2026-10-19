@@ -37,21 +37,16 @@ public class InstagramImporter extends AbstractRecipeImporter {
     private static final Pattern POST_PATH = Pattern.compile("^/(?:[\\w.]+/)?(?:p|reels?|tv)/([\\w-]+)");
 
     private final RecipeTextImporter textImporter;
-    private final InstagramReadRateLimiter rateLimiter;
 
     public InstagramImporter(RecipeImageService recipeImageService, OpencookbookConfiguration opencookbookConfiguration,
-            RecipeTextImporter textImporter, InstagramReadRateLimiter rateLimiter) {
+            RecipeTextImporter textImporter) {
         super(recipeImageService, opencookbookConfiguration);
         this.textImporter = textImporter;
-        this.rateLimiter = rateLimiter;
     }
 
     @Override
     public Recipe importRecipe(String url, CookpalUser owner) {
         var postUrl = postUrlOf(url);
-        if (!rateLimiter.recordRead(owner).allowed()) {
-            throw new ApiException(ApiErrorCode.RATE_LIMITED, "Instagram read rate limit exceeded");
-        }
         var post = InstagramPost.fromPage(fetchPage(postUrl)).orElseThrow(() -> new ApiException(
                 ApiErrorCode.IMPORT_SOURCE_UNAVAILABLE, "No caption on " + postUrl));
         var draft = textImporter.importText(post.caption(), owner);

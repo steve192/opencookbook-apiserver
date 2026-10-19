@@ -73,6 +73,13 @@ class PublicEndpointsIntegrationTest extends IntegrationTestBase {
     }
 
     @Test
+    void anInstanceKeepsItsToolsPrivateByDefault() throws Exception {
+        mockMvc.perform(get("/api/v1/instance"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.toolsPublic").value(false));
+    }
+
+    @Test
     void anInstanceWithoutGoogleSaysSoAndHasNoEndpointForIt() throws Exception {
         mockMvc.perform(get("/api/v1/instance"))
                 .andExpect(jsonPath("$.googleSignIn").value(nullValue()));
@@ -105,6 +112,10 @@ class PublicEndpointsIntegrationTest extends IntegrationTestBase {
             "/api/v1/households/any-household",
             "/api/v1/households/any-household/invites",
             "/api/v1/household-invites/any-token",
+            // The kitchen tools are private unless the instance makes them public.
+            "/api/v1/catalogue/search?q=Zucker",
+            "/api/v1/catalogue/seasons",
+            "/api/v1/catalogue/soaking",
     })
     void everythingElseStillRequiresAuthentication(String path) throws Exception {
         mockMvc.perform(get(path)).andExpect(status().isUnauthorized());

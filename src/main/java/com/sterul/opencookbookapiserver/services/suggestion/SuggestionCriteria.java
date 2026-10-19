@@ -13,6 +13,7 @@ import com.sterul.opencookbookapiserver.entities.recipe.MealType;
  *
  * @param seed makes a result set reproducible, so asking again is a deliberate new draw
  * @param includeHouseholdRecipes also draw on the household cookbooks the cook may read
+ * @param inSeasonMonth also want every food in season in Germany that month, 1 to 12
  */
 public record SuggestionCriteria(
         MatchMode mode,
@@ -23,6 +24,7 @@ public record SuggestionCriteria(
         Integer targetKcalPerServing,
         MacroStyle macroStyle,
         boolean includeHouseholdRecipes,
+        Integer inSeasonMonth,
         int limit,
         long seed) {
 
@@ -32,8 +34,9 @@ public record SuggestionCriteria(
         mealTypes = mealTypes == null ? Set.of() : Set.copyOf(mealTypes);
     }
 
+    /** Picked ingredients or a season: then a recipe has to use some of them, even when none resolve. */
     public boolean hasIngredientFilter() {
-        return !ingredientIds.isEmpty();
+        return !ingredientIds.isEmpty() || inSeasonMonth != null;
     }
 
     public boolean wantsNutrition() {

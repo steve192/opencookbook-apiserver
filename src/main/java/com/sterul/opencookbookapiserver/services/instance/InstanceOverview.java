@@ -45,7 +45,7 @@ public record InstanceOverview(
     }
 
     public record Features(boolean sharing, boolean households, boolean apiKeys, boolean recipeScanConfigured,
-            boolean recipeScanEnabled) {
+            boolean recipeScanEnabled, boolean publicTools) {
     }
 
     /** @param recipeScanUrl null when no subsystem is configured */

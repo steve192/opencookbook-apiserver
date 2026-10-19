@@ -1,9 +1,10 @@
 package com.sterul.opencookbookapiserver.integration;
 
-import org.mockito.Mockito;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
+import java.util.List;
+
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
 
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
@@ -15,13 +16,8 @@ public final class TestUtils {
     }
 
     public static void whenAuthenticated(UserRepository userRepository) {
-        // Mock currently logged in user
-        Authentication authentication = Mockito.mock(Authentication.class);
-        Mockito.when(authentication.getName()).thenReturn("test@test.com");
-
-        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
-        SecurityContextHolder.setContext(securityContext);
+        SecurityContextHolder.setContext(new SecurityContextImpl(
+                UsernamePasswordAuthenticationToken.authenticated("test@test.com", null, List.of())));
 
         var testUser = userRepository.findByEmailAddress("test@test.com");
         if (testUser == null) {

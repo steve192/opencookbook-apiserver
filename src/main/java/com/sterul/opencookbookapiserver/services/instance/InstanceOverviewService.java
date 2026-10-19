@@ -51,7 +51,7 @@ public class InstanceOverviewService {
                 mail(),
                 new InstanceOverview.Features(configuration.getSharing().isEnabled(),
                         configuration.getHouseholds().isEnabled(), configuration.getApiKeys().isEnabled(),
-                        ml.isConfigured(), ml.getRecipeOcr().isEnabled()),
+                        ml.isConfigured(), ml.getRecipeOcr().isEnabled(), configuration.getTools().isPublic()),
                 new InstanceOverview.Services(withoutCredentials(configuration.getRecipeScaperServiceUrl()),
                         ml.isConfigured() ? withoutCredentials(ml.getServiceUrl()) : null),
                 new InstanceOverview.Legal(configuration.getLegalDirectory(), Stream.of(LegalDocument.values())

@@ -29,6 +29,8 @@ import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
+import com.sterul.opencookbookapiserver.ratelimiting.RateLimitTier;
+import com.sterul.opencookbookapiserver.ratelimiting.RateLimited;
 import com.sterul.opencookbookapiserver.services.RecipeCopier;
 import com.sterul.opencookbookapiserver.services.RecipeImportService;
 import com.sterul.opencookbookapiserver.services.RecipeService;
@@ -122,6 +124,7 @@ public class RecipeController extends BaseController {
     @Operation(summary = "Import a recipe from a link or a text",
             description = "A recipe website is imported and saved. A text, or the caption of an Instagram post, "
                     + "is read into a draft that is not saved; its images may hold the post's photo.")
+    @RateLimited(RateLimitTier.EXPENSIVE)
     @PostMapping("/import")
     public RecipeImportResponse importFromLinkOrText(@RequestBody @Valid RecipeImportRequest request) {
         var imported = recipeImportService.importRecipe(request.input(), getLoggedInUser());

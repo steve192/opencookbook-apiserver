@@ -96,6 +96,7 @@ export const InstanceOverview = (props: {overview?: Overview, loading: boolean, 
                 on={overview.features.recipeScan.enabled}
                 note={overview.features.recipeScan.configured ? undefined : 'not configured'}
               />
+              <Flag label="Public kitchen tools" on={overview.features.publicTools} />
             </Stack>
           </Section>
 

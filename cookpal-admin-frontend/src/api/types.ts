@@ -469,6 +469,8 @@ export interface InstanceOverview {
     households: boolean;
     apiKeys: boolean;
     recipeScan: {configured: boolean, enabled: boolean};
+    /** Kitchen tools work without an account (TOOLS_PUBLIC). */
+    publicTools: boolean;
   };
   services: {recipeImportUrl: string | null, recipeScanUrl: string | null};
   legal: {directory: string, documents: {document: string, published: boolean}[]};

@@ -45,7 +45,7 @@ class TestHarmonisedNutrients:
 
     FDC = {"fdc_id": "1", "nitrogen": "", "protein": "20", "protein_conversion_factor": "5.7", "fat": "10",
            "carbohydrate_by_difference": "30", "carbohydrate_by_summation": "", "fibre": "5", "alcohol": "",
-           "sodium_mg": "400", "saturated_fat": "2", "sugars_total_nlea": "3", "sugars_total": ""}
+           "sodium_mg": "400", "saturated_fat": "2", "sugars_total_nlea": "3", "sugars_total": "", "water": "40"}
 
     def test_fdc_carbohydrates_by_difference_lose_their_fibre(self):
         assert nutrients.from_fdc(self.FDC).carbohydrates == 25
@@ -55,6 +55,9 @@ class TestHarmonisedNutrients:
 
     def test_fdc_salt_comes_from_sodium(self):
         assert nutrients.from_fdc(self.FDC).salt == 1.0
+
+    def test_water_is_taken_as_published(self):
+        assert nutrients.from_fdc(self.FDC).water == 40
 
     def test_energy_uses_the_eu_factors(self):
         protein = 20 / 5.7 * 6.25

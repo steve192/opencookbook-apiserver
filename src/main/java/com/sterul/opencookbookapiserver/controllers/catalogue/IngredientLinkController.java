@@ -1,10 +1,7 @@
 package com.sterul.opencookbookapiserver.controllers.catalogue;
 
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,15 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sterul.opencookbookapiserver.controllers.BaseController;
 import com.sterul.opencookbookapiserver.services.SignedInUserService;
 import com.sterul.opencookbookapiserver.services.mail.MailLanguages;
-import com.sterul.opencookbookapiserver.services.catalogue.linking.CatalogueSearchService;
 import com.sterul.opencookbookapiserver.services.catalogue.linking.IngredientLinkService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
@@ -31,28 +25,14 @@ import jakarta.validation.constraints.Positive;
 @Tag(name = "Nutrition", description = "Estimated nutrients of recipes, and the links behind them")
 public class IngredientLinkController extends BaseController {
 
-    private static final String DEFAULT_RESULTS = "20";
-
-    private final CatalogueSearchService searchService;
     private final IngredientLinkService linkService;
     private final MailLanguages languages;
 
-    public IngredientLinkController(CatalogueSearchService searchService, IngredientLinkService linkService, MailLanguages languages,
+    public IngredientLinkController(IngredientLinkService linkService, MailLanguages languages,
             SignedInUserService signedInUser) {
         super(signedInUser);
-        this.searchService = searchService;
         this.linkService = linkService;
         this.languages = languages;
-    }
-
-    @Operation(summary = "Search the catalogue", description = "Most likely foods first. Names are shown in lang, or the user's language.")
-    @GetMapping("/api/v1/catalogue/search")
-    public List<CatalogueFoodResponse> search(@RequestParam @NotBlank String q, @RequestParam(required = false) String lang,
-            @RequestParam(defaultValue = DEFAULT_RESULTS) @Min(1) @Max(50) int limit) {
-        var language = lang != null ? lang : language();
-        return searchService.search(q, language, limit).stream()
-                .map(found -> CatalogueFoodResponse.of(found.food(), language, found.confidence()))
-                .toList();
     }
 
     @Operation(summary = "Say what one of your ingredients is",

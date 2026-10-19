@@ -33,4 +33,7 @@ public class InstanceInfoResponse {
 
     /** Null when the instance does not offer signing in with Google. */
     private GoogleClients googleSignIn;
+
+    /** The kitchen tools work without an account. */
+    private boolean toolsPublic;
 }

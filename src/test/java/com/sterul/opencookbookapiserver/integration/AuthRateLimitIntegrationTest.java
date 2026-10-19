@@ -37,7 +37,7 @@ import com.sterul.opencookbookapiserver.services.EmailService;
  * everything in the context and tests must not spend each other's budgets.
  */
 @SpringBootTest(properties = {
-        "opencookbook.auth.attempts-per-hour-per-ip=3",
+        "opencookbook.rate-limits.guessable.anonymous-per-hour=3",
         "opencookbook.auth.mails-per-hour-per-address=2",
         "opencookbook.smtp-host=smtp.cookpal.invalid",
         "opencookbook.instanceURL=https://cookpal.invalid",

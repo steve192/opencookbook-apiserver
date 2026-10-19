@@ -37,7 +37,7 @@ Every catalogue food has:
 | `variantOf` | For a prepared food, the key of the unprepared **base** it was prepared from (`bls-K110132` boiled potato → `bls-K110100` potato). Bases have no `variantOf`. |
 | `states` | Language-neutral states that change nutrients per 100 g: preparations (`BOILED`, `PAN_FRIED`, …) and processing (`DRIED`, `CANNED`, `SMOKED`, …). See `curation/states.yaml`. |
 | `names` | Per language, the first is the display name. **Only bases have names**; a variant is found through its base plus the state words someone types ("gekochte Kartoffeln"). Names are unique per language across the whole catalogue, ignoring case. |
-| `nutrients` | Per 100 g, harmonised to the EU labelling definitions (see below). |
+| `nutrients` | Per 100 g, harmonised to the EU labelling definitions (see below), plus `water` as published. |
 | `portions` | Weights of count units (`piece`, `slice`, `can`, …) for this food. |
 | `densityGPerMl` | For turning volumes into grams. |
 | `negligible` | Contributes next to nothing (≤ 5 kcal/100 g): water, salt. A recipe line of it never warns. |
@@ -46,8 +46,19 @@ Every catalogue food has:
 
 Besides the catalogue the dataset ships `units.json`, `states.json` and `lexicons.json` (words for
 units and states per language), `non-food.json` (what a food shop sells that is no food: toilet paper,
-detergent; for shopping lists, and never a name a food has) and `manifest.json` with the label, a checksum over all files, the
-source releases used and their attribution texts.
+detergent; for shopping lists, and never a name a food has), one file of **feature facts** per feature
+(below) and `manifest.json` with the label, a checksum over all files, the source releases used and
+their attribution texts.
+
+**Feature facts** are what one feature knows about a few foods. They stay out of the food records, so
+these do not grow a field per feature; each feature's file lists bases by key, and the server imports
+it into that feature's own table ([docs/catalogue.md](../docs/catalogue.md#core-food-and-feature-facts)
+says where a new attribute goes and how to add one):
+
+| File | Feature | Per food |
+|---|---|---|
+| `seasonal.json` | Seasonal calendar, seasonal recipe suggestions | `category` (fruit, vegetable, salad), per region (`DE`) the growing methods per month, `storage` |
+| `soaking.json` | Bread tool soaker | `absorption`: grams of water a gram soaks up |
 
 **Harmonisation.** BLS already follows Regulation (EU) 1169/2011. FDC is brought to it: available
 carbohydrates (by summation, else by difference minus fibre), protein as nitrogen × 6.25, salt from
@@ -163,8 +174,13 @@ The build runs these steps (`scripts/cookpal_catalogue/catalogue/`):
    `subgroupDefaults`. The group letter alone is too coarse: `E` holds eggs and pasta, `Q` oils and
    butter. Variants take their base's aisle unless one of the first three moves them. A base none of
    these places **fails the build**; all FDC foods are listed under `overrides`.
-9. **Shopping tiles** from `shopping-tiles.yaml`: bases only, each icon one of `fluent-icons.txt`.
+9. **Shopping tiles** from `shopping-tiles.yaml`, then **icons** from `food-icons.yaml`: bases only, each icon
+   one of `fluent-icons.txt` or `own-icons.txt`.
    `non-food.yaml` is checked last: a name that is also a food's fails the build.
+10. **Feature facts** (`feature_facts.py`) from the files under [Feature facts](#feature-facts), for
+   bases only: a fact given to a variant fails the build, one for a key the catalogue lacks is stale.
+   Region files must agree on a food's category, and storage is only kept for foods with a season, as
+   the seasonal calendar is what shows it.
 
 ## Curation files
 
@@ -183,6 +199,7 @@ of foods.
 | `lexicon/<lang>.yaml` | Words per language for every unit and state, `preparationContext` phrases ("ohne Fett") that describe a preparation without being one, and `descriptions`: words saying how a food is cut, served or used ("gehackt", "lauwarm", "Form") | `units: {tablespoon: [EL, Esslöffel]}`, `states: {DRIED: [getrocknet]}`, `descriptions: [gehackt]`. Unit words cover every unit string the app and the recipe importers produce. State and description words need base forms only; the matcher stems them. A description a food's name lacks is not held against it; one it shares still counts for it. List only words that never tell two catalogue foods apart - not "frisch" or "gemahlen". |
 | `fdc-vocabulary.yaml` | American → British words (`eggplant: aubergine`), implied words (`egg: chicken`), phrases that name nothing (`year round average`) | used by the FDC duplicate rule |
 | `fluent-icons.txt` | Every Fluent Emoji icon name, Flat style, at commit `1ffb34c7` | one name per line |
+| `own-icons.txt` | CookPal's own icons for produce Fluent has none of; the app bundles them from `assets/own-icons` | one name per line, no Fluent name |
 
 A new language needs a lexicon file, names for it in `names/` and `synonyms/` where derived names
 are missing, and enabling it in the build (`LANGUAGES` in `scripts/cookpal_catalogue/catalogue/model.py`).
@@ -200,9 +217,20 @@ are missing, and enabling it in the build (`LANGUAGES` in `scripts/cookpal_catal
 | `properties.yaml` | A food measured by spoon or cup has no density (a volume is then weighed as water), or density or negligibility is wrong | `bls-C133000: {density: 0.37}`, `bls-R111000: {negligible: true}` |
 | `diet-classes.yaml` | The build stopped on a food nobody has classified, or a class is wrong | `overrides: {bls-R468000: MEAT}` with a comment naming the food. Answer **every** food the build listed; it will not ship a guess |
 | `aisles.yaml` | The build stopped on a food without an aisle, or a food is shelved elsewhere than its subgroup (sugar is baking, honey is not) | `overrides: {bls-S111000: BAKING}` with a comment naming the food |
-| `shopping-tiles.yaml` | A base should be offered as a tile when adding to a shopping list | `bls-G620100: carrot`, empty for the aisle's icon. After adding an icon, run `npm run shopping-icons:sync` in the app: it takes the names from this checkout, and the next Metro start renders them |
+| `shopping-tiles.yaml` | A base should be offered as a tile when adding to a shopping list | `- bls-G620100  # Karotte` |
+| `food-icons.yaml` | A base shows its aisle's icon where the app shows the food (shopping tiles and list, seasonal calendar), but another fits | `bls-G620100: carrot  # Karotte`. After adding an icon, run `npm run shopping-icons:sync` in the app: it takes the names from this checkout, and the next Metro start renders them |
 | `non-food.yaml` | Something bought in food shops that is no food | `toilet-paper: {aisle: HOUSEHOLD, icon: roll_of_paper, de: [...], en: [...]}` |
-| `dataset.yaml` | Every release of this dataset | `label: "2026.2"` |
+| `dataset.yaml` | Every release of this dataset | `label: "2026.3"` |
+
+### Feature facts
+
+Unlike the files above these are not exceptions to rules but reference data. Each feeds one feature's dataset file (see [What the dataset is](#what-the-dataset-is)); a new one follows the checklist in [docs/catalogue.md](../docs/catalogue.md#adding-feature-facts).
+
+| File | Content | Format |
+|---|---|---|
+| `seasons-<region>.yaml` | When a fruit or vegetable comes from the region's fields, covers, greenhouses or stores, from several seasonal calendars of the region: a month is listed when at least two show it, with the methods at least two name. Every region file must give a food the same category | `bls-F110100: {category: FRUIT, months: {8: [FIELD]}}` |
+| `storage.yaml` | Where a food keeps at home and how it behaves with ethylene, as common storage advice agrees on it. Only for foods with a season | `bls-G561100: {place: COOL_DARK, coldSensitive: true, ethyleneProducer: true}` |
+| `soaking.yaml` | Grams of water a gram of seeds, flakes or grist soaks up in a soaker: the median of what baking references give | `bls-H410100: {absorption: 1.5}` |
 
 To find keys, search the built catalogue:
 

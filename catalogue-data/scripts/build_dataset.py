@@ -5,7 +5,7 @@ The report goes to local/build-report.txt.
 
 import sys
 
-from cookpal_catalogue import catalogue, curation, dataset, extraction, non_food, paths, reference
+from cookpal_catalogue import catalogue, curation, dataset, extraction, feature_facts, non_food, paths, reference
 from cookpal_catalogue.curation import InvalidCuration
 from cookpal_catalogue.tables import read_table
 
@@ -21,6 +21,7 @@ def main() -> int:
         )
         foods, report = catalogue.build(references, curated, sources)
         non_food_items = non_food.check(references, curated, foods)
+        facts = feature_facts.build(curated, foods, report)
     except (InvalidCuration, reference.InvalidReference) as invalid:
         # A build that stopped to ask something still owes the report that says what to decide.
         if isinstance(invalid, catalogue.UndecidedFoods):
@@ -29,7 +30,8 @@ def main() -> int:
         print(f"Dataset not built: {invalid}", file=sys.stderr)
         return 1
 
-    checksum = dataset.write(paths.DATASET, curated.label, foods, non_food_items, references, extraction.read_provenance())
+    checksum = dataset.write(paths.DATASET, curated.label, foods, non_food_items, facts, references,
+                             extraction.read_provenance())
     _write_report(report)
     bases = sum(1 for food in foods if food.variant_of is None)
     print(f"{len(foods)} foods ({bases} bases) -> {paths.DATASET.relative_to(paths.REPOSITORY)}, checksum {checksum[:12]}")

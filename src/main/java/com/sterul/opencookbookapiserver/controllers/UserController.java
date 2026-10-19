@@ -37,6 +37,8 @@ import com.sterul.opencookbookapiserver.controllers.responses.UserInfoResponse;
 import com.sterul.opencookbookapiserver.controllers.responses.UserLoginResponse;
 import com.sterul.opencookbookapiserver.entities.account.Role;
 import com.sterul.opencookbookapiserver.errors.ApiException;
+import com.sterul.opencookbookapiserver.ratelimiting.RateLimitTier;
+import com.sterul.opencookbookapiserver.ratelimiting.RateLimited;
 import com.sterul.opencookbookapiserver.services.SignInService;
 import com.sterul.opencookbookapiserver.services.SignedInUserService;
 import com.sterul.opencookbookapiserver.services.SignupService;
@@ -70,6 +72,7 @@ public class UserController extends BaseController {
     @Operation(summary = "Creates a new user",
             description = "With an invitation the account is active at once. Without one it waits for "
                     + "the mailed confirmation link, or for an administrator on an instance without mail.")
+    @RateLimited(RateLimitTier.GUESSABLE)
     @PostMapping("/signup")
     public SignupResponse signup(@Valid @RequestBody UserCreationRequest request) {
         return new SignupResponse(signupService.signup(request.emailAddress(), request.password(),
@@ -77,6 +80,7 @@ public class UserController extends BaseController {
     }
 
     @Operation(summary = "Logs a user in", description = "Logs in and generates tokens for authentication")
+    @RateLimited(RateLimitTier.GUESSABLE)
     @PostMapping("/login")
     public ResponseEntity<UserLoginResponse> login(@Valid @RequestBody UserLoginRequest authenticationRequest) {
         authenticate(authenticationRequest.emailAddress(), authenticationRequest.password());
@@ -93,6 +97,7 @@ public class UserController extends BaseController {
                     + "this cannot be used to find out which addresses are registered. The "
                     + "exceptions are an instance without mail and a mail server that will not "
                     + "accept the message, which are reported rather than silently swallowed.")
+    @RateLimited(RateLimitTier.GUESSABLE)
     @PostMapping("/requestPasswordReset")
     public ResponseEntity<Void> requestPasswordReset(
             @Valid @RequestBody PasswordResetRequest passwordResetRequest)
@@ -102,6 +107,7 @@ public class UserController extends BaseController {
     }
 
     @Operation(summary = "Executes a password reset")
+    @RateLimited(RateLimitTier.GUESSABLE)
     @PostMapping("/resetPassword")
     public ResponseEntity<Void> resetPassword(@Valid @RequestBody PasswordResetExecutionRequest request) {
         userService.resetPassword(request.getNewPassword(), request.getPasswordResetId());
@@ -110,6 +116,7 @@ public class UserController extends BaseController {
 
     @Operation(summary = "Sets a new password", description = "Every other sign in of the account ends.")
     @NotForDemoAccounts
+    @RateLimited(RateLimitTier.GUESSABLE)
     @PostMapping("/changePassword")
     public ResponseEntity<Void> changePassword(@Valid @RequestBody PasswordChangeRequest request,
             @CurrentSignIn String sessionId) {
@@ -123,6 +130,7 @@ public class UserController extends BaseController {
     }
 
     @Operation(summary = "Activates a user, using an activation id")
+    @RateLimited(RateLimitTier.GUESSABLE)
     @GetMapping("/activate")
     public ResponseEntity<UserLoginResponse> activateUser(@Valid @RequestParam String activationId) {
         var user = userService.activateUser(activationId);
@@ -130,6 +138,7 @@ public class UserController extends BaseController {
     }
 
     @Operation(summary = "Resends an activation link to the users email address. Ignores requests for accounts that do not wait for the confirmation, addresses without an account and instances without mail")
+    @RateLimited(RateLimitTier.GUESSABLE)
     @PostMapping("/resendActivationLink")
     public ResponseEntity<Void> resendActivationLink(
             @Valid @RequestBody ResendActivationLinkRequest request) throws MessagingException {

@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.sterul.opencookbookapiserver.entities.catalogue.Aisle;
 
-/** Records mirroring the generated JSON files in src/main/resources/catalogue. */
+/** Records mirroring the core files in src/main/resources/catalogue; feature facts files are read by their features. */
 public final class CatalogueDataset {
 
     private CatalogueDataset() {
@@ -26,7 +26,7 @@ public final class CatalogueDataset {
 
     /**
      * @param dietClass VEGAN, VEGETARIAN or MEAT; see catalogue-data/curation/diet-classes.yaml
-     * @param icon a Fluent Emoji name; null shows the aisle's
+     * @param icon an icon name the app bundles, Fluent Emoji or CookPal's own; null shows the aisle's
      */
     public record Food(String key, String variantOf, Source source, List<String> states, boolean negligible,
             String dietClass, Float densityGPerMl, Nutrients nutrients, List<Name> names, List<Portion> portions,
@@ -50,7 +50,7 @@ public final class CatalogueDataset {
     }
 
     public record Nutrients(Float energyKcal, Float energyKj, Float fat, Float saturatedFat, Float carbohydrates,
-            Float sugar, Float fibre, Float protein, Float salt) {
+            Float sugar, Float fibre, Float protein, Float salt, Float water) {
     }
 
     public record Name(String language, String name, boolean display) {

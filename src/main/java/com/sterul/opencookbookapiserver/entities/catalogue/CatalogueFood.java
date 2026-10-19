@@ -90,7 +90,7 @@ public class CatalogueFood extends AuditableEntity {
     /** Offered as a tile to tap when adding to a shopping list. */
     private boolean shoppingTile;
 
-    /** A Fluent Emoji name; null shows the aisle's icon. */
+    /** An icon name the app bundles, Fluent Emoji or CookPal's own; null shows the aisle's icon. */
     private String icon;
 
     @Column(name = "density_g_per_ml")
@@ -115,6 +115,10 @@ public class CatalogueFood extends AuditableEntity {
     @CollectionTable(name = "catalogue_food_portion", joinColumns = @JoinColumn(name = "catalogue_food_id"))
     @Builder.Default
     private List<CatalogueFoodPortion> portions = new ArrayList<>();
+
+    /** Per 100 g, from the sources like the nutrients, but kept out of nutrition totals. */
+    @Column(name = "water_g_per_100g")
+    private Float waterGPer100g;
 
     /** Falls back to any display name. */
     public Optional<String> displayName(String languageIsoCode) {

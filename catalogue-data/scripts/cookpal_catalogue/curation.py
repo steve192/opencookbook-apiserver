@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 import yaml
 
@@ -13,6 +14,14 @@ DIET_CLASSES = ("VEGAN", "VEGETARIAN", "MEAT")
 # Where a shop sells something, in the order a shop is usually walked.
 AISLES = ("FRUIT_VEG", "BREAD_BAKERY", "DAIRY_EGGS", "MEAT_FISH", "DELI", "FROZEN", "PASTA_RICE_GRAINS", "BAKING",
           "CANNED_JARS", "OILS_SPICES_SAUCES", "SWEETS_SNACKS", "BEVERAGES", "HOUSEHOLD", "DRUGSTORE", "OTHER")
+
+# What the seasonal calendar groups foods by.
+SEASON_CATEGORIES = ("FRUIT", "VEGETABLE", "SALAD")
+
+# How a food is grown or kept in a month, from least to most climate impact.
+GROWING_METHODS = ("FIELD", "PROTECTED", "UNHEATED_GREENHOUSE", "HEATED_GREENHOUSE", "STORED")
+
+STORAGE_PLACES = ("FRIDGE", "COOL_DARK")
 
 
 class InvalidCuration(ValueError):
@@ -89,6 +98,23 @@ class NonFood:
 
 
 @dataclass(frozen=True)
+class Season:
+    """When a food comes from German fields, covers, greenhouses or stores; see curation/seasons-*.yaml."""
+    category: str
+    # Month 1..12 -> growing methods
+    months: dict[int, tuple[str, ...]]
+
+
+@dataclass(frozen=True)
+class Storage:
+    """How a food keeps at home; see curation/storage.yaml. None or False means the advice did not agree."""
+    place: str | None
+    cold_sensitive: bool
+    ethylene_producer: bool
+    ethylene_sensitive: bool
+
+
+@dataclass(frozen=True)
 class FdcVocabulary:
     """How the FDC duplicate rule reads FDC's American English in the BLS's British English."""
     synonyms: dict[str, str]
@@ -115,9 +141,16 @@ class Curation:
     # Everyday names added to a food's other names ("Kartoffel" for "Kartoffel geschält"), never shown first.
     synonyms: dict[str, dict[str, list[str]]] = field(default_factory=dict)
     aisles: Aisles = field(default_factory=lambda: Aisles({}, {}, {}, {}))
-    # Bases a shopping list offers as a tile: catalogue key -> icon, None for the aisle's icon.
-    shopping_tiles: dict[str, str | None] = field(default_factory=dict)
+    # Catalogue keys of the bases a shopping list offers as a tile.
+    shopping_tiles: frozenset[str] = frozenset()
+    # Catalogue key of a base -> the icon it shows.
+    food_icons: dict[str, str] = field(default_factory=dict)
     non_food: tuple[NonFood, ...] = ()
+    # Region ("DE") -> catalogue key -> season.
+    seasons: dict[str, dict[str, Season]] = field(default_factory=dict)
+    storage: dict[str, Storage] = field(default_factory=dict)
+    # Catalogue key -> grams of water a gram soaks up in a soaker.
+    soaking: dict[str, float] = field(default_factory=dict)
 
 
 def load(curation: Path) -> Curation:
@@ -135,9 +168,13 @@ def load(curation: Path) -> Curation:
         properties=_properties(_read(curation / "properties.yaml")),
         synonyms=_names(sorted((curation / "synonyms").glob("*.yaml"))),
         aisles=_aisles(_read(curation / "aisles.yaml")),
-        shopping_tiles={str(key): None if icon is None else str(icon)
-                        for key, icon in _read(curation / "shopping-tiles.yaml").items()},
+        shopping_tiles=frozenset(str(key) for key in _read(curation / "shopping-tiles.yaml")),
+        food_icons={str(key): str(icon) for key, icon in _read(curation / "food-icons.yaml").items()},
         non_food=_non_food(_read(curation / "non-food.yaml")),
+        seasons={path.stem.removeprefix("seasons-").upper(): _seasons(_read(path), path.name)
+                 for path in sorted(curation.glob("seasons-*.yaml"))},
+        storage=_storage(_read(curation / "storage.yaml")),
+        soaking=_soaking(_read(curation / "soaking.yaml")),
     )
 
 
@@ -246,11 +283,53 @@ def _non_food(document: dict) -> tuple[NonFood, ...]:
     return tuple(items)
 
 
+def _seasons(document: dict, file: str) -> dict[str, Season]:
+    seasons = {}
+    for key, spec in (document.get("foods") or {}).items():
+        category = _one_of(spec.get("category"), SEASON_CATEGORIES, f"{file}: category of {key}")
+        months = {}
+        for month, methods in (spec.get("months") or {}).items():
+            if not isinstance(month, int) or not 1 <= month <= 12:
+                raise InvalidCuration(f"{file}: {key} has month {month}, not 1 to 12")
+            months[month] = tuple(_one_of(method, GROWING_METHODS, f"{file}: {key} month {month}") for method in methods)
+        seasons[str(key)] = Season(category=category, months=months)
+    return seasons
+
+
+def _storage(document: dict) -> dict[str, Storage]:
+    storage = {}
+    for key, spec in (document.get("foods") or {}).items():
+        place = spec.get("place")
+        storage[str(key)] = Storage(
+            place=None if place is None else _one_of(place, STORAGE_PLACES, f"storage.yaml: place of {key}"),
+            cold_sensitive=bool(spec.get("coldSensitive")),
+            ethylene_producer=bool(spec.get("ethyleneProducer")),
+            ethylene_sensitive=bool(spec.get("ethyleneSensitive")))
+    return storage
+
+
+def _soaking(document: dict) -> dict[str, float]:
+    soaking = {}
+    for key, spec in (document.get("foods") or {}).items():
+        absorption = float(spec["absorption"])
+        if absorption <= 0:
+            raise InvalidCuration(f"soaking.yaml: {key} must soak up some water")
+        soaking[str(key)] = absorption
+    return soaking
+
+
+def _one_of(value: object, allowed: tuple[str, ...], where: str) -> str:
+    name = str(value).upper()
+    if name not in allowed:
+        raise InvalidCuration(f"{where} is '{value}', not one of {', '.join(allowed)}")
+    return name
+
+
 def _properties(document: dict) -> dict[str, Properties]:
     return {key: Properties(density_g_per_ml=spec.get("density"), negligible=spec.get("negligible"))
             for key, spec in (document or {}).items()}
 
 
-def _read(path: Path) -> dict:
+def _read(path: Path) -> Any:
     with path.open(encoding="utf-8") as file:
         return yaml.safe_load(file) or {}

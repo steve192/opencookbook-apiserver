@@ -40,6 +40,7 @@ import org.springframework.web.cors.CorsConfiguration;
 
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.controllers.admin.AdminPaths;
+import com.sterul.opencookbookapiserver.controllers.catalogue.CataloguePaths;
 import com.sterul.opencookbookapiserver.controllers.errors.ApiErrorWriter;
 import com.sterul.opencookbookapiserver.controllers.legal.LegalPaths;
 import com.sterul.opencookbookapiserver.controllers.setup.SetupPaths;
@@ -55,11 +56,8 @@ import jakarta.servlet.http.HttpServletRequest;
 @SuppressWarnings("java:S1075") // Paths of this server's own endpoints, matched where they are served.
 public class WebSecurityConfiguration {
 
-        /**
-         * Everything a stranger can reach to set up, sign up or sign in. Also what the auth rate
-         * limit counts, so the two cannot drift apart and leave a new endpoint uncounted.
-         */
-        static final String[] UNAUTHENTICATED_ACCOUNT_PATHS = {
+        /** Everything a stranger can reach to set up, sign up or sign in. */
+        private static final String[] UNAUTHENTICATED_ACCOUNT_PATHS = {
                         SetupPaths.BASE,
                         "/api/v1/users/signup",
                         "/api/v1/users/activate",
@@ -71,7 +69,7 @@ public class WebSecurityConfiguration {
         };
 
         /**
-         * Public as well, but left out of the budget: the app renews every few minutes, so a
+         * Public as well, but not rate limited: the app renews every few minutes, so a
          * household behind one address would exhaust any sane limit in normal use.
          */
         private static final String REFRESH_TOKEN_PATH = "/api/v1/users/refreshToken";
@@ -147,13 +145,21 @@ public class WebSecurityConfiguration {
                                                 PathPatternRequestMatcher.withDefaults().matcher(ADMIN_PANEL),
                                                 new ContentSecurityPolicyHeaderWriter(ADMIN_PANEL_POLICY))));
 
-                // The role first, so that anybody else is refused rather than asked for a password
-                http.authorizeHttpRequests(
-                                authorize -> authorize.requestMatchers(PUBLIC_REQUESTS).permitAll()
-                                                .requestMatchers(AdminPaths.BASE + "/**").access(AuthorizationManagers.allOf(
-                                                                AuthorityAuthorizationManager.hasRole(Role.ADMIN.name()),
-                                                                recentPassword(configuration)))
-                                                .anyRequest().authenticated());
+                // The role first, so that anybody else is refused rather than asked for a password.
+                // Tool paths stay out of PUBLIC_REQUESTS: a signed-in caller's token is still read there.
+                http.authorizeHttpRequests(authorize -> {
+                        authorize.requestMatchers(PUBLIC_REQUESTS).permitAll();
+                        var tools = authorize.requestMatchers(HttpMethod.GET, CataloguePaths.TOOL_PATHS);
+                        if (configuration.getTools().isPublic()) {
+                                tools.permitAll();
+                        } else {
+                                tools.authenticated();
+                        }
+                        authorize.requestMatchers(AdminPaths.BASE + "/**").access(AuthorizationManagers.allOf(
+                                        AuthorityAuthorizationManager.hasRole(Role.ADMIN.name()),
+                                        recentPassword(configuration)))
+                                        .anyRequest().authenticated();
+                });
 
                 http.oauth2ResourceServer(resourceServer -> resourceServer
                                 .bearerTokenResolver(WebSecurityConfiguration::accessTokenOf)

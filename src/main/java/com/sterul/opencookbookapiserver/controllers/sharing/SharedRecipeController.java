@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sterul.opencookbookapiserver.controllers.sharing.responses.SharedRecipeResponse;
 import com.sterul.opencookbookapiserver.controllers.support.RecipeImageResponses;
 import com.sterul.opencookbookapiserver.controllers.support.RecipeResponses;
+import com.sterul.opencookbookapiserver.ratelimiting.RateLimitTier;
+import com.sterul.opencookbookapiserver.ratelimiting.RateLimited;
 import com.sterul.opencookbookapiserver.services.RecipeImageService;
 import com.sterul.opencookbookapiserver.services.sharing.ShareService;
 
@@ -29,6 +31,7 @@ import jakarta.validation.constraints.NotBlank;
 @RestController
 @ConditionalOnProperty(prefix = "opencookbook.sharing", name = "enabled",
         havingValue = "true", matchIfMissing = true)
+@RateLimited(value = RateLimitTier.SHARE_LINK, perPathVariable = SharePaths.SHARE_ID_VARIABLE)
 @RequestMapping(SharePaths.PUBLIC_BASE)
 @Tag(name = "Shared recipes", description = "Reading a recipe somebody shared with you")
 public class SharedRecipeController {
@@ -44,7 +47,7 @@ public class SharedRecipeController {
         this.recipeResponses = recipeResponses;
     }
 
-    @Operation(summary = "Read a shared recipe", description = "No authentication required. Rate limited per client and per share.")
+    @Operation(summary = "Read a shared recipe", description = "No authentication required. Rate limited per share link.")
     @GetMapping("/{" + SharePaths.SHARE_ID_VARIABLE + "}")
     public SharedRecipeResponse getSharedRecipe(@Valid @NotBlank @PathVariable String shareId) {
         var recipe = shareService.openSharedRecipe(shareId);

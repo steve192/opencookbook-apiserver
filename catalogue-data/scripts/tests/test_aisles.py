@@ -1,7 +1,7 @@
 import pytest
 
 from cookpal_catalogue import non_food, paths, reference
-from cookpal_catalogue.catalogue import aisles, shopping_tiles
+from cookpal_catalogue.catalogue import aisles, food_icons, shopping_tiles
 from cookpal_catalogue.catalogue.model import Food, Name, Report, UndecidedFoods
 from cookpal_catalogue.curation import Aisles, Curation, InvalidCuration, NonFood
 from cookpal_catalogue.nutrients import Nutrients
@@ -15,7 +15,7 @@ def food(code, name, variant_of=None, states=(), source_type="BLS"):
                 source_names={"de": name}, states=states, nutrients=NUTRIENTS, variant_of=variant_of)
 
 
-def curation(overrides=None, tiles=None, items=()):
+def curation(overrides=None, tiles=None, items=(), icons=None):
     return Curation(
         label="test", bls=None, fdc=None, families=None, fdc_duplicates={}, fdc_vocabulary=None, names={},
         portions={}, diet_classes=None,
@@ -23,7 +23,7 @@ def curation(overrides=None, tiles=None, items=()):
                       state_defaults={"CANNED": "CANNED_JARS"},
                       source_name_patterns={"FROZEN": "tiefgefroren"},
                       overrides=overrides or {}),
-        shopping_tiles=tiles or {}, non_food=tuple(items))
+        shopping_tiles=frozenset(tiles or ()), food_icons=icons or {}, non_food=tuple(items))
 
 
 def assign(foods, overrides=None):
@@ -63,21 +63,47 @@ class TestAisles:
 
 class TestShoppingTiles:
 
-    def test_a_listed_base_becomes_a_tile_with_its_icon(self):
+    def test_a_listed_base_becomes_a_tile(self):
         tomato = food("G561100", "Tomate")
-        shopping_tiles.assign(REFERENCE, curation(tiles={tomato.key: "tomato"}), {tomato.key: tomato}, Report())
+        shopping_tiles.assign(curation(tiles={tomato.key}), {tomato.key: tomato}, Report())
 
-        assert tomato.shopping_tile and tomato.icon == "tomato"
-
-    def test_an_icon_fluent_does_not_have_is_refused(self):
-        tomato = food("G561100", "Tomate")
-        with pytest.raises(InvalidCuration, match="not in fluent-icons"):
-            shopping_tiles.assign(REFERENCE, curation(tiles={tomato.key: "tomatoes"}), {tomato.key: tomato}, Report())
+        assert tomato.shopping_tile and tomato.icon is None
 
     def test_a_variant_cannot_be_a_tile(self):
         variant = food("G561132", "Tomate gekocht", variant_of="bls-G561100")
         with pytest.raises(InvalidCuration, match="variant"):
-            shopping_tiles.assign(REFERENCE, curation(tiles={variant.key: None}), {variant.key: variant}, Report())
+            shopping_tiles.assign(curation(tiles={variant.key}), {variant.key: variant}, Report())
+
+    def test_a_key_the_catalogue_lost_is_reported(self):
+        report = Report()
+        shopping_tiles.assign(curation(tiles={"bls-X000000"}), {}, report)
+
+        assert report.lines["stale curation in shopping-tiles.yaml (ignored)"] == ["bls-X000000"]
+
+
+class TestFoodIcons:
+
+    def test_a_base_shows_its_icon_without_becoming_a_tile(self):
+        quince = food("F140100", "Quitte")
+        food_icons.assign(REFERENCE, curation(icons={quince.key: "quince"}), {quince.key: quince}, Report())
+
+        assert quince.icon == "quince" and not quince.shopping_tile
+
+    def test_cookpal_draws_the_produce_fluent_has_none_of(self):
+        kohlrabi = food("G331100", "Kohlrabi")
+        food_icons.assign(REFERENCE, curation(icons={kohlrabi.key: "kohlrabi"}), {kohlrabi.key: kohlrabi}, Report())
+
+        assert kohlrabi.icon == "kohlrabi"
+
+    def test_an_icon_nobody_bundles_is_refused(self):
+        tomato = food("G561100", "Tomate")
+        with pytest.raises(InvalidCuration, match="not in fluent-icons"):
+            food_icons.assign(REFERENCE, curation(icons={tomato.key: "tomatoes"}), {tomato.key: tomato}, Report())
+
+    def test_a_variant_shows_its_base_icon(self):
+        variant = food("G561132", "Tomate gekocht", variant_of="bls-G561100")
+        with pytest.raises(InvalidCuration, match="variant"):
+            food_icons.assign(REFERENCE, curation(icons={variant.key: "tomato"}), {variant.key: variant}, Report())
 
 
 class TestNonFood:

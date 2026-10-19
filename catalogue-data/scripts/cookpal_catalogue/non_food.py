@@ -10,7 +10,7 @@ def check(reference: Reference, curation: Curation, foods: list[Food]) -> list[N
     taken = {(name.language, name.text.casefold()): food.key for food in foods for name in food.names}
     for item in curation.non_food:
         if item.icon is not None and item.icon not in reference.icons:
-            raise InvalidCuration(f"non-food.yaml: {item.key} shows '{item.icon}', which is not in fluent-icons.txt")
+            raise InvalidCuration(f"non-food.yaml: {item.key} shows '{item.icon}', which is not in fluent-icons.txt or own-icons.txt")
         for language, words in item.names.items():
             for word in words:
                 owner = taken.setdefault((language, word.casefold()), item.key)

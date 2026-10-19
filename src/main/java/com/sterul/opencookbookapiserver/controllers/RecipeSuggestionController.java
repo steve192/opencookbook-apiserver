@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sterul.opencookbookapiserver.controllers.requests.RecipeSuggestionRequest;
 import com.sterul.opencookbookapiserver.controllers.responses.RecipeSuggestionResponse;
 import com.sterul.opencookbookapiserver.controllers.support.RecipeResponses;
+import com.sterul.opencookbookapiserver.ratelimiting.RateLimitTier;
+import com.sterul.opencookbookapiserver.ratelimiting.RateLimited;
 import com.sterul.opencookbookapiserver.services.SignedInUserService;
 import com.sterul.opencookbookapiserver.services.suggestion.RecipeSuggestionService;
 
@@ -16,6 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
+@RateLimited(RateLimitTier.EXPENSIVE)
 @RequestMapping("/api/v1/recipes/suggestions")
 @Tag(name = "Recipe suggestions", description = "Suggesting what to cook from the caller's own recipes")
 public class RecipeSuggestionController extends BaseController {

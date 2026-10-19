@@ -1,0 +1,28 @@
+# How much water a food soaks up in a soaker (Quellstück), in grams per gram, for the bread tool.
+# Read by feature_facts.py into soaking.json. Values for cold or lukewarm water (10 to 30 °C), the
+# median of what baking references give for each food.
+
+foods:
+  bls-H130100: {absorption: 0.5}  # Haselnuss
+  bls-H310100: {absorption: 0.5}  # Kürbiskern
+  bls-H210100: {absorption: 0.5}  # Mandel
+  bls-H420100: {absorption: 0.5}  # Sesam
+  bls-H430100: {absorption: 0.5}  # Sonnenblumenkern
+  bls-H120100: {absorption: 0.5}  # Walnuss
+  bls-C332000: {absorption: 0.5}  # Hirse, cold water
+  bls-C422000: {absorption: 1.0}  # Buchweizen Schrot
+  bls-C235100: {absorption: 1.0}  # Dinkel Vollkornschrot
+  bls-C133000: {absorption: 1.0}  # Haferflocken
+  bls-C219300: {absorption: 1.0}  # Hartweizengrieß
+  bls-C118000: {absorption: 1.0}  # Quinoa weiß
+  bls-C118100: {absorption: 1.0}  # Quinoa tricolore
+  bls-C221100: {absorption: 1.0}  # Roggen Vollkornschrot
+  bls-C222000: {absorption: 1.0}  # Roggen Backschrot
+  bls-C211100: {absorption: 1.0}  # Weizen Vollkornschrot
+  bls-C212000: {absorption: 1.0}  # Weizen Backschrot
+  bls-H410100: {absorption: 1.5}  # Leinsamen
+  bls-C346000: {absorption: 1.5}  # Maisgrieß
+  bls-H410400: {absorption: 2.0}  # Leinsamen geschrotet
+  bls-C217000: {absorption: 2.0}  # Weizenkleie
+  bls-B821000: {absorption: 2.0}  # Paniermehl (dried bread, finely ground)
+  bls-K213000: {absorption: 4.0}  # Kartoffelpüree Instantpulver (potato flakes)

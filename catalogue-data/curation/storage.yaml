@@ -1,0 +1,101 @@
+# How fruit and vegetables keep at home, for the seasonal calendar's storage tips.
+# Read by feature_facts.py into seasonal.json: the seasonal calendar shows it, so only foods with a season.
+#
+# What common storage advice agrees on; a place it disagrees on is left out (apples: cellar or fridge).
+# place: FRIDGE (vegetable drawer, up to about 5 °C) or COOL_DARK (cool, dark, outside the fridge).
+# coldSensitive: suffers in the cold, from about 7 °C down. ethyleneProducer: gives off ethylene.
+# ethyleneSensitive: ripens or spoils faster near ethylene. Advice for root vegetables counts for each of them.
+
+foods:
+  bls-F110100:  # Apfel
+    ethyleneProducer: true
+  bls-F130100:  # Birne
+    ethyleneProducer: true
+  bls-F303100:  # Brombeere
+    place: FRIDGE
+  bls-F301100:  # Erdbeere
+    place: FRIDGE
+  bls-F304100:  # Heidelbeere
+    place: FRIDGE
+  bls-F302100:  # Himbeere
+    place: FRIDGE
+  bls-F321100:  # Johannisbeere rot
+    place: FRIDGE
+  bls-F322100:  # Johannisbeere weiß
+    place: FRIDGE
+  bls-F323100:  # Johannisbeere schwarz
+    place: FRIDGE
+  bls-F211100:  # Süßkirsche
+    place: FRIDGE
+  bls-F212100:  # Sauerkirsche
+    place: FRIDGE
+  bls-F220100:  # Pflaume
+    place: FRIDGE
+    ethyleneProducer: true
+    ethyleneSensitive: true
+  bls-F223100:  # Zwetschge
+    place: FRIDGE
+    ethyleneProducer: true
+    ethyleneSensitive: true
+  bls-F305100:  # Stachelbeere
+    place: FRIDGE
+  bls-G311100:  # Blumenkohl
+    place: FRIDGE
+  bls-G710100:  # Bohne grün
+    place: COOL_DARK
+    coldSensitive: true
+  bls-G520100:  # Gurke
+    place: COOL_DARK
+    coldSensitive: true
+    ethyleneSensitive: true
+  bls-K110100:  # Kartoffel geschält
+    place: COOL_DARK
+    coldSensitive: true
+  bls-K120100:  # Kartoffel ungeschält
+    place: COOL_DARK
+    coldSensitive: true
+  bls-G620100:  # Möhre
+    place: FRIDGE
+  bls-G670100:  # Wurzelpetersilie
+    place: FRIDGE
+  bls-G541100:  # Gemüsepaprika grün
+    place: COOL_DARK
+    coldSensitive: true
+    ethyleneProducer: true
+  bls-G542100:  # Gemüsepaprika gelb
+    place: COOL_DARK
+    coldSensitive: true
+    ethyleneProducer: true
+  bls-G543100:  # Gemüsepaprika rot
+    place: COOL_DARK
+    coldSensitive: true
+    ethyleneProducer: true
+  bls-G691100:  # Radieschen
+    place: FRIDGE
+  bls-G613100:  # Rote Bete
+    place: FRIDGE
+  bls-G650100:  # Schwarzwurzel
+    place: FRIDGE
+  bls-G660100:  # Knollensellerie
+    place: FRIDGE
+  bls-G450100:  # Spargel
+    place: FRIDGE
+  bls-G211100:  # Spinat
+    place: FRIDGE
+  bls-G611100:  # Steckrübe
+    place: FRIDGE
+  bls-G561100:  # Tomate
+    place: COOL_DARK
+    coldSensitive: true
+    ethyleneProducer: true
+  bls-G582100:  # Zucchini
+    place: COOL_DARK
+    coldSensitive: true
+  bls-G103100:  # Eisbergsalat
+    place: FRIDGE
+  bls-G104100:  # Feldsalat
+    place: FRIDGE
+  bls-G105100:  # Kopfsalat
+    place: FRIDGE
+  bls-G130100:  # Rucola
+    place: FRIDGE

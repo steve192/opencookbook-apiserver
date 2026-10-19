@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sterul.opencookbookapiserver.ratelimiting.RateLimitTier;
+import com.sterul.opencookbookapiserver.ratelimiting.RateLimited;
 import com.sterul.opencookbookapiserver.services.instance.SetupService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,6 +29,7 @@ public class SetupController {
     @Operation(summary = "Create the first administrator",
             description = "Whoever comes first while no activated administrator exists. The account is "
                     + "active at once; signing in is a separate call.")
+    @RateLimited(RateLimitTier.GUESSABLE)
     @PostMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void setUp(@Valid @RequestBody SetupRequest request) {

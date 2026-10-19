@@ -1,0 +1,96 @@
+{
+ "foods": [
+  {
+   "absorption": 2.0,
+   "food": "bls-B821000"
+  },
+  {
+   "absorption": 1.0,
+   "food": "bls-C118000"
+  },
+  {
+   "absorption": 1.0,
+   "food": "bls-C118100"
+  },
+  {
+   "absorption": 1.0,
+   "food": "bls-C133000"
+  },
+  {
+   "absorption": 1.0,
+   "food": "bls-C211100"
+  },
+  {
+   "absorption": 1.0,
+   "food": "bls-C212000"
+  },
+  {
+   "absorption": 2.0,
+   "food": "bls-C217000"
+  },
+  {
+   "absorption": 1.0,
+   "food": "bls-C219300"
+  },
+  {
+   "absorption": 1.0,
+   "food": "bls-C221100"
+  },
+  {
+   "absorption": 1.0,
+   "food": "bls-C222000"
+  },
+  {
+   "absorption": 1.0,
+   "food": "bls-C235100"
+  },
+  {
+   "absorption": 0.5,
+   "food": "bls-C332000"
+  },
+  {
+   "absorption": 1.5,
+   "food": "bls-C346000"
+  },
+  {
+   "absorption": 1.0,
+   "food": "bls-C422000"
+  },
+  {
+   "absorption": 0.5,
+   "food": "bls-H120100"
+  },
+  {
+   "absorption": 0.5,
+   "food": "bls-H130100"
+  },
+  {
+   "absorption": 0.5,
+   "food": "bls-H210100"
+  },
+  {
+   "absorption": 0.5,
+   "food": "bls-H310100"
+  },
+  {
+   "absorption": 1.5,
+   "food": "bls-H410100"
+  },
+  {
+   "absorption": 2.0,
+   "food": "bls-H410400"
+  },
+  {
+   "absorption": 0.5,
+   "food": "bls-H420100"
+  },
+  {
+   "absorption": 0.5,
+   "food": "bls-H430100"
+  },
+  {
+   "absorption": 4.0,
+   "food": "bls-K213000"
+  }
+ ]
+}

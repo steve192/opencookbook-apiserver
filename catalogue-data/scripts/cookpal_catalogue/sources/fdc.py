@@ -20,6 +20,7 @@ NUTRIENTS = {
     "sodium_mg": 1093,
     "saturated_fat": 1258,
     "energy_kcal": 1008,
+    "water": 1051,
 }
 
 FOOD_COLUMNS = ("fdc_id", "data_type", "category", "description", "protein_conversion_factor") + tuple(NUTRIENTS)
