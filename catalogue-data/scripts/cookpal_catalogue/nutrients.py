@@ -41,6 +41,8 @@ class Nutrients:
     fibre: float | None
     protein: float
     salt: float | None
+    # Not shown as a nutrient; the bread tool counts it towards a dough's water.
+    water: float | None = None
 
     def as_dict(self) -> dict[str, float | None]:
         return {field.name: getattr(self, field.name) for field in fields(self)}
@@ -80,7 +82,7 @@ def from_bls(row: dict[str, str]) -> Nutrients:
         alcohol=values["ALC"], organic_acids=values["OA"], polyols=values["POLYL"],
         oligosaccharides=values["OLSAC"], fibre=values["FIBT"], food=row["code"])
     return _nutrients(composition, saturated_fat=values["FASAT"], sugar=values["SUGAR"], fibre=values["FIBT"],
-                      salt=values["NACL"])
+                      salt=values["NACL"], water=values["WATER"])
 
 
 def from_fdc(row: dict[str, str]) -> Nutrients:
@@ -91,7 +93,7 @@ def from_fdc(row: dict[str, str]) -> Nutrients:
     sodium = number(row["sodium_mg"])
     return _nutrients(composition, saturated_fat=number(row["saturated_fat"]),
                       sugar=_first_known(number(row["sugars_total_nlea"]), number(row["sugars_total"])), fibre=fibre,
-                      salt=None if sodium is None else sodium * SALT_PER_SODIUM / 1000)
+                      salt=None if sodium is None else sodium * SALT_PER_SODIUM / 1000, water=number(row["water"]))
 
 
 def _fdc_protein(row: dict[str, str]) -> float | None:
@@ -123,7 +125,7 @@ def _composition(protein, carbohydrates, fat, food, **optional) -> Composition:
                        **{name: value or 0.0 for name, value in optional.items()})
 
 
-def _nutrients(composition: Composition, saturated_fat, sugar, fibre, salt) -> Nutrients:
+def _nutrients(composition: Composition, saturated_fat, sugar, fibre, salt, water) -> Nutrients:
     return Nutrients(
         energy_kcal=round(composition.energy(KCAL), 1),
         energy_kj=round(composition.energy(KJ), 1),
@@ -134,6 +136,7 @@ def _nutrients(composition: Composition, saturated_fat, sugar, fibre, salt) -> N
         fibre=fibre,
         protein=round(composition.protein, 3),
         salt=None if salt is None else round(salt, 4),
+        water=water,
     )
 
 

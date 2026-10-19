@@ -1,19 +1,9 @@
-"""Which bases a shopping list offers as a tile, and the icon it shows. Variants have no names to show."""
+"""Which bases a shopping list offers as a tile. Variants have no names to show."""
 
-from cookpal_catalogue.catalogue.model import Food, Report
-from cookpal_catalogue.curation import Curation, InvalidCuration
-from cookpal_catalogue.reference import Reference
+from cookpal_catalogue.catalogue.model import Food, Report, curated_bases
+from cookpal_catalogue.curation import Curation
 
 
-def assign(reference: Reference, curation: Curation, foods: dict[str, Food], report: Report) -> None:
-    report.stale("shopping-tiles.yaml", curation.shopping_tiles.keys() - foods.keys())
-    for key, icon in sorted(curation.shopping_tiles.items()):
-        if icon is not None and icon not in reference.icons:
-            raise InvalidCuration(f"shopping-tiles.yaml: {key} shows '{icon}', which is not in fluent-icons.txt")
-        food = foods.get(key)
-        if food is None:
-            continue
-        if food.variant_of is not None:
-            raise InvalidCuration(f"shopping-tiles.yaml: {key} is a variant; make its base {food.variant_of} the tile")
+def assign(curation: Curation, foods: dict[str, Food], report: Report) -> None:
+    for food in curated_bases("shopping-tiles.yaml", curation.shopping_tiles, foods, report):
         food.shopping_tile = True
-        food.icon = icon

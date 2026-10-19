@@ -8,9 +8,11 @@ from pathlib import Path
 from cookpal_catalogue.catalogue import LANGUAGES, Food
 from cookpal_catalogue.curation import NonFood
 from cookpal_catalogue.extraction import Provenance
+from cookpal_catalogue.feature_facts import FeatureFacts, SeasonalProduce
 from cookpal_catalogue.reference import Reference
 
-CONTENT_FILES = ("catalogue.json", "units.json", "states.json", "lexicons.json", "non-food.json")
+CONTENT_FILES = ("catalogue.json", "units.json", "states.json", "lexicons.json", "non-food.json", "seasonal.json",
+                 "soaking.json")
 
 # Citations as the publisher words them, per release; a new release fails the build until it is added here.
 CITATIONS = {
@@ -41,8 +43,8 @@ ATTRIBUTIONS = {
 }
 
 
-def write(target: Path, label: str, foods: list[Food], non_food: list[NonFood], reference: Reference,
-          provenance: list[Provenance]) -> str:
+def write(target: Path, label: str, foods: list[Food], non_food: list[NonFood], facts: FeatureFacts,
+          reference: Reference, provenance: list[Provenance]) -> str:
     """Writes every file and returns the checksum."""
     target.mkdir(parents=True, exist_ok=True)
     contents = {
@@ -51,6 +53,8 @@ def write(target: Path, label: str, foods: list[Food], non_food: list[NonFood], 
         "states.json": {"states": [_without_empty(asdict(state)) for state in reference.states.values()]},
         "lexicons.json": {"lexicons": [_without_empty(asdict(reference.lexicons[language])) for language in LANGUAGES]},
         "non-food.json": {"items": [_non_food(item) for item in non_food]},
+        "seasonal.json": {"produce": [_seasonal(produce) for produce in facts.seasonal]},
+        "soaking.json": {"foods": [{"food": key, "absorption": absorption} for key, absorption in facts.soaking.items()]},
     }
     digest = hashlib.sha256()
     for name in CONTENT_FILES:
@@ -103,6 +107,16 @@ def _food(food: Food) -> dict:
         "nutrients": _camel(food.nutrients.as_dict()),
         "names": [{"language": name.language, "name": name.text, "display": name.display} for name in food.names],
         "portions": [{"unit": portion.unit, "grams": portion.grams, "origin": portion.origin} for portion in food.portions],
+    })
+
+
+def _seasonal(produce: SeasonalProduce) -> dict:
+    return _without_empty({
+        "food": produce.key,
+        "category": produce.category,
+        "seasons": {region: {str(month): list(methods) for month, methods in sorted(months.items())}
+                    for region, months in produce.seasons.items()},
+        "storage": None if produce.storage is None else _without_empty(asdict(produce.storage)),
     })
 
 

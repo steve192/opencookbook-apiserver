@@ -32,6 +32,8 @@ import com.sterul.opencookbookapiserver.entities.recipe.Diet;
 import com.sterul.opencookbookapiserver.repositories.CatalogueFoodRepository;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.repositories.CatalogueDatasetImportRepository;
+import com.sterul.opencookbookapiserver.repositories.SeasonalProduceRepository;
+import com.sterul.opencookbookapiserver.repositories.SoakingFoodRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.catalogue.CatalogueDatasetApplier;
 import com.sterul.opencookbookapiserver.services.catalogue.DatasetImportLedger;
@@ -40,6 +42,8 @@ import com.sterul.opencookbookapiserver.services.catalogue.dataset.CatalogueData
 import com.sterul.opencookbookapiserver.services.catalogue.dataset.CatalogueDatasetReader;
 import com.sterul.opencookbookapiserver.services.catalogue.matching.CatalogueIndexUpdater;
 import com.sterul.opencookbookapiserver.services.catalogue.matching.CatalogueMatcher;
+
+import tools.jackson.databind.JsonNode;
 
 /** On the migrated schema, whose case-insensitive name constraint must hold while names move between foods. */
 @SpringBootTest(properties = {
@@ -84,6 +88,10 @@ class CatalogueDatasetImportIntegrationTest {
     private CatalogueIndexUpdater indexUpdater;
     @Autowired
     private CatalogueMatcher matcher;
+    @Autowired
+    private SeasonalProduceRepository seasonalProduceRepository;
+    @Autowired
+    private SoakingFoodRepository soakingFoodRepository;
 
     private CookpalUser owner;
 
@@ -116,6 +124,21 @@ class CatalogueDatasetImportIntegrationTest {
         importer.importShippedDataset();
 
         assertEquals(imported.getFinishedAt(), importRepository.findById(manifest.checksum()).orElseThrow().getFinishedAt());
+    }
+
+    @Test
+    void everyFeatureTakesItsFactsFromTheReleaseAndLosesThemWithIt() {
+        new CatalogueDatasetImporter(reader, ledger, applier, events).importShippedDataset();
+
+        assertEquals(shipped("seasonal.json", "produce"), seasonalProduceRepository.count());
+        assertEquals(shipped("soaking.json", "foods"), soakingFoodRepository.count());
+
+        var report = applier.apply(new CatalogueDataset.Catalogue(List.of(
+                food("bls-1", null, name("de", "Kein Saisongemüse", true)))));
+
+        assertEquals(0, seasonalProduceRepository.count());
+        assertEquals(0, soakingFoodRepository.count());
+        assertTrue(report.stream().anyMatch(line -> line.startsWith("0 seasonal produce, ")), report.toString());
     }
 
     @Test
@@ -239,9 +262,13 @@ class CatalogueDatasetImportIntegrationTest {
     }
 
     private static CatalogueDataset.Food food(String key, String variantOf, CatalogueDataset.Name... names) {
-        var nutrients = new CatalogueDataset.Nutrients(77f, 322f, 0.1f, 0f, 15f, 0.7f, 2f, 2f, 0f);
+        var nutrients = new CatalogueDataset.Nutrients(77f, 322f, 0.1f, 0f, 15f, 0.7f, 2f, 2f, 0f, 78f);
         return new CatalogueDataset.Food(key, variantOf, new CatalogueDataset.Source("BLS", key.substring(4), key),
                 List.of(), false, "VEGAN", null, nutrients, List.of(names), List.of(), Aisle.FRUIT_VEG, false, null);
+    }
+
+    private long shipped(String file, String list) {
+        return reader.read(file, JsonNode.class).get(list).size();
     }
 
     private static CatalogueDataset.Name name(String language, String name, boolean display) {

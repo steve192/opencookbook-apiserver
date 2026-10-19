@@ -1,0 +1,214 @@
+# The icon each base shows wherever the app shows the food: shopping tiles, shopping list items and the
+# seasonal calendar. A Fluent Emoji (fluent-icons.txt) or one of CookPal's own (own-icons.txt). Variants
+# show their base's icon; a base without one shows its aisle's.
+
+bls-B271000: bread                  # Roggenmischbrot
+bls-B314000: bread                  # Weizentoastbrot
+bls-B511000: bread                  # Weizenbrötchen
+bls-B723000: pretzel                # Laugengebäck mit Hagelsalz
+bls-B782100: flatbread              # Weizenfladenbrot
+bls-B783012: flatbread              # Weizentortilla
+bls-C118000: sheaf_of_rice          # Quinoa weiß
+bls-C133000: sheaf_of_rice          # Hafer Flocken
+bls-C352000: cooked_rice            # Reis poliert
+bls-C512000: bowl_with_spoon        # Müsli Basismischung (ohne Trockenfrüchte) ungesüßt
+bls-C515400: bowl_with_spoon        # Cornflakes ungesüßt
+bls-C533000: popcorn                # Popcorn ungesüßt
+bls-C660000: glass_of_milk          # Haferdrink ungesüßt
+bls-D050000: pretzel                # Cracker
+bls-D630400: cookie                 # Butterkekse/Butterplätzchen (Mürbeteig)
+bls-D771600: croissant              # Croissant (Hefeblätterteig/Plunderteig)
+bls-E111100: egg                    # Hühnerei
+bls-E401000: spaghetti              # Teigwaren eifrei
+bls-E432000: steaming_bowl          # Eierteigwaren
+bls-E606000: potato                 # Semmelknödel
+bls-F081100: rhubarb                # Rhabarber
+bls-F110100: red_apple              # Apfel
+bls-F130100: pear                   # Birne
+bls-F140100: quince                 # Quitte
+bls-F201100: apricot                # Aprikose
+bls-F202100: nectarine              # Nektarine
+bls-F203100: peach                  # Pfirsich
+bls-F211100: cherries               # Süßkirsche
+bls-F212100: sour_cherries          # Sauerkirsche
+bls-F220100: plum                   # Pflaume
+bls-F223100: damson                 # Zwetschge
+bls-F224100: mirabelle              # Mirabelle
+bls-F301100: strawberry             # Erdbeere
+bls-F302100: raspberry              # Himbeere
+bls-F303100: blackberry             # Brombeere
+bls-F304100: blueberries            # Heidelbeere
+bls-F305100: gooseberry             # Stachelbeere
+bls-F310100: grapes                 # Weintraube
+bls-F321100: red_currant            # Johannisbeere rot
+bls-F322100: white_currant          # Johannisbeere weiß
+bls-F323100: black_currant          # Johannisbeere schwarz
+bls-F501100: pineapple              # Ananas
+bls-F502100: avocado                # Avocado
+bls-F503100: banana                 # Banane
+bls-F514100: kiwi_fruit             # Kiwi
+bls-F516100: mango                  # Mango
+bls-F533100: melon                  # Honigmelone
+bls-F535100: watermelon             # Wassermelone
+bls-F601100: lemon                  # Zitrone
+bls-F602100: lime                   # Limette
+bls-F603100: tangerine              # Orange
+bls-F603600: beverage_box           # Orangensaft
+bls-F604100: tangerine              # Grapefruit
+bls-F606100: tangerine              # Mandarine
+bls-F840100: grapes                 # Rosine/Sultanine (Weinbeere getrocknet)
+bls-G012902: jar                    # Kapern gesäuert, abgetropft
+bls-G061000: herb                   # Basilikum
+bls-G081100: herb                   # Schnittlauch
+bls-G102100: endive                 # Endivie
+bls-G103100: iceberg_lettuce        # Eisbergsalat
+bls-G104100: lambs_lettuce          # Feldsalat
+bls-G105100: green_salad            # Kopfsalat
+bls-G106100: radicchio              # Radicchio
+bls-G130100: arugula                # Rucola
+bls-G211100: leafy_green            # Spinat
+bls-G220100: celery                 # Bleichsellerie
+bls-G230100: chard                  # Mangold
+bls-G250100: herb                   # Petersilienblatt
+bls-G311100: cauliflower            # Blumenkohl
+bls-G312100: broccoli               # Broccoli
+bls-G321100: chinese_cabbage        # Chinakohl
+bls-G322100: kale                   # Grünkohl
+bls-G331100: kohlrabi               # Kohlrabi
+bls-G332100: brussels_sprouts       # Rosenkohl
+bls-G341100: red_cabbage            # Rotkohl
+bls-G342100: white_cabbage          # Weißkohl
+bls-G343100: savoy_cabbage          # Wirsing
+bls-G344100: pointed_cabbage        # Spitzkohl
+bls-G345100: jar                    # Sauerkraut abgetropft
+bls-G410100: jar                    # Artischocke
+bls-G430100: fennel                 # Gemüsefenchel
+bls-G450100: asparagus              # Spargel
+bls-G470100: leek                   # Porree
+bls-G480100: onion                  # Speisezwiebel
+bls-G482100: spring_onion           # Frühlingszwiebel
+bls-G485100: onion                  # Schalotte
+bls-G490100: garlic                 # Knoblauch
+bls-G510100: eggplant               # Aubergine
+bls-G520100: cucumber               # Gurke
+bls-G520802: cucumber               # Gurke gesäuert (Gewürzgurke) abgetropft
+bls-G541100: bell_pepper            # Gemüsepaprika grün
+bls-G542100: yellow_bell_pepper     # Gemüsepaprika gelb
+bls-G543100: red_bell_pepper        # Gemüsepaprika rot
+bls-G554100: hot_pepper             # Pfefferschote rot
+bls-G561100: tomato                 # Tomate
+bls-G568900: canned_food            # Tomate geschält, Konserve
+bls-G570100: ear_of_corn            # Zuckermais
+bls-G581000: pumpkin                # Kürbis Hokkaido (C. maxima)
+bls-G581100: pumpkin                # Kürbis Pumpkin (C. pepo)
+bls-G582100: zucchini               # Zucchini
+bls-G611100: swede                  # Kohlrübe
+bls-G613100: beetroot               # Rote Rübe
+bls-G620100: carrot                 # Karotte
+bls-G640100: parsnip                # Pastinake
+bls-G650100: black_salsify          # Schwarzwurzel
+bls-G660100: celeriac               # Knollensellerie
+bls-G670100: parsnip                # Wurzelpetersilie
+bls-G680100: radish                 # Rettich
+bls-G691100: small_red_radish       # Radieschen
+bls-G710100: green_beans            # Bohne grün
+bls-G730100: broad_beans            # Dicke Bohne
+bls-G760100: canned_food            # Erbse grün
+bls-G760200: ice                    # Erbse grün, tiefgefroren
+bls-G761100: pea_pod                # Zuckererbse
+bls-H120100: walnut                 # Walnuss
+bls-H130100: hazelnut               # Haselnuss
+bls-H130400: hazelnut               # Haselnuss gemahlen
+bls-H150100: coconut                # Kokos Fruchtfleisch
+bls-H150400: coconut                # Kokos Fruchtfleisch, geraspelt, getrocknet
+bls-H154000: canned_food            # Kokosmilch
+bls-H170100: peanuts                # Cashewkern
+bls-H510802: olive                  # Oliven grün, gesäuert, abgetropft
+bls-H610100: canned_food            # Bambussprossen
+bls-H720902: canned_food            # Kichererbse reif, Konserve, abgetropft
+bls-H725100: beans                  # Linse reif
+bls-H742902: canned_food            # Kidneybohne reif, Konserve, abgetropft
+bls-H800000: glass_of_milk          # Mandeldrink ungesüßt
+bls-H841100: glass_of_milk          # Sojadrink ungesüßt
+bls-H880200: peanuts                # Erdnussbutter
+bls-H910500: hot_dog                # Vegetarische Wiener Würstchen
+bls-K110100: potato                 # Kartoffel geschält
+bls-K120100: potato                 # Kartoffel ungeschält
+bls-K130200: french_fries           # Pommes frites tiefgefroren
+bls-K420100: roasted_sweet_potato   # Batate
+bls-K701100: brown_mushroom         # Champignon
+bls-K740100: mushroom               # Austernpilz
+bls-M012200: cheese_wedge           # Feta mind. 45 % Fett i. Tr.
+bls-M032100: cheese_wedge           # Mozzarella mind. 45 % Fett i. Tr.
+bls-M111300: glass_of_milk          # Vollmilch frisch, 3,5 % Fett, pasteurisiert
+bls-M150000: glass_of_milk          # Buttermilch
+bls-M173800: glass_of_milk          # Schlagsahne mind. 30 % Fett
+bls-M206300: hot_beverage           # Milchmischgetränk 3,5 % Fett, mit Kakao/Schokolade, gesüßt
+bls-M306400: cheese_wedge           # Parmesan mind. 30 % Fett i. Tr.
+bls-M402600: cheese_wedge           # Gouda 48 % Fett i. Tr.
+bls-M524500: cheese_wedge           # Halloumi Grillkäse
+bls-M602600: cheese_wedge           # Camembert mind. 45 % Fett i. Tr.
+bls-M820600: cheese_wedge           # Frischkäsezubereitung Natur, mind. 45 % Fett i. Tr.
+bls-N110000: potable_water          # Trinkwasser
+bls-N330000: cup_with_straw         # Colagetränk koffeinhaltig
+bls-N410100: hot_beverage           # Kaffee (Getränk)
+bls-N630000: teacup_without_handle  # Schwarztee (Getränk)
+bls-P163000: beer_mug               # Pilsner Bier
+bls-P2A3000: wine_glass             # Rotwein trocken
+bls-P2A6000: bottle_with_popping_cork  # Qualitätsschaumwein, Sekt, trocken
+bls-P712000: tumbler_glass          # Wodka
+bls-Q120000: droplet                # Olivenöl
+bls-Q180000: droplet                # Rapsöl
+bls-Q400000: butter                 # Pflanzenmargarine Vollfett, angereichert mit Vitaminen
+bls-Q630000: butter                 # Süßrahmbutter
+bls-Q901000: jar                    # Tahin (Sesammus)
+bls-R111000: salt                   # Speisesalz
+bls-R160000: tomato                 # Tomatenmark
+bls-R211200: ginger_root            # Ingwer
+bls-R258100: salt                   # Pfeffer schwarz, getrocknet
+bls-R481100: custard                # Puddingpulver Vanille, ungezuckert
+bls-S120000: honey_pot              # Honig
+bls-S132000: jar                    # Konfitüre extra
+bls-S145000: jar                    # Nuss-Nougat-Creme
+bls-S151100: honey_pot              # Ahornsirup
+bls-S241000: ice_cream              # Vanilleeis
+bls-S380000: candy                  # Komprimate (Pastillen, Presslinge)
+bls-S500000: chocolate_bar          # Schokolade
+bls-S560000: chocolate_bar          # Halbbitterschokolade
+bls-T020100: squid                  # Tintenfisch
+bls-T107100: canned_food            # Makrele
+bls-T121100: canned_food            # Thunfisch
+bls-T204100: fish                   # Dorsch
+bls-T410100: fish                   # Lachs
+bls-T410600: fish                   # Lachs geräuchert (Räucherlachs)
+bls-T753100: shrimp                 # Garnele
+bls-T792100: oyster                 # Miesmuschel
+bls-T930100: fish                   # Fischstäbchen (Alaska-Seelachs) paniert, tiefgefroren
+bls-U050100: cut_of_meat            # Hackfleisch gemischt
+bls-U151100: cut_of_meat            # Rind Gulasch (Bug)
+bls-U201000: cut_of_meat            # Rind Muskelfleisch
+bls-U401000: cut_of_meat            # Kalb Muskelfleisch
+bls-U601000: cut_of_meat            # Schwein Muskelfleisch
+bls-U681700: cut_of_meat            # Schwein Rohschinken, mager, Rohpökelware, geräuchert
+bls-U867100: meat_on_bone           # Lamm Bug
+bls-U985200: pot_of_food            # Rindfleischbrühe Konserve
+bls-V416100: poultry_leg            # Hähnchen Brustfilet
+bls-V464100: poultry_leg            # Ente Fleisch, mit Haut
+bls-V486100: poultry_leg            # Pute Brust, ohne Haut
+bls-W215000: hot_dog                # Knackwurst
+bls-W222600: hot_dog                # Rostbratwurst
+bls-W231100: sandwich               # Lyoner
+bls-W415000: bacon                  # Schwein Frühstücksspeck, Rohpökelware, geräuchert
+bls-W424000: cut_of_meat            # Schwein Kochschinken, Kochpökelware
+fdc-168573: herb                    # Zitronengras
+fdc-169997: herb                    # Koriandergrün
+fdc-170923: salt                    # Kreuzkümmel
+fdc-171329: salt                    # Paprikapulver
+fdc-171579: jar                     # Pesto
+fdc-172233: herb                    # Dill
+fdc-173470: herb                    # Thymian
+fdc-173473: herb                    # Rosmarin
+fdc-173475: herb                    # Minze
+fdc-174913: baguette_bread          # Ciabatta
+fdc-2346414: canned_food            # Apfelmus ungesüßt
+fdc-2685579: jar                    # Tomatensauce aus der Dose

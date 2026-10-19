@@ -1,0 +1,2195 @@
+{
+ "produce": [
+  {
+   "category": "VEGETABLE",
+   "food": "bls-F081100",
+   "seasons": {
+    "DE": {
+     "3": [
+      "PROTECTED"
+     ],
+     "4": [
+      "FIELD",
+      "PROTECTED"
+     ],
+     "5": [
+      "FIELD"
+     ],
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "FRUIT",
+   "food": "bls-F110100",
+   "seasons": {
+    "DE": {
+     "1": [
+      "STORED"
+     ],
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD",
+      "STORED"
+     ],
+     "12": [
+      "STORED"
+     ],
+     "2": [
+      "STORED"
+     ],
+     "3": [
+      "STORED"
+     ],
+     "4": [
+      "STORED"
+     ],
+     "5": [
+      "STORED"
+     ],
+     "6": [
+      "STORED"
+     ],
+     "7": [
+      "STORED"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "ethyleneProducer": true
+   }
+  },
+  {
+   "category": "FRUIT",
+   "food": "bls-F130100",
+   "seasons": {
+    "DE": {
+     "1": [
+      "STORED"
+     ],
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "STORED"
+     ],
+     "12": [
+      "STORED"
+     ],
+     "2": [
+      "STORED"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "ethyleneProducer": true
+   }
+  },
+  {
+   "category": "FRUIT",
+   "food": "bls-F140100",
+   "seasons": {
+    "DE": {
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "FRUIT",
+   "food": "bls-F201100",
+   "seasons": {
+    "DE": {
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "FRUIT",
+   "food": "bls-F202100",
+   "seasons": {
+    "DE": {
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "FRUIT",
+   "food": "bls-F203100",
+   "seasons": {
+    "DE": {
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "FRUIT",
+   "food": "bls-F211100",
+   "seasons": {
+    "DE": {
+     "6": [
+      "FIELD",
+      "PROTECTED"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "place": "FRIDGE"
+   }
+  },
+  {
+   "category": "FRUIT",
+   "food": "bls-F212100",
+   "seasons": {
+    "DE": {
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "place": "FRIDGE"
+   }
+  },
+  {
+   "category": "FRUIT",
+   "food": "bls-F220100",
+   "seasons": {
+    "DE": {
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "ethyleneProducer": true,
+    "ethyleneSensitive": true,
+    "place": "FRIDGE"
+   }
+  },
+  {
+   "category": "FRUIT",
+   "food": "bls-F223100",
+   "seasons": {
+    "DE": {
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "ethyleneProducer": true,
+    "ethyleneSensitive": true,
+    "place": "FRIDGE"
+   }
+  },
+  {
+   "category": "FRUIT",
+   "food": "bls-F224100",
+   "seasons": {
+    "DE": {
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "FRUIT",
+   "food": "bls-F301100",
+   "seasons": {
+    "DE": {
+     "10": [
+      "PROTECTED"
+     ],
+     "5": [
+      "FIELD",
+      "PROTECTED"
+     ],
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "place": "FRIDGE"
+   }
+  },
+  {
+   "category": "FRUIT",
+   "food": "bls-F302100",
+   "seasons": {
+    "DE": {
+     "6": [
+      "FIELD",
+      "PROTECTED"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "place": "FRIDGE"
+   }
+  },
+  {
+   "category": "FRUIT",
+   "food": "bls-F303100",
+   "seasons": {
+    "DE": {
+     "10": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "place": "FRIDGE"
+   }
+  },
+  {
+   "category": "FRUIT",
+   "food": "bls-F304100",
+   "seasons": {
+    "DE": {
+     "10": [
+      "STORED"
+     ],
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "place": "FRIDGE"
+   }
+  },
+  {
+   "category": "FRUIT",
+   "food": "bls-F305100",
+   "seasons": {
+    "DE": {
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "place": "FRIDGE"
+   }
+  },
+  {
+   "category": "FRUIT",
+   "food": "bls-F310100",
+   "seasons": {
+    "DE": {
+     "10": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "FRUIT",
+   "food": "bls-F321100",
+   "seasons": {
+    "DE": {
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "place": "FRIDGE"
+   }
+  },
+  {
+   "category": "FRUIT",
+   "food": "bls-F322100",
+   "seasons": {
+    "DE": {
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "place": "FRIDGE"
+   }
+  },
+  {
+   "category": "FRUIT",
+   "food": "bls-F323100",
+   "seasons": {
+    "DE": {
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "place": "FRIDGE"
+   }
+  },
+  {
+   "category": "SALAD",
+   "food": "bls-G102100",
+   "seasons": {
+    "DE": {
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD"
+     ],
+     "5": [
+      "FIELD",
+      "PROTECTED"
+     ],
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "SALAD",
+   "food": "bls-G103100",
+   "seasons": {
+    "DE": {
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD"
+     ],
+     "5": [
+      "FIELD",
+      "PROTECTED"
+     ],
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "place": "FRIDGE"
+   }
+  },
+  {
+   "category": "SALAD",
+   "food": "bls-G104100",
+   "seasons": {
+    "DE": {
+     "1": [
+      "PROTECTED"
+     ],
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD",
+      "PROTECTED"
+     ],
+     "12": [
+      "PROTECTED"
+     ],
+     "2": [
+      "PROTECTED"
+     ],
+     "3": [
+      "FIELD",
+      "PROTECTED"
+     ],
+     "4": [
+      "PROTECTED"
+     ],
+     "5": [
+      "FIELD"
+     ],
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "place": "FRIDGE"
+   }
+  },
+  {
+   "category": "SALAD",
+   "food": "bls-G105100",
+   "seasons": {
+    "DE": {
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "PROTECTED"
+     ],
+     "12": [
+      "UNHEATED_GREENHOUSE"
+     ],
+     "3": [
+      "UNHEATED_GREENHOUSE"
+     ],
+     "4": [
+      "PROTECTED",
+      "UNHEATED_GREENHOUSE"
+     ],
+     "5": [
+      "FIELD",
+      "PROTECTED"
+     ],
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "place": "FRIDGE"
+   }
+  },
+  {
+   "category": "SALAD",
+   "food": "bls-G106100",
+   "seasons": {
+    "DE": {
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD"
+     ],
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "SALAD",
+   "food": "bls-G130100",
+   "seasons": {
+    "DE": {
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD",
+      "PROTECTED"
+     ],
+     "12": [
+      "UNHEATED_GREENHOUSE"
+     ],
+     "3": [
+      "PROTECTED",
+      "UNHEATED_GREENHOUSE"
+     ],
+     "4": [
+      "PROTECTED"
+     ],
+     "5": [
+      "FIELD"
+     ],
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "place": "FRIDGE"
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G211100",
+   "seasons": {
+    "DE": {
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD"
+     ],
+     "4": [
+      "FIELD"
+     ],
+     "5": [
+      "FIELD"
+     ],
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "place": "FRIDGE"
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G220100",
+   "seasons": {
+    "DE": {
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD"
+     ],
+     "5": [
+      "PROTECTED"
+     ],
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G230100",
+   "seasons": {
+    "DE": {
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD"
+     ],
+     "5": [
+      "FIELD"
+     ],
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G311100",
+   "seasons": {
+    "DE": {
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD"
+     ],
+     "12": [
+      "FIELD"
+     ],
+     "4": [
+      "PROTECTED"
+     ],
+     "5": [
+      "FIELD"
+     ],
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "place": "FRIDGE"
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G312100",
+   "seasons": {
+    "DE": {
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD"
+     ],
+     "5": [
+      "FIELD"
+     ],
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G321100",
+   "seasons": {
+    "DE": {
+     "1": [
+      "STORED"
+     ],
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD"
+     ],
+     "12": [
+      "STORED"
+     ],
+     "2": [
+      "STORED"
+     ],
+     "3": [
+      "STORED"
+     ],
+     "5": [
+      "PROTECTED"
+     ],
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G322100",
+   "seasons": {
+    "DE": {
+     "1": [
+      "FIELD"
+     ],
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD"
+     ],
+     "12": [
+      "FIELD"
+     ],
+     "2": [
+      "FIELD"
+     ],
+     "3": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G331100",
+   "seasons": {
+    "DE": {
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD",
+      "PROTECTED"
+     ],
+     "12": [
+      "PROTECTED"
+     ],
+     "4": [
+      "PROTECTED"
+     ],
+     "5": [
+      "FIELD",
+      "PROTECTED"
+     ],
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G332100",
+   "seasons": {
+    "DE": {
+     "1": [
+      "FIELD"
+     ],
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD"
+     ],
+     "12": [
+      "FIELD"
+     ],
+     "2": [
+      "FIELD"
+     ],
+     "3": [
+      "STORED"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G341100",
+   "seasons": {
+    "DE": {
+     "1": [
+      "STORED"
+     ],
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD"
+     ],
+     "12": [
+      "STORED"
+     ],
+     "2": [
+      "STORED"
+     ],
+     "3": [
+      "STORED"
+     ],
+     "4": [
+      "STORED"
+     ],
+     "5": [
+      "STORED"
+     ],
+     "6": [
+      "PROTECTED"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G342100",
+   "seasons": {
+    "DE": {
+     "1": [
+      "STORED"
+     ],
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD"
+     ],
+     "12": [
+      "STORED"
+     ],
+     "2": [
+      "STORED"
+     ],
+     "3": [
+      "STORED"
+     ],
+     "4": [
+      "STORED"
+     ],
+     "5": [
+      "STORED"
+     ],
+     "6": [
+      "PROTECTED"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G343100",
+   "seasons": {
+    "DE": {
+     "1": [
+      "STORED"
+     ],
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD"
+     ],
+     "12": [
+      "STORED"
+     ],
+     "2": [
+      "STORED"
+     ],
+     "3": [
+      "STORED"
+     ],
+     "4": [
+      "STORED"
+     ],
+     "5": [
+      "STORED"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G344100",
+   "seasons": {
+    "DE": {
+     "1": [
+      "STORED"
+     ],
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD"
+     ],
+     "12": [
+      "STORED"
+     ],
+     "2": [
+      "STORED"
+     ],
+     "5": [
+      "PROTECTED"
+     ],
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G430100",
+   "seasons": {
+    "DE": {
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD"
+     ],
+     "5": [
+      "PROTECTED"
+     ],
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G450100",
+   "seasons": {
+    "DE": {
+     "4": [
+      "FIELD",
+      "PROTECTED"
+     ],
+     "5": [
+      "FIELD",
+      "PROTECTED"
+     ],
+     "6": [
+      "FIELD",
+      "PROTECTED"
+     ]
+    }
+   },
+   "storage": {
+    "place": "FRIDGE"
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G470100",
+   "seasons": {
+    "DE": {
+     "1": [
+      "FIELD",
+      "STORED"
+     ],
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD"
+     ],
+     "12": [
+      "FIELD"
+     ],
+     "2": [
+      "FIELD",
+      "STORED"
+     ],
+     "3": [
+      "FIELD",
+      "STORED"
+     ],
+     "4": [
+      "FIELD"
+     ],
+     "5": [
+      "FIELD"
+     ],
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G480100",
+   "seasons": {
+    "DE": {
+     "1": [
+      "STORED"
+     ],
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "STORED"
+     ],
+     "12": [
+      "STORED"
+     ],
+     "2": [
+      "STORED"
+     ],
+     "3": [
+      "STORED"
+     ],
+     "4": [
+      "STORED"
+     ],
+     "5": [
+      "STORED"
+     ],
+     "6": [
+      "PROTECTED",
+      "STORED"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G482100",
+   "seasons": {
+    "DE": {
+     "10": [
+      "FIELD"
+     ],
+     "4": [
+      "FIELD"
+     ],
+     "5": [
+      "FIELD"
+     ],
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G510100",
+   "seasons": {
+    "DE": {
+     "10": [
+      "UNHEATED_GREENHOUSE",
+      "HEATED_GREENHOUSE"
+     ],
+     "6": [
+      "UNHEATED_GREENHOUSE",
+      "HEATED_GREENHOUSE"
+     ],
+     "7": [
+      "UNHEATED_GREENHOUSE",
+      "HEATED_GREENHOUSE"
+     ],
+     "8": [
+      "UNHEATED_GREENHOUSE",
+      "HEATED_GREENHOUSE"
+     ],
+     "9": [
+      "UNHEATED_GREENHOUSE",
+      "HEATED_GREENHOUSE"
+     ]
+    }
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G520100",
+   "seasons": {
+    "DE": {
+     "10": [
+      "UNHEATED_GREENHOUSE"
+     ],
+     "3": [
+      "HEATED_GREENHOUSE"
+     ],
+     "4": [
+      "UNHEATED_GREENHOUSE",
+      "HEATED_GREENHOUSE"
+     ],
+     "5": [
+      "UNHEATED_GREENHOUSE",
+      "HEATED_GREENHOUSE"
+     ],
+     "6": [
+      "FIELD",
+      "UNHEATED_GREENHOUSE",
+      "HEATED_GREENHOUSE"
+     ],
+     "7": [
+      "FIELD",
+      "UNHEATED_GREENHOUSE",
+      "HEATED_GREENHOUSE"
+     ],
+     "8": [
+      "FIELD",
+      "UNHEATED_GREENHOUSE",
+      "HEATED_GREENHOUSE"
+     ],
+     "9": [
+      "FIELD",
+      "UNHEATED_GREENHOUSE",
+      "HEATED_GREENHOUSE"
+     ]
+    }
+   },
+   "storage": {
+    "coldSensitive": true,
+    "ethyleneSensitive": true,
+    "place": "COOL_DARK"
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G541100",
+   "seasons": {
+    "DE": {
+     "10": [
+      "UNHEATED_GREENHOUSE",
+      "HEATED_GREENHOUSE"
+     ],
+     "4": [
+      "HEATED_GREENHOUSE"
+     ],
+     "5": [
+      "HEATED_GREENHOUSE"
+     ],
+     "6": [
+      "UNHEATED_GREENHOUSE",
+      "HEATED_GREENHOUSE"
+     ],
+     "7": [
+      "UNHEATED_GREENHOUSE",
+      "HEATED_GREENHOUSE"
+     ],
+     "8": [
+      "UNHEATED_GREENHOUSE"
+     ],
+     "9": [
+      "UNHEATED_GREENHOUSE"
+     ]
+    }
+   },
+   "storage": {
+    "coldSensitive": true,
+    "ethyleneProducer": true,
+    "place": "COOL_DARK"
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G542100",
+   "seasons": {
+    "DE": {
+     "10": [
+      "UNHEATED_GREENHOUSE",
+      "HEATED_GREENHOUSE"
+     ],
+     "4": [
+      "HEATED_GREENHOUSE"
+     ],
+     "5": [
+      "HEATED_GREENHOUSE"
+     ],
+     "6": [
+      "UNHEATED_GREENHOUSE",
+      "HEATED_GREENHOUSE"
+     ],
+     "7": [
+      "UNHEATED_GREENHOUSE",
+      "HEATED_GREENHOUSE"
+     ],
+     "8": [
+      "UNHEATED_GREENHOUSE"
+     ],
+     "9": [
+      "UNHEATED_GREENHOUSE"
+     ]
+    }
+   },
+   "storage": {
+    "coldSensitive": true,
+    "ethyleneProducer": true,
+    "place": "COOL_DARK"
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G543100",
+   "seasons": {
+    "DE": {
+     "10": [
+      "UNHEATED_GREENHOUSE",
+      "HEATED_GREENHOUSE"
+     ],
+     "4": [
+      "HEATED_GREENHOUSE"
+     ],
+     "5": [
+      "HEATED_GREENHOUSE"
+     ],
+     "6": [
+      "UNHEATED_GREENHOUSE",
+      "HEATED_GREENHOUSE"
+     ],
+     "7": [
+      "UNHEATED_GREENHOUSE",
+      "HEATED_GREENHOUSE"
+     ],
+     "8": [
+      "UNHEATED_GREENHOUSE"
+     ],
+     "9": [
+      "UNHEATED_GREENHOUSE"
+     ]
+    }
+   },
+   "storage": {
+    "coldSensitive": true,
+    "ethyleneProducer": true,
+    "place": "COOL_DARK"
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G561100",
+   "seasons": {
+    "DE": {
+     "10": [
+      "UNHEATED_GREENHOUSE",
+      "HEATED_GREENHOUSE"
+     ],
+     "11": [
+      "HEATED_GREENHOUSE"
+     ],
+     "3": [
+      "HEATED_GREENHOUSE"
+     ],
+     "4": [
+      "HEATED_GREENHOUSE"
+     ],
+     "5": [
+      "UNHEATED_GREENHOUSE",
+      "HEATED_GREENHOUSE"
+     ],
+     "6": [
+      "UNHEATED_GREENHOUSE",
+      "HEATED_GREENHOUSE"
+     ],
+     "7": [
+      "PROTECTED",
+      "UNHEATED_GREENHOUSE",
+      "HEATED_GREENHOUSE"
+     ],
+     "8": [
+      "PROTECTED",
+      "UNHEATED_GREENHOUSE",
+      "HEATED_GREENHOUSE"
+     ],
+     "9": [
+      "PROTECTED",
+      "UNHEATED_GREENHOUSE",
+      "HEATED_GREENHOUSE"
+     ]
+    }
+   },
+   "storage": {
+    "coldSensitive": true,
+    "ethyleneProducer": true,
+    "place": "COOL_DARK"
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G581000",
+   "seasons": {
+    "DE": {
+     "1": [
+      "STORED"
+     ],
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "STORED"
+     ],
+     "12": [
+      "STORED"
+     ],
+     "2": [
+      "STORED"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G581100",
+   "seasons": {
+    "DE": {
+     "1": [
+      "STORED"
+     ],
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "STORED"
+     ],
+     "12": [
+      "STORED"
+     ],
+     "2": [
+      "STORED"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G582100",
+   "seasons": {
+    "DE": {
+     "10": [
+      "FIELD"
+     ],
+     "6": [
+      "PROTECTED"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "coldSensitive": true,
+    "place": "COOL_DARK"
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G611100",
+   "seasons": {
+    "DE": {
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "place": "FRIDGE"
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G613100",
+   "seasons": {
+    "DE": {
+     "1": [
+      "STORED"
+     ],
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD"
+     ],
+     "12": [
+      "STORED"
+     ],
+     "2": [
+      "STORED"
+     ],
+     "3": [
+      "STORED"
+     ],
+     "4": [
+      "STORED"
+     ],
+     "5": [
+      "STORED"
+     ],
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "place": "FRIDGE"
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G620100",
+   "seasons": {
+    "DE": {
+     "1": [
+      "STORED"
+     ],
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD"
+     ],
+     "12": [
+      "STORED"
+     ],
+     "2": [
+      "STORED"
+     ],
+     "3": [
+      "STORED"
+     ],
+     "4": [
+      "STORED"
+     ],
+     "5": [
+      "STORED"
+     ],
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "place": "FRIDGE"
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G640100",
+   "seasons": {
+    "DE": {
+     "1": [
+      "STORED"
+     ],
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD"
+     ],
+     "12": [
+      "STORED"
+     ],
+     "2": [
+      "STORED"
+     ],
+     "3": [
+      "STORED"
+     ],
+     "4": [
+      "STORED"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G650100",
+   "seasons": {
+    "DE": {
+     "1": [
+      "STORED"
+     ],
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD"
+     ],
+     "12": [
+      "STORED"
+     ],
+     "2": [
+      "STORED"
+     ],
+     "3": [
+      "STORED"
+     ],
+     "4": [
+      "STORED"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "place": "FRIDGE"
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G660100",
+   "seasons": {
+    "DE": {
+     "1": [
+      "STORED"
+     ],
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD"
+     ],
+     "12": [
+      "STORED"
+     ],
+     "2": [
+      "STORED"
+     ],
+     "3": [
+      "STORED"
+     ],
+     "4": [
+      "STORED"
+     ],
+     "5": [
+      "STORED"
+     ],
+     "6": [
+      "FIELD",
+      "STORED"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "place": "FRIDGE"
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G670100",
+   "seasons": {
+    "DE": {
+     "1": [
+      "STORED"
+     ],
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD"
+     ],
+     "12": [
+      "STORED"
+     ],
+     "2": [
+      "STORED"
+     ],
+     "3": [
+      "STORED"
+     ],
+     "4": [
+      "STORED"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "place": "FRIDGE"
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G680100",
+   "seasons": {
+    "DE": {
+     "1": [
+      "STORED"
+     ],
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD"
+     ],
+     "12": [
+      "STORED"
+     ],
+     "2": [
+      "STORED"
+     ],
+     "3": [
+      "STORED"
+     ],
+     "4": [
+      "PROTECTED",
+      "STORED"
+     ],
+     "5": [
+      "FIELD",
+      "STORED"
+     ],
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G691100",
+   "seasons": {
+    "DE": {
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "FIELD"
+     ],
+     "3": [
+      "UNHEATED_GREENHOUSE"
+     ],
+     "4": [
+      "PROTECTED"
+     ],
+     "5": [
+      "FIELD",
+      "PROTECTED"
+     ],
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "place": "FRIDGE"
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G710100",
+   "seasons": {
+    "DE": {
+     "10": [
+      "FIELD"
+     ],
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "coldSensitive": true,
+    "place": "COOL_DARK"
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G730100",
+   "seasons": {
+    "DE": {
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-G761100",
+   "seasons": {
+    "DE": {
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "FRUIT",
+   "food": "bls-H120100",
+   "seasons": {
+    "DE": {
+     "10": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "FRUIT",
+   "food": "bls-H130100",
+   "seasons": {
+    "DE": {
+     "10": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-K110100",
+   "seasons": {
+    "DE": {
+     "1": [
+      "STORED"
+     ],
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "STORED"
+     ],
+     "12": [
+      "STORED"
+     ],
+     "2": [
+      "STORED"
+     ],
+     "3": [
+      "STORED"
+     ],
+     "4": [
+      "STORED"
+     ],
+     "5": [
+      "STORED"
+     ],
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "coldSensitive": true,
+    "place": "COOL_DARK"
+   }
+  },
+  {
+   "category": "VEGETABLE",
+   "food": "bls-K120100",
+   "seasons": {
+    "DE": {
+     "1": [
+      "STORED"
+     ],
+     "10": [
+      "FIELD"
+     ],
+     "11": [
+      "STORED"
+     ],
+     "12": [
+      "STORED"
+     ],
+     "2": [
+      "STORED"
+     ],
+     "3": [
+      "STORED"
+     ],
+     "4": [
+      "STORED"
+     ],
+     "5": [
+      "STORED"
+     ],
+     "6": [
+      "FIELD"
+     ],
+     "7": [
+      "FIELD"
+     ],
+     "8": [
+      "FIELD"
+     ],
+     "9": [
+      "FIELD"
+     ]
+    }
+   },
+   "storage": {
+    "coldSensitive": true,
+    "place": "COOL_DARK"
+   }
+  }
+ ]
+}

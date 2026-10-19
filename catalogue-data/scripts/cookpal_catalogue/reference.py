@@ -60,6 +60,12 @@ class InvalidReference(ValueError):
     pass
 
 
+def _icon_names(path: Path) -> frozenset[str]:
+    """One icon name per line; lines starting with # are comments."""
+    return frozenset(line.strip() for line in path.read_text(encoding="utf-8").splitlines()
+                     if line.strip() and not line.startswith("#"))
+
+
 def load(curation: Path) -> Reference:
     units = _units(_read(curation / "units.yaml")["units"])
     states_document = _read(curation / "states.yaml")
@@ -73,7 +79,10 @@ def load(curation: Path) -> Reference:
         _require_known(lexicon.states, states, f"state in {path.name}")
         _require_plain_descriptions(lexicon, path.name)
         lexicons[lexicon.language] = lexicon
-    icons = frozenset((curation / "fluent-icons.txt").read_text(encoding="utf-8").split())
+    fluent, own = _icon_names(curation / "fluent-icons.txt"), _icon_names(curation / "own-icons.txt")
+    if fluent & own:
+        raise InvalidReference(f"own-icons.txt: {sorted(fluent & own)} are Fluent Emoji names already")
+    icons = fluent | own
     reference = Reference(units=units, states=states, bls_preparation_digits=digits, lexicons=lexicons, icons=icons)
     _require_unambiguous_words(reference)
     return reference

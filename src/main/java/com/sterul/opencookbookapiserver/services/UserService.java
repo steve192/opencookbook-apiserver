@@ -28,6 +28,7 @@ import com.sterul.opencookbookapiserver.services.exceptions.PasswordResetLinkNot
 import com.sterul.opencookbookapiserver.services.exceptions.UserAlreadyExistsException;
 import com.sterul.opencookbookapiserver.services.households.HouseholdService;
 import com.sterul.opencookbookapiserver.services.instance.Administrators;
+import com.sterul.opencookbookapiserver.services.mail.MailAllowance;
 import com.sterul.opencookbookapiserver.services.mail.MailAvailability;
 import com.sterul.opencookbookapiserver.services.mail.MailLanguages;
 
@@ -56,7 +57,7 @@ public class UserService {
     private final AccountLinkFactory accountLinks;
     private final MailLanguages mailLanguages;
     private final Administrators administrators;
-    private final AuthRateLimiter authRateLimiter;
+    private final MailAllowance mailAllowance;
     private final ApplicationEventPublisher events;
 
     public UserService(UserRepository userRepository, IngredientService ingredientService,
@@ -65,7 +66,7 @@ public class UserService {
             SignInService signInService, ActivationLinkRepository activationLinkRepository,
             PasswordResetLinkRepository passwordResetLinkRepository, EmailService emailService,
             MailAvailability mail, AccountLinkFactory accountLinks, MailLanguages mailLanguages,
-            Administrators administrators, AuthRateLimiter authRateLimiter, ApplicationEventPublisher events) {
+            Administrators administrators, MailAllowance mailAllowance, ApplicationEventPublisher events) {
         this.userRepository = userRepository;
         this.ingredientService = ingredientService;
         this.passwordEncoder = passwordEncoder;
@@ -82,7 +83,7 @@ public class UserService {
         this.accountLinks = accountLinks;
         this.mailLanguages = mailLanguages;
         this.administrators = administrators;
-        this.authRateLimiter = authRateLimiter;
+        this.mailAllowance = mailAllowance;
         this.events = events;
     }
 
@@ -387,7 +388,7 @@ public class UserService {
      * callers answer the same whether or not an account exists.
      */
     private boolean mayMail(String emailAddress) {
-        if (authRateLimiter.mayMail(emailAddress)) {
+        if (mailAllowance.mayMail(emailAddress)) {
             return true;
         }
         log.warn("Not sending another mail to a recipient who has had their hourly allowance");

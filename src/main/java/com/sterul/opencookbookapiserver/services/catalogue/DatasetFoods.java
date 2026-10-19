@@ -28,6 +28,7 @@ public final class DatasetFoods {
         entity.applyDatasetDietClass(dietClass(food));
         entity.setDensityGPerMl(food.densityGPerMl());
         entity.setNutrients(nutrients(food.nutrients()));
+        entity.setWaterGPer100g(food.nutrients().water());
         replaceIfChanged(entity.getStates(), new HashSet<>(food.states()));
         replaceIfChanged(entity.getPortions(), food.portions().stream()
                 .map(portion -> CatalogueFoodPortion.builder()

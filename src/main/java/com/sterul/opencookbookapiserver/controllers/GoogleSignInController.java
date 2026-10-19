@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sterul.opencookbookapiserver.configurations.google.ConditionalOnGoogleSignIn;
 import com.sterul.opencookbookapiserver.controllers.requests.GoogleSignInRequest;
 import com.sterul.opencookbookapiserver.controllers.responses.UserLoginResponse;
+import com.sterul.opencookbookapiserver.ratelimiting.RateLimitTier;
+import com.sterul.opencookbookapiserver.ratelimiting.RateLimited;
 import com.sterul.opencookbookapiserver.services.google.GoogleSignInService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,6 +32,7 @@ public class GoogleSignInController {
             description = "Opens the account of the address Google verified, if Google hosts that address (Gmail, "
                     + "Workspace). Without an account, one is created when the instance is open or the invitation is "
                     + "valid. The admin api still asks for the password.")
+    @RateLimited(RateLimitTier.GUESSABLE)
     @PostMapping
     public UserLoginResponse signIn(@Valid @RequestBody GoogleSignInRequest request) {
         return UserLoginResponse.of(googleSignIns.signIn(request.idToken(), request.invitation()));

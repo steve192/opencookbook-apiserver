@@ -58,6 +58,7 @@ public class InstanceInfoController extends BaseController {
                 .signupMode(settings.getSignupMode())
                 .mailEnabled(mail.isEnabled())
                 .googleSignIn(GoogleClients.of(opencookbookConfiguration.getAuth().getGoogle()).orElse(null))
+                .toolsPublic(opencookbookConfiguration.getTools().isPublic())
                 .build();
     }
 

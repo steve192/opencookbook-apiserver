@@ -8,7 +8,9 @@ import java.util.stream.Stream;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -133,8 +135,11 @@ public class OpencookbookConfiguration {
     /** Deleting accounts nobody uses any more. */
     private Retention retention = new Retention();
 
-    /** Importing recipes from links and texts. */
-    private RecipeImport recipeImport = new RecipeImport();
+    /** The budgets of the rate limit tiers. */
+    private RateLimits rateLimits = new RateLimits();
+
+    /** The kitchen tools: calculators and the seasonal calendar. */
+    private Tools tools = new Tools();
 
     /**
      * Connection to the machine learning subsystem. Leaving the url empty is how an instance
@@ -273,15 +278,40 @@ public class OpencookbookConfiguration {
         private int maxPerUser = 20;
     }
 
+    /** The budgets of the rate limit tiers; see docs/rate-limits.md. */
     @Getter
     @Setter
-    public static class RecipeImport {
+    public static class RateLimits {
 
         /**
-         * How many Instagram posts one user may have read per hour. Instagram sees every read as
-         * coming from this server, and blocking it would end Instagram imports for everybody.
+         * Cheap reads anybody may make. Generous for callers without an account: a household or a mobile network
+         * can put many people behind one address.
          */
-        private int instagramReadsPerHourPerUser = 30;
+        private CallerBudget cheap = new CallerBudget(120, 600);
+
+        /** Endpoints that could be used to guess a password, a token or an id. */
+        private CallerBudget guessable = new CallerBudget(60, 60);
+
+        /** Costly work. Also protects this server's address: Instagram, for one, sees every read as coming from it. */
+        private CallerBudget expensive = new CallerBudget(10, 60);
+
+        /**
+         * Requests per day to one share link, from anyone: the recipe, its nutrition and each image. Enough for the
+         * few people a recipe is shared with, too few to publish it.
+         */
+        private int shareLinkPerDay = 300;
+    }
+
+    /** A tier's requests per hour: per address for callers without an account, per account for signed-in users. */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CallerBudget {
+
+        private int anonymousPerHour;
+
+        private int signedInPerHour;
     }
 
     @Getter
@@ -301,17 +331,21 @@ public class OpencookbookConfiguration {
 
     @Getter
     @Setter
+    public static class Tools {
+
+        /** Whether the kitchen tools, and the catalogue data they read, work without an account. */
+        private boolean isPublic;
+    }
+
+    @Getter
+    @Setter
     public static class Catalogue {
 
         /** Imports a newly shipped dataset in the background once the server is up. Tests import what they need. */
         private boolean importOnStartup = true;
     }
 
-    /**
-     * Public sharing of recipes. Grouped rather than flat because every one of these values is
-     * meaningless without the others: they describe how long a public link lives and how hard it
-     * may be pulled while it does.
-     */
+    /** Public sharing of recipes. */
     @Getter
     @Setter
     public static class Sharing {
@@ -329,27 +363,6 @@ public class OpencookbookConfiguration {
          * shows the owner when it will.
          */
         private int validityDays = 90;
-
-        /**
-         * How often one client may open shared recipes per hour. Aimed at a client walking many
-         * share ids rather than at people reading one recipe. Sized for a household, where a
-         * whole family shares one address.
-         */
-        private int viewsPerHourPerIp = 30;
-
-        /**
-         * How often a single share may be opened per hour, from anywhere. The backstop for a
-         * leaked link, and the only limit that does not depend on a client supplied address.
-         */
-        private int viewsPerHourPerShare = 60;
-
-        /**
-         * How many images of shared recipes one client may load per hour. Counted separately
-         * because a recipe with six pictures costs seven requests to render, so sharing a budget
-         * with the recipe itself would make the effective limit depend on how photographed a
-         * recipe happens to be.
-         */
-        private int imageViewsPerHourPerIp = 120;
     }
 
     /** Households: small private groups sharing a cookbook and a weekplan. The caps keep them small. */
@@ -371,25 +384,11 @@ public class OpencookbookConfiguration {
 
         /** How many days an invite link stays valid. */
         private int inviteValidityDays = 14;
-
-        /** How often one client may resolve invite tokens per hour. */
-        private int inviteLookupsPerHourPerIp = 30;
     }
 
-    /**
-     * Budgets for the endpoints that need no token: reachable by anybody, and two of them make
-     * the server send e-mail.
-     */
     @Getter
     @Setter
     public static class Auth {
-
-        /**
-         * How many calls to the endpoints that need no token one address may make per hour.
-         * Generous on purpose: signing in is rare, and a household or a mobile network can put
-         * a great many people behind one address.
-         */
-        private int attemptsPerHourPerIp = 60;
 
         /**
          * How many activation or password reset mails one address may be sent per hour, whoever

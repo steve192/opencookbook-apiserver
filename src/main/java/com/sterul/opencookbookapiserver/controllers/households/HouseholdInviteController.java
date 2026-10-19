@@ -13,6 +13,8 @@ import com.sterul.opencookbookapiserver.controllers.households.requests.AcceptIn
 import com.sterul.opencookbookapiserver.controllers.households.responses.HouseholdResponse;
 import com.sterul.opencookbookapiserver.controllers.households.responses.InvitePreviewResponse;
 import com.sterul.opencookbookapiserver.controllers.support.HouseholdResponses;
+import com.sterul.opencookbookapiserver.ratelimiting.RateLimitTier;
+import com.sterul.opencookbookapiserver.ratelimiting.RateLimited;
 import com.sterul.opencookbookapiserver.services.SignedInUserService;
 import com.sterul.opencookbookapiserver.services.households.HouseholdInviteService;
 
@@ -24,6 +26,7 @@ import jakarta.validation.constraints.NotBlank;
 /** Authenticated, unlike a share link: joining needs an account anyway. */
 @RestController
 @ConditionalOnHouseholdsEnabled
+@RateLimited(RateLimitTier.GUESSABLE)
 @RequestMapping(HouseholdPaths.INVITE_BASE)
 @Tag(name = "Household invites", description = "Joining a household you were invited to")
 public class HouseholdInviteController extends BaseController {

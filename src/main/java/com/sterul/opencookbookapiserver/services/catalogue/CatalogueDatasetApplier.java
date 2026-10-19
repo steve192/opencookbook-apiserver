@@ -24,7 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Applies a dataset release in one transaction: upserts dataset foods by key, retires removed ones, keeps admin
- * names unless the release claims them, and merges legacy foods into dataset foods sharing a name.
+ * names unless the release claims them, merges legacy foods into dataset foods sharing a name, and lets every
+ * feature replace its facts.
  */
 @Component
 @Slf4j
@@ -35,12 +36,14 @@ public class CatalogueDatasetApplier {
     private final CatalogueFoodRepository foodRepository;
     private final CatalogueFoodReferences references;
     private final EntityManager entityManager;
+    private final List<CatalogueFacts> features;
 
     public CatalogueDatasetApplier(CatalogueFoodRepository foodRepository, CatalogueFoodReferences references,
-            EntityManager entityManager) {
+            EntityManager entityManager, List<CatalogueFacts> features) {
         this.foodRepository = foodRepository;
         this.references = references;
         this.entityManager = entityManager;
+        this.features = features;
     }
 
     @Transactional
@@ -62,6 +65,7 @@ public class CatalogueDatasetApplier {
         entityManager.flush();
 
         merges.forEach((legacy, target) -> merge(legacy, target, report));
+        features.forEach(feature -> feature.apply(foods, report));
         log.info("Catalogue dataset applied: {} foods", foods.size());
         return report;
     }

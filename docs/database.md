@@ -331,6 +331,29 @@ device sent, for a week, so a batch retried after a lost answer is not applied t
 `shopping_staple` what a person left unticked in imports, and whether three times in a row made it a
 staple. `cookpal_user.shopping_provider` says whether imports go to the CookPal list or to Bring.
 
+## Kitchen tool facts (`V41`)
+
+`V41` adds `catalogue_food.water_g_per_100g`, the water content both sources state, and two feature facts
+tables (see [catalogue.md](catalogue.md#core-food-and-feature-facts)). The dataset import replaces their rows with
+each release's; nothing else writes them. Their rows go with their food.
+
+### `seasonal_produce` and `seasonal_produce_month`
+
+| Column | Type | Meaning |
+|---|---|---|
+| `catalogue_food_id` | bigint → `catalogue_food` | The primary key: one row per fruit or vegetable of the seasonal calendar |
+| `category` | varchar(16) | `FRUIT`, `VEGETABLE` or `SALAD`, for the calendar's filter |
+| `storage_place` | varchar(16) | `FRIDGE` or `COOL_DARK`; null where the sources disagree |
+| `storage_cold_sensitive`, `storage_ethylene_producer`, `storage_ethylene_sensitive` | boolean | Only true where two sources agree |
+| `region`, `month_of_year`, `method` | varchar(2), smallint, varchar(32) | In `seasonal_produce_month`: one row per region (`DE`), month 1 to 12 and growing method (`FIELD`, `PROTECTED`, `UNHEATED_GREENHOUSE`, `HEATED_GREENHOUSE`, `STORED`). In season means `FIELD` or `PROTECTED` |
+
+### `soaking_food`
+
+| Column | Type | Meaning |
+|---|---|---|
+| `catalogue_food_id` | bigint → `catalogue_food` | The primary key: a seed, flake or grain the bread tool puts into a soaker |
+| `absorption` | real | Grams of water one gram soaks up; above zero |
+
 ---
 
 ## Cascades in the mapping as well

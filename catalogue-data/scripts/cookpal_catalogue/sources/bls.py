@@ -17,9 +17,9 @@ DATA_FILE = re.compile(r"(^|/)BLS_[^/]*_Daten_[^/]*\.xlsx$")
 # The release in the archive name, e.g. BLS_4_0_2025_DE.zip.
 ARCHIVE_RELEASE = re.compile(r"BLS_(\d+)_(\d+)_(\d{4})_")
 
-# Components cookpal needs: the nine it shows, plus what EU energy recomputation needs.
+# Components cookpal needs: the nine it shows, what EU energy recomputation needs, and water for the bread tool.
 COMPONENTS = ("ENERCC", "ENERCJ", "PROT625", "FAT", "FASAT", "CHO", "SUGAR", "FIBT", "NACL", "ALC",
-              "POLYL", "OA", "OLSAC")
+              "POLYL", "OA", "OLSAC", "WATER")
 
 IDENTIFYING_COLUMNS = ("code", "name_de", "name_en")
 COLUMNS = IDENTIFYING_COLUMNS + COMPONENTS

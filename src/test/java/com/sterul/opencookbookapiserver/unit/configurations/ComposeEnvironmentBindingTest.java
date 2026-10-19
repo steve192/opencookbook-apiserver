@@ -70,6 +70,11 @@ class ComposeEnvironmentBindingTest {
     }
 
     @Test
+    void theToolSettingReachesItsSetting() {
+        assertTrue(bind(Map.of("OPENCOOKBOOK_TOOLS_PUBLIC", "true")).getTools().isPublic());
+    }
+
+    @Test
     void anInstallationThatSetsNoneOfThemKeepsTheDefaults() {
         var configuration = bind(Map.of(
                 "OPENCOOKBOOK_AUTH_GOOGLE_CLIENTID", "",
@@ -82,6 +87,7 @@ class ComposeEnvironmentBindingTest {
         assertEquals(6, ml.getRecipeOcr().getMaxPages());
         assertFalse(configuration.getAuth().getGoogle().isEnabled());
         assertFalse(configuration.getRetention().isEnabled());
+        assertFalse(configuration.getTools().isPublic());
     }
 
     private OpencookbookConfiguration bind(Map<String, Object> variables) {

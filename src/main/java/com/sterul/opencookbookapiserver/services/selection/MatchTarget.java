@@ -9,7 +9,8 @@ import com.sterul.opencookbookapiserver.entities.Ingredient;
  * matches its whole family, so "Forelle" also finds a recipe written with "Forelle gebraten";
  * an unlinked one can only match the very ingredient it came from.
  *
- * @param foodIds empty while the selection is not linked to the catalogue
+ * @param ingredientId null for a catalogue food wanted as such, such as one in season
+ * @param foodIds      empty while the selection is not linked to the catalogue
  */
 public record MatchTarget(Long ingredientId, String label, Set<Long> foodIds) {
 
@@ -21,7 +22,7 @@ public record MatchTarget(Long ingredientId, String label, Set<Long> foodIds) {
         if (ingredient == null) {
             return false;
         }
-        if (ingredientId.equals(ingredient.getId())) {
+        if (ingredient.getId().equals(ingredientId)) {
             return true;
         }
         var food = ingredient.getCatalogueFood();

@@ -9,26 +9,31 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.stereotype.Component;
 
 import com.sterul.opencookbookapiserver.entities.Ingredient;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFood;
+import com.sterul.opencookbookapiserver.entities.seasonal.SeasonalProduce;
 import com.sterul.opencookbookapiserver.repositories.CatalogueFoodRepository;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
+import com.sterul.opencookbookapiserver.services.seasonal.SeasonalCalendarService;
 
-/** Turns the ingredients a cook picked into what counts as them while matching. */
+/** Turns what a cook wants, picked ingredients or what is in season, into what counts as it while matching. */
 @Component
 public class IngredientTargetResolver {
 
     private final IngredientRepository ingredientRepository;
     private final CatalogueFoodRepository catalogueFoodRepository;
+    private final SeasonalCalendarService seasonalCalendar;
 
     public IngredientTargetResolver(IngredientRepository ingredientRepository,
-            CatalogueFoodRepository catalogueFoodRepository) {
+            CatalogueFoodRepository catalogueFoodRepository, SeasonalCalendarService seasonalCalendar) {
         this.ingredientRepository = ingredientRepository;
         this.catalogueFoodRepository = catalogueFoodRepository;
+        this.seasonalCalendar = seasonalCalendar;
     }
 
     /** Ingredients of somebody else are silently dropped, so ids cannot be probed. */
@@ -46,11 +51,26 @@ public class IngredientTargetResolver {
         return ingredients.stream().map(ingredient -> toTarget(ingredient, families)).toList();
     }
 
-    /** The foods of each picked food's family, by the id of the family's base. */
+    /** Every food in season in a region and month, each standing for its whole family. */
+    public List<MatchTarget> inSeason(String region, int month, String language) {
+        var inSeason = seasonalCalendar.produce(region).stream()
+                .filter(produce -> produce.isInSeason(region, month))
+                .map(SeasonalProduce::getFood)
+                .toList();
+        var families = familiesOf(inSeason.stream());
+        return inSeason.stream()
+                .map(food -> new MatchTarget(null, food.displayName(language).orElse(food.getSourceName()),
+                        families.get(food.getId())))
+                .toList();
+    }
+
     private Map<Long, Set<Long>> familiesOf(List<Ingredient> ingredients) {
-        var bases = ingredients.stream()
-                .map(Ingredient::getCatalogueFood)
-                .filter(Objects::nonNull)
+        return familiesOf(ingredients.stream().map(Ingredient::getCatalogueFood).filter(Objects::nonNull));
+    }
+
+    /** The foods of each family, by the id of the family's base. */
+    private Map<Long, Set<Long>> familiesOf(Stream<CatalogueFood> foods) {
+        var bases = foods
                 .map(IngredientTargetResolver::baseOf)
                 .collect(Collectors.toMap(CatalogueFood::getId, Function.identity(), (first, duplicate) -> first));
         if (bases.isEmpty()) {

@@ -69,7 +69,7 @@ public class CandidatePool {
 
     private static Pool partition(int owned, List<SuggestionCandidate> candidates, List<MatchTarget> targets,
             SuggestionCriteria criteria) {
-        if (targets.isEmpty()) {
+        if (!criteria.hasIngredientFilter()) {
             return new Pool(owned, candidates.size(), candidates, List.of());
         }
         return switch (criteria.mode()) {

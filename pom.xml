@@ -25,6 +25,7 @@
         <sonar.language>java</sonar.language>
         <velocity.version>2.4.1</velocity.version>
         <lucene.version>10.5.2</lucene.version>
+        <bucket4j.version>8.21.0</bucket4j.version>
 
         <!-- The admin panel, which is bundled into this server's static resources -->
         <frontend-maven-plugin.version>2.0.2</frontend-maven-plugin.version>
@@ -94,6 +95,16 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+        <!-- Rate limits: token buckets per caller, held in a bounded in-memory cache -->
+        <dependency>
+            <groupId>com.bucket4j</groupId>
+            <artifactId>bucket4j_jdk17-core</artifactId>
+            <version>${bucket4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

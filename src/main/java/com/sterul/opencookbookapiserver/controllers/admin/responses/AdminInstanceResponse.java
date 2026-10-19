@@ -30,7 +30,8 @@ public record AdminInstanceResponse(
             Boolean startTls, String from) {
     }
 
-    public record Features(boolean sharing, boolean households, boolean apiKeys, RecipeScan recipeScan) {
+    public record Features(boolean sharing, boolean households, boolean apiKeys, RecipeScan recipeScan,
+            boolean publicTools) {
     }
 
     public record RecipeScan(boolean configured, boolean enabled) {
@@ -63,7 +64,8 @@ public record AdminInstanceResponse(
                 new Mail(mail.configured(), mail.enabled(), mail.host(), mail.port(), mail.protocol(), mail.startTls(),
                         mail.from()),
                 new Features(features.sharing(), features.households(), features.apiKeys(),
-                        new RecipeScan(features.recipeScanConfigured(), features.recipeScanEnabled())),
+                        new RecipeScan(features.recipeScanConfigured(), features.recipeScanEnabled()),
+                        features.publicTools()),
                 new Services(overview.services().recipeImportUrl(), overview.services().recipeScanUrl()),
                 new Legal(overview.legal().directory(), overview.legal().documents().stream()
                         .map(state -> new LegalDocument(state.document().getPathSegment(), state.published()))

@@ -43,7 +43,7 @@ class Food:
     diet_class: str | None = None
     # See catalogue/aisles.py.
     aisle: str | None = None
-    # Bases only; see catalogue/shopping_tiles.py.
+    # Bases only; see catalogue/shopping_tiles.py and catalogue/food_icons.py.
     shopping_tile: bool = False
     icon: str | None = None
 
@@ -82,3 +82,14 @@ def bls_key(code: str) -> str:
 
 def fdc_key(fdc_id: object) -> str:
     return f"fdc-{fdc_id}"
+
+
+def curated_bases(file: str, keys: Iterable[str], foods: dict[str, Food], report: Report) -> list[Food]:
+    """The foods a curation file names that only bases take: unknown keys are reported, a variant is refused."""
+    keys = set(keys)
+    report.stale(file, keys - foods.keys())
+    bases = [foods[key] for key in sorted(keys & foods.keys())]
+    for food in bases:
+        if food.variant_of is not None:
+            raise InvalidCuration(f"{file}: {food.key} is a variant; name its base {food.variant_of}")
+    return bases

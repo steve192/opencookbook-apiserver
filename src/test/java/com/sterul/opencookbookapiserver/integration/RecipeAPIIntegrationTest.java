@@ -3,7 +3,6 @@ package com.sterul.opencookbookapiserver.integration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -15,9 +14,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -31,7 +27,6 @@ import com.sterul.opencookbookapiserver.controllers.requests.IngredientRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.RecipeGroupRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.RecipeRequest;
 import com.sterul.opencookbookapiserver.controllers.responses.RecipeResponse;
-import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers.RecipeScraperServiceProxy;
 
@@ -48,27 +43,12 @@ class RecipeAPIIntegrationTest extends IntegrationTestBase {
     @Autowired
     private UserRepository userRepository;
 
-    private CookpalUser testUser;
     @MockitoBean
     private RecipeScraperServiceProxy recipeScraperServiceProxy;
 
     @BeforeEach
     void setupContext() {
-        testUser = userRepository.findByEmailAddress("test@test.com");
-        if (testUser == null) {
-            testUser = new CookpalUser();
-            testUser.setUserId(null);
-            testUser.setEmailAddress("test@test.com");
-            userRepository.save(testUser);
-        }
-
-        // Mock currently logged in user
-        Authentication authentication = mock(Authentication.class);
-        when(authentication.getName()).thenReturn("test@test.com");
-
-        SecurityContext securityContext = mock(SecurityContext.class);
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        SecurityContextHolder.setContext(securityContext);
+        TestUtils.whenAuthenticated(userRepository);
     }
 
     @Test
