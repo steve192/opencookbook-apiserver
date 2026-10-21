@@ -29,7 +29,7 @@
 
         <!-- The admin panel, which is bundled into this server's static resources -->
         <frontend-maven-plugin.version>2.0.2</frontend-maven-plugin.version>
-        <node.version>v24.21.0</node.version>
+        <node.version>v24.22.0</node.version>
         <skipAdminUi>false</skipAdminUi>
 
         <!-- Test groups that need what a normal build has not: see the profiles below -->
