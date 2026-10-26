@@ -44,6 +44,11 @@ public class ShoppingListService {
         return find(listId, scope);
     }
 
+    /** Under the list's row lock, which serialises its writers. */
+    public ShoppingList lockedIn(Long listId, PlanScope scope) {
+        return listRepository.lockIn(listId, scope).orElseThrow(ElementNotFound::new);
+    }
+
     public ShoppingList create(PlanScope scope, String name) {
         if (listRepository.countIn(scope) >= MAX_LISTS_PER_SCOPE) {
             throw new ApiException(ApiErrorCode.TOO_MANY_SHOPPING_LISTS, "Shopping list limit reached");

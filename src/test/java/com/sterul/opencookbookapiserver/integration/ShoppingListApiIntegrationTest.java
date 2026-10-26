@@ -14,7 +14,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -31,9 +33,11 @@ import com.jayway.jsonpath.JsonPath;
 import com.sterul.opencookbookapiserver.entities.catalogue.Aisle;
 import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFood;
 import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFoodName;
+import com.sterul.opencookbookapiserver.entities.shopping.ShoppingTile;
 import com.sterul.opencookbookapiserver.entities.nutrition.NutrientValues;
 import com.sterul.opencookbookapiserver.repositories.CatalogueFoodRepository;
 import com.sterul.opencookbookapiserver.repositories.CatalogueNameRuleRepository;
+import com.sterul.opencookbookapiserver.repositories.ShoppingTileRepository;
 import com.sterul.opencookbookapiserver.repositories.HouseholdMembershipRepository;
 import com.sterul.opencookbookapiserver.repositories.HouseholdRepository;
 import com.sterul.opencookbookapiserver.repositories.ShoppingListRepository;
@@ -69,6 +73,8 @@ class ShoppingListApiIntegrationTest extends IntegrationTestBase {
     private CatalogueNameRuleRepository nameRuleRepository;
     @Autowired
     private NameRuleService nameRules;
+    @Autowired
+    private ShoppingTileRepository tileRepository;
 
     private String householdId;
 
@@ -276,8 +282,14 @@ class ShoppingListApiIntegrationTest extends IntegrationTestBase {
 
     @Test
     void addingOffersWhatIsNoFoodNextToTheCatalogueTilesAndTheUnitWords() throws Exception {
+        var flour = foodRepository.findByCatalogueKey("custom-flour").orElseThrow();
+        tileRepository.save(ShoppingTile.builder().food(flour).names(new HashMap<>(Map.of("de", "Mehl"))).build());
+
         mockMvc.perform(get("/api/v1/shopping/vocabulary").with(user(ANNA)))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.tiles[?(@.key == 'custom-flour')].names.de[0]").value("Mehl"))
+                .andExpect(jsonPath("$.tiles[?(@.key == 'custom-flour')].names.de[1]").value("Weizenmehl"))
+                .andExpect(jsonPath("$.tiles[?(@.key == 'custom-flour')].aisle").value("BAKING"))
                 .andExpect(jsonPath("$.tiles[?(@.key == 'toilet-paper')].aisle").value("HOUSEHOLD"))
                 .andExpect(jsonPath("$.tiles[?(@.key == 'toilet-paper')].names.de[0]").value("Toilettenpapier"))
                 .andExpect(jsonPath("$.unitWords", hasItems("kg", "netz", "dosen", "cans")));
@@ -287,7 +299,8 @@ class ShoppingListApiIntegrationTest extends IntegrationTestBase {
             Boolean prioritized) {
 
         String json() {
-            return "{\"opId\":\"%s\",\"type\":\"%s\",\"itemId\":\"%s\"%s%s%s%s}".formatted(opId, type, itemId,
+            return "{\"opId\":\"%s\",\"type\":\"%s\",\"itemId\":\"%s\",\"at\":\"%s\"%s%s%s%s}".formatted(opId, type, itemId,
+                    Instant.now(),
                     field("name", name), field("spec", spec), field("aisle", aisle),
                     prioritized == null ? "" : ",\"prioritized\":" + prioritized);
         }

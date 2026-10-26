@@ -15,7 +15,6 @@ import com.sterul.opencookbookapiserver.entities.shopping.ShoppingList;
 import com.sterul.opencookbookapiserver.repositories.AppliedShoppingOpRepository;
 import com.sterul.opencookbookapiserver.repositories.ShoppingItemRepository;
 import com.sterul.opencookbookapiserver.repositories.ShoppingListRepository;
-import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 import com.sterul.opencookbookapiserver.services.shopping.ShoppingListService;
 
 /**
@@ -62,7 +61,7 @@ public class ShoppingSyncService {
     }
 
     private ShoppingList applyOps(Long listId, PlanScope scope, List<ShoppingOp> ops, CookpalUser actor) {
-        return applyTo(listRepository.lockIn(listId, scope).orElseThrow(ElementNotFound::new), ops, actor);
+        return applyTo(lists.lockedIn(listId, scope), ops, actor);
     }
 
     /**
@@ -88,7 +87,7 @@ public class ShoppingSyncService {
     }
 
     private static ShoppingOp.Add withNewItemId(ShoppingOp.Add line) {
-        return new ShoppingOp.Add(null, UUID.randomUUID().toString(), line.name(), line.spec(), line.aisle(),
+        return new ShoppingOp.Add(null, UUID.randomUUID().toString(), null, line.name(), line.spec(), line.aisle(),
                 line.icon(), line.sources(), line.prioritized());
     }
 

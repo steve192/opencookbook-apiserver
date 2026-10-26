@@ -4,12 +4,13 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.sterul.opencookbookapiserver.entities.catalogue.Aisle;
-import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFood;
 import com.sterul.opencookbookapiserver.entities.catalogue.CatalogueFoodName;
+import com.sterul.opencookbookapiserver.entities.shopping.ShoppingTile;
 import com.sterul.opencookbookapiserver.services.catalogue.dataset.CatalogueDataset;
 import com.sterul.opencookbookapiserver.services.shopping.placement.ItemPlacement;
 
@@ -20,11 +21,13 @@ import com.sterul.opencookbookapiserver.services.shopping.placement.ItemPlacemen
  */
 public record ShoppingTileResponse(String key, Aisle aisle, String icon, Map<String, List<String>> names) {
 
-    public static ShoppingTileResponse of(CatalogueFood food) {
-        var names = food.getNames().stream()
+    public static ShoppingTileResponse of(ShoppingTile tile) {
+        var food = tile.getFood();
+        var foodNames = food.getNames().stream()
                 .sorted(Comparator.comparing(CatalogueFoodName::isDisplay).reversed())
                 .map(name -> Map.entry(name.getLanguageIsoCode(), name.getName()));
-        return of(food.getCatalogueKey(), ItemPlacement.of(food).orElse(ItemPlacement.UNKNOWN), names);
+        return of(food.getCatalogueKey(), ItemPlacement.of(food).orElse(ItemPlacement.UNKNOWN),
+                Stream.concat(tile.getNames().entrySet().stream(), foodNames));
     }
 
     public static ShoppingTileResponse of(CatalogueDataset.NonFoodItem item) {
@@ -38,6 +41,13 @@ public record ShoppingTileResponse(String key, Aisle aisle, String icon, Map<Str
 
     private static Map<String, List<String>> byLanguage(Stream<Map.Entry<String, String>> names) {
         return names.collect(Collectors.groupingBy(Map.Entry::getKey, LinkedHashMap::new,
-                Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
+                Collectors.mapping(Map.Entry::getValue, Collectors.collectingAndThen(Collectors.toList(),
+                        ShoppingTileResponse::onceEach))));
+    }
+
+    /** The shown word is usually among the food's names too, in another case ("Rice", "rice"). */
+    private static List<String> onceEach(List<String> names) {
+        var seen = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+        return names.stream().filter(seen::add).toList();
     }
 }

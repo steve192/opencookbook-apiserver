@@ -1,5 +1,6 @@
 package com.sterul.opencookbookapiserver.controllers.shopping.requests;
 
+import java.time.Instant;
 import java.util.List;
 
 import com.sterul.opencookbookapiserver.entities.catalogue.Aisle;
@@ -10,11 +11,16 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-/** One op as a device sends it; which fields count depends on the type. */
+/**
+ * One op as a device sends it; which fields count depends on the type.
+ *
+ * @param at when it was made, by the device's clock; a client that is always online may leave it to the server's
+ */
 public record ShoppingOpRequest(
         @NotNull @Pattern(regexp = UUID_PATTERN) String opId,
         @NotNull Type type,
         @NotNull @Pattern(regexp = UUID_PATTERN) String itemId,
+        Instant at,
         @Size(max = 120) String name,
         @Size(max = 200) String spec,
         Aisle aisle,
@@ -31,12 +37,12 @@ public record ShoppingOpRequest(
 
     public ShoppingOp toOp() {
         return switch (type) {
-            case ADD -> new ShoppingOp.Add(opId, itemId, name == null ? "" : name, spec, aisle, icon,
+            case ADD -> new ShoppingOp.Add(opId, itemId, at, name == null ? "" : name, spec, aisle, icon,
                     ItemSourceRequest.toSources(sources), Boolean.TRUE.equals(prioritized));
-            case UPDATE -> new ShoppingOp.Update(opId, itemId, name, spec, aisle, prioritized);
-            case BUY -> new ShoppingOp.Buy(opId, itemId);
-            case RESTORE -> new ShoppingOp.Restore(opId, itemId, spec);
-            case DELETE -> new ShoppingOp.Delete(opId, itemId);
+            case UPDATE -> new ShoppingOp.Update(opId, itemId, at, name, spec, aisle, prioritized);
+            case BUY -> new ShoppingOp.Buy(opId, itemId, at);
+            case RESTORE -> new ShoppingOp.Restore(opId, itemId, at, spec);
+            case DELETE -> new ShoppingOp.Delete(opId, itemId, at);
         };
     }
 }

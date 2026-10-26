@@ -33,6 +33,7 @@ import com.sterul.opencookbookapiserver.repositories.CatalogueFoodRepository;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.repositories.CatalogueDatasetImportRepository;
 import com.sterul.opencookbookapiserver.repositories.SeasonalProduceRepository;
+import com.sterul.opencookbookapiserver.repositories.ShoppingTileRepository;
 import com.sterul.opencookbookapiserver.repositories.SoakingFoodRepository;
 import com.sterul.opencookbookapiserver.repositories.UserRepository;
 import com.sterul.opencookbookapiserver.services.catalogue.CatalogueDatasetApplier;
@@ -92,6 +93,8 @@ class CatalogueDatasetImportIntegrationTest {
     private SeasonalProduceRepository seasonalProduceRepository;
     @Autowired
     private SoakingFoodRepository soakingFoodRepository;
+    @Autowired
+    private ShoppingTileRepository shoppingTileRepository;
 
     private CookpalUser owner;
 
@@ -132,12 +135,14 @@ class CatalogueDatasetImportIntegrationTest {
 
         assertEquals(shipped("seasonal.json", "produce"), seasonalProduceRepository.count());
         assertEquals(shipped("soaking.json", "foods"), soakingFoodRepository.count());
+        assertEquals(shipped("shopping-tiles.json", "tiles"), shoppingTileRepository.count());
 
         var report = applier.apply(new CatalogueDataset.Catalogue(List.of(
                 food("bls-1", null, name("de", "Kein Saisongemüse", true)))));
 
         assertEquals(0, seasonalProduceRepository.count());
         assertEquals(0, soakingFoodRepository.count());
+        assertEquals(0, shoppingTileRepository.count());
         assertTrue(report.stream().anyMatch(line -> line.startsWith("0 seasonal produce, ")), report.toString());
     }
 
@@ -264,7 +269,7 @@ class CatalogueDatasetImportIntegrationTest {
     private static CatalogueDataset.Food food(String key, String variantOf, CatalogueDataset.Name... names) {
         var nutrients = new CatalogueDataset.Nutrients(77f, 322f, 0.1f, 0f, 15f, 0.7f, 2f, 2f, 0f, 78f);
         return new CatalogueDataset.Food(key, variantOf, new CatalogueDataset.Source("BLS", key.substring(4), key),
-                List.of(), false, "VEGAN", null, nutrients, List.of(names), List.of(), Aisle.FRUIT_VEG, false, null);
+                List.of(), false, "VEGAN", null, nutrients, List.of(names), List.of(), Aisle.FRUIT_VEG, null);
     }
 
     private long shipped(String file, String list) {

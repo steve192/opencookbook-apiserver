@@ -7,7 +7,7 @@ Facts belong to bases: a variant is found through its base.
 
 from dataclasses import dataclass
 
-from cookpal_catalogue.catalogue import Food, Report
+from cookpal_catalogue.catalogue import LANGUAGES, Food, Report
 from cookpal_catalogue.catalogue.model import curated_bases
 from cookpal_catalogue.curation import Curation, InvalidCuration, Storage
 
@@ -27,12 +27,26 @@ class FeatureFacts:
     seasonal: list[SeasonalProduce]
     # Catalogue key -> grams of water a gram soaks up in a soaker, for the bread tool
     soaking: dict[str, float]
+    # Catalogue key -> language -> the word a shopping list tile shows
+    shopping_tiles: dict[str, dict[str, str]]
 
 
 def build(curation: Curation, foods: list[Food], report: Report) -> FeatureFacts:
     by_key = {food.key: food for food in foods}
     return FeatureFacts(seasonal=_seasonal(curation, by_key, report),
-                        soaking=dict(_bases("soaking.yaml", curation.soaking, by_key, report)))
+                        soaking=dict(_bases("soaking.yaml", curation.soaking, by_key, report)),
+                        shopping_tiles=_shopping_tiles(curation, by_key, report))
+
+
+def _shopping_tiles(curation: Curation, foods: dict[str, Food], report: Report) -> dict[str, dict[str, str]]:
+    """A tile shows the word a shop list uses: the first everyday synonym, else the display name ("Reis poliert")."""
+    tiles = {}
+    for food in curated_bases("shopping-tiles.yaml", curation.shopping_tiles, foods, report):
+        displayed = {name.language: name.text for name in food.names if name.display}
+        everyday = curation.synonyms.get(food.key, {})
+        names = {language: (everyday.get(language) or [displayed.get(language)])[0] for language in LANGUAGES}
+        tiles[food.key] = {language: name[0].upper() + name[1:] for language, name in names.items() if name}
+    return tiles
 
 
 def _seasonal(curation: Curation, foods: dict[str, Food], report: Report) -> list[SeasonalProduce]:

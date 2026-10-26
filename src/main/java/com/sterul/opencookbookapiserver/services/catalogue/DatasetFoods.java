@@ -23,7 +23,6 @@ public final class DatasetFoods {
         entity.setSourceName(food.source().name());
         entity.setNegligible(food.negligible());
         entity.setAisle(food.aisle());
-        entity.setShoppingTile(food.shoppingTile());
         entity.setIcon(food.icon());
         entity.applyDatasetDietClass(dietClass(food));
         entity.setDensityGPerMl(food.densityGPerMl());

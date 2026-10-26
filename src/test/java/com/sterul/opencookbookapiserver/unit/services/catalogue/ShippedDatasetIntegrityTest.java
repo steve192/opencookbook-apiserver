@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
+import com.sterul.opencookbookapiserver.entities.catalogue.Aisle;
 import com.sterul.opencookbookapiserver.entities.recipe.Diet;
 import com.sterul.opencookbookapiserver.services.catalogue.dataset.CatalogueDataset;
 import com.sterul.opencookbookapiserver.services.catalogue.dataset.CatalogueDatasetReader;
@@ -34,6 +35,7 @@ class ShippedDatasetIntegrityTest {
             .collect(Collectors.toMap(CatalogueDataset.Unit::key, Function.identity()));
     private static final Set<String> STATES = READER.states().states().stream()
             .map(CatalogueDataset.State::key).collect(Collectors.toSet());
+    private static final List<Tile> TILES = READER.read("shopping-tiles.json", Tiles.class).tiles();
 
     /** Grams of fat, carbohydrates, protein and fibre per 100 g; above it a value is misread, not dry. */
     private static final float MOST_MACRONUTRIENTS = 110;
@@ -146,6 +148,35 @@ class ShippedDatasetIntegrityTest {
         assertNone(FOODS.stream().filter(food -> food.variantOf() != null).toList(),
                 food -> !food.dietClass().equals(BY_KEY.get(food.variantOf()).dietClass()),
                 "variants of another diet than their base");
+    }
+
+    @Test
+    void aShoppingTileIsAPlacedBaseNamedInEveryLanguage() {
+        assertNone(TILES, tile -> !BY_KEY.containsKey(tile.food()) || BY_KEY.get(tile.food()).variantOf() != null
+                || BY_KEY.get(tile.food()).aisle() == null, "tiles that are no placed base");
+        assertNone(TILES, tile -> !tile.names().keySet().containsAll(MANIFEST.languages()),
+                "tiles not named in every shipped language");
+    }
+
+    /** "Eis" was placed next to iced tea, and "Milchreis" read as "Reis poliert". */
+    @Test
+    void shopWordsLeadToTheFoodShoppersMean() {
+        var tiles = TILES.stream().collect(Collectors.toMap(Tile::food, Tile::names));
+        assertEquals(Aisle.FROZEN, foodNamed("Eis").aisle());
+        assertEquals("Eis", tiles.get(foodNamed("Eis").key()).get("de"));
+        assertEquals("Reis", tiles.get(foodNamed("Milchreis").key()).get("de"));
+    }
+
+    private static CatalogueDataset.Food foodNamed(String germanName) {
+        return FOODS.stream().filter(food -> food.names().stream()
+                .anyMatch(name -> name.language().equals("de") && name.name().equals(germanName)))
+                .findFirst().orElseThrow();
+    }
+
+    private record Tiles(List<Tile> tiles) {
+    }
+
+    private record Tile(String food, Map<String, String> names) {
     }
 
     private static <T> void assertNone(Collection<T> items, Predicate<T> violation, String description) {

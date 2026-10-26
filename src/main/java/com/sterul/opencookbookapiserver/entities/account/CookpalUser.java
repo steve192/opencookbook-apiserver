@@ -60,6 +60,9 @@ public class CookpalUser extends AuditableEntity {
     @Enumerated(EnumType.STRING)
     private ShoppingProvider shoppingProvider;
 
+    /** Whether the app shows suggestions of regularly bought items; lists learn them regardless. */
+    private boolean shoppingSuggestions = true;
+
     /** Has signed in with Google. */
     private boolean googleLinked;
 

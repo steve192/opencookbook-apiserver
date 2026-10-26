@@ -42,7 +42,7 @@ Every catalogue food has:
 | `densityGPerMl` | For turning volumes into grams. |
 | `negligible` | Contributes next to nothing (≤ 5 kcal/100 g): water, salt. A recipe line of it never warns. |
 | `aisle` | Where a shop sells it, for sorting a shopping list: `FRUIT_VEG`, `DAIRY_EGGS`, `FROZEN`, … Every food has one. |
-| `shoppingTile`, `icon` | Bases a shopping list offers as a tile to tap, and the [Fluent Emoji](https://github.com/microsoft/fluentui-emoji) it shows; without an icon the tile shows its aisle's. |
+| `icon` | The [Fluent Emoji](https://github.com/microsoft/fluentui-emoji) a base shows on shopping tiles, list items and the seasonal calendar; without one the app shows its aisle's. |
 
 Besides the catalogue the dataset ships `units.json`, `states.json` and `lexicons.json` (words for
 units and states per language), `non-food.json` (what a food shop sells that is no food: toilet paper,
@@ -174,8 +174,7 @@ The build runs these steps (`scripts/cookpal_catalogue/catalogue/`):
    `subgroupDefaults`. The group letter alone is too coarse: `E` holds eggs and pasta, `Q` oils and
    butter. Variants take their base's aisle unless one of the first three moves them. A base none of
    these places **fails the build**; all FDC foods are listed under `overrides`.
-9. **Shopping tiles** from `shopping-tiles.yaml`, then **icons** from `food-icons.yaml`: bases only, each icon
-   one of `fluent-icons.txt` or `own-icons.txt`.
+9. **Icons** from `food-icons.yaml`: bases only, each icon one of `fluent-icons.txt` or `own-icons.txt`.
    `non-food.yaml` is checked last: a name that is also a food's fails the build.
 10. **Feature facts** (`feature_facts.py`) from the files under [Feature facts](#feature-facts), for
    bases only: a fact given to a variant fails the build, one for a key the catalogue lacks is stale.
@@ -212,15 +211,14 @@ are missing, and enabling it in the build (`LANGUAGES` in `scripts/cookpal_catal
 | `families.yaml` | *prepared food without an unprepared base* or a wrong *variant linked by name* | `attach: {T420132: T422100}` (prepared code → base code); `bases: [G860192]` |
 | `fdc-duplicates.yaml` | *FDC food decided by rule* got it wrong | `<fdc id>: <BLS code>` or `<fdc id>: new`, with a comment: `# <description> (rule: <what the rule said>)` |
 | `names/bls.yaml`, `names/fdc.yaml` | A food's derived names are poor, misspelled, or missing (every new FDC food needs German names) | `bls-K110100: {de: [Kartoffel geschält], en: [Potato peeled]}` - replaces all derived names; first per language is shown. Quote names containing commas. |
-| `synonyms/*.yaml` | People write a food differently than its name ("Butter" for "Süßrahmbutter", "Möhre" for "Karotte") | same format; added, never shown first. List a form only if it is irregular (`Eier`) or another word - plurals, inflections and typos are the matcher's job. A synonym belongs to the food most recipes mean by it. |
+| `synonyms/*.yaml` | People write a food differently than its name ("Butter" for "Süßrahmbutter", "Möhre" for "Karotte") | same format; added, never shown first, except that a shopping tile shows a food's first synonym (list the display name first where it is the shop word). List a form only if it is irregular (`Eier`) or another word - plurals, inflections and typos are the matcher's job. A synonym belongs to the food most recipes mean by it. |
 | `portions.yaml` | A food recipes count in pieces, slices, packs or cubes has no weight for that unit; a container holds something else than its typical size (a drained can); an FDC weight follows US packaging where German recipes assume another | `bls-G480100: {piece: {grams: 150}}` (estimated) or `{piece: {grams: 110, fdc: 123456}}` (taken from an FDC measure) |
 | `properties.yaml` | A food measured by spoon or cup has no density (a volume is then weighed as water), or density or negligibility is wrong | `bls-C133000: {density: 0.37}`, `bls-R111000: {negligible: true}` |
 | `diet-classes.yaml` | The build stopped on a food nobody has classified, or a class is wrong | `overrides: {bls-R468000: MEAT}` with a comment naming the food. Answer **every** food the build listed; it will not ship a guess |
 | `aisles.yaml` | The build stopped on a food without an aisle, or a food is shelved elsewhere than its subgroup (sugar is baking, honey is not) | `overrides: {bls-S111000: BAKING}` with a comment naming the food |
-| `shopping-tiles.yaml` | A base should be offered as a tile when adding to a shopping list | `- bls-G620100  # Karotte` |
 | `food-icons.yaml` | A base shows its aisle's icon where the app shows the food (shopping tiles and list, seasonal calendar), but another fits | `bls-G620100: carrot  # Karotte`. After adding an icon, run `npm run shopping-icons:sync` in the app: it takes the names from this checkout, and the next Metro start renders them |
 | `non-food.yaml` | Something bought in food shops that is no food | `toilet-paper: {aisle: HOUSEHOLD, icon: roll_of_paper, de: [...], en: [...]}` |
-| `dataset.yaml` | Every release of this dataset | `label: "2026.3"` |
+| `dataset.yaml` | Every release of this dataset | `label: "2026.4"` |
 
 ### Feature facts
 
@@ -231,6 +229,7 @@ Unlike the files above these are not exceptions to rules but reference data. Eac
 | `seasons-<region>.yaml` | When a fruit or vegetable comes from the region's fields, covers, greenhouses or stores, from several seasonal calendars of the region: a month is listed when at least two show it, with the methods at least two name. Every region file must give a food the same category | `bls-F110100: {category: FRUIT, months: {8: [FIELD]}}` |
 | `storage.yaml` | Where a food keeps at home and how it behaves with ethylene, as common storage advice agrees on it. Only for foods with a season | `bls-G561100: {place: COOL_DARK, coldSensitive: true, ethyleneProducer: true}` |
 | `soaking.yaml` | Grams of water a gram of seeds, flakes or grist soaks up in a soaker: the median of what baking references give | `bls-H410100: {absorption: 1.5}` |
+| `shopping-tiles.yaml` | Bases a shopping list offers as a tile to tap. A tile is named with the food's first everyday synonym per language (`synonyms/everyday.yaml`), else its display name | `- bls-G620100  # Karotte` |
 
 To find keys, search the built catalogue:
 

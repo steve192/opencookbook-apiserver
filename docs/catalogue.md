@@ -39,8 +39,9 @@ not know them, and a food without the fact simply has no row.
 |---|---|---|---|---|---|
 | Seasonal calendar, seasonal recipe suggestions | `seasons-<region>.yaml`, `storage.yaml` | `seasonal.json` | `seasonal_produce`, `seasonal_produce_month` | `entities.seasonal`, `SeasonalCalendarService` | `GET /api/v1/catalogue/seasons` |
 | Bread tool soaker | `soaking.yaml` | `soaking.json` | `soaking_food` | `entities.baking`, `SoakingService` | `GET /api/v1/catalogue/soaking` |
+| Shopping list tiles | `shopping-tiles.yaml`, `synonyms/everyday.yaml` (the shown name) | `shopping-tiles.json` | `shopping_tile`, `shopping_tile_name` | `entities.shopping`, `ShoppingTileService` | `GET /api/v1/shopping/vocabulary` |
 
-Shopping tiles and their icons predate this split and are still columns of `catalogue_food`.
+Food icons stay on `catalogue_food`: the shopping list and the seasonal calendar both show them.
 
 ### Where a new attribute goes
 

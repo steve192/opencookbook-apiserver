@@ -17,7 +17,7 @@
    "text": "Additional data: U.S. Department of Agriculture, Agricultural Research Service. FoodData Central (foundation 2026-04-30, sr legacy 2018-04), fdc.nal.usda.gov."
   }
  ],
- "checksum": "ac43e515c7d6a9b4e51bd77aec201e7710f835766765e12b3bdcea9761a371f7",
+ "checksum": "8586297c72c1d0def81e361da63b056a2287b01f93ad2b313012e1bf3b7be192",
  "files": [
   "catalogue.json",
   "units.json",
@@ -25,10 +25,11 @@
   "lexicons.json",
   "non-food.json",
   "seasonal.json",
-  "soaking.json"
+  "soaking.json",
+  "shopping-tiles.json"
  ],
  "foods": 5200,
- "label": "2026.3",
+ "label": "2026.4",
  "languages": [
   "de",
   "en"

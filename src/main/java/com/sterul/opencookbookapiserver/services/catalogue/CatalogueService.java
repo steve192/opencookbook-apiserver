@@ -66,11 +66,6 @@ public class CatalogueService {
         return foodRepository.findByCatalogueKey(catalogueKey);
     }
 
-    /** The foods a shopping list offers to tap, with their names. */
-    public List<CatalogueFood> getShoppingTiles() {
-        return foodRepository.findAllByShoppingTileTrueAndRetiredFalse();
-    }
-
     public long countLinkedIngredients(CatalogueFood food) {
         return ingredientRepository.countByCatalogueFood(food);
     }

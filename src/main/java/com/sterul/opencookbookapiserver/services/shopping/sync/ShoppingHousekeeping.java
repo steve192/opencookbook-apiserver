@@ -46,7 +46,7 @@ public class ShoppingHousekeeping {
             var list = listRepository.findLockedById(crowded.getId()).orElseThrow();
             var surplus = itemRepository.findAllByListAndStatusAndDeletedFalseOrderByBoughtAtDesc(list, ItemStatus.BOUGHT)
                     .stream().skip(RECENTLY_BOUGHT_KEPT)
-                    .<ShoppingOp>map(item -> new ShoppingOp.Delete(null, item.getId())).toList();
+                    .<ShoppingOp>map(item -> new ShoppingOp.Delete(null, item.getId(), null)).toList();
             sync.applyTo(list, surplus, null);
         }
     }

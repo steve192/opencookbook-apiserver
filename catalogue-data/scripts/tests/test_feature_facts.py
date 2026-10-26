@@ -54,6 +54,7 @@ class TestStorageAndSoakingCuration:
 
 
 ASPARAGUS = bls_row("G450100", "Spargel roh", "Asparagus raw")
+RICE = bls_row("C352000", "Reis poliert", "Rice polished")
 SPRING = Season(category="VEGETABLE", months={5: ("FIELD",), 4: ("PROTECTED", "FIELD")})
 
 
@@ -79,10 +80,23 @@ class TestFeatureFacts:
     def test_soaking_ships_in_a_file_of_its_own(self):
         assert facts_of([ASPARAGUS], soaking={"bls-G450100": 1.5}).soaking == {"bls-G450100": 1.5}
 
-    def test_the_food_record_carries_no_feature_facts(self):
-        foods, _ = build([ASPARAGUS], seasons={"DE": {"bls-G450100": SPRING}}, soaking={"bls-G450100": 1.5})
+    def test_a_tile_shows_the_first_everyday_synonym(self):
+        facts = facts_of([RICE], shopping_tiles=frozenset({"bls-C352000"}),
+                         synonyms={"bls-C352000": {"de": ["Reis", "Milchreis"], "en": ["rice"]}})
 
-        assert not {"seasonCategory", "seasons", "storage", "soakAbsorption"} & dataset._food(foods["bls-G450100"]).keys()
+        assert facts.shopping_tiles == {"bls-C352000": {"de": "Reis", "en": "Rice"}}
+
+    def test_a_tile_without_synonyms_shows_the_display_name(self):
+        facts = facts_of([RICE], shopping_tiles=frozenset({"bls-C352000"}))
+
+        assert facts.shopping_tiles == {"bls-C352000": {"de": "Reis poliert", "en": "Rice polished"}}
+
+    def test_the_food_record_carries_no_feature_facts(self):
+        foods, _ = build([ASPARAGUS], seasons={"DE": {"bls-G450100": SPRING}}, soaking={"bls-G450100": 1.5},
+                         shopping_tiles=frozenset({"bls-G450100"}))
+
+        assert not ({"seasonCategory", "seasons", "storage", "soakAbsorption", "shoppingTile"}
+                    & dataset._food(foods["bls-G450100"]).keys())
 
     def test_regions_must_agree_on_the_category(self):
         with pytest.raises(InvalidCuration, match="in another region"):
@@ -94,10 +108,11 @@ class TestFeatureFacts:
         with pytest.raises(InvalidCuration, match="have no season"):
             facts_of([ASPARAGUS], storage={"bls-G450100": storage})
 
-    def test_a_variant_is_refused(self):
+    @pytest.mark.parametrize("facts", [{"soaking": {"bls-G450132": 1.0}},
+                                       {"shopping_tiles": frozenset({"bls-G450132"})}])
+    def test_a_variant_is_refused(self, facts):
         with pytest.raises(InvalidCuration, match="variant"):
-            facts_of([ASPARAGUS, bls_row("G450132", "Spargel gekocht", "Asparagus boiled")],
-                     soaking={"bls-G450132": 1.0})
+            facts_of([ASPARAGUS, bls_row("G450132", "Spargel gekocht", "Asparagus boiled")], **facts)
 
     def test_a_fact_for_a_food_the_catalogue_lacks_is_reported_stale(self):
         report = build([ASPARAGUS])[1]
