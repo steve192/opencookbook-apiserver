@@ -64,8 +64,8 @@ class ShoppingHousekeepingIntegrationTest extends IntegrationTestBase {
         var ops = new ArrayList<ShoppingOp>();
         for (var index = 0; index < 62; index++) {
             var id = UUID.randomUUID().toString();
-            ops.add(new ShoppingOp.Add(null, id, "Ding " + index, null, Aisle.OTHER, null, List.of(), false));
-            ops.add(new ShoppingOp.Buy(null, id));
+            ops.add(new ShoppingOp.Add(null, id, null, "Ding " + index, null, Aisle.OTHER, null, List.of(), false));
+            ops.add(new ShoppingOp.Buy(null, id, null));
         }
         sync.apply(listId, scope, ops, 0, cook);
 
@@ -80,9 +80,9 @@ class ShoppingHousekeepingIntegrationTest extends IntegrationTestBase {
         var gone = UUID.randomUUID().toString();
         var kept = UUID.randomUUID().toString();
         var afterAdding = sync.apply(listId, scope, List.of(
-                new ShoppingOp.Add(null, gone, "Brot", null, Aisle.OTHER, null, List.of(), false),
-                new ShoppingOp.Add(null, kept, "Butter", null, Aisle.OTHER, null, List.of(), false)), 0, cook).version();
-        sync.apply(listId, scope, List.of(new ShoppingOp.Delete(null, gone)), 0, cook);
+                new ShoppingOp.Add(null, gone, null, "Brot", null, Aisle.OTHER, null, List.of(), false),
+                new ShoppingOp.Add(null, kept, null, "Butter", null, Aisle.OTHER, null, List.of(), false)), 0, cook).version();
+        sync.apply(listId, scope, List.of(new ShoppingOp.Delete(null, gone, null)), 0, cook);
         jdbcTemplate.update("UPDATE shopping_item SET last_change = now() - interval '31 days' WHERE id = ?", gone);
 
         housekeeping.purgeTombstones();

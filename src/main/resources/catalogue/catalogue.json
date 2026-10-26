@@ -3,6 +3,7 @@
   {
    "aisle": "BREAD_BAKERY",
    "dietClass": "VEGAN",
+   "icon": "bread",
    "key": "bls-B101000",
    "names": [
     {
@@ -1511,9 +1512,19 @@
      "name": "Bauernbrot"
     },
     {
+     "display": false,
+     "language": "de",
+     "name": "Brot"
+    },
+    {
      "display": true,
      "language": "en",
      "name": "Rye-wheat bread (> 50 % and < 90 % rye)"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "farmhouse bread"
     }
    ],
    "nutrients": {
@@ -1528,7 +1539,6 @@
     "sugar": 1.26,
     "water": 37.6
    },
-   "shoppingTile": true,
    "source": {
     "code": "B271000",
     "name": "Roggenmischbrot",
@@ -1995,7 +2005,6 @@
      "unit": "slice"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "B314000",
     "name": "Weizentoastbrot/Buttertoastbrot",
@@ -2889,7 +2898,6 @@
      "unit": "roll"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "B511000",
     "name": "Weizenbrötchen",
@@ -4380,7 +4388,6 @@
     "sugar": 1.905,
     "water": 6.0
    },
-   "shoppingTile": true,
    "source": {
     "code": "B6A2100",
     "name": "Roggenvollkornknäckebrot",
@@ -5299,7 +5306,6 @@
      "unit": "piece"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "B723000",
     "name": "Laugengebäck mit Hagelsalz",
@@ -5770,7 +5776,6 @@
     "sugar": 0.317,
     "water": 39.0
    },
-   "shoppingTile": true,
    "source": {
     "code": "B782100",
     "name": "Weizenfladenbrot",
@@ -5844,7 +5849,6 @@
      "unit": "piece"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "B783012",
     "name": "Weizentortilla",
@@ -5917,7 +5921,6 @@
      "unit": "slice"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "B821000",
     "name": "Paniermehl/Semmelbrösel/Semmelmehl",
@@ -6895,7 +6898,6 @@
     "sugar": 1.75005,
     "water": 11.7
    },
-   "shoppingTile": true,
    "source": {
     "code": "C118000",
     "name": "Quinoa weiß, roh",
@@ -7097,7 +7099,6 @@
     "sugar": 1.0625,
     "water": 11.05
    },
-   "shoppingTile": true,
    "source": {
     "code": "C119200",
     "name": "Couscous (Hartweizen) roh",
@@ -7405,7 +7406,6 @@
     "sugar": 0.74,
     "water": 10.07
    },
-   "shoppingTile": true,
    "source": {
     "code": "C133000",
     "name": "Hafer Flocken",
@@ -8209,7 +8209,6 @@
     "sugar": 0.30701,
     "water": 13.59
    },
-   "shoppingTile": true,
    "source": {
     "code": "C214100",
     "name": "Weizen Mehl, Type 405",
@@ -8429,7 +8428,6 @@
     "sugar": 0.76504,
     "water": 13.84
    },
-   "shoppingTile": true,
    "source": {
     "code": "C218000",
     "name": "Weichweizen Grieß",
@@ -10538,7 +10536,6 @@
     "sugar": 1.39,
     "water": 12.0
    },
-   "shoppingTile": true,
    "source": {
     "code": "C346000",
     "name": "Mais Grieß",
@@ -10688,6 +10685,7 @@
    "aisle": "PASTA_RICE_GRAINS",
    "densityGPerMl": 0.792,
    "dietClass": "VEGAN",
+   "icon": "cooked_rice",
    "key": "bls-C351000",
    "names": [
     {
@@ -10894,7 +10892,6 @@
     "sugar": 0.28,
     "water": 11.88
    },
-   "shoppingTile": true,
    "source": {
     "code": "C352000",
     "name": "Reis poliert, roh",
@@ -11887,7 +11884,6 @@
     "sugar": 0.0,
     "water": 12.6
    },
-   "shoppingTile": true,
    "source": {
     "code": "C446000",
     "name": "Mais Stärke",
@@ -12161,7 +12157,6 @@
     "sugar": 1.052,
     "water": 9.7
    },
-   "shoppingTile": true,
    "source": {
     "code": "C512000",
     "name": "Müsli Basismischung (ohne Trockenfrüchte) ungesüßt",
@@ -12768,7 +12763,6 @@
     "sugar": 0.71,
     "water": 4.4
    },
-   "shoppingTile": true,
    "source": {
     "code": "C515400",
     "name": "Cornflakes ungesüßt",
@@ -13622,7 +13616,6 @@
     "sugar": 0.86,
     "water": 3.7
    },
-   "shoppingTile": true,
    "source": {
     "code": "C533000",
     "name": "Popcorn ungesüßt",
@@ -14047,6 +14040,7 @@
   {
    "aisle": "PASTA_RICE_GRAINS",
    "dietClass": "VEGAN",
+   "icon": "flatbread",
    "key": "bls-C546000",
    "names": [
     {
@@ -14055,9 +14049,29 @@
      "name": "Tortillachips (Nachos)"
     },
     {
+     "display": false,
+     "language": "de",
+     "name": "Tortillachips"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Nachos"
+    },
+    {
      "display": true,
      "language": "en",
      "name": "Tortilla chips (Nachos)"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "tortilla chips"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "nachos"
     }
    ],
    "nutrients": {
@@ -14466,7 +14480,6 @@
     "sugar": 3.815,
     "water": 91.12
    },
-   "shoppingTile": true,
    "source": {
     "code": "C660000",
     "name": "Haferdrink ungesüßt",
@@ -14755,7 +14768,6 @@
     "sugar": 11.55,
     "water": 3.9
    },
-   "shoppingTile": true,
    "source": {
     "code": "D032000",
     "name": "Nährzwieback",
@@ -14960,7 +14972,6 @@
     "sugar": 2.5,
     "water": 2.33
    },
-   "shoppingTile": true,
    "source": {
     "code": "D041000",
     "name": "Erdnussflips",
@@ -15009,7 +15020,6 @@
      "unit": "portion"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "D050000",
     "name": "Cracker",
@@ -15019,6 +15029,7 @@
   {
    "aisle": "SWEETS_SNACKS",
    "dietClass": "VEGETARIAN",
+   "icon": "pretzel",
    "key": "bls-D064000",
    "names": [
     {
@@ -15027,9 +15038,24 @@
      "name": "Salzbrezeln/Salzstangen (Laugendauergebäck)"
     },
     {
+     "display": false,
+     "language": "de",
+     "name": "Salzstangen"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Salzbrezeln"
+    },
+    {
      "display": true,
      "language": "en",
      "name": "Salted pretzels/pretzel sticks (snack)"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "pretzel sticks"
     }
    ],
    "nutrients": {
@@ -15137,7 +15163,6 @@
      "unit": "roll"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "D072000",
     "name": "Blätterteig eifrei, roh",
@@ -15290,12 +15315,22 @@
     {
      "display": false,
      "language": "de",
+     "name": "Pizzateig"
+    },
+    {
+     "display": false,
+     "language": "de",
      "name": "Flammkuchenteig"
     },
     {
      "display": true,
      "language": "en",
      "name": "Pizza dough with yeast"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "pizza dough"
     }
    ],
    "nutrients": {
@@ -23060,9 +23095,19 @@
      "name": "Leibniz Kekse"
     },
     {
+     "display": false,
+     "language": "de",
+     "name": "Kekse"
+    },
+    {
      "display": true,
      "language": "en",
      "name": "Shortbread biscuits"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "biscuits"
     }
    ],
    "nutrients": {
@@ -23077,7 +23122,6 @@
     "sugar": 27.06,
     "water": 4.0
    },
-   "shoppingTile": true,
    "source": {
     "code": "D630400",
     "name": "Butterkekse/Butterplätzchen (Mürbeteig)",
@@ -27196,7 +27240,6 @@
     "sugar": 7.2,
     "water": 22.0
    },
-   "shoppingTile": true,
    "source": {
     "code": "D771600",
     "name": "Croissant (Hefeblätterteig/Plunderteig)",
@@ -30943,12 +30986,12 @@
     {
      "display": false,
      "language": "de",
-     "name": "Ei"
+     "name": "Eier"
     },
     {
      "display": false,
      "language": "de",
-     "name": "Eier"
+     "name": "Ei"
     },
     {
      "display": false,
@@ -30963,12 +31006,12 @@
     {
      "display": false,
      "language": "en",
-     "name": "egg"
+     "name": "eggs"
     },
     {
      "display": false,
      "language": "en",
-     "name": "eggs"
+     "name": "egg"
     }
    ],
    "nutrients": {
@@ -30990,7 +31033,6 @@
      "unit": "piece"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "E111100",
     "name": "Hühnerei roh",
@@ -31932,7 +31974,6 @@
      "unit": "pack"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "E401000",
     "name": "Teigwaren eifrei, roh",
@@ -32146,7 +32187,6 @@
      "unit": "pack"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "E432000",
     "name": "Eierteigwaren roh",
@@ -32242,7 +32282,6 @@
     "sugar": 0.428,
     "water": 29.1
    },
-   "shoppingTile": true,
    "source": {
     "code": "E438000",
     "name": "Eier-Frischteigwaren roh",
@@ -32580,6 +32619,7 @@
   {
    "aisle": "PASTA_RICE_GRAINS",
    "dietClass": "VEGETARIAN",
+   "icon": "spaghetti",
    "key": "bls-E530000",
    "names": [
     {
@@ -33173,7 +33213,6 @@
     "sugar": 2.83,
     "water": 57.0
    },
-   "shoppingTile": true,
    "source": {
     "code": "E606000",
     "name": "Semmelknödel roh",
@@ -34692,7 +34731,6 @@
      "unit": "stalk"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "F081100",
     "name": "Rhabarber roh",
@@ -35211,7 +35249,6 @@
      "unit": "piece"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "F110100",
     "name": "Apfel roh",
@@ -35294,6 +35331,7 @@
    "aisle": "BEVERAGES",
    "densityGPerMl": 1.038,
    "dietClass": "VEGAN",
+   "icon": "beverage_box",
    "key": "bls-F110600",
    "names": [
     {
@@ -35616,7 +35654,6 @@
      "unit": "piece"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "F130100",
     "name": "Birne roh",
@@ -36086,7 +36123,6 @@
     "sugar": 7.42,
     "water": 84.61
    },
-   "shoppingTile": true,
    "source": {
     "code": "F201100",
     "name": "Aprikose roh",
@@ -36362,7 +36398,6 @@
      "unit": "portion"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "F203100",
     "name": "Pfirsich roh",
@@ -36728,7 +36763,6 @@
     "sugar": 13.66,
     "water": 82.63
    },
-   "shoppingTile": true,
    "source": {
     "code": "F211100",
     "name": "Süßkirsche roh",
@@ -37164,7 +37198,6 @@
     "sugar": 8.1,
     "water": 87.071
    },
-   "shoppingTile": true,
    "source": {
     "code": "F220100",
     "name": "Pflaume roh",
@@ -37904,7 +37937,6 @@
      "unit": "piece"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "F301100",
     "name": "Erdbeere roh",
@@ -38100,7 +38132,6 @@
     "sugar": 5.2,
     "water": 86.1
    },
-   "shoppingTile": true,
    "source": {
     "code": "F302100",
     "name": "Himbeere roh",
@@ -38280,7 +38311,6 @@
     "sugar": 5.4,
     "water": 87.5
    },
-   "shoppingTile": true,
    "source": {
     "code": "F303100",
     "name": "Brombeere roh",
@@ -38471,7 +38501,6 @@
     "sugar": 9.7,
     "water": 86.5
    },
-   "shoppingTile": true,
    "source": {
     "code": "F304100",
     "name": "Heidelbeere roh",
@@ -38812,7 +38841,6 @@
      "unit": "leaf"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "F310100",
     "name": "Weintraube roh",
@@ -39114,7 +39142,6 @@
     "sugar": 4.3,
     "water": 85.6
    },
-   "shoppingTile": true,
    "source": {
     "code": "F321100",
     "name": "Johannisbeere rot, roh",
@@ -40628,7 +40655,6 @@
      "unit": "slice"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "F501100",
     "name": "Ananas roh",
@@ -40817,7 +40843,6 @@
     "sugar": 1.37,
     "water": 77.2
    },
-   "shoppingTile": true,
    "source": {
     "code": "F502100",
     "name": "Avocado roh",
@@ -40861,7 +40886,6 @@
      "unit": "piece"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "F503100",
     "name": "Banane roh",
@@ -41045,7 +41069,6 @@
      "unit": "piece"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "F505100",
     "name": "Feige roh",
@@ -41158,7 +41181,6 @@
     "sugar": 16.1,
     "water": 79.06
    },
-   "shoppingTile": true,
    "source": {
     "code": "F506100",
     "name": "Granatapfel roh",
@@ -41267,7 +41289,6 @@
     "sugar": 9.54,
     "water": 82.0
    },
-   "shoppingTile": true,
    "source": {
     "code": "F508100",
     "name": "Maracuja/Passionsfrucht, roh",
@@ -41486,7 +41507,6 @@
     "sugar": 10.1,
     "water": 84.9
    },
-   "shoppingTile": true,
    "source": {
     "code": "F514100",
     "name": "Kiwi roh",
@@ -41582,7 +41602,6 @@
     "sugar": 17.9,
     "water": 79.69
    },
-   "shoppingTile": true,
    "source": {
     "code": "F515100",
     "name": "Litschi roh",
@@ -41691,7 +41710,6 @@
     "sugar": 11.0,
     "water": 85.9
    },
-   "shoppingTile": true,
    "source": {
     "code": "F516100",
     "name": "Mango roh",
@@ -41879,7 +41897,6 @@
     "sugar": 9.6,
     "water": 87.6
    },
-   "shoppingTile": true,
    "source": {
     "code": "F517100",
     "name": "Papaya roh",
@@ -42210,7 +42227,6 @@
      "unit": "wedge"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "F533100",
     "name": "Honigmelone roh",
@@ -42288,7 +42304,6 @@
      "unit": "wedge"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "F535100",
     "name": "Wassermelone roh",
@@ -42569,6 +42584,11 @@
      "display": true,
      "language": "en",
      "name": "Cape gooseberry"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "physalis"
     }
    ],
    "nutrients": {
@@ -43049,7 +43069,6 @@
      "unit": "piece"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "F601100",
     "name": "Zitrone roh",
@@ -43171,7 +43190,6 @@
      "unit": "piece"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "F602100",
     "name": "Limette roh",
@@ -43287,7 +43305,6 @@
      "unit": "piece"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "F603100",
     "name": "Orange roh",
@@ -43346,7 +43363,6 @@
      "unit": "portion"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "F603600",
     "name": "Orangensaft",
@@ -43416,7 +43432,6 @@
     "sugar": 6.5,
     "water": 89.8
    },
-   "shoppingTile": true,
    "source": {
     "code": "F604100",
     "name": "Grapefruit roh",
@@ -43565,7 +43580,6 @@
     "sugar": 10.1,
     "water": 87.3
    },
-   "shoppingTile": true,
    "source": {
     "code": "F606100",
     "name": "Mandarine roh",
@@ -43647,6 +43661,7 @@
   {
    "aisle": "FRUIT_VEG",
    "dietClass": "VEGAN",
+   "icon": "tangerine",
    "key": "bls-F607100",
    "names": [
     {
@@ -44124,7 +44139,6 @@
     "sugar": 60.9,
     "water": 19.0
    },
-   "shoppingTile": true,
    "source": {
     "code": "F840100",
     "name": "Rosine/Sultanine (Weinbeere getrocknet)",
@@ -44543,7 +44557,6 @@
     "sugar": 0.0,
     "water": 85.2
    },
-   "shoppingTile": true,
    "source": {
     "code": "G012902",
     "name": "Kapern gesäuert, abgetropft",
@@ -44621,7 +44634,6 @@
      "unit": "leaf"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G061000",
     "name": "Basilikum roh",
@@ -44666,7 +44678,6 @@
      "unit": "bunch"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G081100",
     "name": "Schnittlauch roh",
@@ -45571,7 +45582,6 @@
     "sugar": 0.8,
     "water": 92.667
    },
-   "shoppingTile": true,
    "source": {
     "code": "G104100",
     "name": "Feldsalat/Rapunzel, roh",
@@ -45640,7 +45650,6 @@
      "unit": "leaf"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G105100",
     "name": "Kopfsalat roh",
@@ -45690,6 +45699,7 @@
   {
    "aisle": "FRUIT_VEG",
    "dietClass": "VEGAN",
+   "icon": "leafy_green",
    "key": "bls-G107100",
    "names": [
     {
@@ -45877,7 +45887,6 @@
      "unit": "leaf"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G130100",
     "name": "Rucola roh",
@@ -46148,7 +46157,6 @@
      "unit": "pack"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G211100",
     "name": "Spinat roh",
@@ -46243,6 +46251,7 @@
   {
    "aisle": "FROZEN",
    "dietClass": "VEGAN",
+   "icon": "leafy_green",
    "key": "bls-G211200",
    "names": [
     {
@@ -46551,7 +46560,6 @@
      "unit": "strip"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G220100",
     "name": "Bleichsellerie roh",
@@ -46730,7 +46738,6 @@
     "sugar": 0.69,
     "water": 92.3
    },
-   "shoppingTile": true,
    "source": {
     "code": "G230100",
     "name": "Mangold roh",
@@ -46929,7 +46936,6 @@
      "unit": "bunch"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G250100",
     "name": "Petersilienblatt roh",
@@ -47294,7 +47300,6 @@
      "unit": "head"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G311100",
     "name": "Blumenkohl roh",
@@ -47704,7 +47709,6 @@
      "unit": "stalk"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G312100",
     "name": "Broccoli roh",
@@ -47998,6 +48002,11 @@
      "display": true,
      "language": "en",
      "name": "Chinese white cabbage"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "napa cabbage"
     }
    ],
    "nutrients": {
@@ -48012,7 +48021,6 @@
     "sugar": 1.242,
     "water": 94.3
    },
-   "shoppingTile": true,
    "source": {
     "code": "G321100",
     "name": "Chinakohl roh",
@@ -48162,7 +48170,6 @@
     "sugar": 2.6404,
     "water": 83.932
    },
-   "shoppingTile": true,
    "source": {
     "code": "G322100",
     "name": "Grünkohl roh",
@@ -48626,7 +48633,6 @@
      "unit": "slice"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G331100",
     "name": "Kohlrabi roh",
@@ -48805,7 +48811,6 @@
     "sugar": 1.58,
     "water": 82.7
    },
-   "shoppingTile": true,
    "source": {
     "code": "G332100",
     "name": "Rosenkohl roh",
@@ -49126,7 +49131,6 @@
      "unit": "leaf"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G341100",
     "name": "Rotkohl roh",
@@ -49364,7 +49368,6 @@
      "unit": "head"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G342100",
     "name": "Weißkohl roh",
@@ -49995,7 +49998,6 @@
     "sugar": 0.77,
     "water": 90.7
    },
-   "shoppingTile": true,
    "source": {
     "code": "G345100",
     "name": "Sauerkraut abgetropft, roh",
@@ -50353,7 +50355,6 @@
     "sugar": 2.51,
     "water": 82.5
    },
-   "shoppingTile": true,
    "source": {
     "code": "G410100",
     "name": "Artischocke roh",
@@ -50756,7 +50757,6 @@
      "unit": "bulb"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G430100",
     "name": "Gemüsefenchel roh",
@@ -51046,7 +51046,6 @@
     "sugar": 3.8,
     "water": 93.615
    },
-   "shoppingTile": true,
    "source": {
     "code": "G450100",
     "name": "Spargel roh",
@@ -51541,7 +51540,6 @@
      "unit": "stalk"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G470100",
     "name": "Porree/Lauch, roh",
@@ -51929,7 +51927,6 @@
      "unit": "slice"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G480100",
     "name": "Speisezwiebel roh",
@@ -52422,7 +52419,6 @@
      "unit": "stalk"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G482100",
     "name": "Frühlingszwiebel/Lauchzwiebel, roh",
@@ -52760,7 +52756,6 @@
      "unit": "piece"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G485100",
     "name": "Schalotte roh",
@@ -53161,7 +53156,6 @@
      "unit": "piece"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G490100",
     "name": "Knoblauch roh",
@@ -53688,7 +53682,6 @@
      "unit": "piece"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G510100",
     "name": "Aubergine roh",
@@ -53995,7 +53988,6 @@
      "unit": "slice"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G520100",
     "name": "Gurke roh",
@@ -54185,7 +54177,6 @@
      "unit": "piece"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G520802",
     "name": "Gurke gesäuert (Gewürzgurke) abgetropft",
@@ -55009,7 +55000,6 @@
      "unit": "ring"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G543100",
     "name": "Gemüsepaprika rot, roh",
@@ -55445,7 +55435,6 @@
      "unit": "piece"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G554100",
     "name": "Pfefferschote rot, roh",
@@ -55560,6 +55549,7 @@
    "aisle": "FRUIT_VEG",
    "densityGPerMl": 0.323,
    "dietClass": "VEGAN",
+   "icon": "tomato",
    "key": "bls-G560400",
    "names": [
     {
@@ -55568,9 +55558,19 @@
      "name": "Tomate getrocknet"
     },
     {
+     "display": false,
+     "language": "de",
+     "name": "getrocknete Tomaten"
+    },
+    {
      "display": true,
      "language": "en",
      "name": "Tomato dried"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "sun-dried tomatoes"
     }
    ],
    "nutrients": {
@@ -55842,7 +55842,6 @@
      "unit": "wedge"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G561100",
     "name": "Tomate roh",
@@ -56123,7 +56122,6 @@
     "sugar": 3.25,
     "water": 94.0
    },
-   "shoppingTile": true,
    "source": {
     "code": "G568900",
     "name": "Tomate geschält, Konserve",
@@ -56214,7 +56212,6 @@
     "sugar": 3.4,
     "water": 76.0
    },
-   "shoppingTile": true,
    "source": {
     "code": "G570100",
     "name": "Zuckermais roh",
@@ -56605,7 +56602,6 @@
      "unit": "piece"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G581000",
     "name": "Kürbis Hokkaido (C. maxima) roh",
@@ -56991,7 +56987,6 @@
      "unit": "piece"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G582100",
     "name": "Zucchini roh",
@@ -57447,7 +57442,6 @@
      "unit": "slice"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G613100",
     "name": "Rote Rübe/Rote Bete, roh",
@@ -57773,7 +57767,6 @@
      "unit": "strip"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G620100",
     "name": "Karotte/Möhre, roh",
@@ -58345,7 +58338,6 @@
     "sugar": 3.061,
     "water": 80.2
    },
-   "shoppingTile": true,
    "source": {
     "code": "G640100",
     "name": "Pastinake roh",
@@ -58798,7 +58790,6 @@
      "unit": "piece"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G660100",
     "name": "Knollensellerie roh",
@@ -59281,6 +59272,11 @@
      "display": true,
      "language": "en",
      "name": "Small red radish"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "radishes"
     }
    ],
    "nutrients": {
@@ -59295,7 +59291,6 @@
     "sugar": 2.133,
     "water": 94.05
    },
-   "shoppingTile": true,
    "source": {
     "code": "G691100",
     "name": "Radieschen roh",
@@ -59460,7 +59455,6 @@
      "unit": "jar"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G710100",
     "name": "Bohne grün, roh",
@@ -60258,6 +60252,7 @@
   {
    "aisle": "FRUIT_VEG",
    "dietClass": "VEGAN",
+   "icon": "pea_pod",
    "key": "bls-G750100",
    "names": [
     {
@@ -60447,7 +60442,6 @@
     "sugar": 1.303,
     "water": 82.435
    },
-   "shoppingTile": true,
    "source": {
     "code": "G760100",
     "name": "Erbse grün, roh",
@@ -60611,7 +60605,6 @@
      "unit": "pack"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "G760200",
     "name": "Erbse grün, tiefgefroren",
@@ -60926,7 +60919,6 @@
     "sugar": 3.16,
     "water": 89.4
    },
-   "shoppingTile": true,
    "source": {
     "code": "G761100",
     "name": "Zuckererbse roh",
@@ -61636,6 +61628,7 @@
   {
    "aisle": "CANNED_JARS",
    "dietClass": "VEGAN",
+   "icon": "jar",
    "key": "bls-G898400",
    "names": [
     {
@@ -61644,9 +61637,19 @@
      "name": "Ajvar Konserve"
     },
     {
+     "display": false,
+     "language": "de",
+     "name": "Ajvar"
+    },
+    {
      "display": true,
      "language": "en",
      "name": "Ajvar canned"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "ajvar"
     }
    ],
    "nutrients": {
@@ -63101,12 +63104,18 @@
    "aisle": "SWEETS_SNACKS",
    "densityGPerMl": 0.608,
    "dietClass": "VEGAN",
+   "icon": "peanuts",
    "key": "bls-H110600",
    "names": [
     {
      "display": true,
      "language": "de",
      "name": "Erdnuss"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Erdnüsse"
     },
     {
      "display": false,
@@ -63230,6 +63239,11 @@
     {
      "display": false,
      "language": "de",
+     "name": "Walnüsse"
+    },
+    {
+     "display": false,
+     "language": "de",
      "name": "Walnusskerne"
     },
     {
@@ -63255,7 +63269,6 @@
     "sugar": 2.68,
     "water": 4.2
    },
-   "shoppingTile": true,
    "source": {
     "code": "H120100",
     "name": "Walnuss",
@@ -63352,6 +63365,11 @@
     {
      "display": false,
      "language": "de",
+     "name": "Haselnüsse"
+    },
+    {
+     "display": false,
+     "language": "de",
      "name": "Haselnusskerne"
     },
     {
@@ -63427,7 +63445,6 @@
     "sugar": 3.85,
     "water": 6.5
    },
-   "shoppingTile": true,
    "source": {
     "code": "H130400",
     "name": "Haselnuss gemahlen",
@@ -63546,7 +63563,6 @@
      "unit": "piece"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "H150100",
     "name": "Kokos Fruchtfleisch, roh",
@@ -63618,7 +63634,6 @@
     "sugar": 7.1,
     "water": 2.19
    },
-   "shoppingTile": true,
    "source": {
     "code": "H150400",
     "name": "Kokos Fruchtfleisch, geraspelt, getrocknet",
@@ -63710,7 +63725,6 @@
      "unit": "pack"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "H154000",
     "name": "Kokosmilch/Kokosnussmilch",
@@ -63833,7 +63847,6 @@
     "sugar": 6.15,
     "water": 4.08
    },
-   "shoppingTile": true,
    "source": {
     "code": "H170100",
     "name": "Cashewkern",
@@ -64128,7 +64141,6 @@
     "sugar": 3.634,
     "water": 5.3
    },
-   "shoppingTile": true,
    "source": {
     "code": "H210100",
     "name": "Mandel süß",
@@ -64547,9 +64559,19 @@
      "name": "Pistazie"
     },
     {
+     "display": false,
+     "language": "de",
+     "name": "Pistazien"
+    },
+    {
      "display": true,
      "language": "en",
      "name": "Pistachio nut"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "pistachios"
     }
    ],
    "nutrients": {
@@ -64680,7 +64702,6 @@
     "sugar": 1.34,
     "water": 5.37
    },
-   "shoppingTile": true,
    "source": {
     "code": "H310100",
     "name": "Kürbiskern",
@@ -65188,7 +65209,6 @@
     "sugar": 0.0,
     "water": 67.85
    },
-   "shoppingTile": true,
    "source": {
     "code": "H510802",
     "name": "Oliven grün, gesäuert, abgetropft",
@@ -65356,7 +65376,6 @@
     "sugar": 0.96,
     "water": 91.0
    },
-   "shoppingTile": true,
    "source": {
     "code": "H610100",
     "name": "Bambussprossen roh",
@@ -65644,7 +65663,6 @@
     "sugar": 0.3,
     "water": 93.1
    },
-   "shoppingTile": true,
    "source": {
     "code": "H650100",
     "name": "Mungbohnensprossen/Mungbohnenkeimlinge, roh",
@@ -65922,12 +65940,12 @@
     {
      "display": false,
      "language": "de",
-     "name": "Kichererbse"
+     "name": "Kichererbsen"
     },
     {
      "display": false,
      "language": "de",
-     "name": "Kichererbsen"
+     "name": "Kichererbse"
     },
     {
      "display": true,
@@ -65964,7 +65982,6 @@
      "unit": "can"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "H720902",
     "name": "Kichererbse reif, Konserve, abgetropft",
@@ -66029,7 +66046,6 @@
     "sugar": 1.3,
     "water": 10.7
    },
-   "shoppingTile": true,
    "source": {
     "code": "H725100",
     "name": "Linse reif",
@@ -66040,6 +66056,7 @@
    "aisle": "PASTA_RICE_GRAINS",
    "densityGPerMl": 0.8,
    "dietClass": "VEGAN",
+   "icon": "beans",
    "key": "bls-H730000",
    "names": [
     {
@@ -66242,6 +66259,7 @@
   {
    "aisle": "PASTA_RICE_GRAINS",
    "dietClass": "VEGAN",
+   "icon": "beans",
    "key": "bls-H739400",
    "names": [
     {
@@ -66475,7 +66493,6 @@
      "unit": "can"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "H742902",
     "name": "Kidneybohne reif, Konserve, abgetropft",
@@ -66806,7 +66823,6 @@
     "sugar": 0.173,
     "water": 96.33
    },
-   "shoppingTile": true,
    "source": {
     "code": "H800000",
     "name": "Mandeldrink ungesüßt",
@@ -67068,7 +67084,6 @@
     "sugar": 0.389,
     "water": 93.49
    },
-   "shoppingTile": true,
    "source": {
     "code": "H841100",
     "name": "Sojadrink ungesüßt",
@@ -67486,7 +67501,6 @@
     "sugar": 0.0,
     "water": 73.4
    },
-   "shoppingTile": true,
    "source": {
     "code": "H861000",
     "name": "Tofu",
@@ -67789,7 +67803,6 @@
      "unit": "portion"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "H880200",
     "name": "Erdnussbutter/Erdnusscreme",
@@ -68060,7 +68073,6 @@
     "sugar": 3.21,
     "water": 53.6
    },
-   "shoppingTile": true,
    "source": {
     "code": "H910500",
     "name": "Vegetarische Wiener Würstchen",
@@ -68247,6 +68259,7 @@
    "aisle": "DELI",
    "densityGPerMl": 1.13,
    "dietClass": "VEGAN",
+   "icon": "jar",
    "key": "bls-H960000",
    "names": [
     {
@@ -68350,7 +68363,6 @@
      "unit": "piece"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "K110100",
     "name": "Kartoffel geschält, roh",
@@ -68801,7 +68813,6 @@
     "sugar": 0.17,
     "water": 68.5
    },
-   "shoppingTile": true,
    "source": {
     "code": "K130200",
     "name": "Pommes frites tiefgefroren",
@@ -69260,7 +69271,6 @@
     "sugar": 0.408,
     "water": 58.18
    },
-   "shoppingTile": true,
    "source": {
     "code": "K270000",
     "name": "Gnocchi roh",
@@ -69434,6 +69444,7 @@
   {
    "aisle": "SWEETS_SNACKS",
    "dietClass": "VEGAN",
+   "icon": "potato",
    "key": "bls-K280100",
    "names": [
     {
@@ -69447,9 +69458,29 @@
      "name": "Stapelchips, diverse Sorten"
     },
     {
+     "display": false,
+     "language": "de",
+     "name": "Chips"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Kartoffelchips"
+    },
+    {
      "display": true,
      "language": "en",
      "name": "Potato crisps/potato chips (various types)"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "crisps"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "potato chips"
     }
    ],
    "nutrients": {
@@ -70137,7 +70168,6 @@
     "sugar": 5.5,
     "water": 69.2
    },
-   "shoppingTile": true,
    "source": {
     "code": "K420100",
     "name": "Batate/Süßkartoffel, roh",
@@ -70669,7 +70699,6 @@
      "unit": "piece"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "K701100",
     "name": "Champignon roh",
@@ -72677,7 +72706,6 @@
      "unit": "piece"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "K740100",
     "name": "Austernpilz roh",
@@ -73415,7 +73443,6 @@
      "unit": "wedge"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "M012200",
     "name": "Feta mind. 45 % Fett i. Tr.",
@@ -73518,7 +73545,6 @@
      "unit": "portion"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "M032100",
     "name": "Mozzarella mind. 45 % Fett i. Tr.",
@@ -73699,6 +73725,7 @@
    "aisle": "DAIRY_EGGS",
    "densityGPerMl": 1.03,
    "dietClass": "VEGETARIAN",
+   "icon": "glass_of_milk",
    "key": "bls-M111200",
    "names": [
     {
@@ -73818,7 +73845,6 @@
     "sugar": 4.03,
     "water": 87.5
    },
-   "shoppingTile": true,
    "source": {
     "code": "M111300",
     "name": "Vollmilch frisch, 3,5 % Fett, pasteurisiert",
@@ -73943,6 +73969,7 @@
    "aisle": "DAIRY_EGGS",
    "densityGPerMl": 1.03,
    "dietClass": "VEGETARIAN",
+   "icon": "glass_of_milk",
    "key": "bls-M113300",
    "names": [
     {
@@ -74609,7 +74636,6 @@
     "sugar": 4.13,
     "water": 86.6
    },
-   "shoppingTile": true,
    "source": {
     "code": "M141300",
     "name": "Joghurt mild, mind. 3,5 % Fett",
@@ -74865,7 +74891,6 @@
     "sugar": 4.73,
     "water": 91.0
    },
-   "shoppingTile": true,
    "source": {
     "code": "M150000",
     "name": "Buttermilch",
@@ -75092,6 +75117,11 @@
     {
      "display": false,
      "language": "en",
+     "name": "smetana"
+    },
+    {
+     "display": false,
+     "language": "en",
      "name": "soured cream 20 % fat"
     }
    ],
@@ -75107,7 +75137,6 @@
     "sugar": 3.0,
     "water": 71.9
    },
-   "shoppingTile": true,
    "source": {
     "code": "M172700",
     "name": "Sauerrahm/Schmand, mind. 20 % Fett",
@@ -75253,7 +75282,6 @@
     "sugar": 3.27,
     "water": 62.0
    },
-   "shoppingTile": true,
    "source": {
     "code": "M173800",
     "name": "Schlagsahne mind. 30 % Fett",
@@ -75546,6 +75574,7 @@
    "aisle": "DAIRY_EGGS",
    "densityGPerMl": 1.05,
    "dietClass": "VEGETARIAN",
+   "icon": "canned_food",
    "key": "bls-M182400",
    "names": [
     {
@@ -76078,7 +76107,6 @@
     "sugar": 7.55,
     "water": 83.2
    },
-   "shoppingTile": true,
    "source": {
     "code": "M206300",
     "name": "Milchmischgetränk 3,5 % Fett, mit Kakao/Schokolade, gesüßt",
@@ -78141,6 +78169,7 @@
   {
    "aisle": "DAIRY_EGGS",
    "dietClass": "VEGETARIAN",
+   "icon": "cheese_wedge",
    "key": "bls-M303600",
    "names": [
     {
@@ -78237,6 +78266,7 @@
   {
    "aisle": "DAIRY_EGGS",
    "dietClass": "VEGETARIAN",
+   "icon": "cheese_wedge",
    "key": "bls-M304600",
    "names": [
     {
@@ -78389,7 +78419,6 @@
     "sugar": 0.056,
     "water": 30.544
    },
-   "shoppingTile": true,
    "source": {
     "code": "M306400",
     "name": "Parmesan mind. 30 % Fett i. Tr.",
@@ -79036,7 +79065,6 @@
      "unit": "slice"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "M402600",
     "name": "Gouda 48 % Fett i. Tr.",
@@ -80298,7 +80326,6 @@
     "sugar": 0.0,
     "water": 47.2
    },
-   "shoppingTile": true,
    "source": {
     "code": "M524500",
     "name": "Halloumi Grillkäse",
@@ -80838,7 +80865,6 @@
     "sugar": 0.0,
     "water": 57.0
    },
-   "shoppingTile": true,
    "source": {
     "code": "M602600",
     "name": "Camembert mind. 45 % Fett i. Tr.",
@@ -81395,6 +81421,7 @@
   {
    "aisle": "DAIRY_EGGS",
    "dietClass": "VEGETARIAN",
+   "icon": "cheese_wedge",
    "key": "bls-M6A6800",
    "names": [
     {
@@ -81654,7 +81681,6 @@
     "sugar": 3.0,
     "water": 82.7
    },
-   "shoppingTile": true,
    "source": {
     "code": "M711100",
     "name": "Körniger Frischkäse < 10 % Fett i. Tr.",
@@ -81970,7 +81996,6 @@
      "unit": "pack"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "M713500",
     "name": "Speisequark Fettstufe, 40 % Fett i. Tr.",
@@ -82121,7 +82146,6 @@
     "sugar": 3.43,
     "water": 73.2
    },
-   "shoppingTile": true,
    "source": {
     "code": "M741600",
     "name": "Ricotta, Molkeneiweißkäse, mind. 45 % Fett i. Tr.",
@@ -82518,7 +82542,6 @@
     "sugar": 3.38,
     "water": 51.4
    },
-   "shoppingTile": true,
    "source": {
     "code": "M7A6800",
     "name": "Mascarpone mind. 80 % Fett i. Tr.",
@@ -82664,6 +82687,7 @@
   {
    "aisle": "DAIRY_EGGS",
    "dietClass": "VEGETARIAN",
+   "icon": "cheese_wedge",
    "key": "bls-M810600",
    "names": [
     {
@@ -82927,7 +82951,6 @@
      "unit": "pack"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "M820600",
     "name": "Frischkäsezubereitung Natur, mind. 45 % Fett i. Tr.",
@@ -84180,6 +84203,7 @@
   {
    "aisle": "BEVERAGES",
    "dietClass": "VEGAN",
+   "icon": "cup_with_straw",
    "key": "bls-N019000",
    "names": [
     {
@@ -84193,9 +84217,19 @@
      "name": "Pfirsichgeschmack, gesüßt"
     },
     {
+     "display": false,
+     "language": "de",
+     "name": "Eistee"
+    },
+    {
      "display": true,
      "language": "en",
      "name": "Iced tea lemon-peach-flavoured, sweetened"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "iced tea"
     }
    ],
    "nutrients": {
@@ -84363,7 +84397,6 @@
      "unit": "portion"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "N110000",
     "name": "Trinkwasser",
@@ -84374,6 +84407,7 @@
    "aisle": "BEVERAGES",
    "densityGPerMl": 1.002,
    "dietClass": "VEGAN",
+   "icon": "potable_water",
    "key": "bls-N120000",
    "names": [
     {
@@ -84382,9 +84416,34 @@
      "name": "Natürliches Mineralwasser"
     },
     {
+     "display": false,
+     "language": "de",
+     "name": "Mineralwasser"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Sprudel"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Sprudelwasser"
+    },
+    {
      "display": true,
      "language": "en",
      "name": "Natural mineral water"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "mineral water"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "sparkling water"
     }
    ],
    "negligible": true,
@@ -84824,6 +84883,7 @@
   {
    "aisle": "BEVERAGES",
    "dietClass": "VEGAN",
+   "icon": "beverage_box",
    "key": "bls-N256000",
    "names": [
     {
@@ -84832,9 +84892,24 @@
      "name": "Fruchtsaftschorle Apfel"
     },
     {
+     "display": false,
+     "language": "de",
+     "name": "Apfelschorle"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Apfelsaftschorle"
+    },
+    {
      "display": true,
      "language": "en",
      "name": "Apple juice spritzer"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "apple spritzer"
     }
    ],
    "nutrients": {
@@ -85754,7 +85829,6 @@
     "sugar": 10.3,
     "water": 90.29
    },
-   "shoppingTile": true,
    "source": {
     "code": "N330000",
     "name": "Colagetränk koffeinhaltig",
@@ -85945,7 +86019,6 @@
     "sugar": 0.0,
     "water": 98.2
    },
-   "shoppingTile": true,
    "source": {
     "code": "N410100",
     "name": "Kaffee (Getränk)",
@@ -87472,7 +87545,6 @@
     "sugar": 0.0,
     "water": 99.5
    },
-   "shoppingTile": true,
    "source": {
     "code": "N630000",
     "name": "Schwarztee (Getränk)",
@@ -88467,7 +88539,6 @@
     "sugar": 0.108,
     "water": 92.47
    },
-   "shoppingTile": true,
    "source": {
     "code": "P163000",
     "name": "Pilsner Bier",
@@ -89204,6 +89275,7 @@
   {
    "aisle": "BEVERAGES",
    "dietClass": "VEGAN",
+   "icon": "wine_glass",
    "key": "bls-P210000",
    "names": [
     {
@@ -89920,7 +89992,6 @@
      "unit": "bottle"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "P2A3000",
     "name": "Rotwein trocken",
@@ -89976,7 +90047,6 @@
     "sugar": 2.08,
     "water": 93.1
    },
-   "shoppingTile": true,
    "source": {
     "code": "P2A6000",
     "name": "Qualitätsschaumwein, Sekt, trocken",
@@ -91258,7 +91328,6 @@
     "sugar": 0.0,
     "water": 66.6
    },
-   "shoppingTile": true,
    "source": {
     "code": "P712000",
     "name": "Wodka",
@@ -92458,7 +92527,6 @@
     "sugar": 0.0,
     "water": 0.1065
    },
-   "shoppingTile": true,
    "source": {
     "code": "Q120000",
     "name": "Olivenöl",
@@ -92729,7 +92797,6 @@
     "sugar": 0.0,
     "water": 0.0
    },
-   "shoppingTile": true,
    "source": {
     "code": "Q180000",
     "name": "Rapsöl/Rüböl",
@@ -93210,7 +93277,6 @@
      "unit": "pack"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "Q400000",
     "name": "Pflanzenmargarine Vollfett, angereichert mit Vitaminen",
@@ -94063,7 +94129,6 @@
      "unit": "pack"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "Q630000",
     "name": "Süßrahmbutter",
@@ -94676,6 +94741,11 @@
      "display": true,
      "language": "en",
      "name": "Tahini made from sesame seeds"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "tahini"
     }
    ],
    "nutrients": {
@@ -94690,7 +94760,6 @@
     "sugar": 0.3,
     "water": 3.0
    },
-   "shoppingTile": true,
    "source": {
     "code": "Q901000",
     "name": "Tahin (Sesammus)",
@@ -94863,7 +94932,6 @@
     "sugar": 2.3,
     "water": 11.7
    },
-   "shoppingTile": true,
    "source": {
     "code": "Q991000",
     "name": "Mayonnaise (Fertigprodukt)",
@@ -95038,7 +95106,6 @@
     "sugar": 0.0,
     "water": 0.1
    },
-   "shoppingTile": true,
    "source": {
     "code": "R111000",
     "name": "Speisesalz/Siedesalz/Tafelsalz",
@@ -95409,7 +95476,6 @@
     "sugar": 0.0,
     "water": 93.0
    },
-   "shoppingTile": true,
    "source": {
     "code": "R121000",
     "name": "Weinessig",
@@ -95619,7 +95685,6 @@
     "sugar": 2.76,
     "water": 76.0
    },
-   "shoppingTile": true,
    "source": {
     "code": "R132000",
     "name": "Senf mittelscharf",
@@ -95767,7 +95832,6 @@
     "sugar": 20.82,
     "water": 72.7
    },
-   "shoppingTile": true,
    "source": {
     "code": "R141100",
     "name": "Tomatenketchup",
@@ -95867,7 +95931,6 @@
     "sugar": 4.89,
     "water": 70.0
    },
-   "shoppingTile": true,
    "source": {
     "code": "R143000",
     "name": "Sojasauce/Sojasoße",
@@ -96063,7 +96126,6 @@
      "unit": "tube"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "R160000",
     "name": "Tomatenmark",
@@ -96074,6 +96136,7 @@
    "aisle": "CANNED_JARS",
    "densityGPerMl": 1.042,
    "dietClass": "VEGAN",
+   "icon": "canned_food",
    "key": "bls-R161200",
    "names": [
     {
@@ -96200,7 +96263,6 @@
      "unit": "slice"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "R211200",
     "name": "Ingwer/Ingwerwurzel, roh",
@@ -96312,7 +96374,6 @@
     "sugar": 0.67,
     "water": 9.9
    },
-   "shoppingTile": true,
    "source": {
     "code": "R258100",
     "name": "Pfeffer schwarz, getrocknet",
@@ -96440,7 +96501,6 @@
      "unit": "pack"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "R421100",
     "name": "Backpulver",
@@ -96716,7 +96776,6 @@
      "unit": "pack"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "R459000",
     "name": "Backhefe frisch (Frischbackhefe)",
@@ -96815,7 +96874,6 @@
      "unit": "pack"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "R468000",
     "name": "Gelatine/Speisegelatine",
@@ -96873,7 +96931,6 @@
      "unit": "pack"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "R481100",
     "name": "Puddingpulver Vanille, ungezuckert",
@@ -97427,7 +97484,6 @@
     "sugar": 17.59,
     "water": 5.89
    },
-   "shoppingTile": true,
    "source": {
     "code": "R910000",
     "name": "Bratensoße Instantpulver",
@@ -97939,7 +97995,6 @@
     "sugar": 8.537,
     "water": 87.9
    },
-   "shoppingTile": true,
    "source": {
     "code": "R942000",
     "name": "Tortenguss klar (zubereitet mit Wasser und Zucker) für Gebäck/Torten",
@@ -98992,7 +99047,6 @@
     "sugar": 100.0,
     "water": 0.0
    },
-   "shoppingTile": true,
    "source": {
     "code": "S111000",
     "name": "Zucker weiß (Raffinadezucker/Weißzucker)",
@@ -99043,7 +99097,6 @@
     "sugar": 100.0,
     "water": 0.0
    },
-   "shoppingTile": true,
    "source": {
     "code": "S111100",
     "name": "Puderzucker",
@@ -99159,7 +99212,6 @@
      "unit": "piece"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "S114000",
     "name": "Vanillezucker",
@@ -99169,12 +99221,18 @@
   {
    "aisle": "BAKING",
    "dietClass": "VEGETARIAN",
+   "icon": "candy",
    "key": "bls-S115100",
    "names": [
     {
      "display": true,
      "language": "de",
      "name": "Traubenzucker (Dextrose/Glukose)"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Traubenzucker"
     },
     {
      "display": true,
@@ -99344,7 +99402,6 @@
      "unit": "pack"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "S120000",
     "name": "Honig",
@@ -99557,7 +99614,6 @@
     "sugar": 56.3,
     "water": 40.7
    },
-   "shoppingTile": true,
    "source": {
     "code": "S132000",
     "name": "Konfitüre extra",
@@ -99941,7 +99997,6 @@
     "sugar": 53.07,
     "water": 0.7
    },
-   "shoppingTile": true,
    "source": {
     "code": "S145000",
     "name": "Nuss-Nougat-Creme",
@@ -100019,7 +100074,6 @@
      "unit": "portion"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "S151100",
     "name": "Ahornsirup",
@@ -100664,6 +100718,7 @@
   {
    "aisle": "FROZEN",
    "dietClass": "VEGETARIAN",
+   "icon": "soft_ice_cream",
    "key": "bls-S210000",
    "names": [
     {
@@ -100677,9 +100732,29 @@
      "name": "Kremeis"
     },
     {
+     "display": false,
+     "language": "de",
+     "name": "Eis"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Speiseeis"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Eiscreme"
+    },
+    {
      "display": true,
      "language": "en",
      "name": "Ice cream (containing egg yolk)"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "ice cream"
     }
    ],
    "nutrients": {
@@ -101767,7 +101842,6 @@
      "unit": "portion"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "S241000",
     "name": "Vanilleeis",
@@ -103464,6 +103538,7 @@
   {
    "aisle": "SWEETS_SNACKS",
    "dietClass": "VEGETARIAN",
+   "icon": "candy",
    "key": "bls-S361000",
    "names": [
     {
@@ -103472,9 +103547,34 @@
      "name": "Fruchtgummi (Gummibonbon)"
     },
     {
+     "display": false,
+     "language": "de",
+     "name": "Gummibärchen"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Fruchtgummi"
+    },
+    {
+     "display": false,
+     "language": "de",
+     "name": "Weingummi"
+    },
+    {
      "display": true,
      "language": "en",
      "name": "Gum drops with fruit essence"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "gummy bears"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "gummies"
     }
    ],
    "nutrients": {
@@ -103564,7 +103664,6 @@
     "sugar": 78.8,
     "water": 6.4
    },
-   "shoppingTile": true,
    "source": {
     "code": "S380000",
     "name": "Komprimate (Pastillen, Presslinge)",
@@ -103633,7 +103732,6 @@
     "sugar": 68.539,
     "water": 5.7
    },
-   "shoppingTile": true,
    "source": {
     "code": "S420000",
     "name": "Marzipan",
@@ -103846,6 +103944,11 @@
      "display": false,
      "language": "en",
      "name": "sugar sprinkles"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "sprinkles"
     }
    ],
    "nutrients": {
@@ -103860,7 +103963,6 @@
     "sugar": 78.8,
     "water": 6.4
    },
-   "shoppingTile": true,
    "source": {
     "code": "S462000",
     "name": "Zuckerperlen (Liebesperlen)",
@@ -104305,7 +104407,6 @@
     "sugar": 55.354,
     "water": 0.38
    },
-   "shoppingTile": true,
    "source": {
     "code": "S500000",
     "name": "Schokolade",
@@ -105418,7 +105519,6 @@
     "sugar": 46.9,
     "water": 0.82
    },
-   "shoppingTile": true,
    "source": {
     "code": "S560000",
     "name": "Zartbitter-/Halbbitterschokolade",
@@ -107616,6 +107716,7 @@
   {
    "aisle": "SWEETS_SNACKS",
    "dietClass": "VEGETARIAN",
+   "icon": "chocolate_bar",
    "key": "bls-S660000",
    "names": [
     {
@@ -107957,7 +108058,6 @@
     "sugar": 0.9,
     "water": 4.62
    },
-   "shoppingTile": true,
    "source": {
     "code": "S711000",
     "name": "Kakaopulver schwach entölt",
@@ -108260,7 +108360,6 @@
     "sugar": 18.7,
     "water": 8.6
    },
-   "shoppingTile": true,
    "source": {
     "code": "S830000",
     "name": "Müsli-Riegel",
@@ -108282,6 +108381,11 @@
      "display": true,
      "language": "en",
      "name": "Common cuttlefish"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "cuttlefish"
     }
    ],
    "nutrients": {
@@ -108296,7 +108400,6 @@
     "sugar": 0.0,
     "water": 81.0
    },
-   "shoppingTile": true,
    "source": {
     "code": "T020100",
     "name": "Tintenfisch roh",
@@ -110347,7 +110450,6 @@
     "sugar": 0.0,
     "water": 68.0
    },
-   "shoppingTile": true,
    "source": {
     "code": "T107100",
     "name": "Makrele roh",
@@ -110766,7 +110868,6 @@
     "sugar": 0.0,
     "water": 70.0
    },
-   "shoppingTile": true,
    "source": {
     "code": "T121100",
     "name": "Thunfisch roh",
@@ -110993,6 +111094,7 @@
    "aisle": "CANNED_JARS",
    "densityGPerMl": 0.608,
    "dietClass": "MEAT",
+   "icon": "canned_food",
    "key": "bls-T121702",
    "names": [
     {
@@ -111052,6 +111154,7 @@
   {
    "aisle": "CANNED_JARS",
    "dietClass": "MEAT",
+   "icon": "canned_food",
    "key": "bls-T121902",
    "names": [
     {
@@ -111776,7 +111879,6 @@
      "unit": "piece"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "T204100",
     "name": "Dorsch/Kabeljau, roh",
@@ -115463,7 +115565,6 @@
      "unit": "piece"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "T410100",
     "name": "Lachs roh",
@@ -115654,6 +115755,11 @@
      "display": true,
      "language": "en",
      "name": "Salmon smoked"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "smoked salmon"
     }
    ],
    "nutrients": {
@@ -115668,7 +115774,6 @@
     "sugar": 0.16,
     "water": 66.9
    },
-   "shoppingTile": true,
    "source": {
     "code": "T410600",
     "name": "Lachs geräuchert (Räucherlachs)",
@@ -116796,6 +116901,7 @@
   {
    "aisle": "MEAT_FISH",
    "dietClass": "MEAT",
+   "icon": "fish",
    "key": "bls-T422100",
    "names": [
     {
@@ -121043,7 +121149,6 @@
      "unit": "piece"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "T753100",
     "name": "Garnele/Granat/Krabbe, roh",
@@ -121792,7 +121897,6 @@
     "sugar": 0.0,
     "water": 83.2
    },
-   "shoppingTile": true,
    "source": {
     "code": "T792100",
     "name": "Miesmuschel roh",
@@ -123515,7 +123619,6 @@
     "sugar": 0.96,
     "water": 63.2
    },
-   "shoppingTile": true,
    "source": {
     "code": "T930100",
     "name": "Fischstäbchen (Alaska-Seelachs) paniert, tiefgefroren",
@@ -124335,6 +124438,7 @@
   {
    "aisle": "MEAT_FISH",
    "dietClass": "MEAT",
+   "icon": "cut_of_meat",
    "key": "bls-U010100",
    "names": [
     {
@@ -124809,6 +124913,7 @@
   {
    "aisle": "MEAT_FISH",
    "dietClass": "MEAT",
+   "icon": "cut_of_meat",
    "key": "bls-U020100",
    "names": [
     {
@@ -125827,7 +125932,6 @@
     "sugar": 0.0,
     "water": 61.96
    },
-   "shoppingTile": true,
    "source": {
     "code": "U050100",
     "name": "Rind/Schwein, Hackfleisch gemischt, roh",
@@ -127253,6 +127357,7 @@
   {
    "aisle": "MEAT_FISH",
    "dietClass": "MEAT",
+   "icon": "cut_of_meat",
    "key": "bls-U131100",
    "names": [
     {
@@ -127648,7 +127753,6 @@
     "sugar": 0.0,
     "water": 73.1
    },
-   "shoppingTile": true,
    "source": {
     "code": "U151100",
     "name": "Rind Gulasch (Bug) roh",
@@ -128334,7 +128438,6 @@
     "sugar": 0.043,
     "water": 74.11
    },
-   "shoppingTile": true,
    "source": {
     "code": "U201000",
     "name": "Rind Muskelfleisch, roh",
@@ -128832,6 +128935,7 @@
   {
    "aisle": "MEAT_FISH",
    "dietClass": "MEAT",
+   "icon": "cut_of_meat",
    "key": "bls-U221100",
    "names": [
     {
@@ -131731,7 +131835,6 @@
     "sugar": 0.0,
     "water": 76.4
    },
-   "shoppingTile": true,
    "source": {
     "code": "U401000",
     "name": "Kalb Muskelfleisch, roh",
@@ -134819,6 +134922,7 @@
   {
    "aisle": "MEAT_FISH",
    "dietClass": "MEAT",
+   "icon": "cut_of_meat",
    "key": "bls-U541100",
    "names": [
     {
@@ -136120,7 +136224,6 @@
     "sugar": 0.0,
     "water": 74.7
    },
-   "shoppingTile": true,
    "source": {
     "code": "U601000",
     "name": "Schwein Muskelfleisch, roh",
@@ -136541,6 +136644,7 @@
   {
    "aisle": "MEAT_FISH",
    "dietClass": "MEAT",
+   "icon": "cut_of_meat",
    "key": "bls-U611100",
    "names": [
     {
@@ -137449,6 +137553,7 @@
   {
    "aisle": "MEAT_FISH",
    "dietClass": "MEAT",
+   "icon": "cut_of_meat",
    "key": "bls-U642100",
    "names": [
     {
@@ -138441,7 +138546,6 @@
     "sugar": 0.11,
     "water": 62.4
    },
-   "shoppingTile": true,
    "source": {
     "code": "U681700",
     "name": "Schwein Rohschinken, mager, Rohpökelware, geräuchert",
@@ -142875,7 +142979,6 @@
      "unit": "portion"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "U867100",
     "name": "Lamm Bug/Schulter, roh",
@@ -145162,7 +145265,6 @@
      "unit": "can"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "U985200",
     "name": "Rindfleischbrühe Konserve",
@@ -148689,7 +148791,6 @@
      "unit": "piece"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "V416100",
     "name": "Hähnchen Brustfilet, roh",
@@ -150445,7 +150546,6 @@
     "sugar": 0.0,
     "water": 63.7
    },
-   "shoppingTile": true,
    "source": {
     "code": "V464100",
     "name": "Ente Fleisch, mit Haut, roh",
@@ -153103,7 +153203,6 @@
      "unit": "slice"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "V486100",
     "name": "Pute Brust, ohne Haut, roh",
@@ -154153,6 +154252,7 @@
   {
    "aisle": "MEAT_FISH",
    "dietClass": "MEAT",
+   "icon": "poultry_leg",
    "key": "bls-V4A5100",
    "names": [
     {
@@ -160120,7 +160220,6 @@
      "unit": "portion"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "W140000",
     "name": "Salami",
@@ -161723,6 +161822,7 @@
   {
    "aisle": "DELI",
    "dietClass": "MEAT",
+   "icon": "hot_dog",
    "key": "bls-W211100",
    "names": [
     {
@@ -161783,6 +161883,7 @@
   {
    "aisle": "DELI",
    "dietClass": "MEAT",
+   "icon": "hot_dog",
    "key": "bls-W211200",
    "names": [
     {
@@ -162123,6 +162224,11 @@
      "display": false,
      "language": "en",
      "name": "Servela sausage, small"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "knackwurst"
     }
    ],
    "nutrients": {
@@ -162137,7 +162243,6 @@
     "sugar": 0.0,
     "water": 60.9
    },
-   "shoppingTile": true,
    "source": {
     "code": "W215000",
     "name": "Knackwurst/Servela/Würstchen",
@@ -162785,7 +162890,6 @@
      "unit": "piece"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "W222600",
     "name": "Rostbratwurst",
@@ -163247,7 +163351,6 @@
     "sugar": 0.24,
     "water": 59.8
    },
-   "shoppingTile": true,
    "source": {
     "code": "W231100",
     "name": "Lyoner/Lyoner Wurst",
@@ -163547,6 +163650,7 @@
   {
    "aisle": "DELI",
    "dietClass": "MEAT",
+   "icon": "hot_dog",
    "key": "bls-W234000",
    "names": [
     {
@@ -166368,9 +166472,19 @@
      "name": "Gutsleberwurst"
     },
     {
+     "display": false,
+     "language": "de",
+     "name": "Leberwurst"
+    },
+    {
      "display": true,
      "language": "en",
      "name": "Liver sausage finely minced"
+    },
+    {
+     "display": false,
+     "language": "en",
+     "name": "liver sausage"
     }
    ],
    "nutrients": {
@@ -168598,6 +168712,7 @@
   {
    "aisle": "DELI",
    "dietClass": "MEAT",
+   "icon": "bacon",
    "key": "bls-W411300",
    "names": [
     {
@@ -168801,7 +168916,6 @@
      "unit": "slice"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "W415000",
     "name": "Schwein Frühstücksspeck, Rohpökelware, geräuchert",
@@ -169019,7 +169133,6 @@
      "unit": "slice"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "W424000",
     "name": "Schwein Kochschinken, Kochpökelware",
@@ -172337,7 +172450,6 @@
      "unit": "stalk"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "168573",
     "name": "Lemon grass (citronella), raw",
@@ -172410,7 +172522,6 @@
      "unit": "sprig"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "169997",
     "name": "Coriander (cilantro) leaves, raw",
@@ -172420,6 +172531,7 @@
   {
    "aisle": "OILS_SPICES_SAUCES",
    "dietClass": "VEGAN",
+   "icon": "herb",
    "key": "fdc-170917",
    "names": [
     {
@@ -172765,7 +172877,6 @@
     "sugar": 2.25,
     "water": 8.06
    },
-   "shoppingTile": true,
    "source": {
     "code": "170923",
     "name": "Spices, cumin seed",
@@ -172776,6 +172887,7 @@
    "aisle": "OILS_SPICES_SAUCES",
    "densityGPerMl": 0.41,
    "dietClass": "VEGAN",
+   "icon": "salt",
    "key": "fdc-170924",
    "names": [
     {
@@ -173688,6 +173800,7 @@
    "aisle": "OILS_SPICES_SAUCES",
    "densityGPerMl": 0.52,
    "dietClass": "VEGAN",
+   "icon": "salt",
    "key": "fdc-171320",
    "names": [
     {
@@ -173946,6 +174059,7 @@
    "aisle": "OILS_SPICES_SAUCES",
    "densityGPerMl": 0.453,
    "dietClass": "VEGAN",
+   "icon": "salt",
    "key": "fdc-171326",
    "names": [
     {
@@ -173997,6 +174111,7 @@
    "aisle": "OILS_SPICES_SAUCES",
    "densityGPerMl": 0.28,
    "dietClass": "VEGAN",
+   "icon": "herb",
    "key": "fdc-171328",
    "names": [
     {
@@ -174128,7 +174243,6 @@
     "sugar": 10.3,
     "water": 11.2
    },
-   "shoppingTile": true,
    "source": {
     "code": "171329",
     "name": "Spices, paprika",
@@ -174316,7 +174430,6 @@
     "sugar": 6.33,
     "water": 39.0
    },
-   "shoppingTile": true,
    "source": {
     "code": "171579",
     "name": "Sauce, pesto, ready-to-serve, refrigerated",
@@ -174419,7 +174532,6 @@
     "sugar": 10.0,
     "water": 78.5
    },
-   "shoppingTile": true,
    "source": {
     "code": "171610",
     "name": "Sauce, worcestershire",
@@ -174584,7 +174696,6 @@
      "unit": "sprig"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "172233",
     "name": "Dill weed, fresh",
@@ -174888,7 +174999,6 @@
     "sugar": null,
     "water": 65.1
    },
-   "shoppingTile": true,
    "source": {
     "code": "173470",
     "name": "Thyme, fresh",
@@ -174935,7 +175045,6 @@
     "sugar": 12.6,
     "water": 52.6
    },
-   "shoppingTile": true,
    "source": {
     "code": "173471",
     "name": "Vanilla extract",
@@ -174987,7 +175096,6 @@
     "sugar": null,
     "water": 67.8
    },
-   "shoppingTile": true,
    "source": {
     "code": "173473",
     "name": "Rosemary, fresh",
@@ -175109,7 +175217,6 @@
      "unit": "leaf"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "173475",
     "name": "Spearmint, fresh",
@@ -175271,7 +175378,6 @@
     "sugar": 3.64,
     "water": 71.1
    },
-   "shoppingTile": true,
    "source": {
     "code": "174531",
     "name": "Sauce, fish, ready-to-serve",
@@ -175379,7 +175485,6 @@
      "unit": "slice"
     }
    ],
-   "shoppingTile": true,
    "source": {
     "code": "174913",
     "name": "Bread, Italian",
@@ -175814,6 +175919,11 @@
      "name": "Apfelmark ungesüßt"
     },
     {
+     "display": false,
+     "language": "de",
+     "name": "Apfelmus"
+    },
+    {
      "display": true,
      "language": "en",
      "name": "Unsweetened applesauce"
@@ -175836,7 +175946,6 @@
     "sugar": 9.66,
     "water": 87.1
    },
-   "shoppingTile": true,
    "source": {
     "code": "2346414",
     "name": "Applesauce, unsweetened, with added vitamin C",
@@ -176413,7 +176522,6 @@
     "sugar": 3.52,
     "water": 90.2
    },
-   "shoppingTile": true,
    "source": {
     "code": "2685579",
     "name": "Tomato, sauce, canned, with salt added",

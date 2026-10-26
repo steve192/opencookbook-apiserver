@@ -1,6 +1,7 @@
 # Bases a shopping list offers as a tile to tap. A tile shows its food's icon (food-icons.yaml), or its
 # aisle's when the food has none. Bases only; variants have no names to show.
 
+- bls-B101000         # Vollkornbrot
 - bls-B271000         # Roggenmischbrot
 - bls-B314000         # Weizentoastbrot
 - bls-B511000         # Weizenbrötchen
@@ -10,34 +11,47 @@
 - bls-B783012         # Weizentortilla
 - bls-B821000         # Paniermehl
 - bls-C118000         # Quinoa weiß
+- bls-C119100         # Bulgur (Hartweizen)
 - bls-C119200         # Couscous (Hartweizen)
 - bls-C133000         # Hafer Flocken
+- bls-C211000         # Weizen Vollkornmehl
 - bls-C214100         # Weizen Mehl, Type 405
 - bls-C218000         # Weichweizen Grieß
+- bls-C223200         # Roggen Mehl, Type 997
+- bls-C234000         # Dinkel Mehl, Type 630
 - bls-C346000         # Mais Grieß
+- bls-C351000         # Reis unpoliert
 - bls-C352000         # Reis poliert
 - bls-C446000         # Mais Stärke
 - bls-C512000         # Müsli Basismischung (ohne Trockenfrüchte) ungesüßt
 - bls-C515400         # Cornflakes ungesüßt
 - bls-C533000         # Popcorn ungesüßt
+- bls-C546000         # Tortillachips (Nachos)
 - bls-C660000         # Haferdrink ungesüßt
 - bls-D032000         # Nährzwieback
 - bls-D041000         # Erdnussflips
 - bls-D050000         # Cracker
+- bls-D064000         # Salzbrezeln/Salzstangen (Laugendauergebäck)
 - bls-D072000         # Blätterteig eifrei
+- bls-D079000         # Pizzateig (mit Hefe)
 - bls-D630400         # Butterkekse/Butterplätzchen (Mürbeteig)
 - bls-D771600         # Croissant (Hefeblätterteig/Plunderteig)
 - bls-E111100         # Hühnerei
 - bls-E401000         # Teigwaren eifrei
 - bls-E432000         # Eierteigwaren
 - bls-E438000         # Eier-Frischteigwaren
+- bls-E530000         # Vollkorneierteigwaren
+- bls-E605000         # Kartoffel-Schupfnudeln
 - bls-E606000         # Semmelknödel
 - bls-F081100         # Rhabarber
 - bls-F110100         # Apfel
+- bls-F110600         # Apfelsaft
 - bls-F130100         # Birne
 - bls-F201100         # Aprikose
+- bls-F202100         # Nektarine
 - bls-F203100         # Pfirsich
 - bls-F211100         # Süßkirsche
+- bls-F212100         # Sauerkirsche
 - bls-F220100         # Pflaume
 - bls-F301100         # Erdbeere
 - bls-F302100         # Himbeere
@@ -50,6 +64,7 @@
 - bls-F503100         # Banane
 - bls-F505100         # Feige
 - bls-F506100         # Granatapfel
+- bls-F507100         # Kaki
 - bls-F508100         # Maracuja
 - bls-F514100         # Kiwi
 - bls-F515100         # Litschi
@@ -57,20 +72,24 @@
 - bls-F517100         # Papaya
 - bls-F533100         # Honigmelone
 - bls-F535100         # Wassermelone
+- bls-F552100         # Kapstachelbeere
 - bls-F601100         # Zitrone
 - bls-F602100         # Limette
 - bls-F603100         # Orange
 - bls-F603600         # Orangensaft
 - bls-F604100         # Grapefruit
 - bls-F606100         # Mandarine
+- bls-F607100         # Clementine
 - bls-F840100         # Rosine/Sultanine (Weinbeere getrocknet)
 - bls-G012902         # Kapern gesäuert, abgetropft
 - bls-G061000         # Basilikum
 - bls-G081100         # Schnittlauch
 - bls-G104100         # Feldsalat
 - bls-G105100         # Kopfsalat
+- bls-G107100         # Römischer Salat
 - bls-G130100         # Rucola
 - bls-G211100         # Spinat
+- bls-G211200         # Spinat tiefgefroren
 - bls-G220100         # Bleichsellerie
 - bls-G230100         # Mangold
 - bls-G250100         # Petersilienblatt
@@ -94,8 +113,11 @@
 - bls-G510100         # Aubergine
 - bls-G520100         # Gurke
 - bls-G520802         # Gurke gesäuert (Gewürzgurke) abgetropft
+- bls-G541100         # Gemüsepaprika grün
+- bls-G542100         # Gemüsepaprika gelb
 - bls-G543100         # Gemüsepaprika rot
 - bls-G554100         # Pfefferschote rot
+- bls-G560400         # Tomate getrocknet
 - bls-G561100         # Tomate
 - bls-G568900         # Tomate geschält, Konserve
 - bls-G570100         # Zuckermais
@@ -107,56 +129,89 @@
 - bls-G660100         # Knollensellerie
 - bls-G691100         # Radieschen
 - bls-G710100         # Bohne grün
+- bls-G750100         # Sojabohne unreif (Edamame)
 - bls-G760100         # Erbse grün
 - bls-G760200         # Erbse grün, tiefgefroren
 - bls-G761100         # Zuckererbse
+- bls-G898400         # Ajvar Konserve
+- bls-H030400         # Glasnudeln aus Mungbohnenstärke
+- bls-H110600         # Erdnuss
 - bls-H120100         # Walnuss
+- bls-H130100         # Haselnuss
 - bls-H130400         # Haselnuss gemahlen
 - bls-H150100         # Kokos Fruchtfleisch
 - bls-H150400         # Kokos Fruchtfleisch, geraspelt, getrocknet
 - bls-H154000         # Kokosmilch
 - bls-H170100         # Cashewkern
 - bls-H210100         # Mandel süß
+- bls-H210400         # Mandel süß, gemahlen
+- bls-H250100         # Pistazie
 - bls-H310100         # Kürbiskern
+- bls-H320100         # Pinienkern
+- bls-H420100         # Sesam
 - bls-H510802         # Oliven grün, gesäuert, abgetropft
 - bls-H610100         # Bambussprossen
+- bls-H620100         # Sojabohnensprossen
 - bls-H650100         # Mungbohnensprossen
 - bls-H720902         # Kichererbse reif, Konserve, abgetropft
 - bls-H725100         # Linse reif
+- bls-H730000         # Linse rot reif
+- bls-H739400         # Gartenbohne reif
 - bls-H742902         # Kidneybohne reif, Konserve, abgetropft
+- bls-H765000         # Sojaschnetzel, texturiert, trocken
 - bls-H800000         # Mandeldrink ungesüßt
+- bls-H810000         # Studentenfutter
 - bls-H841100         # Sojadrink ungesüßt
 - bls-H861000         # Tofu
 - bls-H880200         # Erdnussbutter
 - bls-H910500         # Vegetarische Wiener Würstchen
+- bls-H960000         # Hummus
 - bls-K110100         # Kartoffel geschält
 - bls-K130200         # Pommes frites tiefgefroren
 - bls-K270000         # Gnocchi
+- bls-K280100         # Kartoffelchips, diverse Sorten
 - bls-K420100         # Batate
 - bls-K701100         # Champignon
 - bls-K740100         # Austernpilz
+- bls-K762400         # Hefe Flocken
 - bls-M012200         # Feta mind. 45 % Fett i. Tr.
 - bls-M032100         # Mozzarella mind. 45 % Fett i. Tr.
+- bls-M111200         # Milch fettarm, frisch, 1,5 % Fett, pasteurisiert
 - bls-M111300         # Vollmilch frisch, 3,5 % Fett, pasteurisiert
+- bls-M113300         # H-Vollmilch 3,5 % Fett, ultrahocherhitzt
 - bls-M141300         # Joghurt mild, mind. 3,5 % Fett
 - bls-M150000         # Buttermilch
+- bls-M171500         # Kaffeesahne mind. 10 % Fett
+- bls-M172500         # Sauerrahm, mind. 10 % Fett
 - bls-M172700         # Sauerrahm, mind. 20 % Fett
+- bls-M172900         # Sauerrahm, 40 % Fett
 - bls-M173800         # Schlagsahne mind. 30 % Fett
+- bls-M182400         # Kondensmilch mind. 7,5 % Fett
 - bls-M206300         # Milchmischgetränk 3,5 % Fett, mit Kakao/Schokolade, gesüßt
+- bls-M303600         # Chester (Cheddar) mind. 45 % Fett i. Tr.
+- bls-M304600         # Emmentaler mind. 45 % Fett i. Tr.
 - bls-M306400         # Parmesan mind. 30 % Fett i. Tr.
 - bls-M402600         # Gouda 48 % Fett i. Tr.
 - bls-M524500         # Halloumi Grillkäse
 - bls-M602600         # Camembert mind. 45 % Fett i. Tr.
+- bls-M6A6800         # Salzlakenkäse aus Schafmilch, mind. 45 % Fett i. Tr.
+- bls-M710100         # Skyr, Frischkäse < 10 % Fett i. Tr.
 - bls-M711100         # Körniger Frischkäse < 10 % Fett i. Tr.
+- bls-M713100         # Speisequark Magerstufe, Magerquark < 10 % Fett i. Tr.
 - bls-M713500         # Speisequark Fettstufe, 40 % Fett i. Tr.
 - bls-M741600         # Ricotta, Molkeneiweißkäse, mind. 45 % Fett i. Tr.
 - bls-M7A6800         # Mascarpone mind. 80 % Fett i. Tr.
+- bls-M810600         # Schmelzkäsezubereitung 45 - 52 % Fett i. Tr.
 - bls-M820600         # Frischkäsezubereitung Natur, mind. 45 % Fett i. Tr.
+- bls-N019000         # Eistee mit Zitronen-, gesüßt
 - bls-N110000         # Trinkwasser
+- bls-N120000         # Natürliches Mineralwasser
+- bls-N256000         # Fruchtsaftschorle Apfel
 - bls-N330000         # Colagetränk koffeinhaltig
 - bls-N410100         # Kaffee (Getränk)
 - bls-N630000         # Schwarztee (Getränk)
 - bls-P163000         # Pilsner Bier
+- bls-P210000         # Weißwein trocken
 - bls-P2A3000         # Rotwein trocken
 - bls-P2A6000         # Qualitätsschaumwein, Sekt, trocken
 - bls-P712000         # Wodka
@@ -164,66 +219,99 @@
 - bls-Q180000         # Rapsöl
 - bls-Q400000         # Pflanzenmargarine Vollfett, angereichert mit Vitaminen
 - bls-Q630000         # Süßrahmbutter
+- bls-Q683000         # Butterschmalz
 - bls-Q901000         # Tahin (Sesammus)
 - bls-Q991000         # Mayonnaise (Fertigprodukt)
 - bls-R111000         # Speisesalz
 - bls-R121000         # Weinessig
+- bls-R125000         # Balsamicoessig
 - bls-R132000         # Senf mittelscharf
 - bls-R141100         # Tomatenketchup
 - bls-R143000         # Sojasauce
 - bls-R160000         # Tomatenmark
+- bls-R161200         # Tomaten passiert
 - bls-R211200         # Ingwer
 - bls-R258100         # Pfeffer schwarz, getrocknet
 - bls-R421100         # Backpulver
+- bls-R434000         # Sahnestandmittel
+- bls-R458000         # Backhefe getrocknet (Trockenbackhefe)
 - bls-R459000         # Backhefe frisch (Frischbackhefe)
 - bls-R468000         # Gelatine
 - bls-R481100         # Puddingpulver Vanille, ungezuckert
+- bls-R821000         # Gemüse Bouillon/Brühe/Suppe (Brühwürfel, Pulver)
 - bls-R910000         # Bratensoße Instantpulver
 - bls-R942000         # Tortenguss klar (zubereitet mit Wasser und Zucker) für Gebäck/Torten
 - bls-S111000         # Zucker weiß (Raffinadezucker/Weißzucker)
 - bls-S111100         # Puderzucker
+- bls-S112000         # Zucker braun (Kandisfarin/Rohzucker)
 - bls-S114000         # Vanillezucker
+- bls-S115100         # Traubenzucker (Dextrose/Glukose)
 - bls-S120000         # Honig
 - bls-S132000         # Konfitüre extra
 - bls-S145000         # Nuss-Nougat-Creme
 - bls-S151100         # Ahornsirup
+- bls-S171000         # Tafelsüße Flüssigsüße (Süßstoffe: Cyclamat, Saccharin)
+- bls-S210000         # Cremeeis
 - bls-S241000         # Vanilleeis
-- bls-S380000         # Komprimate (Pastillen, Presslinge)
+- bls-S361000         # Fruchtgummi (Gummibonbon)
 - bls-S420000         # Marzipan
 - bls-S462000         # Zuckerperlen (Liebesperlen)
 - bls-S500000         # Schokolade
 - bls-S560000         # Halbbitterschokolade
+- bls-S660000         # Schokoladenstreusel
 - bls-S711000         # Kakaopulver schwach entölt
 - bls-S830000         # Müsli-Riegel
 - bls-T020100         # Tintenfisch
 - bls-T107100         # Makrele
 - bls-T121100         # Thunfisch
+- bls-T121702         # Thunfisch in Öl, Konserve, abgetropft
+- bls-T121902         # Thunfisch im eigenen Saft, Konserve, abgetropft
 - bls-T204100         # Dorsch
 - bls-T410100         # Lachs
 - bls-T410600         # Lachs geräuchert (Räucherlachs)
+- bls-T422100         # Forelle
 - bls-T753100         # Garnele
 - bls-T792100         # Miesmuschel
 - bls-T930100         # Fischstäbchen (Alaska-Seelachs) paniert, tiefgefroren
+- bls-U010100         # Rind Hackfleisch
+- bls-U020100         # Schwein Hackfleisch
 - bls-U050100         # Hackfleisch gemischt
+- bls-U131100         # Rind Steak (Rücken)
 - bls-U151100         # Rind Gulasch (Bug)
 - bls-U201000         # Rind Muskelfleisch
+- bls-U221100         # Rind Roastbeef (Rücken)
 - bls-U401000         # Kalb Muskelfleisch
+- bls-U541100         # Schwein Schnitzel (Oberschale)
 - bls-U601000         # Schwein Muskelfleisch
+- bls-U611100         # Schwein Filet
+- bls-U642100         # Schwein Bauch (wie gewachsen)
 - bls-U681700         # Schwein Rohschinken, mager, Rohpökelware, geräuchert
+- bls-U685100         # Schwein Hüfte
 - bls-U867100         # Lamm Bug
 - bls-U985200         # Rindfleischbrühe Konserve
 - bls-V416100         # Hähnchen Brustfilet
 - bls-V464100         # Ente Fleisch, mit Haut
 - bls-V486100         # Pute Brust, ohne Haut
+- bls-V4A5100         # Hähnchen Oberschenkel, mit Haut
 - bls-W140000         # Salami
+- bls-W211100         # Bockwurst
+- bls-W211200         # Wiener Würstchen
 - bls-W215000         # Knackwurst
 - bls-W222600         # Rostbratwurst
 - bls-W231100         # Lyoner
+- bls-W234000         # Fleischwurst
+- bls-W310000         # Delikatess Leberwurst
+- bls-W411300         # Schwein Bauchspeck, Rohpökelware, geräuchert
 - bls-W415000         # Schwein Frühstücksspeck, Rohpökelware, geräuchert
 - bls-W424000         # Schwein Kochschinken, Kochpökelware
 - fdc-168573          # Zitronengras
 - fdc-169997          # Koriandergrün
+- fdc-170917          # Lorbeerblatt
 - fdc-170923          # Kreuzkümmel
+- fdc-170924          # Currypulver
+- fdc-171320          # Zimt
+- fdc-171326          # Muskatnuss
+- fdc-171328          # Oregano getrocknet
 - fdc-171329          # Paprikapulver
 - fdc-171579          # Pesto
 - fdc-171610          # Worcestersauce

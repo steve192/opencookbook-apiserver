@@ -1,5 +1,6 @@
 package com.sterul.opencookbookapiserver.entities.shopping;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,9 @@ import lombok.NoArgsConstructor;
 public class ShoppingItem extends AuditableEntity {
 
     public static final String SPEC_SEPARATOR = " + ";
+
+    /** Undone within this long, a change was a slip and leaves no trace in the list's history. */
+    private static final Duration SLIP = Duration.ofMinutes(2);
 
     @Id
     @EqualsAndHashCode.Include
@@ -80,6 +84,10 @@ public class ShoppingItem extends AuditableEntity {
     @Column(nullable = false)
     private Instant addedAt;
 
+    /** When it last went onto the list from not being on it; asking for more does not move it. */
+    @Column(nullable = false)
+    private Instant listedAt;
+
     private long version;
 
     private boolean deleted;
@@ -103,12 +111,21 @@ public class ShoppingItem extends AuditableEntity {
 
     /** Adding a recently bought name puts it back with only what is asked for now. */
     public void reactivate(String newSpec, List<ItemSource> newSources, Instant at) {
-        status = ItemStatus.ACTIVE;
-        boughtAt = null;
-        spec = blankToNull(newSpec);
-        sources.clear();
-        sources.addAll(newSources);
-        addedAt = at;
+        activate(newSpec, newSources, at);
+        listedAt = at;
+    }
+
+    /** Brought back right after the tick: it has been on the list all along. */
+    public void takeBack(String newSpec, List<ItemSource> newSources, Instant at) {
+        activate(newSpec, newSources, at);
+    }
+
+    public boolean wasJustListed(Instant at) {
+        return isSlip(listedAt, at);
+    }
+
+    public boolean wasJustBought(Instant at) {
+        return status == ItemStatus.BOUGHT && boughtAt != null && isSlip(boughtAt, at);
     }
 
     public void replaceSpec(String newSpec) {
@@ -139,6 +156,20 @@ public class ShoppingItem extends AuditableEntity {
 
     public void delete() {
         deleted = true;
+    }
+
+    private void activate(String newSpec, List<ItemSource> newSources, Instant at) {
+        status = ItemStatus.ACTIVE;
+        boughtAt = null;
+        spec = blankToNull(newSpec);
+        sources.clear();
+        sources.addAll(newSources);
+        addedAt = at;
+    }
+
+    /** An offline device may date a change before {@code from}; that is no slip. */
+    private static boolean isSlip(Instant from, Instant to) {
+        return !to.isBefore(from) && Duration.between(from, to).compareTo(SLIP) < 0;
     }
 
     private static String joinSpecs(String first, String second) {

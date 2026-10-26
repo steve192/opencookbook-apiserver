@@ -331,6 +331,52 @@ device sent, for a week, so a batch retried after a lost answer is not applied t
 `shopping_staple` what a person left unticked in imports, and whether three times in a row made it a
 staple. `cookpal_user.shopping_provider` says whether imports go to the CookPal list or to Bring.
 
+## Shopping suggestions (`V42`)
+
+A list remembers what was on it and learns which names it buys at a steady rhythm, to suggest them when
+they are due again. Suggestions are not items: devices read them from the regular items, which say in
+which windows of time each is shown. `shopping_item.listed_at` is when an item last went onto its list
+from not being on it (asking for more does not move it). Times come from the device that made the change,
+trusted for 30 days back. `cookpal_user.shopping_suggestions` only says whether the app shows
+suggestions. `V42` also moves shopping tiles to a feature fact table and drops `catalogue_food.shopping_tile`.
+
+### `shopping_list_event`
+
+One change a person made to an item of a list: added, ticked off, put back, removed, or one edited field
+(`kind`). It is the list's history screen, and what the list learns its purchases and earlier entries from.
+What the server does by itself is not recorded. An item taken off within two minutes of going on the list
+leaves no events, and a tick taken back within two minutes deletes its `BOUGHT`. The nightly housekeeping
+deletes events older than a year. Cascades with its list; `shopping_list_event_source` holds the meals an
+addition was imported for.
+
+| Column | Type | Meaning |
+|---|---|---|
+| `item_id` | varchar(36) | The item it happened to, kept after the item is purged; a slip forgets that item's events under any name |
+| `at` | timestamp | By the clock of the device that made the change |
+| `kind` | varchar(16) | `ADDED`, `RESTORED`, `BOUGHT`, `REMOVED`, `RENAMED`, `SPEC_CHANGED`, `AISLE_CHANGED`, `PRIORITIZED`, `UNPRIORITIZED` |
+| `name_key`, `name`, `aisle`, `icon` | | The item after the change |
+| `spec`, `previous_name` | varchar | The amount asked for or set; the name before a rename |
+| `actor_user_id` | bigint → `cookpal_user` | Who made it; set null when that account is deleted |
+
+### `shopping_regular`
+
+What a list learned from buying one name, recomputed from its latest purchases whenever one is written or
+taken back. The windows a device shows its suggestion in follow from `suggest_at` and the rhythm: half a
+rhythm long (2 to 7 days), back one rhythm later, until three rhythms pass without a purchase. Unique per
+list and name; cascades with its list.
+
+| Column | Type | Meaning |
+|---|---|---|
+| `rhythm_seconds` | bigint | The median gap between recent shopping trips; null while the purchases make no rhythm |
+| `last_bought_at` | timestamp | The latest purchase |
+| `suggest_at` | timestamp | When the suggestion is first shown; "not now" moves it. Null while muted or without a rhythm |
+| `muted` | boolean | Somebody chose not to have it suggested; such a row is kept even without purchases |
+
+### `shopping_tile` and `shopping_tile_name`
+
+The catalogue foods a shopping list offers to tap, and the word each shows per language (often not the
+food's display name: "Reis" rather than "Reis poliert"). Filled by the dataset import, cascades with the food.
+
 ## Kitchen tool facts (`V41`)
 
 `V41` adds `catalogue_food.water_g_per_100g`, the water content both sources state, and two feature facts

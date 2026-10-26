@@ -3,8 +3,7 @@
 Every decision is taken by rule; curation corrects single foods. Fails only where shipping would be wrong.
 """
 
-from cookpal_catalogue.catalogue import (aisles, amounts, bls_foods, diets, fdc_foods, food_icons, naming,
-                                         shopping_tiles)
+from cookpal_catalogue.catalogue import aisles, amounts, bls_foods, diets, fdc_foods, food_icons, naming
 from cookpal_catalogue.catalogue.model import (LANGUAGES, Food, Name, Portion, Report, Sources, UndecidedFoods,
                                                bls_key, fdc_key)
 from cookpal_catalogue.catalogue.words import StateWords
@@ -23,6 +22,5 @@ def build(reference: Reference, curation: Curation, sources: Sources) -> tuple[l
     amounts.assign(reference, curation, sources, foods, report)
     diets.assign(curation, foods, report)
     aisles.assign(curation, foods, report)
-    shopping_tiles.assign(curation, foods, report)
     food_icons.assign(reference, curation, foods, report)
     return sorted(foods.values(), key=lambda food: food.key), report

@@ -12,7 +12,7 @@ from cookpal_catalogue.feature_facts import FeatureFacts, SeasonalProduce
 from cookpal_catalogue.reference import Reference
 
 CONTENT_FILES = ("catalogue.json", "units.json", "states.json", "lexicons.json", "non-food.json", "seasonal.json",
-                 "soaking.json")
+                 "soaking.json", "shopping-tiles.json")
 
 # Citations as the publisher words them, per release; a new release fails the build until it is added here.
 CITATIONS = {
@@ -55,6 +55,7 @@ def write(target: Path, label: str, foods: list[Food], non_food: list[NonFood], 
         "non-food.json": {"items": [_non_food(item) for item in non_food]},
         "seasonal.json": {"produce": [_seasonal(produce) for produce in facts.seasonal]},
         "soaking.json": {"foods": [{"food": key, "absorption": absorption} for key, absorption in facts.soaking.items()]},
+        "shopping-tiles.json": {"tiles": [{"food": key, "names": names} for key, names in facts.shopping_tiles.items()]},
     }
     digest = hashlib.sha256()
     for name in CONTENT_FILES:
@@ -100,7 +101,6 @@ def _food(food: Food) -> dict:
         "states": list(food.states),
         "dietClass": food.diet_class,
         "aisle": food.aisle,
-        "shoppingTile": food.shopping_tile,
         "icon": food.icon,
         "negligible": food.negligible,
         "densityGPerMl": food.density_g_per_ml,

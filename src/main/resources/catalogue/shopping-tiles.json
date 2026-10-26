@@ -1,0 +1,2265 @@
+{
+ "tiles": [
+  {
+   "food": "bls-B101000",
+   "names": {
+    "de": "Vollkornbrot",
+    "en": "Wholemeal bread"
+   }
+  },
+  {
+   "food": "bls-B271000",
+   "names": {
+    "de": "Bauernbrot",
+    "en": "Farmhouse bread"
+   }
+  },
+  {
+   "food": "bls-B314000",
+   "names": {
+    "de": "Toast",
+    "en": "White toast bread"
+   }
+  },
+  {
+   "food": "bls-B511000",
+   "names": {
+    "de": "Brötchen",
+    "en": "Bread roll"
+   }
+  },
+  {
+   "food": "bls-B6A2100",
+   "names": {
+    "de": "Knäckebrot",
+    "en": "Crispbread"
+   }
+  },
+  {
+   "food": "bls-B723000",
+   "names": {
+    "de": "Brezel",
+    "en": "Pretzel"
+   }
+  },
+  {
+   "food": "bls-B782100",
+   "names": {
+    "de": "Fladenbrot",
+    "en": "Flatbread"
+   }
+  },
+  {
+   "food": "bls-B783012",
+   "names": {
+    "de": "Tortilla",
+    "en": "Tortilla"
+   }
+  },
+  {
+   "food": "bls-B821000",
+   "names": {
+    "de": "Paniermehl",
+    "en": "Breadcrumbs"
+   }
+  },
+  {
+   "food": "bls-C118000",
+   "names": {
+    "de": "Quinoa",
+    "en": "Quinoa"
+   }
+  },
+  {
+   "food": "bls-C119100",
+   "names": {
+    "de": "Bulgur",
+    "en": "Bulgur"
+   }
+  },
+  {
+   "food": "bls-C119200",
+   "names": {
+    "de": "Couscous",
+    "en": "Couscous"
+   }
+  },
+  {
+   "food": "bls-C133000",
+   "names": {
+    "de": "Haferflocken",
+    "en": "Oats"
+   }
+  },
+  {
+   "food": "bls-C211000",
+   "names": {
+    "de": "Vollkornmehl",
+    "en": "Wholemeal flour"
+   }
+  },
+  {
+   "food": "bls-C214100",
+   "names": {
+    "de": "Mehl",
+    "en": "Flour"
+   }
+  },
+  {
+   "food": "bls-C218000",
+   "names": {
+    "de": "Grieß",
+    "en": "Semolina"
+   }
+  },
+  {
+   "food": "bls-C223200",
+   "names": {
+    "de": "Roggenmehl",
+    "en": "Rye flour"
+   }
+  },
+  {
+   "food": "bls-C234000",
+   "names": {
+    "de": "Dinkelmehl",
+    "en": "Spelt flour"
+   }
+  },
+  {
+   "food": "bls-C346000",
+   "names": {
+    "de": "Polenta",
+    "en": "Polenta"
+   }
+  },
+  {
+   "food": "bls-C351000",
+   "names": {
+    "de": "Naturreis",
+    "en": "Brown rice"
+   }
+  },
+  {
+   "food": "bls-C352000",
+   "names": {
+    "de": "Reis",
+    "en": "Rice"
+   }
+  },
+  {
+   "food": "bls-C446000",
+   "names": {
+    "de": "Speisestärke",
+    "en": "Cornstarch"
+   }
+  },
+  {
+   "food": "bls-C512000",
+   "names": {
+    "de": "Müsli",
+    "en": "Muesli"
+   }
+  },
+  {
+   "food": "bls-C515400",
+   "names": {
+    "de": "Cornflakes",
+    "en": "Cornflakes"
+   }
+  },
+  {
+   "food": "bls-C533000",
+   "names": {
+    "de": "Popcorn",
+    "en": "Popcorn"
+   }
+  },
+  {
+   "food": "bls-C546000",
+   "names": {
+    "de": "Tortillachips",
+    "en": "Tortilla chips"
+   }
+  },
+  {
+   "food": "bls-C660000",
+   "names": {
+    "de": "Hafermilch",
+    "en": "Oat milk"
+   }
+  },
+  {
+   "food": "bls-D032000",
+   "names": {
+    "de": "Zwieback",
+    "en": "Rusk"
+   }
+  },
+  {
+   "food": "bls-D041000",
+   "names": {
+    "de": "Erdnussflips",
+    "en": "Peanut puffs"
+   }
+  },
+  {
+   "food": "bls-D050000",
+   "names": {
+    "de": "Cracker",
+    "en": "Crackers"
+   }
+  },
+  {
+   "food": "bls-D064000",
+   "names": {
+    "de": "Salzstangen",
+    "en": "Pretzel sticks"
+   }
+  },
+  {
+   "food": "bls-D072000",
+   "names": {
+    "de": "Blätterteig",
+    "en": "Puff pastry"
+   }
+  },
+  {
+   "food": "bls-D079000",
+   "names": {
+    "de": "Pizzateig",
+    "en": "Pizza dough"
+   }
+  },
+  {
+   "food": "bls-D630400",
+   "names": {
+    "de": "Butterkekse",
+    "en": "Biscuits"
+   }
+  },
+  {
+   "food": "bls-D771600",
+   "names": {
+    "de": "Croissant",
+    "en": "Croissant"
+   }
+  },
+  {
+   "food": "bls-E111100",
+   "names": {
+    "de": "Eier",
+    "en": "Eggs"
+   }
+  },
+  {
+   "food": "bls-E401000",
+   "names": {
+    "de": "Nudeln",
+    "en": "Pasta"
+   }
+  },
+  {
+   "food": "bls-E432000",
+   "names": {
+    "de": "Eiernudeln",
+    "en": "Egg noodles"
+   }
+  },
+  {
+   "food": "bls-E438000",
+   "names": {
+    "de": "Frische Nudeln",
+    "en": "Fresh pasta"
+   }
+  },
+  {
+   "food": "bls-E530000",
+   "names": {
+    "de": "Vollkornnudeln",
+    "en": "Whole wheat pasta"
+   }
+  },
+  {
+   "food": "bls-E605000",
+   "names": {
+    "de": "Schupfnudeln",
+    "en": "Potato noodles (Schupfnudeln)"
+   }
+  },
+  {
+   "food": "bls-E606000",
+   "names": {
+    "de": "Semmelknödel",
+    "en": "White bread dumplings"
+   }
+  },
+  {
+   "food": "bls-F081100",
+   "names": {
+    "de": "Rhabarber",
+    "en": "Rhubarb"
+   }
+  },
+  {
+   "food": "bls-F110100",
+   "names": {
+    "de": "Apfel",
+    "en": "Apple"
+   }
+  },
+  {
+   "food": "bls-F110600",
+   "names": {
+    "de": "Apfelsaft",
+    "en": "Apple juice"
+   }
+  },
+  {
+   "food": "bls-F130100",
+   "names": {
+    "de": "Birne",
+    "en": "Pear"
+   }
+  },
+  {
+   "food": "bls-F201100",
+   "names": {
+    "de": "Aprikose",
+    "en": "Apricot"
+   }
+  },
+  {
+   "food": "bls-F202100",
+   "names": {
+    "de": "Nektarine",
+    "en": "Nectarine"
+   }
+  },
+  {
+   "food": "bls-F203100",
+   "names": {
+    "de": "Pfirsich",
+    "en": "Peach"
+   }
+  },
+  {
+   "food": "bls-F211100",
+   "names": {
+    "de": "Kirsche",
+    "en": "Cherries"
+   }
+  },
+  {
+   "food": "bls-F212100",
+   "names": {
+    "de": "Schattenmorellen",
+    "en": "Sour cherries"
+   }
+  },
+  {
+   "food": "bls-F220100",
+   "names": {
+    "de": "Pflaume",
+    "en": "Plum"
+   }
+  },
+  {
+   "food": "bls-F301100",
+   "names": {
+    "de": "Erdbeere",
+    "en": "Strawberry"
+   }
+  },
+  {
+   "food": "bls-F302100",
+   "names": {
+    "de": "Himbeere",
+    "en": "Raspberry"
+   }
+  },
+  {
+   "food": "bls-F303100",
+   "names": {
+    "de": "Brombeere",
+    "en": "Blackberry"
+   }
+  },
+  {
+   "food": "bls-F304100",
+   "names": {
+    "de": "Blaubeere",
+    "en": "Blueberries"
+   }
+  },
+  {
+   "food": "bls-F310100",
+   "names": {
+    "de": "Trauben",
+    "en": "Grapes"
+   }
+  },
+  {
+   "food": "bls-F321100",
+   "names": {
+    "de": "Johannisbeere",
+    "en": "Currant"
+   }
+  },
+  {
+   "food": "bls-F501100",
+   "names": {
+    "de": "Ananas",
+    "en": "Pineapple"
+   }
+  },
+  {
+   "food": "bls-F502100",
+   "names": {
+    "de": "Avocado",
+    "en": "Avocado"
+   }
+  },
+  {
+   "food": "bls-F503100",
+   "names": {
+    "de": "Banane",
+    "en": "Banana"
+   }
+  },
+  {
+   "food": "bls-F505100",
+   "names": {
+    "de": "Feige",
+    "en": "Fig"
+   }
+  },
+  {
+   "food": "bls-F506100",
+   "names": {
+    "de": "Granatapfel",
+    "en": "Pomegranate"
+   }
+  },
+  {
+   "food": "bls-F507100",
+   "names": {
+    "de": "Kaki",
+    "en": "Persimmon"
+   }
+  },
+  {
+   "food": "bls-F508100",
+   "names": {
+    "de": "Maracuja",
+    "en": "Passion fruit"
+   }
+  },
+  {
+   "food": "bls-F514100",
+   "names": {
+    "de": "Kiwi",
+    "en": "Kiwi fruit"
+   }
+  },
+  {
+   "food": "bls-F515100",
+   "names": {
+    "de": "Litschi",
+    "en": "Lychee"
+   }
+  },
+  {
+   "food": "bls-F516100",
+   "names": {
+    "de": "Mango",
+    "en": "Mango"
+   }
+  },
+  {
+   "food": "bls-F517100",
+   "names": {
+    "de": "Papaya",
+    "en": "Papaya"
+   }
+  },
+  {
+   "food": "bls-F533100",
+   "names": {
+    "de": "Honigmelone",
+    "en": "Honeydew melon"
+   }
+  },
+  {
+   "food": "bls-F535100",
+   "names": {
+    "de": "Wassermelone",
+    "en": "Watermelon"
+   }
+  },
+  {
+   "food": "bls-F552100",
+   "names": {
+    "de": "Physalis",
+    "en": "Physalis"
+   }
+  },
+  {
+   "food": "bls-F601100",
+   "names": {
+    "de": "Zitrone",
+    "en": "Lemon"
+   }
+  },
+  {
+   "food": "bls-F602100",
+   "names": {
+    "de": "Limette",
+    "en": "Lime"
+   }
+  },
+  {
+   "food": "bls-F603100",
+   "names": {
+    "de": "Orange",
+    "en": "Orange"
+   }
+  },
+  {
+   "food": "bls-F603600",
+   "names": {
+    "de": "O-Saft",
+    "en": "Orange juice"
+   }
+  },
+  {
+   "food": "bls-F604100",
+   "names": {
+    "de": "Grapefruit",
+    "en": "Grapefruit"
+   }
+  },
+  {
+   "food": "bls-F606100",
+   "names": {
+    "de": "Mandarine",
+    "en": "Mandarin"
+   }
+  },
+  {
+   "food": "bls-F607100",
+   "names": {
+    "de": "Clementine",
+    "en": "Clementine"
+   }
+  },
+  {
+   "food": "bls-F840100",
+   "names": {
+    "de": "Rosinen",
+    "en": "Raisins"
+   }
+  },
+  {
+   "food": "bls-G012902",
+   "names": {
+    "de": "Kapern",
+    "en": "Capers"
+   }
+  },
+  {
+   "food": "bls-G061000",
+   "names": {
+    "de": "Basilikum",
+    "en": "Basil"
+   }
+  },
+  {
+   "food": "bls-G081100",
+   "names": {
+    "de": "Schnittlauch",
+    "en": "Chives"
+   }
+  },
+  {
+   "food": "bls-G104100",
+   "names": {
+    "de": "Feldsalat",
+    "en": "Lamb's lettuce"
+   }
+  },
+  {
+   "food": "bls-G105100",
+   "names": {
+    "de": "Salat",
+    "en": "Lettuce"
+   }
+  },
+  {
+   "food": "bls-G107100",
+   "names": {
+    "de": "Romanasalat",
+    "en": "Romaine lettuce"
+   }
+  },
+  {
+   "food": "bls-G130100",
+   "names": {
+    "de": "Rucola",
+    "en": "Arugula"
+   }
+  },
+  {
+   "food": "bls-G211100",
+   "names": {
+    "de": "Spinat",
+    "en": "Spinach"
+   }
+  },
+  {
+   "food": "bls-G211200",
+   "names": {
+    "de": "TK-Spinat",
+    "en": "Frozen spinach"
+   }
+  },
+  {
+   "food": "bls-G220100",
+   "names": {
+    "de": "Staudensellerie",
+    "en": "Celery"
+   }
+  },
+  {
+   "food": "bls-G230100",
+   "names": {
+    "de": "Mangold",
+    "en": "Chard"
+   }
+  },
+  {
+   "food": "bls-G250100",
+   "names": {
+    "de": "Petersilie",
+    "en": "Parsley"
+   }
+  },
+  {
+   "food": "bls-G311100",
+   "names": {
+    "de": "Blumenkohl",
+    "en": "Cauliflower"
+   }
+  },
+  {
+   "food": "bls-G312100",
+   "names": {
+    "de": "Brokkoli",
+    "en": "Broccoli"
+   }
+  },
+  {
+   "food": "bls-G321100",
+   "names": {
+    "de": "Chinakohl",
+    "en": "Napa cabbage"
+   }
+  },
+  {
+   "food": "bls-G322100",
+   "names": {
+    "de": "Grünkohl",
+    "en": "Kale"
+   }
+  },
+  {
+   "food": "bls-G331100",
+   "names": {
+    "de": "Kohlrabi",
+    "en": "Kohlrabi"
+   }
+  },
+  {
+   "food": "bls-G332100",
+   "names": {
+    "de": "Rosenkohl",
+    "en": "Brussels sprouts"
+   }
+  },
+  {
+   "food": "bls-G341100",
+   "names": {
+    "de": "Rotkohl",
+    "en": "Red cabbage"
+   }
+  },
+  {
+   "food": "bls-G342100",
+   "names": {
+    "de": "Weißkohl",
+    "en": "Cabbage"
+   }
+  },
+  {
+   "food": "bls-G345100",
+   "names": {
+    "de": "Sauerkraut",
+    "en": "Sauerkraut"
+   }
+  },
+  {
+   "food": "bls-G410100",
+   "names": {
+    "de": "Artischocke",
+    "en": "Artichokes"
+   }
+  },
+  {
+   "food": "bls-G430100",
+   "names": {
+    "de": "Fenchel",
+    "en": "Fennel bulb"
+   }
+  },
+  {
+   "food": "bls-G450100",
+   "names": {
+    "de": "Spargel",
+    "en": "Asparagus"
+   }
+  },
+  {
+   "food": "bls-G470100",
+   "names": {
+    "de": "Porree",
+    "en": "Leek"
+   }
+  },
+  {
+   "food": "bls-G480100",
+   "names": {
+    "de": "Zwiebel",
+    "en": "Onion"
+   }
+  },
+  {
+   "food": "bls-G482100",
+   "names": {
+    "de": "Frühlingszwiebel",
+    "en": "Scallion"
+   }
+  },
+  {
+   "food": "bls-G485100",
+   "names": {
+    "de": "Schalotte",
+    "en": "Shallot"
+   }
+  },
+  {
+   "food": "bls-G490100",
+   "names": {
+    "de": "Knoblauch",
+    "en": "Garlic"
+   }
+  },
+  {
+   "food": "bls-G510100",
+   "names": {
+    "de": "Aubergine",
+    "en": "Eggplant"
+   }
+  },
+  {
+   "food": "bls-G520100",
+   "names": {
+    "de": "Gurke",
+    "en": "Cucumber"
+   }
+  },
+  {
+   "food": "bls-G520802",
+   "names": {
+    "de": "Gewürzgurken",
+    "en": "Pickles"
+   }
+  },
+  {
+   "food": "bls-G541100",
+   "names": {
+    "de": "Grüne Paprika",
+    "en": "Green pepper"
+   }
+  },
+  {
+   "food": "bls-G542100",
+   "names": {
+    "de": "Gelbe Paprika",
+    "en": "Yellow pepper"
+   }
+  },
+  {
+   "food": "bls-G543100",
+   "names": {
+    "de": "Paprika",
+    "en": "Red pepper"
+   }
+  },
+  {
+   "food": "bls-G554100",
+   "names": {
+    "de": "Chili",
+    "en": "Chili"
+   }
+  },
+  {
+   "food": "bls-G560400",
+   "names": {
+    "de": "Getrocknete Tomaten",
+    "en": "Sun-dried tomatoes"
+   }
+  },
+  {
+   "food": "bls-G561100",
+   "names": {
+    "de": "Tomate",
+    "en": "Tomatoes"
+   }
+  },
+  {
+   "food": "bls-G568900",
+   "names": {
+    "de": "Geschälte Tomaten",
+    "en": "Canned tomatoes"
+   }
+  },
+  {
+   "food": "bls-G570100",
+   "names": {
+    "de": "Mais",
+    "en": "Sweetcorn"
+   }
+  },
+  {
+   "food": "bls-G581000",
+   "names": {
+    "de": "Kürbis",
+    "en": "Pumpkin"
+   }
+  },
+  {
+   "food": "bls-G582100",
+   "names": {
+    "de": "Zucchini",
+    "en": "Zucchini"
+   }
+  },
+  {
+   "food": "bls-G613100",
+   "names": {
+    "de": "Rote Bete",
+    "en": "Beets"
+   }
+  },
+  {
+   "food": "bls-G620100",
+   "names": {
+    "de": "Möhre",
+    "en": "Carrots"
+   }
+  },
+  {
+   "food": "bls-G640100",
+   "names": {
+    "de": "Pastinake",
+    "en": "Parsnip"
+   }
+  },
+  {
+   "food": "bls-G660100",
+   "names": {
+    "de": "Sellerie",
+    "en": "Celery root"
+   }
+  },
+  {
+   "food": "bls-G691100",
+   "names": {
+    "de": "Radieschen",
+    "en": "Radishes"
+   }
+  },
+  {
+   "food": "bls-G710100",
+   "names": {
+    "de": "Grüne Bohnen",
+    "en": "Green beans"
+   }
+  },
+  {
+   "food": "bls-G750100",
+   "names": {
+    "de": "Edamame",
+    "en": "Edamame"
+   }
+  },
+  {
+   "food": "bls-G760100",
+   "names": {
+    "de": "Erbsen",
+    "en": "Peas"
+   }
+  },
+  {
+   "food": "bls-G760200",
+   "names": {
+    "de": "TK-Erbsen",
+    "en": "Frozen peas"
+   }
+  },
+  {
+   "food": "bls-G761100",
+   "names": {
+    "de": "Zuckerschoten",
+    "en": "Snow peas"
+   }
+  },
+  {
+   "food": "bls-G898400",
+   "names": {
+    "de": "Ajvar",
+    "en": "Ajvar"
+   }
+  },
+  {
+   "food": "bls-H030400",
+   "names": {
+    "de": "Glasnudeln",
+    "en": "Glass noodles"
+   }
+  },
+  {
+   "food": "bls-H110600",
+   "names": {
+    "de": "Erdnüsse",
+    "en": "Peanuts"
+   }
+  },
+  {
+   "food": "bls-H120100",
+   "names": {
+    "de": "Walnüsse",
+    "en": "Walnuts"
+   }
+  },
+  {
+   "food": "bls-H130100",
+   "names": {
+    "de": "Haselnüsse",
+    "en": "Hazelnuts"
+   }
+  },
+  {
+   "food": "bls-H130400",
+   "names": {
+    "de": "Gemahlene Haselnüsse",
+    "en": "Ground hazelnuts"
+   }
+  },
+  {
+   "food": "bls-H150100",
+   "names": {
+    "de": "Kokosnuss",
+    "en": "Coconut"
+   }
+  },
+  {
+   "food": "bls-H150400",
+   "names": {
+    "de": "Kokosraspeln",
+    "en": "Desiccated coconut"
+   }
+  },
+  {
+   "food": "bls-H154000",
+   "names": {
+    "de": "Kokosmilch",
+    "en": "Coconut milk"
+   }
+  },
+  {
+   "food": "bls-H170100",
+   "names": {
+    "de": "Cashewkerne",
+    "en": "Cashews"
+   }
+  },
+  {
+   "food": "bls-H210100",
+   "names": {
+    "de": "Mandeln",
+    "en": "Almonds"
+   }
+  },
+  {
+   "food": "bls-H210400",
+   "names": {
+    "de": "Gemahlene Mandeln",
+    "en": "Ground almonds"
+   }
+  },
+  {
+   "food": "bls-H250100",
+   "names": {
+    "de": "Pistazien",
+    "en": "Pistachios"
+   }
+  },
+  {
+   "food": "bls-H310100",
+   "names": {
+    "de": "Kürbiskerne",
+    "en": "Pumpkin seeds"
+   }
+  },
+  {
+   "food": "bls-H320100",
+   "names": {
+    "de": "Pinienkerne",
+    "en": "Pine nuts"
+   }
+  },
+  {
+   "food": "bls-H420100",
+   "names": {
+    "de": "Sesam",
+    "en": "Sesame"
+   }
+  },
+  {
+   "food": "bls-H510802",
+   "names": {
+    "de": "Oliven",
+    "en": "Olives"
+   }
+  },
+  {
+   "food": "bls-H610100",
+   "names": {
+    "de": "Bambussprossen",
+    "en": "Bamboo shoots"
+   }
+  },
+  {
+   "food": "bls-H620100",
+   "names": {
+    "de": "Sojasprossen",
+    "en": "Soybean sprouts"
+   }
+  },
+  {
+   "food": "bls-H650100",
+   "names": {
+    "de": "Mungbohnensprossen",
+    "en": "Mung bean sprouts"
+   }
+  },
+  {
+   "food": "bls-H720902",
+   "names": {
+    "de": "Kichererbsen",
+    "en": "Chickpeas"
+   }
+  },
+  {
+   "food": "bls-H725100",
+   "names": {
+    "de": "Linsen",
+    "en": "Lentils"
+   }
+  },
+  {
+   "food": "bls-H730000",
+   "names": {
+    "de": "Rote Linsen",
+    "en": "Red lentils"
+   }
+  },
+  {
+   "food": "bls-H739400",
+   "names": {
+    "de": "Weiße Bohnen",
+    "en": "White beans"
+   }
+  },
+  {
+   "food": "bls-H742902",
+   "names": {
+    "de": "Kidneybohnen",
+    "en": "Kidney beans"
+   }
+  },
+  {
+   "food": "bls-H765000",
+   "names": {
+    "de": "Sojaschnetzel",
+    "en": "Textured soy protein"
+   }
+  },
+  {
+   "food": "bls-H800000",
+   "names": {
+    "de": "Mandelmilch",
+    "en": "Almond milk"
+   }
+  },
+  {
+   "food": "bls-H810000",
+   "names": {
+    "de": "Studentenfutter",
+    "en": "Fruit and nut mix"
+   }
+  },
+  {
+   "food": "bls-H841100",
+   "names": {
+    "de": "Sojamilch",
+    "en": "Soy milk"
+   }
+  },
+  {
+   "food": "bls-H861000",
+   "names": {
+    "de": "Tofu",
+    "en": "Tofu"
+   }
+  },
+  {
+   "food": "bls-H880200",
+   "names": {
+    "de": "Erdnussbutter",
+    "en": "Peanut butter"
+   }
+  },
+  {
+   "food": "bls-H910500",
+   "names": {
+    "de": "Vegetarische Würstchen",
+    "en": "Vegetarian sausages"
+   }
+  },
+  {
+   "food": "bls-H960000",
+   "names": {
+    "de": "Hummus",
+    "en": "Hummus"
+   }
+  },
+  {
+   "food": "bls-K110100",
+   "names": {
+    "de": "Kartoffel",
+    "en": "Potato"
+   }
+  },
+  {
+   "food": "bls-K130200",
+   "names": {
+    "de": "Pommes",
+    "en": "French fries"
+   }
+  },
+  {
+   "food": "bls-K270000",
+   "names": {
+    "de": "Gnocchi",
+    "en": "Gnocchi"
+   }
+  },
+  {
+   "food": "bls-K280100",
+   "names": {
+    "de": "Chips",
+    "en": "Crisps"
+   }
+  },
+  {
+   "food": "bls-K420100",
+   "names": {
+    "de": "Süßkartoffel",
+    "en": "Sweet potato"
+   }
+  },
+  {
+   "food": "bls-K701100",
+   "names": {
+    "de": "Champignons",
+    "en": "Mushrooms"
+   }
+  },
+  {
+   "food": "bls-K740100",
+   "names": {
+    "de": "Austernpilz",
+    "en": "Oyster mushroom"
+   }
+  },
+  {
+   "food": "bls-K762400",
+   "names": {
+    "de": "Hefeflocken",
+    "en": "Nutritional yeast"
+   }
+  },
+  {
+   "food": "bls-M012200",
+   "names": {
+    "de": "Feta",
+    "en": "Feta"
+   }
+  },
+  {
+   "food": "bls-M032100",
+   "names": {
+    "de": "Mozzarella",
+    "en": "Mozzarella"
+   }
+  },
+  {
+   "food": "bls-M111200",
+   "names": {
+    "de": "Fettarme Milch",
+    "en": "Low-fat milk"
+   }
+  },
+  {
+   "food": "bls-M111300",
+   "names": {
+    "de": "Milch",
+    "en": "Milk"
+   }
+  },
+  {
+   "food": "bls-M113300",
+   "names": {
+    "de": "H-Milch",
+    "en": "UHT milk"
+   }
+  },
+  {
+   "food": "bls-M141300",
+   "names": {
+    "de": "Joghurt",
+    "en": "Yogurt"
+   }
+  },
+  {
+   "food": "bls-M150000",
+   "names": {
+    "de": "Buttermilch",
+    "en": "Buttermilk"
+   }
+  },
+  {
+   "food": "bls-M171500",
+   "names": {
+    "de": "Kaffeesahne",
+    "en": "Single cream"
+   }
+  },
+  {
+   "food": "bls-M172500",
+   "names": {
+    "de": "Saure Sahne",
+    "en": "Sour cream"
+   }
+  },
+  {
+   "food": "bls-M172700",
+   "names": {
+    "de": "Schmand",
+    "en": "Smetana"
+   }
+  },
+  {
+   "food": "bls-M172900",
+   "names": {
+    "de": "Crème fraîche",
+    "en": "Crème fraîche"
+   }
+  },
+  {
+   "food": "bls-M173800",
+   "names": {
+    "de": "Sahne",
+    "en": "Cream"
+   }
+  },
+  {
+   "food": "bls-M182400",
+   "names": {
+    "de": "Kondensmilch",
+    "en": "Evaporated milk"
+   }
+  },
+  {
+   "food": "bls-M206300",
+   "names": {
+    "de": "Heiße Schokolade",
+    "en": "Hot chocolate"
+   }
+  },
+  {
+   "food": "bls-M303600",
+   "names": {
+    "de": "Cheddar",
+    "en": "Cheddar"
+   }
+  },
+  {
+   "food": "bls-M304600",
+   "names": {
+    "de": "Emmentaler",
+    "en": "Emmental"
+   }
+  },
+  {
+   "food": "bls-M306400",
+   "names": {
+    "de": "Parmesan",
+    "en": "Parmesan"
+   }
+  },
+  {
+   "food": "bls-M402600",
+   "names": {
+    "de": "Gouda",
+    "en": "Gouda"
+   }
+  },
+  {
+   "food": "bls-M524500",
+   "names": {
+    "de": "Halloumi",
+    "en": "Halloumi"
+   }
+  },
+  {
+   "food": "bls-M602600",
+   "names": {
+    "de": "Camembert",
+    "en": "Camembert"
+   }
+  },
+  {
+   "food": "bls-M6A6800",
+   "names": {
+    "de": "Schafskäse",
+    "en": "Sheep's cheese"
+   }
+  },
+  {
+   "food": "bls-M710100",
+   "names": {
+    "de": "Skyr",
+    "en": "Skyr"
+   }
+  },
+  {
+   "food": "bls-M711100",
+   "names": {
+    "de": "Hüttenkäse",
+    "en": "Cottage cheese"
+   }
+  },
+  {
+   "food": "bls-M713100",
+   "names": {
+    "de": "Magerquark",
+    "en": "Low-fat quark"
+   }
+  },
+  {
+   "food": "bls-M713500",
+   "names": {
+    "de": "Quark",
+    "en": "Quark"
+   }
+  },
+  {
+   "food": "bls-M741600",
+   "names": {
+    "de": "Ricotta",
+    "en": "Ricotta"
+   }
+  },
+  {
+   "food": "bls-M7A6800",
+   "names": {
+    "de": "Mascarpone",
+    "en": "Mascarpone"
+   }
+  },
+  {
+   "food": "bls-M810600",
+   "names": {
+    "de": "Schmelzkäse",
+    "en": "Processed cheese"
+   }
+  },
+  {
+   "food": "bls-M820600",
+   "names": {
+    "de": "Frischkäse",
+    "en": "Cream cheese"
+   }
+  },
+  {
+   "food": "bls-N019000",
+   "names": {
+    "de": "Eistee",
+    "en": "Iced tea"
+   }
+  },
+  {
+   "food": "bls-N110000",
+   "names": {
+    "de": "Wasser",
+    "en": "Water"
+   }
+  },
+  {
+   "food": "bls-N120000",
+   "names": {
+    "de": "Mineralwasser",
+    "en": "Mineral water"
+   }
+  },
+  {
+   "food": "bls-N256000",
+   "names": {
+    "de": "Apfelschorle",
+    "en": "Apple spritzer"
+   }
+  },
+  {
+   "food": "bls-N330000",
+   "names": {
+    "de": "Cola",
+    "en": "Cola"
+   }
+  },
+  {
+   "food": "bls-N410100",
+   "names": {
+    "de": "Kaffee",
+    "en": "Coffee"
+   }
+  },
+  {
+   "food": "bls-N630000",
+   "names": {
+    "de": "Tee",
+    "en": "Tea"
+   }
+  },
+  {
+   "food": "bls-P163000",
+   "names": {
+    "de": "Bier",
+    "en": "Beer"
+   }
+  },
+  {
+   "food": "bls-P210000",
+   "names": {
+    "de": "Weißwein",
+    "en": "White wine"
+   }
+  },
+  {
+   "food": "bls-P2A3000",
+   "names": {
+    "de": "Rotwein",
+    "en": "Red wine"
+   }
+  },
+  {
+   "food": "bls-P2A6000",
+   "names": {
+    "de": "Sekt",
+    "en": "Sparkling wine"
+   }
+  },
+  {
+   "food": "bls-P712000",
+   "names": {
+    "de": "Wodka",
+    "en": "Vodka"
+   }
+  },
+  {
+   "food": "bls-Q120000",
+   "names": {
+    "de": "Olivenöl",
+    "en": "Olive oil"
+   }
+  },
+  {
+   "food": "bls-Q180000",
+   "names": {
+    "de": "Öl",
+    "en": "Oil"
+   }
+  },
+  {
+   "food": "bls-Q400000",
+   "names": {
+    "de": "Margarine",
+    "en": "Margarine"
+   }
+  },
+  {
+   "food": "bls-Q630000",
+   "names": {
+    "de": "Butter",
+    "en": "Butter"
+   }
+  },
+  {
+   "food": "bls-Q683000",
+   "names": {
+    "de": "Butterschmalz",
+    "en": "Ghee"
+   }
+  },
+  {
+   "food": "bls-Q901000",
+   "names": {
+    "de": "Tahini",
+    "en": "Tahini"
+   }
+  },
+  {
+   "food": "bls-Q991000",
+   "names": {
+    "de": "Mayo",
+    "en": "Mayo"
+   }
+  },
+  {
+   "food": "bls-R111000",
+   "names": {
+    "de": "Salz",
+    "en": "Salt"
+   }
+  },
+  {
+   "food": "bls-R121000",
+   "names": {
+    "de": "Essig",
+    "en": "Vinegar"
+   }
+  },
+  {
+   "food": "bls-R125000",
+   "names": {
+    "de": "Balsamico",
+    "en": "Balsamic"
+   }
+  },
+  {
+   "food": "bls-R132000",
+   "names": {
+    "de": "Senf",
+    "en": "Mustard"
+   }
+  },
+  {
+   "food": "bls-R141100",
+   "names": {
+    "de": "Ketchup",
+    "en": "Ketchup"
+   }
+  },
+  {
+   "food": "bls-R143000",
+   "names": {
+    "de": "Sojasauce",
+    "en": "Soy sauce"
+   }
+  },
+  {
+   "food": "bls-R160000",
+   "names": {
+    "de": "Tomatenmark",
+    "en": "Tomato paste"
+   }
+  },
+  {
+   "food": "bls-R161200",
+   "names": {
+    "de": "Passierte Tomaten",
+    "en": "Passata"
+   }
+  },
+  {
+   "food": "bls-R211200",
+   "names": {
+    "de": "Ingwer",
+    "en": "Ginger"
+   }
+  },
+  {
+   "food": "bls-R258100",
+   "names": {
+    "de": "Pfeffer",
+    "en": "Pepper"
+   }
+  },
+  {
+   "food": "bls-R421100",
+   "names": {
+    "de": "Backpulver",
+    "en": "Baking powder"
+   }
+  },
+  {
+   "food": "bls-R434000",
+   "names": {
+    "de": "Sahnesteif",
+    "en": "Whipped cream stabilizer"
+   }
+  },
+  {
+   "food": "bls-R458000",
+   "names": {
+    "de": "Trockenhefe",
+    "en": "Dry yeast"
+   }
+  },
+  {
+   "food": "bls-R459000",
+   "names": {
+    "de": "Hefe",
+    "en": "Yeast"
+   }
+  },
+  {
+   "food": "bls-R468000",
+   "names": {
+    "de": "Gelatine",
+    "en": "Gelatin"
+   }
+  },
+  {
+   "food": "bls-R481100",
+   "names": {
+    "de": "Puddingpulver",
+    "en": "Custard powder"
+   }
+  },
+  {
+   "food": "bls-R821000",
+   "names": {
+    "de": "Brühwürfel",
+    "en": "Stock cube"
+   }
+  },
+  {
+   "food": "bls-R910000",
+   "names": {
+    "de": "Bratensoße",
+    "en": "Gravy"
+   }
+  },
+  {
+   "food": "bls-R942000",
+   "names": {
+    "de": "Tortenguss",
+    "en": "Cake glaze"
+   }
+  },
+  {
+   "food": "bls-S111000",
+   "names": {
+    "de": "Zucker",
+    "en": "Sugar"
+   }
+  },
+  {
+   "food": "bls-S111100",
+   "names": {
+    "de": "Puderzucker",
+    "en": "Confectioners' sugar"
+   }
+  },
+  {
+   "food": "bls-S112000",
+   "names": {
+    "de": "Brauner Zucker",
+    "en": "Brown sugar"
+   }
+  },
+  {
+   "food": "bls-S114000",
+   "names": {
+    "de": "Vanillezucker",
+    "en": "Vanilla sugar"
+   }
+  },
+  {
+   "food": "bls-S115100",
+   "names": {
+    "de": "Traubenzucker",
+    "en": "Dextrose"
+   }
+  },
+  {
+   "food": "bls-S120000",
+   "names": {
+    "de": "Honig",
+    "en": "Honey"
+   }
+  },
+  {
+   "food": "bls-S132000",
+   "names": {
+    "de": "Marmelade",
+    "en": "Jam"
+   }
+  },
+  {
+   "food": "bls-S145000",
+   "names": {
+    "de": "Nutella",
+    "en": "Chocolate hazelnut spread"
+   }
+  },
+  {
+   "food": "bls-S151100",
+   "names": {
+    "de": "Ahornsirup",
+    "en": "Maple syrup"
+   }
+  },
+  {
+   "food": "bls-S171000",
+   "names": {
+    "de": "Süßstoff",
+    "en": "Sweetener"
+   }
+  },
+  {
+   "food": "bls-S210000",
+   "names": {
+    "de": "Eis",
+    "en": "Ice cream"
+   }
+  },
+  {
+   "food": "bls-S241000",
+   "names": {
+    "de": "Vanilleeis",
+    "en": "Vanilla ice cream"
+   }
+  },
+  {
+   "food": "bls-S361000",
+   "names": {
+    "de": "Gummibärchen",
+    "en": "Gummy bears"
+   }
+  },
+  {
+   "food": "bls-S420000",
+   "names": {
+    "de": "Marzipan",
+    "en": "Marzipan"
+   }
+  },
+  {
+   "food": "bls-S462000",
+   "names": {
+    "de": "Liebesperlen",
+    "en": "Sprinkles"
+   }
+  },
+  {
+   "food": "bls-S500000",
+   "names": {
+    "de": "Schokolade",
+    "en": "Chocolate"
+   }
+  },
+  {
+   "food": "bls-S560000",
+   "names": {
+    "de": "Zartbitterschokolade",
+    "en": "Semisweet chocolate"
+   }
+  },
+  {
+   "food": "bls-S660000",
+   "names": {
+    "de": "Schokostreusel",
+    "en": "Chocolate sprinkles"
+   }
+  },
+  {
+   "food": "bls-S711000",
+   "names": {
+    "de": "Kakao",
+    "en": "Cocoa"
+   }
+  },
+  {
+   "food": "bls-S830000",
+   "names": {
+    "de": "Müsliriegel",
+    "en": "Cereal bar"
+   }
+  },
+  {
+   "food": "bls-T020100",
+   "names": {
+    "de": "Tintenfisch",
+    "en": "Cuttlefish"
+   }
+  },
+  {
+   "food": "bls-T107100",
+   "names": {
+    "de": "Makrele",
+    "en": "Mackerel"
+   }
+  },
+  {
+   "food": "bls-T121100",
+   "names": {
+    "de": "Thunfisch",
+    "en": "Tuna"
+   }
+  },
+  {
+   "food": "bls-T121702",
+   "names": {
+    "de": "Thunfisch in Öl",
+    "en": "Canned tuna"
+   }
+  },
+  {
+   "food": "bls-T121902",
+   "names": {
+    "de": "Thunfisch naturell",
+    "en": "Tuna in water"
+   }
+  },
+  {
+   "food": "bls-T204100",
+   "names": {
+    "de": "Kabeljau",
+    "en": "Cod fillet"
+   }
+  },
+  {
+   "food": "bls-T410100",
+   "names": {
+    "de": "Lachs",
+    "en": "Salmon fillet"
+   }
+  },
+  {
+   "food": "bls-T410600",
+   "names": {
+    "de": "Räucherlachs",
+    "en": "Smoked salmon"
+   }
+  },
+  {
+   "food": "bls-T422100",
+   "names": {
+    "de": "Forelle",
+    "en": "Trout"
+   }
+  },
+  {
+   "food": "bls-T753100",
+   "names": {
+    "de": "Garnelen",
+    "en": "Prawns"
+   }
+  },
+  {
+   "food": "bls-T792100",
+   "names": {
+    "de": "Muscheln",
+    "en": "Mussels"
+   }
+  },
+  {
+   "food": "bls-T930100",
+   "names": {
+    "de": "Fischstäbchen",
+    "en": "Fish fingers"
+   }
+  },
+  {
+   "food": "bls-U010100",
+   "names": {
+    "de": "Rinderhack",
+    "en": "Minced beef"
+   }
+  },
+  {
+   "food": "bls-U020100",
+   "names": {
+    "de": "Schweinehack",
+    "en": "Pork mince"
+   }
+  },
+  {
+   "food": "bls-U050100",
+   "names": {
+    "de": "Hackfleisch",
+    "en": "Mince"
+   }
+  },
+  {
+   "food": "bls-U131100",
+   "names": {
+    "de": "Rindersteak",
+    "en": "Beef steak"
+   }
+  },
+  {
+   "food": "bls-U151100",
+   "names": {
+    "de": "Rindergulasch",
+    "en": "Beef stew meat"
+   }
+  },
+  {
+   "food": "bls-U201000",
+   "names": {
+    "de": "Rindfleisch",
+    "en": "Beef"
+   }
+  },
+  {
+   "food": "bls-U221100",
+   "names": {
+    "de": "Roastbeef",
+    "en": "Roast beef"
+   }
+  },
+  {
+   "food": "bls-U401000",
+   "names": {
+    "de": "Kalbfleisch",
+    "en": "Veal"
+   }
+  },
+  {
+   "food": "bls-U541100",
+   "names": {
+    "de": "Schweineschnitzel",
+    "en": "Pork schnitzel"
+   }
+  },
+  {
+   "food": "bls-U601000",
+   "names": {
+    "de": "Schweinefleisch",
+    "en": "Pork"
+   }
+  },
+  {
+   "food": "bls-U611100",
+   "names": {
+    "de": "Schweinefilet",
+    "en": "Pork fillet"
+   }
+  },
+  {
+   "food": "bls-U642100",
+   "names": {
+    "de": "Schweinebauch",
+    "en": "Pork belly"
+   }
+  },
+  {
+   "food": "bls-U681700",
+   "names": {
+    "de": "Räucherschinken",
+    "en": "Smoked ham"
+   }
+  },
+  {
+   "food": "bls-U685100",
+   "names": {
+    "de": "Schinkenwürfel",
+    "en": "Diced ham"
+   }
+  },
+  {
+   "food": "bls-U867100",
+   "names": {
+    "de": "Lamm Bug",
+    "en": "Lamb shoulder"
+   }
+  },
+  {
+   "food": "bls-U985200",
+   "names": {
+    "de": "Brühe",
+    "en": "Stock"
+   }
+  },
+  {
+   "food": "bls-V416100",
+   "names": {
+    "de": "Hähnchenbrust",
+    "en": "Chicken breast"
+   }
+  },
+  {
+   "food": "bls-V464100",
+   "names": {
+    "de": "Ente",
+    "en": "Duck"
+   }
+  },
+  {
+   "food": "bls-V486100",
+   "names": {
+    "de": "Putenbrust",
+    "en": "Turkey breast"
+   }
+  },
+  {
+   "food": "bls-V4A5100",
+   "names": {
+    "de": "Hähnchenschenkel",
+    "en": "Chicken thighs"
+   }
+  },
+  {
+   "food": "bls-W140000",
+   "names": {
+    "de": "Salami",
+    "en": "Salami"
+   }
+  },
+  {
+   "food": "bls-W211100",
+   "names": {
+    "de": "Bockwurst",
+    "en": "Bockwurst"
+   }
+  },
+  {
+   "food": "bls-W211200",
+   "names": {
+    "de": "Wiener Würstchen",
+    "en": "Vienna sausage"
+   }
+  },
+  {
+   "food": "bls-W215000",
+   "names": {
+    "de": "Knackwurst",
+    "en": "Knackwurst"
+   }
+  },
+  {
+   "food": "bls-W222600",
+   "names": {
+    "de": "Bratwurst",
+    "en": "Bratwurst"
+   }
+  },
+  {
+   "food": "bls-W231100",
+   "names": {
+    "de": "Lyoner",
+    "en": "Lyon sausage"
+   }
+  },
+  {
+   "food": "bls-W234000",
+   "names": {
+    "de": "Fleischwurst",
+    "en": "Bologna"
+   }
+  },
+  {
+   "food": "bls-W310000",
+   "names": {
+    "de": "Leberwurst",
+    "en": "Liver sausage"
+   }
+  },
+  {
+   "food": "bls-W411300",
+   "names": {
+    "de": "Bauchspeck",
+    "en": "Pancetta"
+   }
+  },
+  {
+   "food": "bls-W415000",
+   "names": {
+    "de": "Bacon",
+    "en": "Bacon"
+   }
+  },
+  {
+   "food": "bls-W424000",
+   "names": {
+    "de": "Kochschinken",
+    "en": "Ham"
+   }
+  },
+  {
+   "food": "fdc-168573",
+   "names": {
+    "de": "Zitronengras",
+    "en": "Lemongrass"
+   }
+  },
+  {
+   "food": "fdc-169997",
+   "names": {
+    "de": "Koriandergrün",
+    "en": "Cilantro"
+   }
+  },
+  {
+   "food": "fdc-170917",
+   "names": {
+    "de": "Lorbeerblatt",
+    "en": "Bay leaf"
+   }
+  },
+  {
+   "food": "fdc-170923",
+   "names": {
+    "de": "Kreuzkümmel",
+    "en": "Cumin"
+   }
+  },
+  {
+   "food": "fdc-170924",
+   "names": {
+    "de": "Currypulver",
+    "en": "Curry powder"
+   }
+  },
+  {
+   "food": "fdc-171320",
+   "names": {
+    "de": "Zimt",
+    "en": "Cinnamon"
+   }
+  },
+  {
+   "food": "fdc-171326",
+   "names": {
+    "de": "Muskatnuss",
+    "en": "Nutmeg"
+   }
+  },
+  {
+   "food": "fdc-171328",
+   "names": {
+    "de": "Oregano",
+    "en": "Oregano"
+   }
+  },
+  {
+   "food": "fdc-171329",
+   "names": {
+    "de": "Paprikapulver",
+    "en": "Paprika"
+   }
+  },
+  {
+   "food": "fdc-171579",
+   "names": {
+    "de": "Pesto",
+    "en": "Pesto"
+   }
+  },
+  {
+   "food": "fdc-171610",
+   "names": {
+    "de": "Worcestersauce",
+    "en": "Worcestershire sauce"
+   }
+  },
+  {
+   "food": "fdc-172233",
+   "names": {
+    "de": "Dill",
+    "en": "Dill"
+   }
+  },
+  {
+   "food": "fdc-173470",
+   "names": {
+    "de": "Thymian",
+    "en": "Thyme"
+   }
+  },
+  {
+   "food": "fdc-173471",
+   "names": {
+    "de": "Vanilleextrakt",
+    "en": "Vanilla essence"
+   }
+  },
+  {
+   "food": "fdc-173473",
+   "names": {
+    "de": "Rosmarin",
+    "en": "Rosemary"
+   }
+  },
+  {
+   "food": "fdc-173475",
+   "names": {
+    "de": "Minze",
+    "en": "Mint"
+   }
+  },
+  {
+   "food": "fdc-174531",
+   "names": {
+    "de": "Fischsauce",
+    "en": "Fish sauce"
+   }
+  },
+  {
+   "food": "fdc-174913",
+   "names": {
+    "de": "Ciabatta",
+    "en": "Ciabatta"
+   }
+  },
+  {
+   "food": "fdc-2346414",
+   "names": {
+    "de": "Apfelmus",
+    "en": "Applesauce"
+   }
+  },
+  {
+   "food": "fdc-2685579",
+   "names": {
+    "de": "Tomatensoße",
+    "en": "Tomato sauce"
+   }
+  }
+ ]
+}

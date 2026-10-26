@@ -28,9 +28,6 @@ public interface CatalogueFoodRepository extends JpaRepository<CatalogueFood, Lo
     @EntityGraph(attributePaths = {"names", "states", "variantOf"})
     List<CatalogueFood> findAllByRetiredFalse();
 
-    @EntityGraph(attributePaths = {"names"})
-    List<CatalogueFood> findAllByShoppingTileTrueAndRetiredFalse();
-
     List<CatalogueFood> findAllByCatalogueKeyIn(Collection<String> catalogueKeys);
 
     default Map<String, CatalogueFood> findAllByCatalogueKeyMapped(Collection<String> catalogueKeys) {

@@ -236,8 +236,14 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public CookpalUser setShoppingProvider(CookpalUser user, ShoppingProvider provider) {
-        user.setShoppingProvider(provider);
+    /** Null leaves a setting as it is. */
+    public CookpalUser setShoppingSettings(CookpalUser user, ShoppingProvider provider, Boolean suggestions) {
+        if (provider != null) {
+            user.setShoppingProvider(provider);
+        }
+        if (suggestions != null) {
+            user.setShoppingSuggestions(suggestions);
+        }
         return userRepository.save(user);
     }
 

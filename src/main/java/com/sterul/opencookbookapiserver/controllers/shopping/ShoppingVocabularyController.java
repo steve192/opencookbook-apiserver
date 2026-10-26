@@ -11,9 +11,9 @@ import com.sterul.opencookbookapiserver.controllers.shopping.responses.ShoppingT
 import com.sterul.opencookbookapiserver.controllers.shopping.responses.ShoppingVocabularyResponse;
 import com.sterul.opencookbookapiserver.entities.account.ApiScope;
 import com.sterul.opencookbookapiserver.services.SignedInUserService;
-import com.sterul.opencookbookapiserver.services.catalogue.CatalogueService;
 import com.sterul.opencookbookapiserver.services.catalogue.NonFoodItems;
 import com.sterul.opencookbookapiserver.services.catalogue.UnitLexicon;
+import com.sterul.opencookbookapiserver.services.shopping.tiles.ShoppingTileService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,14 +22,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Shopping lists")
 public class ShoppingVocabularyController extends BaseController {
 
-    private final CatalogueService catalogue;
+    private final ShoppingTileService tiles;
     private final NonFoodItems nonFood;
     private final UnitLexicon unitLexicon;
 
-    public ShoppingVocabularyController(CatalogueService catalogue, NonFoodItems nonFood, UnitLexicon unitLexicon,
+    public ShoppingVocabularyController(ShoppingTileService tiles, NonFoodItems nonFood, UnitLexicon unitLexicon,
             SignedInUserService signedInUser) {
         super(signedInUser);
-        this.catalogue = catalogue;
+        this.tiles = tiles;
         this.nonFood = nonFood;
         this.unitLexicon = unitLexicon;
     }
@@ -40,9 +40,9 @@ public class ShoppingVocabularyController extends BaseController {
     @ApiKeyAccess(ApiScope.SHOPPING_READ)
     @GetMapping(ShoppingPaths.VOCABULARY)
     public ShoppingVocabularyResponse getVocabulary() {
-        var tiles = Stream.concat(
-                catalogue.getShoppingTiles().stream().map(ShoppingTileResponse::of),
+        var offered = Stream.concat(
+                tiles.tiles().stream().map(ShoppingTileResponse::of),
                 nonFood.items().stream().map(ShoppingTileResponse::of)).toList();
-        return new ShoppingVocabularyResponse(tiles, unitLexicon.words().stream().sorted().toList());
+        return new ShoppingVocabularyResponse(offered, unitLexicon.words().stream().sorted().toList());
     }
 }

@@ -28,7 +28,7 @@ import com.sterul.opencookbookapiserver.controllers.requests.PasswordResetExecut
 import com.sterul.opencookbookapiserver.controllers.requests.PasswordResetRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.RefreshTokenRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.ResendActivationLinkRequest;
-import com.sterul.opencookbookapiserver.controllers.requests.ShoppingProviderRequest;
+import com.sterul.opencookbookapiserver.controllers.requests.ShoppingSettingsRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.UserCreationRequest;
 import com.sterul.opencookbookapiserver.controllers.requests.UserLoginRequest;
 import com.sterul.opencookbookapiserver.controllers.responses.RefreshTokenResponse;
@@ -155,6 +155,7 @@ public class UserController extends BaseController {
         response.setDisplayName(user.getDisplayName());
         response.setOnboarded(user.isOnboarded());
         response.setShoppingProvider(user.getShoppingProvider());
+        response.setShoppingSuggestions(user.isShoppingSuggestions());
         // The account's role, not the request's authorities, which also say how it signed in.
         response.setRoles(Stream.ofNullable(user.getRoles()).map(Role::name).toList());
         return response;
@@ -168,11 +169,13 @@ public class UserController extends BaseController {
         return getOwnUserInfo();
     }
 
-    @Operation(summary = "Choose where shopping imports go",
-            description = "The app asks on the first import and shows only the chosen provider afterwards.")
-    @PutMapping("/self/shoppingProvider")
-    public UserInfoResponse setShoppingProvider(@Valid @RequestBody ShoppingProviderRequest request) {
-        userService.setShoppingProvider(getLoggedInUser(), request.provider());
+    @Operation(summary = "Change shopping settings",
+            description = "Where shopping imports go (the app asks on the first import and shows only the chosen "
+                    + "provider afterwards) and whether the app suggests regularly bought items. A missing field "
+                    + "stays as it is.")
+    @PutMapping("/self/shoppingSettings")
+    public UserInfoResponse setShoppingSettings(@Valid @RequestBody ShoppingSettingsRequest request) {
+        userService.setShoppingSettings(getLoggedInUser(), request.provider(), request.suggestions());
         return getOwnUserInfo();
     }
 

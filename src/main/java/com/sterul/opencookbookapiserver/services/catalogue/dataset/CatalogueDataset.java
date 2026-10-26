@@ -30,7 +30,7 @@ public final class CatalogueDataset {
      */
     public record Food(String key, String variantOf, Source source, List<String> states, boolean negligible,
             String dietClass, Float densityGPerMl, Nutrients nutrients, List<Name> names, List<Portion> portions,
-            Aisle aisle, boolean shoppingTile, String icon) {
+            Aisle aisle, String icon) {
 
         public Food {
             states = states == null ? List.of() : states;

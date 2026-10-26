@@ -1,6 +1,7 @@
 # Everyday names as recipes write them ("Mehl" for "Weizen Mehl, Type 405"); added after a food's names.
 # A name belongs to one food: the one most recipes mean.
 # Plurals, inflections and typos are the matcher's job; list only irregular forms ("Eier") or other words.
+# The first synonym is also what a shopping tile shows, so where the display name is the shop word it comes first.
 
 # --- Dairy and eggs --------------------------------------------------------------------------------
 bls-M111300:
@@ -26,7 +27,7 @@ bls-M172500:
   en: [sour cream]
 bls-M172700:
   de: [Schmand]
-  en: [soured cream 20 % fat]
+  en: [smetana, "soured cream 20 % fat"]
 bls-M172900:
   de: [Crème fraîche, Creme fraiche, Crème fraiche]
   en: [crème fraîche, creme fraiche]
@@ -90,11 +91,11 @@ bls-Q400000:
   de: [Margarine, Pflanzenmargarine]
   en: [margarine]
 bls-Q683000:
-  de: [Ghee, geklärte Butter]
+  de: [Butterschmalz, Ghee, geklärte Butter]
   en: [ghee, clarified butter]
 bls-E111100:
-  de: [Ei, Eier, Hühnereier]
-  en: [egg, eggs]
+  de: [Eier, Ei, Hühnereier]
+  en: [eggs, egg]
 bls-E112100:
   de: [Eigelb, Eidotter, Dotter]
   en: [egg yolk, yolk]
@@ -169,7 +170,7 @@ bls-H730000:
   en: [red lentils]
 # Recipes mean canned chickpeas and kidney beans; the dry ones keep their own names ("Kichererbse reif").
 bls-H720902:
-  de: [Kichererbse, Kichererbsen]
+  de: [Kichererbsen, Kichererbse]
   en: [chickpeas, garbanzo beans]
 bls-H742902:
   de: [Kidneybohnen, rote Bohnen]
@@ -199,15 +200,16 @@ bls-C219300:
   de: [Hartweizenmehl, Semola, Semola rimacinata]
   en: [semolina flour]
 bls-B271000:
-  de: [Bauernbrot]
+  de: [Bauernbrot, Brot]
+  en: [farmhouse bread]
 bls-E605000:
   de: [Schupfnudeln]
 bls-H765000:
   de: [Sojaschnetzel]
   en: [textured soy protein]
 bls-H861000:
-  de: [Räuchertofu]
-  en: [smoked tofu]
+  de: [Tofu, Räuchertofu]
+  en: [tofu, smoked tofu]
 
 # --- Sugar, sweeteners, oils -----------------------------------------------------------------------
 bls-S111000:
@@ -217,7 +219,7 @@ bls-S112000:
   de: [brauner Zucker, Rohrzucker, Rohzucker]
   en: [brown sugar, cane sugar]
 bls-S111100:
-  de: [Staubzucker]
+  de: [Puderzucker, Staubzucker]
   en: [confectioners' sugar]
 bls-S114000:
   de: [Vanillezucker, Bourbon-Vanillezucker]
@@ -226,8 +228,8 @@ bls-Q180000:
   de: [Öl, Speiseöl, Pflanzenöl, neutrales Öl, Rapskernöl]
   en: [oil, vegetable oil, cooking oil]
 bls-Q120000:
-  de: [natives Olivenöl extra, Olivenöl extra vergine]
-  en: [extra virgin olive oil]
+  de: [Olivenöl, natives Olivenöl extra, Olivenöl extra vergine]
+  en: [olive oil, extra virgin olive oil]
 bls-Q940000:
   de: [Frittieröl]
   en: [frying oil]
@@ -241,7 +243,7 @@ bls-G480100:
   de: [Zwiebel, rote Zwiebel, Gemüsezwiebel, gelbe Zwiebel]
   en: [onion, red onion, yellow onion, brown onion]
 bls-G482100:
-  de: [Lauchzwiebel]
+  de: [Frühlingszwiebel, Lauchzwiebel]
   en: [scallion, green onion]
 bls-G620100:
   de: [Möhre, Mohrrübe, Gelbe Rübe, Rüebli]
@@ -262,13 +264,13 @@ bls-G542100:
   de: [gelbe Paprika, gelbe Paprikaschote]
   en: [yellow pepper, yellow bell pepper]
 bls-G582100:
-  de: [Zucchino]
+  de: [Zucchini, Zucchino]
   en: [zucchini]
 bls-G510100:
-  de: [Melanzani]
+  de: [Aubergine, Melanzani]
   en: [eggplant]
 bls-G520100:
-  de: [Salatgurke]
+  de: [Gurke, Salatgurke]
   en: [cucumber]
 bls-G430100:
   de: [Fenchel, Fenchelknolle]
@@ -280,7 +282,7 @@ bls-G520802:
   de: [Gewürzgurken, saure Gurken, Essiggurken]
   en: [pickles, gherkins]
 bls-G561100:
-  de: [Kirschtomate, Cocktailtomate, Cherrytomate, Strauchtomate, Rispentomate, Datteltomate, Fleischtomate, Romatomate]
+  de: [Tomate, Kirschtomate, Cocktailtomate, Cherrytomate, Strauchtomate, Rispentomate, Datteltomate, Fleischtomate, Romatomate]
   en: [tomatoes, cherry tomatoes]
 bls-G568900:
   de: [geschälte Tomaten, Dosentomaten, gehackte Tomaten, stückige Tomaten, Pizzatomaten]
@@ -292,19 +294,19 @@ bls-G312100:
   de: [Brokkoli, Broccoli]
   en: [broccoli]
 bls-G211100:
-  de: [Blattspinat, Babyspinat]
-  en: [baby spinach]
+  de: [Spinat, Blattspinat, Babyspinat]
+  en: [spinach, baby spinach]
 bls-G211200:
   de: [TK-Spinat, Tiefkühlspinat]
   en: [frozen spinach]
 bls-G342100:
-  de: [Weißkraut, Kohl]
+  de: [Weißkohl, Weißkraut, Kohl]
   en: [cabbage]
 bls-G341100:
-  de: [Rotkraut, Blaukraut]
+  de: [Rotkohl, Rotkraut, Blaukraut]
   en: [red cabbage]
 bls-G322100:
-  de: [Braunkohl]
+  de: [Grünkohl, Braunkohl]
   en: [kale]
 bls-K701100:
   de: [Champignons, Pilze, braune Champignons, Egerlinge]
@@ -316,13 +318,13 @@ bls-G613100:
   de: [Rote Bete, Rote Beete]
   en: [beets]
 bls-G130100:
-  de: [Rauke]
+  de: [Rucola, Rauke]
   en: [arugula]
 bls-G105100:
   de: [Salat, Blattsalat, grüner Salat]
   en: [lettuce]
 bls-R211200:
-  de: [frischer Ingwer]
+  de: [Ingwer, frischer Ingwer]
   en: [ginger, fresh ginger]
 bls-G554100:
   de: [Chili, Chilischote, rote Chili, Peperoni, Habanero, Vogelaugenchili, Thai-Chili]
@@ -337,8 +339,8 @@ bls-G250100:
   de: [Petersilie, glatte Petersilie, krause Petersilie]
   en: [parsley, flat-leaf parsley]
 bls-G061000:
-  de: [Basilikumblätter, Thai-Basilikum, Thaibasilikum]
-  en: [basil leaves, thai basil]
+  de: [Basilikum, Basilikumblätter, Thai-Basilikum, Thaibasilikum]
+  en: [basil, basil leaves, thai basil]
 bls-H510802:
   de: [Oliven, grüne Oliven]
   en: [olives, green olives]
@@ -448,7 +450,7 @@ bls-W424000:
   de: [Kochschinken, gekochter Schinken]
   en: [ham, cooked ham]
 bls-T410100:
-  de: [Lachsfilet]
+  de: [Lachs, Lachsfilet]
   en: [salmon fillet]
 bls-T121702:
   de: [Thunfisch in Öl]
@@ -460,7 +462,7 @@ bls-T753100:
   de: [Garnelen, Shrimps, Crevetten, Krabben, Scampi, Riesengarnelen]
   en: [prawns, shrimp]
 bls-T204100:
-  de: [Kabeljaufilet, Dorschfilet]
+  de: [Kabeljau, Kabeljaufilet, Dorschfilet]
   en: [cod fillet]
 
 bls-U221100:
@@ -497,10 +499,10 @@ bls-H120400:
   de: [gemahlene Walnüsse, geriebene Walnüsse]
   en: [ground walnuts]
 bls-H130100:
-  de: [Haselnusskerne]
+  de: [Haselnüsse, Haselnusskerne]
   en: [hazelnuts]
 bls-H120100:
-  de: [Walnusskerne]
+  de: [Walnüsse, Walnusskerne]
   en: [walnuts]
 bls-H170100:
   de: [Cashewkerne, Cashewnüsse, Cashews]
@@ -509,13 +511,13 @@ bls-H320100:
   de: [Pinienkerne]
   en: [pine nuts]
 bls-H420100:
-  de: [Sesamsaat]
+  de: [Sesam, Sesamsaat]
   en: [sesame, sesame seeds]
 bls-H310100:
   de: [Kürbiskerne]
   en: [pumpkin seeds]
 bls-H110600:
-  de: [Erdnusskerne]
+  de: [Erdnüsse, Erdnusskerne]
   en: [peanuts]
 bls-H150100:
   de: [Kokosnuss, Kokosnussfleisch]
@@ -552,7 +554,7 @@ bls-S171000:
   de: [Süßstoff, Flüssigsüßstoff]
   en: [sweetener, liquid sweetener]
 bls-R468000:
-  de: [Blattgelatine]
+  de: [Gelatine, Blattgelatine]
   en: [gelatin]
 bls-S711000:
   de: [Kakao, Kakaopulver, Backkakao]
@@ -579,7 +581,7 @@ bls-S660000:
   de: [Schokostreusel, Schokoraspel, Schokoladenraspel]
   en: [chocolate sprinkles]
 fdc-173471:
-  de: [Vanilleessenz]
+  de: [Vanilleextrakt, Vanilleessenz]
   en: [vanilla essence]
 bls-S145000:
   de: [Nutella, Nuss-Nougat-Aufstrich]
@@ -605,7 +607,7 @@ bls-Q991000:
   de: [Mayo]
   en: [mayo]
 bls-R143000:
-  de: [helle Sojasauce, dunkle Sojasauce, Sojasoße, helle Sojasoße, dunkle Sojasoße]
+  de: [Sojasauce, helle Sojasauce, dunkle Sojasauce, Sojasoße, helle Sojasoße, dunkle Sojasoße]
   en: [soy sauce]
 bls-U985200:
   de: [Brühe, Fleischbrühe, Rinderbrühe]
@@ -673,13 +675,16 @@ bls-C223300:
 bls-C213200:
   de: [Weizenmehl Type 1050, 1050er Weizenmehl, Weizenmehl 1050]
 bls-D630400:
-  de: [Butterkekse, Butterkeks, Leibniz Kekse]
+  de: [Butterkekse, Butterkeks, Leibniz Kekse, Kekse]
+  en: [biscuits]
 bls-Q901000:
   de: [Tahini, Tahina, Sesampaste]
+  en: [tahini]
 bls-U235100:
   de: [Entrecôte, Entrecote, Ribeye, Rib-Eye-Steak]
 bls-D079000:
-  de: [Flammkuchenteig]
+  de: [Pizzateig, Flammkuchenteig]
+  en: [pizza dough]
 bls-M141100:
   de: [Magerjoghurt]
 bls-G710200:
@@ -710,8 +715,8 @@ bls-P741000:
 bls-Q998000:
   de: [Miracel Whip]
 fdc-171329:
-  de: [scharfes Paprikapulver, Paprikapulver scharf, süßes Paprikapulver, geräuchertes Paprikapulver, Pimentón]
-  en: [smoked paprika, hot paprika]
+  de: [Paprikapulver, scharfes Paprikapulver, Paprikapulver scharf, süßes Paprikapulver, geräuchertes Paprikapulver, Pimentón]
+  en: [paprika, smoked paprika, hot paprika]
 fdc-170918:
   de: [Kümmelpulver, gemahlener Kümmel]
   en: [ground caraway]
@@ -797,3 +802,72 @@ bls-M524500:
 bls-M602600:
   de: [Camembert]
   en: [camembert]
+
+# --- Shop words: what a shopping list calls foods that recipes rarely name ---------------------------
+bls-T410600:
+  de: [Räucherlachs]
+  en: [smoked salmon]
+bls-S462000:
+  de: [Liebesperlen]
+  en: [sprinkles]
+fdc-2346414:
+  de: [Apfelmus]
+  en: [applesauce]
+fdc-2685579:
+  de: [Tomatensoße]
+bls-S210000:
+  de: [Eis, Speiseeis, Eiscreme]
+  en: [ice cream]
+bls-N120000:
+  de: [Mineralwasser, Sprudel, Sprudelwasser]
+  en: [mineral water, sparkling water]
+bls-K280100:
+  de: [Chips, Kartoffelchips]
+  en: [crisps, potato chips]
+bls-C546000:
+  de: [Tortillachips, Nachos]
+  en: [tortilla chips, nachos]
+bls-S361000:
+  de: [Gummibärchen, Fruchtgummi, Weingummi]
+  en: [gummy bears, gummies]
+bls-N019000:
+  de: [Eistee]
+  en: [iced tea]
+bls-N256000:
+  de: [Apfelschorle, Apfelsaftschorle]
+  en: [apple spritzer]
+bls-W310000:
+  de: [Leberwurst]
+  en: [liver sausage]
+bls-G898400:
+  de: [Ajvar]
+  en: [ajvar]
+bls-D064000:
+  de: [Salzstangen, Salzbrezeln]
+  en: [pretzel sticks]
+bls-H250100:
+  de: [Pistazien]
+  en: [pistachios]
+bls-F552100:
+  de: [Physalis]
+  en: [physalis]
+bls-G560400:
+  de: [getrocknete Tomaten]
+  en: [sun-dried tomatoes]
+bls-S115100:
+  de: [Traubenzucker]
+  en: [dextrose]
+bls-K420100:
+  de: [Süßkartoffel]
+  en: [sweet potato]
+bls-G691100:
+  en: [radishes]
+bls-T020100:
+  en: [cuttlefish]
+bls-W215000:
+  en: [knackwurst]
+bls-G321100:
+  en: [napa cabbage]
+fdc-171328:
+  de: [Oregano]
+  en: [oregano]

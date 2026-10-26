@@ -43,8 +43,7 @@ class Food:
     diet_class: str | None = None
     # See catalogue/aisles.py.
     aisle: str | None = None
-    # Bases only; see catalogue/shopping_tiles.py and catalogue/food_icons.py.
-    shopping_tile: bool = False
+    # Bases only; see catalogue/food_icons.py.
     icon: str | None = None
 
 

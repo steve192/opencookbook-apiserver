@@ -87,9 +87,6 @@ public class CatalogueFood extends AuditableEntity {
     @Enumerated(EnumType.STRING)
     private Aisle aisle;
 
-    /** Offered as a tile to tap when adding to a shopping list. */
-    private boolean shoppingTile;
-
     /** An icon name the app bundles, Fluent Emoji or CookPal's own; null shows the aisle's icon. */
     private String icon;
 

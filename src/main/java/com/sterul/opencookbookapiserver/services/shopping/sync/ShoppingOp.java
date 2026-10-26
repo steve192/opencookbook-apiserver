@@ -1,5 +1,6 @@
 package com.sterul.opencookbookapiserver.services.shopping.sync;
 
+import java.time.Instant;
 import java.util.List;
 
 import com.sterul.opencookbookapiserver.entities.catalogue.Aisle;
@@ -17,27 +18,30 @@ public sealed interface ShoppingOp {
     /** Chosen by the device, so it can refer to an item it added offline. */
     String itemId();
 
+    /** When the change was made, by the device's clock; dates the list's history, not the order. Null for now. */
+    Instant at();
+
     /**
      * Adding a name already on the list asks for more of it.
      *
      * @param aisle null or {@code OTHER} to have the server place it
      * @param prioritized also prioritizes a name already on the list, never clears it
      */
-    record Add(String opId, String itemId, String name, String spec, Aisle aisle, String icon,
+    record Add(String opId, String itemId, Instant at, String name, String spec, Aisle aisle, String icon,
             List<ItemSource> sources, boolean prioritized) implements ShoppingOp {
     }
 
     /** Null leaves a field as it is; a blank spec clears it; an aisle is a person's choice. */
-    record Update(String opId, String itemId, String name, String spec, Aisle aisle, Boolean prioritized)
+    record Update(String opId, String itemId, Instant at, String name, String spec, Aisle aisle, Boolean prioritized)
             implements ShoppingOp {
     }
 
-    record Buy(String opId, String itemId) implements ShoppingOp {
+    record Buy(String opId, String itemId, Instant at) implements ShoppingOp {
     }
 
-    record Restore(String opId, String itemId, String spec) implements ShoppingOp {
+    record Restore(String opId, String itemId, Instant at, String spec) implements ShoppingOp {
     }
 
-    record Delete(String opId, String itemId) implements ShoppingOp {
+    record Delete(String opId, String itemId, Instant at) implements ShoppingOp {
     }
 }

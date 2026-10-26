@@ -14,5 +14,6 @@ public class UserInfoResponse {
     boolean onboarded;
     /** Null until the first shopping import asked. */
     ShoppingProvider shoppingProvider;
+    boolean shoppingSuggestions;
     List<String> roles;
 }
