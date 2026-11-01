@@ -16,7 +16,7 @@
     <description>opencookbook api-server</description>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>25</java.version>
         <sonar.organization>steve192</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
 
@@ -29,7 +29,7 @@
 
         <!-- The admin panel, which is bundled into this server's static resources -->
         <frontend-maven-plugin.version>2.0.2</frontend-maven-plugin.version>
-        <node.version>v24.21.0</node.version>
+        <node.version>v24.22.2</node.version>
         <skipAdminUi>false</skipAdminUi>
 
         <!-- Test groups that need what a normal build has not: see the profiles below -->
@@ -225,6 +225,23 @@
             </plugins>
         </pluginManagement>
         <plugins>
+            <!-- Since JDK 23, javac runs only the annotation processors it is given, none found on the classpath -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.springframework.boot</groupId>
+                            <artifactId>spring-boot-configuration-processor</artifactId>
+                        </path>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

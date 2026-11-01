@@ -269,7 +269,7 @@ both languages, adding `synonyms/` where not. The matcher tests below measure ex
 
 ## Checking the result in the apiserver
 
-From the repository root (Java 21, see the main README):
+From the repository root (Java 25, see the main README):
 
 ```sh
 # the dataset itself: checksum, unique names, display names, plausible nutrients, known units and states
