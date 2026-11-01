@@ -50,6 +50,8 @@ public class CatalogueNameRule extends AuditableEntity {
     public enum Kind {
         NEVER_LINK_TO,
         /** The name names no food ("Zahnstocher"). */
-        NOT_A_FOOD
+        NOT_A_FOOD,
+        /** A line written so ("salz, pfeffer") keeps its name and note when read again. */
+        KEEP_AS_WRITTEN
     }
 }

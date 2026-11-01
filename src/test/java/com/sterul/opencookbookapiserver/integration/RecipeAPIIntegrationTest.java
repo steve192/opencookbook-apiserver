@@ -124,6 +124,24 @@ class RecipeAPIIntegrationTest extends IntegrationTestBase {
     }
 
     @Test
+    @Transactional
+    void aLineIsStoredTidyAsTheReaderReadsIt() {
+        var newRecipe = RecipeRequest.builder()
+                .title("test")
+                .servings(1)
+                .neededIngredients(List.of(IngredientNeedRequest.builder()
+                        .note(" fein  gehackt ")
+                        .ingredient(IngredientReference.builder().name("Rote  Zwiebel ").build())
+                        .build()))
+                .build();
+
+        var line = cut.newRecipe(newRecipe).getNeededIngredients().get(0);
+
+        assertEquals("fein gehackt", line.note());
+        assertEquals("Rote Zwiebel", line.ingredient().name());
+    }
+
+    @Test
     void availableHostsPassedByRecipeScrapers() throws IOException {
         var testhost = "testhost.com";
         when(recipeScraperServiceProxy.getSupportedHosts()).thenReturn("[\"" + testhost + "\"]");
@@ -140,6 +158,7 @@ class RecipeAPIIntegrationTest extends IntegrationTestBase {
     private static IngredientNeedRequest fourOf(String ingredientName) {
         return IngredientNeedRequest.builder()
                 .amount(4F)
+                .note("fein gehackt")
                 .ingredient(IngredientReference.builder().name(ingredientName).build())
                 .build();
     }
@@ -151,6 +170,7 @@ class RecipeAPIIntegrationTest extends IntegrationTestBase {
             var answered = response.getNeededIngredients().get(i);
             assertEquals(requested.getAmount(), answered.amount());
             assertEquals(requested.getUnit(), answered.unit());
+            assertEquals(requested.getNote(), answered.note());
             assertEquals(requested.getIngredient().getName(), answered.ingredient().name());
         }
     }

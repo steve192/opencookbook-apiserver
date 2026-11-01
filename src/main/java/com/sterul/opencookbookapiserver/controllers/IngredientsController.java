@@ -70,7 +70,6 @@ public class IngredientsController extends BaseController {
     private Ingredient requestToEntity(IngredientRequest ingredientRequest) {
         return Ingredient.builder()
                 .name(ingredientRequest.getName())
-                .additionalInfo(ingredientRequest.getAdditionalInfo())
                 .build();
     }
 
@@ -78,7 +77,6 @@ public class IngredientsController extends BaseController {
         return IngredientResponse.builder()
                 .id(ingredient.getId())
                 .name(ingredient.getName())
-                .additionalInfo(ingredient.getAdditionalInfo())
                 .build();
     }
 

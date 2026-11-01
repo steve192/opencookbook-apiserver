@@ -22,6 +22,7 @@ const SCOPE_LABELS: Record<RelinkScope, string> = {
   ALL_AUTOMATIC: 'Everything matched',
   RETIRED_FOODS: 'Matched to retired foods',
   OLDER_MATCHER: 'Matched by an older matcher',
+  NAMES_AND_NOTES: 'Names and notes of recipe lines',
 };
 
 const CHANGE_LABELS: Record<RelinkChange, string> = {
@@ -29,6 +30,7 @@ const CHANGE_LABELS: Record<RelinkChange, string> = {
   CHANGED: 'Changed',
   UNLINKED: 'Unlinked',
   CONFIDENCE: 'Confidence',
+  NAME_AND_NOTE: 'Name and note',
 };
 
 const BAND_COLORS: Record<ConfidenceBand, 'success' | 'warning' | 'default'> = {
@@ -44,7 +46,7 @@ const runFields: FieldDefinition<RelinkRun>[] = [
   runStatusField(),
   {key: 'startedByEmailAddress', label: 'Started by', width: 200},
   {key: 'proposalCount', label: 'Proposals', kind: 'number', width: 110},
-  {key: 'ingredientCount', label: 'Ingredients', kind: 'number', width: 110, importance: 'secondary'},
+  {key: 'ingredientCount', label: 'Ingredients or lines', kind: 'number', width: 110, importance: 'secondary'},
   {key: 'appliedCount', label: 'Applied', kind: 'number', width: 100, importance: 'secondary'},
   {key: 'skippedCount', label: 'Skipped', kind: 'number', width: 100, importance: 'secondary'},
   {key: 'unchangedCount', label: 'Unchanged', kind: 'number', importance: 'reference'},
@@ -55,8 +57,7 @@ const runFields: FieldDefinition<RelinkRun>[] = [
   {key: 'id', label: 'Id', kind: 'number', importance: 'reference'},
 ];
 
-const proposalFields: FieldDefinition<RelinkProposal>[] = [
-  {key: 'name', label: 'Name', width: 200},
+const foodFields: FieldDefinition<RelinkProposal>[] = [
   {key: 'oldFood', label: 'Now', width: 220, value: (proposal) => describeFood(proposal.oldFood)},
   {key: 'newFood', label: 'Proposed', width: 220, value: (proposal) => describeFood(proposal.newFood)},
   {key: 'newConfidence', label: 'Confidence', kind: 'number', width: 120,
@@ -64,12 +65,34 @@ const proposalFields: FieldDefinition<RelinkProposal>[] = [
       <Chip size="small" color={BAND_COLORS[proposal.band]} label={formatConfidence(proposal.newConfidence)} /> :
       '-'},
   decisionField(),
-  {key: 'change', label: 'Change', width: 120, importance: 'secondary', value: (proposal) => CHANGE_LABELS[proposal.change]},
-  {key: 'ingredientCount', label: 'Ingredients', kind: 'number', width: 110, importance: 'secondary'},
+];
+
+const referenceFields: FieldDefinition<RelinkProposal>[] = [
   {key: 'language', label: 'Language', width: 100, importance: 'secondary'},
   {key: 'band', label: 'Band', importance: 'reference'},
   {key: 'id', label: 'Id', kind: 'number', importance: 'reference'},
 ];
+
+const proposalFields: FieldDefinition<RelinkProposal>[] = [
+  {key: 'name', label: 'Name', width: 200},
+  ...foodFields,
+  {key: 'change', label: 'Change', width: 120, importance: 'secondary', value: (proposal) => CHANGE_LABELS[proposal.change]},
+  {key: 'ingredientCount', label: 'Ingredients', kind: 'number', width: 110, importance: 'secondary'},
+  ...referenceFields,
+];
+
+// A line read again: what it is written as now, what it reads as with today's catalogue, and the food that follows
+const lineProposalFields: FieldDefinition<RelinkProposal>[] = [
+  {key: 'name', label: 'Name', width: 180},
+  {key: 'note', label: 'Note', width: 140},
+  {key: 'newName', label: 'Reads as', width: 180},
+  {key: 'newNote', label: 'New note', width: 140},
+  ...foodFields,
+  {key: 'lineCount', label: 'Lines', kind: 'number', width: 90, importance: 'secondary'},
+  ...referenceFields,
+];
+
+const readsLines = (run: RelinkRun | null | undefined) => run?.scope === 'NAMES_AND_NOTES';
 
 interface PreviewForm {
   scope: RelinkScope;
@@ -100,7 +123,8 @@ const preview: RunPreview<RelinkRun, PreviewForm> = {
   start: (form) => RelinkApi.preview(form.scope, form.belowConfidence),
 };
 
-const revertMessage = (run: RelinkRun) =>
+const revertMessage = (run: RelinkRun) => readsLines(run) ?
+  'Move the lines run ' + run.id + ' moved back? Lines changed since stay as they are.' :
   'Put back the links run ' + run.id + ' changed? Ingredients linked since stay as they are.';
 
 export const RelinkScreen = () => (
@@ -119,20 +143,27 @@ const RunReview = (props: {runId: number, onBack: () => void}) => {
   const review = useRunReview(RelinkApi, runId);
   const {proposals, runner, previewed} = review;
   const [showingRecipesOf, setShowingRecipesOf] = useState<RelinkProposal>();
+  const run = review.run.data;
+  const lines = readsLines(run);
 
   const stats = useMemo(() => {
     const count = (predicate: (proposal: RelinkProposal) => boolean) => proposals.data.filter(predicate).length;
+    const changes = lines ?
+      [{label: 'Other food', value: count((proposal) => proposal.oldFood?.id !== proposal.newFood?.id)}] :
+      [
+        {label: 'New links', value: count((proposal) => proposal.change === 'NEW_LINK')},
+        {label: 'Changed', value: count((proposal) => proposal.change === 'CHANGED')},
+        {label: 'Unlinked', value: count((proposal) => proposal.change === 'UNLINKED'), color: 'warning.main'},
+        {label: 'Confidence', value: count((proposal) => proposal.change === 'CONFIDENCE')},
+      ];
     return [
-      {label: 'New links', value: count((proposal) => proposal.change === 'NEW_LINK')},
-      {label: 'Changed', value: count((proposal) => proposal.change === 'CHANGED')},
-      {label: 'Unlinked', value: count((proposal) => proposal.change === 'UNLINKED'), color: 'warning.main'},
-      {label: 'Confidence', value: count((proposal) => proposal.change === 'CONFIDENCE')},
+      ...changes,
       {label: 'Silent', value: count((proposal) => proposal.band === 'SILENT')},
       {label: 'Uncertain', value: count((proposal) => proposal.band === 'UNCERTAIN')},
       {label: 'Pending', value: count((proposal) => proposal.decision === 'PENDING')},
       {label: 'Accepted', value: count((proposal) => proposal.decision === 'ACCEPTED'), color: 'success.main'},
     ];
-  }, [proposals.data]);
+  }, [proposals.data, lines]);
 
   const decide = useCallback((selected: RelinkProposal[], decision: RelinkDecision, remember: boolean) =>
     runner.run(decision === 'ACCEPTED' ? 'Accepted ' + selected.length : 'Rejected ' + selected.length,
@@ -154,11 +185,12 @@ const RunReview = (props: {runId: number, onBack: () => void}) => {
     {
       label: 'Reject and remember',
       icon: <BlockIcon fontSize="small" />,
-      confirm: (selected) => 'Reject ' + selected.length + ' proposal(s) and never propose these foods for these ' +
-        'names again? The rules are listed under Name rules.',
+      confirm: (selected) => 'Reject ' + selected.length + ' proposal(s) and never ' +
+        (lines ? 'read these lines otherwise' : 'propose these foods for these names') +
+        ' again? The rules are listed under Name rules.',
       onRun: (selected) => decide(selected, 'REJECTED', true),
     },
-  ] : [], [decide, previewed]);
+  ] : [], [decide, previewed, lines]);
 
   const acceptSilent = () => {
     const silent = proposals.data.filter((proposal) => proposal.band === 'SILENT' && proposal.decision === 'PENDING');
@@ -168,14 +200,18 @@ const RunReview = (props: {runId: number, onBack: () => void}) => {
   };
 
   const accepted = proposals.data.filter((proposal) => proposal.decision === 'ACCEPTED');
-  const acceptedIngredients = accepted.reduce((sum, proposal) => sum + proposal.ingredientCount, 0);
-  const run = review.run.data;
+  const acceptedCount = accepted.reduce((sum, proposal) => sum + proposal.ingredientCount + proposal.lineCount, 0);
+  const applyMessage = lines ?
+    'Move ' + acceptedCount + ' recipe line(s) of ' + accepted.length + ' accepted proposal(s)? Lines changed since ' +
+      'the preview are skipped.' :
+    'Link ' + acceptedCount + ' ingredient(s) of ' + accepted.length + ' accepted proposal(s)? Ingredients changed ' +
+      'since the preview are skipped.';
 
   return (
     <>
       <CollectionScreen
         title={'Run ' + runId + (run ? ': ' + SCOPE_LABELS[run.scope] : '')}
-        fields={proposalFields}
+        fields={lines ? lineProposalFields : proposalFields}
         data={proposals}
         getRowId={(proposal) => proposal.id}
         detailsTitle={(proposal) => proposal.name}
@@ -184,9 +220,8 @@ const RunReview = (props: {runId: number, onBack: () => void}) => {
           <RunReviewHeader
             review={review}
             acceptedCount={accepted.length}
-            applyMessage={'Link ' + acceptedIngredients + ' ingredient(s) of ' + accepted.length +
-              ' accepted proposal(s)? Ingredients changed since the preview are skipped.'}
-            unit="ingredient"
+            applyMessage={applyMessage}
+            unit={lines ? 'line' : 'ingredient'}
             onBack={props.onBack}
             actions={<Button onClick={acceptSilent}>Accept all silent</Button>}
           >
@@ -218,7 +253,7 @@ const AffectedRecipesDialog = (props: {runId: number, proposal: RelinkProposal, 
             <ListItem key={recipe.id} disableGutters>
               <ListItemText
                 primary={recipe.title + ' (' + (recipe.ownerEmailAddress ?? 'no owner') + ')'}
-                secondary={recipe.ingredients.join(', ')}
+                secondary={recipe.ingredients.join('; ')}
               />
             </ListItem>
           ))}

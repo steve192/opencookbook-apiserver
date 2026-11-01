@@ -35,7 +35,6 @@ const fields: FieldDefinition<Ingredient>[] = [
   {key: 'linkMatcherVersion', label: 'Matcher version', kind: 'number', importance: 'reference'},
   {key: 'linkedAt', label: 'Linked', kind: 'datetime', importance: 'reference'},
   {key: 'excludedFromNutrition', label: 'Not a food', kind: 'boolean', importance: 'reference'},
-  {key: 'additionalInfo', label: 'Additional info', importance: 'reference'},
   {key: 'createdOn', label: 'Created', kind: 'datetime', importance: 'reference'},
   {key: 'lastChange', label: 'Last change', kind: 'datetime', importance: 'reference'},
 ];

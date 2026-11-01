@@ -44,15 +44,14 @@ class IngredientServiceTest {
 
     @Test
     void anIngredientOfANewNameIsCreatedForTheOwner() {
-        when(ingredientRepository.findByNameAndOwner("Mehl", owner)).thenReturn(Optional.empty());
+        when(ingredientRepository.findByNameAndOwner("Weizenmehl 550", owner)).thenReturn(Optional.empty());
         when(ingredientRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        cut.createOrGetIngredient(Ingredient.builder().id(99L).name(" Mehl ").additionalInfo("Type 405").build(), owner);
+        cut.createOrGetIngredient(Ingredient.builder().id(99L).name(" Weizenmehl  550 ").build(), owner);
 
         var saved = ArgumentCaptor.forClass(Ingredient.class);
         verify(ingredientRepository).save(saved.capture());
-        assertEquals("Mehl", saved.getValue().getName());
-        assertEquals("Type 405", saved.getValue().getAdditionalInfo());
+        assertEquals("Weizenmehl 550", saved.getValue().getName());
         assertSame(owner, saved.getValue().getOwner());
         assertEquals(null, saved.getValue().getId());
         verify(linker).linkNew(saved.getValue());

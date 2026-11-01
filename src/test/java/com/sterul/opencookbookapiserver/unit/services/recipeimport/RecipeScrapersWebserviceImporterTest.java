@@ -81,7 +81,7 @@ class RecipeScrapersWebserviceImporterTest {
 
     @Test
     void testPreparationStepsImported() {
-        var recipe = cut.importRecipe(TEST_RECIPE_URL, null);
+        var recipe = cut.importRecipe(TEST_RECIPE_URL, userMock);
 
         assertEquals(Arrays.asList("Den Ofen auf 160°C vorheizen.",
                         "200 g Butter und 200 g Bitterschokoladestückchen vorsichtig miteinander schmelzen, die Schokolade darf nicht zu heiß werden. Abkühlen lassen.",
@@ -102,20 +102,21 @@ class RecipeScrapersWebserviceImporterTest {
     void testIngredientsImported() {
         var recipe = cut.importRecipe(TEST_RECIPE_URL, userMock);
 
-        assertIngredientPresent(recipe, 250, "g", "Butter", 0);
-        assertIngredientPresent(recipe, 300, "g", "Schokolade", 1);
-        assertIngredientPresent(recipe, 100, "g", "Schokolade nach Wahl", 2);
-        assertIngredientPresent(recipe, 200, "g", "Zucker", 3);
-        assertIngredientPresent(recipe, 1, "Pck.", "Vanillezucker", 4);
-        assertIngredientPresent(recipe, 4, "", "Ei(er)", 5);
-        assertIngredientPresent(recipe, 1, "Prise(n)", "Salz", 6);
+        assertIngredientPresent(recipe, 250F, "g", "Butter", 0);
+        assertIngredientPresent(recipe, 300F, "g", "Schokolade", 1);
+        assertIngredientPresent(recipe, 100F, "g", "Schokolade nach Wahl", 2);
+        assertIngredientPresent(recipe, 200F, "g", "Zucker", 3);
+        assertIngredientPresent(recipe, 1F, "Pck.", "Vanillezucker", 4);
+        assertIngredientPresent(recipe, 4F, "", "Ei(er)", 5);
+        assertIngredientPresent(recipe, 1F, "Prise(n)", "Salz", 6);
         // The source line offers two alternatives at once. The importer keeps the first amount
         // and unit and leaves the rest of the line in the name, rather than inventing a split.
-        assertIngredientPresent(recipe, 0.5F, "Flasche", "Rumaroma oder EL Rum", 7);
-        assertIngredientPresent(recipe, 0, "", "Salz nach Wunsch", 9);
+        assertIngredientPresent(recipe, 0.5F, "Flasche", "Rumaroma oder 3 EL Rum", 7);
+        assertIngredientPresent(recipe, null, "", "Salz nach Wunsch", 9);
+        assertEquals("gehackt", recipe.getNeededIngredients().get(2).getNote());
     }
 
-    private void assertIngredientPresent(Recipe recipe, float amount, String unit, String ingredientName, int index) {
+    private void assertIngredientPresent(Recipe recipe, Float amount, String unit, String ingredientName, int index) {
         assertEquals(amount, recipe.getNeededIngredients().get(index).getAmount());
         assertEquals(unit, recipe.getNeededIngredients().get(index).getUnit());
         assertEquals(ingredientName, recipe.getNeededIngredients().get(index).getIngredient().getName());

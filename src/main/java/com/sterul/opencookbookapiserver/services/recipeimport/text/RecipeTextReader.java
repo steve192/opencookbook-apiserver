@@ -11,8 +11,6 @@ import java.util.stream.Stream;
 
 import org.springframework.stereotype.Component;
 
-import com.sterul.opencookbookapiserver.services.catalogue.UnitLexicon;
-
 /** Reads a recipe from a caption, a note or a message, by fixed German and English rules. */
 @Component
 public class RecipeTextReader {
@@ -23,18 +21,12 @@ public class RecipeTextReader {
     private static final Pattern TRAILING_PUNCTUATION = Pattern.compile("[\\s.,;]+$");
     private static final Pattern LOWER_CASE = Pattern.compile("\\p{Ll}");
 
-    private final IngredientLines ingredientLines;
-
-    public RecipeTextReader(UnitLexicon unitLexicon) {
-        this.ingredientLines = new IngredientLines(unitLexicon);
-    }
-
     public RecipeText read(String text) {
         var cleaned = NoiseFilter.clean(TextNormalizer.lines(text));
         var lines = cleaned.lines();
         var block = IngredientBlock.find(lines).orElse(null);
         var ingredients = block == null ? List.<String>of() : block.lines().stream()
-                .flatMap(line -> ingredientLines.clean(line).stream())
+                .flatMap(line -> IngredientLines.clean(line).stream())
                 .toList();
         if (ingredients.isEmpty()) {
             return RecipeText.none(cleaned.link());

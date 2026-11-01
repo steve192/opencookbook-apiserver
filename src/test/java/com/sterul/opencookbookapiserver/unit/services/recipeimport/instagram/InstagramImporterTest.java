@@ -47,8 +47,8 @@ class InstagramImporterTest {
     void setup() throws IOException {
         var configuration = new OpencookbookConfiguration();
         configuration.setMaxImageSize(1_000_000L);
-        var textImporter = new RecipeTextImporter(new RecipeTextReader(ShippedCatalogueDataset.UNIT_LEXICON),
-                ShippedCatalogueDataset.ingredientExtractor());
+        var textImporter = new RecipeTextImporter(new RecipeTextReader(),
+                ShippedCatalogueDataset.ingredientLineReader());
         cut = new InstagramImporter(recipeImageService, configuration, textImporter);
         http = new StubbedHttp().page(POST, page(RECIPE_CAPTION, PHOTO)).image(PHOTO, new byte[] { 1, 2, 3 });
         ReflectionTestUtils.setField(cut, "client", http.client());

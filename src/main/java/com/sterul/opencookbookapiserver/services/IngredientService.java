@@ -12,6 +12,7 @@ import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
 import com.sterul.opencookbookapiserver.errors.ApiException;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.repositories.projections.OwnerCount;
+import com.sterul.opencookbookapiserver.services.catalogue.IngredientNames;
 import com.sterul.opencookbookapiserver.services.exceptions.ElementNotFound;
 
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +32,7 @@ public class IngredientService {
 
     /** By name only; the template's id is ignored. A new ingredient is linked automatically. */
     public Ingredient createOrGetIngredient(Ingredient template, CookpalUser owner) {
-        var ingredient = existingOrUnsaved(template.getName(), template.getAdditionalInfo(), owner);
+        var ingredient = existingOrUnsaved(template.getName(), owner);
         if (ingredient.getId() != null) {
             return ingredient;
         }
@@ -40,10 +41,10 @@ public class IngredientService {
     }
 
     /** The owner's ingredient of this name, or a new one not yet saved, linked as it would be when it is. */
-    public Ingredient existingOrUnsaved(String name, String additionalInfo, CookpalUser owner) {
-        var tidy = name.trim();
+    public Ingredient existingOrUnsaved(String name, CookpalUser owner) {
+        var tidy = IngredientNames.tidy(name);
         return ingredientRepository.findByNameAndOwner(tidy, owner).orElseGet(() -> {
-            var ingredient = Ingredient.builder().name(tidy).additionalInfo(additionalInfo).owner(owner).build();
+            var ingredient = Ingredient.builder().name(tidy).owner(owner).build();
             linker.linkNew(ingredient);
             return ingredient;
         });

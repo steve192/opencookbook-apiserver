@@ -33,7 +33,8 @@ public record SharedRecipeResponse(
                         .map(need -> new SharedIngredientUseResponse(
                                 new SharedIngredientResponse(need.getIngredient().getName()),
                                 need.getAmount(),
-                                need.getUnit()))
+                                need.getUnit(),
+                                need.getNote()))
                         .toList(),
                 // Copied rather than shared so that nothing can reach back into the entity, and
                 // copied permissively: a step that somehow ended up null must not turn the one

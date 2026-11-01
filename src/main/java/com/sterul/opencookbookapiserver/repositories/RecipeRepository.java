@@ -37,6 +37,9 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     @Query("select distinct recipe from Recipe recipe join recipe.neededIngredients need where need.ingredient.id in :ingredientIds")
     List<Recipe> findUsingIngredients(@Param("ingredientIds") Collection<Long> ingredientIds, Pageable page);
 
+    @Query("select distinct recipe from Recipe recipe join recipe.neededIngredients need where need.id in :needIds")
+    List<Recipe> findUsingNeeds(@Param("needIds") Collection<Long> needIds, Pageable page);
+
     @Query("select new com.sterul.opencookbookapiserver.repositories.projections.RecipeLine(recipe.id, recipe.title, need) "
             + "from Recipe recipe join recipe.neededIngredients need where need.ingredient.id in :ingredientIds")
     List<RecipeLine> findLinesUsingIngredients(@Param("ingredientIds") Collection<Long> ingredientIds);

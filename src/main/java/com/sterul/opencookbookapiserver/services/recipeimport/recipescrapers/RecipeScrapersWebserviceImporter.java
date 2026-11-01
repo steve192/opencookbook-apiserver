@@ -12,6 +12,8 @@ import com.google.gson.JsonSyntaxException;
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
+import com.sterul.opencookbookapiserver.services.ingredients.IngredientLineReader;
+import com.sterul.opencookbookapiserver.services.ingredients.IngredientLineReader.IngredientLine;
 import com.sterul.opencookbookapiserver.services.RecipeImageService;
 import com.sterul.opencookbookapiserver.services.recipeimport.AbstractRecipeImporter;
 import com.sterul.opencookbookapiserver.services.recipeimport.RecipeImportFailedException;
@@ -25,14 +27,14 @@ import lombok.extern.slf4j.Slf4j;
 public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
 
     private final RecipeScraperServiceProxy recipeScraperServiceProxy;
-    private final IngredientExtractor ingredientExtractor;
+    private final IngredientLineReader lineReader;
 
     public RecipeScrapersWebserviceImporter(RecipeScraperServiceProxy recipeScraperServiceProxy,
-            IngredientExtractor ingredientExtractor, RecipeImageService recipeImageService,
+            IngredientLineReader lineReader, RecipeImageService recipeImageService,
             OpencookbookConfiguration opencookbookConfiguration) {
         super(recipeImageService, opencookbookConfiguration);
         this.recipeScraperServiceProxy = recipeScraperServiceProxy;
-        this.ingredientExtractor = ingredientExtractor;
+        this.lineReader = lineReader;
     }
 
     @Override
@@ -86,15 +88,15 @@ public class RecipeScrapersWebserviceImporter extends AbstractRecipeImporter {
                 .build();
 
         addImage(importRecipe, scrapedRecipe.image, owner);
-        extractIngredients(scrapedRecipe, importRecipe);
+        extractIngredients(scrapedRecipe, importRecipe, owner.getLanguage());
 
         log.info("Recipe imported");
         return importRecipe;
     }
 
-    private void extractIngredients(ScrapedRecipe scrapedRecipe, Recipe importRecipe) {
+    private void extractIngredients(ScrapedRecipe scrapedRecipe, Recipe importRecipe, String language) {
         importRecipe.setNeededIngredients(scrapedRecipe.ingredients.stream()
-                .flatMap(line -> ingredientExtractor.toNeed(line).stream())
+                .flatMap(line -> lineReader.read(line, language).map(IngredientLine::toNeed).stream())
                 .toList());
     }
 

@@ -23,7 +23,7 @@ import com.sterul.opencookbookapiserver.unit.services.catalogue.ShippedCatalogue
  */
 class RecipeOcrImportServiceTest {
 
-    private final RecipeOcrImportService cut = new RecipeOcrImportService(ShippedCatalogueDataset.ingredientExtractor(),
+    private final RecipeOcrImportService cut = new RecipeOcrImportService(ShippedCatalogueDataset.ingredientLineReader(),
             ShippedCatalogueDataset.UNIT_LEXICON);
     private final CookpalUser owner = new CookpalUser();
 
@@ -71,7 +71,7 @@ class RecipeOcrImportServiceTest {
         assertEquals(200f, needs.get(0).getAmount());
         assertEquals("g", needs.get(0).getUnit());
         assertEquals("Mehl", needs.get(0).getIngredient().getName());
-        assertEquals("Type 405", needs.get(0).getIngredient().getAdditionalInfo());
+        assertEquals("Type 405", needs.get(0).getNote());
         assertEquals("", needs.get(1).getUnit());
     }
 
@@ -100,6 +100,15 @@ class RecipeOcrImportServiceTest {
         assertEquals("Prise(n)", need.getUnit());
         assertEquals("Salz", need.getIngredient().getName());
         assertEquals(1f, need.getAmount());
+    }
+
+    @Test
+    void anIngredientWithoutAnAmountHasNone() {
+        var result = ingredientResult(
+                "{\"raw\": \"Salz\", \"amount\": null, \"unit\": \"\", \"name\": \"Salz\","
+                        + " \"additionalInfo\": \"\", \"confidence\": 0.9}");
+
+        assertNull(toRecipe(result).getNeededIngredients().get(0).getAmount());
     }
 
     @Test

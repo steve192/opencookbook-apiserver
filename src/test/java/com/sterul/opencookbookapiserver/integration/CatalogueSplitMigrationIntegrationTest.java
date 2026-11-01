@@ -7,39 +7,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.Map;
 
-import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.FlywayException;
 import org.flywaydb.core.api.MigrationVersion;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 /** V17 on a version 16 database holding every case the old model allowed. */
-@Testcontainers
-class CatalogueSplitMigrationIntegrationTest {
+class CatalogueSplitMigrationIntegrationTest extends MigrationFromVersionTestBase {
 
-    private static final MigrationVersion BEFORE_THE_SPLIT = MigrationVersion.fromVersion("16");
-
-    // V8__.sql carries an "OWNER to cookpal", so the chain only applies as that role.
-    @Container
-    static PostgreSQLContainer<?> database = new PostgreSQLContainer<>("postgres:16-alpine")
-            .withDatabaseName("cookpal")
-            .withUsername("cookpal")
-            .withPassword("password")
-            .waitingFor(Wait.forListeningPort());
-
-    private JdbcTemplate jdbc;
-
-    @BeforeEach
-    void migrateToVersion16() {
-        flyway(BEFORE_THE_SPLIT).clean();
-        flyway(BEFORE_THE_SPLIT).migrate();
-        jdbc = new JdbcTemplate(new DriverManagerDataSource(database.getJdbcUrl(), database.getUsername(), database.getPassword()));
+    CatalogueSplitMigrationIntegrationTest() {
+        super("16");
     }
 
     @Test
@@ -243,19 +219,6 @@ class CatalogueSplitMigrationIntegrationTest {
         assertEquals(1, jdbc.queryForObject("SELECT count(*) FROM ingredient WHERE is_public_ingredient", Integer.class));
     }
 
-    private Flyway flyway(MigrationVersion target) {
-        return Flyway.configure()
-                .dataSource(database.getJdbcUrl(), database.getUsername(), database.getPassword())
-                .locations("classpath:db/migration")
-                .target(target)
-                .cleanDisabled(false)
-                .load();
-    }
-
-    private void migrate() {
-        flyway(MigrationVersion.LATEST).migrate();
-    }
-
     private long user(String emailAddress) {
         var id = nextval("cookpal_user_seq");
         jdbc.update("INSERT INTO cookpal_user (user_id, email_address, activated) VALUES (?, ?, true)", id, emailAddress);
@@ -301,10 +264,6 @@ class CatalogueSplitMigrationIntegrationTest {
         var need = need(ingredient);
         jdbc.update("INSERT INTO recipe_needed_ingredients (recipe_id, needed_ingredients_id) VALUES (?, ?)", recipe, need);
         return need;
-    }
-
-    private long nextval(String sequence) {
-        return jdbc.queryForObject("SELECT nextval('" + sequence + "')", Long.class);
     }
 
     private List<String> namesOf(String catalogueKey) {

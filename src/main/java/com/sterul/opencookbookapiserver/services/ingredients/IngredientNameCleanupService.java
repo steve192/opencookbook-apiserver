@@ -16,7 +16,7 @@ import com.sterul.opencookbookapiserver.errors.ApiException;
 import com.sterul.opencookbookapiserver.repositories.IngredientRepository;
 import com.sterul.opencookbookapiserver.repositories.RecipeRepository;
 import com.sterul.opencookbookapiserver.repositories.projections.RecipeLine;
-import com.sterul.opencookbookapiserver.services.ingredients.IngredientNameSplitter.SplitName;
+import com.sterul.opencookbookapiserver.services.ingredients.IngredientLineReader.IngredientLine;
 import com.sterul.opencookbookapiserver.services.catalogue.IngredientNames;
 
 import lombok.extern.slf4j.Slf4j;
@@ -32,20 +32,20 @@ public class IngredientNameCleanupService {
 
     private final IngredientRepository ingredientRepository;
     private final RecipeRepository recipeRepository;
-    private final IngredientNameSplitter splitter;
+    private final IngredientLineReader lineReader;
 
     public IngredientNameCleanupService(IngredientRepository ingredientRepository, RecipeRepository recipeRepository,
-            IngredientNameSplitter splitter) {
+            IngredientLineReader lineReader) {
         this.ingredientRepository = ingredientRepository;
         this.recipeRepository = recipeRepository;
-        this.splitter = splitter;
+        this.lineReader = lineReader;
     }
 
     public record LineChange(Long recipeId, String recipeTitle, Float amount, String unit, Float newAmount, String newUnit) {
     }
 
     /** @param mergesIntoIngredientId null if only renamed */
-    public record Proposal(Long ingredientId, String ownerEmailAddress, Instant lastChange, String name, SplitName split,
+    public record Proposal(Long ingredientId, String ownerEmailAddress, Instant lastChange, String name, IngredientLine split,
             Long mergesIntoIngredientId, List<LineChange> lines) {
     }
 
@@ -63,7 +63,7 @@ public class IngredientNameCleanupService {
                 .collect(Collectors.toMap(ingredient -> ownerAndName(ingredient.getOwner().getUserId(), ingredient.getName()),
                         Ingredient::getId, (first, second) -> first));
         var splits = ingredients.stream()
-                .flatMap(ingredient -> splitter.split(ingredient.getName()).map(split -> Map.entry(ingredient, split)).stream())
+                .flatMap(ingredient -> lineReader.quantityOf(ingredient.getName()).map(split -> Map.entry(ingredient, split)).stream())
                 .toList();
         var lines = linesByIngredient(splits.stream().map(entry -> entry.getKey().getId()).toList());
         return splits.stream()
@@ -93,7 +93,7 @@ public class IngredientNameCleanupService {
                 throw new ApiException(ApiErrorCode.VALIDATION_FAILED, "Ingredient " + decision.ingredientId() + " needs a name");
             }
             var ingredient = ingredientRepository.findById(decision.ingredientId()).orElse(null);
-            var split = ingredient == null ? null : splitter.split(ingredient.getName()).orElse(null);
+            var split = ingredient == null ? null : lineReader.quantityOf(ingredient.getName()).orElse(null);
             if (split == null || !Objects.equals(ingredient.getLastChange(), decision.lastChange())) {
                 skipped++;
                 continue;
@@ -131,12 +131,12 @@ public class IngredientNameCleanupService {
                 .collect(Collectors.groupingBy(line -> line.need().getIngredient().getId()));
     }
 
-    private static Float newAmount(RecipeLine line, SplitName split) {
+    private static Float newAmount(RecipeLine line, IngredientLine split) {
         return split.amount() != null ? split.amount() : line.need().getAmount();
     }
 
-    private static String newUnit(RecipeLine line, SplitName split) {
-        return split.unit() != null ? split.unit() : line.need().getUnit();
+    private static String newUnit(RecipeLine line, IngredientLine split) {
+        return split.unit().isEmpty() ? line.need().getUnit() : split.unit();
     }
 
     private static String ownerAndName(Long ownerId, String name) {

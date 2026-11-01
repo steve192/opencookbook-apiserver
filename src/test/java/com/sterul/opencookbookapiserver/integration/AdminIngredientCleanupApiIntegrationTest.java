@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -112,7 +113,7 @@ class AdminIngredientCleanupApiIntegrationTest extends IntegrationTestBase {
     void anIngredientChangedSinceThePreviewIsSkipped() throws Exception {
         var decisions = decisions(Map.of());
         var zimt = ingredientRepository.findByNameAndOwner("Prise Zimt", cook()).orElseThrow();
-        zimt.setAdditionalInfo("gemahlen");
+        zimt.excludeByOwner(Instant.now());
         ingredientRepository.saveAndFlush(zimt);
 
         mockMvc.perform(apply(decisions))

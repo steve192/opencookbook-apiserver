@@ -40,7 +40,7 @@ class ShoppingImportPreviewIntegrationTest extends IntegrationTestBase {
             { "title": "Pfannkuchen", "servings": 4,
               "neededIngredients": [
                 { "amount": 500, "unit": "g", "ingredient": { "name": "Mehl" } },
-                { "amount": 1, "unit": "kg", "ingredient": { "name": "Kartoffeln" } },
+                { "amount": 1, "unit": "kg", "note": "festkochend", "ingredient": { "name": "Kartoffeln" } },
                 { "amount": 2, "unit": "EL", "ingredient": { "name": "Öl" } },
                 { "amount": 1, "unit": "Prise", "ingredient": { "name": "Salz" } } ] }
             """;
@@ -114,6 +114,12 @@ class ShoppingImportPreviewIntegrationTest extends IntegrationTestBase {
                 .andExpect(jsonPath("$.meals[0].lines[1].mergeUnit").value("g"))
                 .andExpect(jsonPath("$.meals[0].lines[1].mergeFactor").value(1000.0))
                 .andExpect(jsonPath("$.meals[0].lines[2].mergeUnit").value("tablespoon"));
+    }
+
+    @Test
+    void aLineKeepsWhatTheRecipeSaysBesideTheFood() throws Exception {
+        week().andExpect(jsonPath("$.meals[0].lines[1].name").value("Kartoffeln"))
+                .andExpect(jsonPath("$.meals[0].lines[1].note").value("festkochend"));
     }
 
     @Test
