@@ -48,7 +48,7 @@ export const IngredientCleanupScreen = () => {
         {proposal.mergesIntoIngredientId !== null && <Chip size="small" label="merges" sx={{ml: 1}} />}
       </>,
     },
-    {key: 'amount', label: 'From the name', width: 140, value: (proposal) => amountAndUnit(proposal.amount, proposal.unit)},
+    {key: 'amount', label: 'Amount in the name', width: 160, value: (proposal) => amountAndUnit(proposal.amount, proposal.unit)},
     {key: 'lines', label: 'Recipe lines', kind: 'list', width: 320, value: (proposal) => proposal.lines.map(describeLine)},
     {key: 'ownerEmailAddress', label: 'Owner', width: 220, importance: 'secondary'},
     {key: 'ingredientId', label: 'Id', kind: 'number', importance: 'reference'},
