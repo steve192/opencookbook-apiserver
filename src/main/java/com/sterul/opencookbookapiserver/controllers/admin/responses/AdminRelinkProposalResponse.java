@@ -3,12 +3,19 @@ package com.sterul.opencookbookapiserver.controllers.admin.responses;
 import com.sterul.opencookbookapiserver.entities.catalogue.IngredientRelinkProposal;
 import com.sterul.opencookbookapiserver.services.catalogue.matching.ConfidenceBand;
 
-/** @param band null when the proposal unlinks */
+/**
+ * @param band      null when the proposal unlinks
+ * @param note      for NAME_AND_NOTE only, as newName, newNote and lineCount; such a proposal has no ingredients
+ */
 public record AdminRelinkProposalResponse(
         Long id,
         String name,
+        String note,
+        String newName,
+        String newNote,
         String language,
         int ingredientCount,
+        int lineCount,
         AdminFoodReference oldFood,
         AdminFoodReference newFood,
         Float newConfidence,
@@ -18,8 +25,9 @@ public record AdminRelinkProposalResponse(
 
     public static AdminRelinkProposalResponse fromEntity(IngredientRelinkProposal proposal) {
         var confidence = proposal.getNewConfidence();
-        return new AdminRelinkProposalResponse(proposal.getId(), proposal.getName(), proposal.getLanguage(),
-                proposal.getMembers().size(), AdminFoodReference.of(proposal.getOldFood()), AdminFoodReference.of(proposal.getNewFood()),
+        return new AdminRelinkProposalResponse(proposal.getId(), proposal.getName(), proposal.getNote(), proposal.getNewName(),
+                proposal.getNewNote(), proposal.getLanguage(), proposal.getMembers().size(), proposal.getLines().size(),
+                AdminFoodReference.of(proposal.getOldFood()), AdminFoodReference.of(proposal.getNewFood()),
                 confidence, confidence == null ? null : ConfidenceBand.of(confidence), proposal.getChange(), proposal.getDecision());
     }
 }

@@ -9,7 +9,8 @@ import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
 import com.sterul.opencookbookapiserver.errors.ApiException;
-import com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers.IngredientExtractor;
+import com.sterul.opencookbookapiserver.services.ingredients.IngredientLineReader;
+import com.sterul.opencookbookapiserver.services.ingredients.IngredientLineReader.IngredientLine;
 
 /** Turns a recipe written as text into an unsaved draft, as a scan is. */
 @Component
@@ -18,11 +19,11 @@ public class RecipeTextImporter {
     private static final int DEFAULT_SERVINGS = 1;
 
     private final RecipeTextReader textReader;
-    private final IngredientExtractor ingredientExtractor;
+    private final IngredientLineReader lineReader;
 
-    public RecipeTextImporter(RecipeTextReader textReader, IngredientExtractor ingredientExtractor) {
+    public RecipeTextImporter(RecipeTextReader textReader, IngredientLineReader lineReader) {
         this.textReader = textReader;
-        this.ingredientExtractor = ingredientExtractor;
+        this.lineReader = lineReader;
     }
 
     /** @throws ApiException IMPORT_NO_RECIPE, carrying the link the text points to where it has one */
@@ -38,7 +39,7 @@ public class RecipeTextImporter {
                 .preparationTime(0L)
                 .totalTime(0L)
                 .neededIngredients(recipe.ingredientLines().stream()
-                        .flatMap(line -> ingredientExtractor.toNeed(line).stream())
+                        .flatMap(line -> lineReader.read(line, owner.getLanguage()).map(IngredientLine::toNeed).stream())
                         .collect(Collectors.toCollection(ArrayList::new)))
                 .preparationSteps(new ArrayList<>(recipe.steps()))
                 .recipeSource(recipe.link())

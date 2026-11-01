@@ -1,8 +1,11 @@
 package com.sterul.opencookbookapiserver.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -55,6 +58,13 @@ class AdminRelinkApiIntegrationTest extends IntegrationTestBase {
               "neededIngredients": [
                 { "amount": 100, "unit": "g", "ingredient": { "name": "Zucker" } },
                 { "amount": 10, "unit": "g", "ingredient": { "name": "Zauberpulver" } } ] }
+            """;
+    /** Written before the catalogue knew passata, and by an import that left a note in a name. */
+    private static final String SAUCE = """
+            { "title": "Tomatensauce", "servings": 2,
+              "neededIngredients": [
+                { "amount": 400, "unit": "g", "note": "passiert", "ingredient": { "name": "Tomaten" } },
+                { "amount": 1, "unit": "TL", "ingredient": { "name": "Zucker, fein" } } ] }
             """;
 
     @Autowired
@@ -155,6 +165,93 @@ class AdminRelinkApiIntegrationTest extends IntegrationTestBase {
         var nextRunId = preview("NEVER_MATCHED_OR_UNLINKED");
         mockMvc.perform(get("/api/v1/admin/nutrition/relink-runs/" + nextRunId + "/proposals").with(operator()))
                 .andExpect(jsonPath("$[*].newFood.catalogueKey").value(not(hasItem("custom-sugar"))));
+    }
+
+    @Test
+    void aRunReadsLinesAgainWithTodaysCatalogueAndIsRevertedAgain() throws Exception {
+        var recipeId = postSauce();
+        catalogueLearnsPassata();
+
+        var runId = preview("NAMES_AND_NOTES");
+        mockMvc.perform(get("/api/v1/admin/nutrition/relink-runs/" + runId + "/proposals").with(operator()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].name").value("Tomaten"))
+                .andExpect(jsonPath("$[0].note").value("passiert"))
+                .andExpect(jsonPath("$[0].newName").value("Tomaten, passiert"))
+                .andExpect(jsonPath("$[0].newNote").isEmpty())
+                .andExpect(jsonPath("$[0].newFood.catalogueKey").value("custom-passata"))
+                .andExpect(jsonPath("$[0].change").value("NAME_AND_NOTE"))
+                .andExpect(jsonPath("$[0].lineCount").value(1))
+                .andExpect(jsonPath("$[1].name").value("Zucker, fein"))
+                .andExpect(jsonPath("$[1].newName").value("Zucker"))
+                .andExpect(jsonPath("$[1].newNote").value("fein"))
+                .andExpect(jsonPath("$[1].newFood.catalogueKey").value("custom-sugar"));
+
+        decideAll(runId, "ACCEPTED", false);
+        mockMvc.perform(post("/api/v1/admin/nutrition/relink-runs/" + runId + "/apply").with(operator()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.appliedCount").value(2));
+        mockMvc.perform(get("/api/v1/recipes/" + recipeId).with(user(COOK)))
+                .andExpect(jsonPath("$.neededIngredients[0].ingredient.name").value("Tomaten, passiert"))
+                .andExpect(jsonPath("$.neededIngredients[0].note").isEmpty())
+                .andExpect(jsonPath("$.neededIngredients[1].ingredient.name").value("Zucker"))
+                .andExpect(jsonPath("$.neededIngredients[1].note").value("fein"));
+
+        mockMvc.perform(post("/api/v1/admin/nutrition/relink-runs/" + runId + "/revert").with(operator()))
+                .andExpect(jsonPath("$.status").value("REVERTED"));
+        mockMvc.perform(get("/api/v1/recipes/" + recipeId).with(user(COOK)))
+                .andExpect(jsonPath("$.neededIngredients[0].ingredient.name").value("Tomaten"))
+                .andExpect(jsonPath("$.neededIngredients[0].note").value("passiert"))
+                .andExpect(jsonPath("$.neededIngredients[1].ingredient.name").value("Zucker, fein"))
+                .andExpect(jsonPath("$.neededIngredients[1].note").isEmpty());
+    }
+
+    @Test
+    void aRememberedRejectionKeepsTheLinesAsWritten() throws Exception {
+        postSauce();
+        catalogueLearnsPassata();
+        var runId = preview("NAMES_AND_NOTES");
+        decideAll(runId, "REJECTED", true);
+
+        mockMvc.perform(get("/api/v1/admin/nutrition/name-rules").with(operator()))
+                .andExpect(jsonPath("$[*].name").value(containsInAnyOrder("tomaten, passiert", "zucker, fein")))
+                .andExpect(jsonPath("$[*].kind").value(everyItem(is("KEEP_AS_WRITTEN"))));
+        mockMvc.perform(post("/api/v1/admin/nutrition/relink-runs/" + runId + "/discard").with(operator()));
+
+        var nextRunId = preview("NAMES_AND_NOTES");
+        mockMvc.perform(get("/api/v1/admin/nutrition/relink-runs/" + nextRunId + "/proposals").with(operator()))
+                .andExpect(jsonPath("$.length()").value(0));
+    }
+
+    @Test
+    void linesOfAnIngredientItsOwnerDecidedAreLeftAlone() throws Exception {
+        postSauce();
+        var fein = ingredientRepository.findByNameAndOwner("Zucker, fein", userRepository.findByEmailAddress(COOK)).orElseThrow();
+        mockMvc.perform(put("/api/v1/ingredients/" + fein.getId() + "/link").with(user(COOK))
+                .contentType(MediaType.APPLICATION_JSON).content("{\"excluded\": true}"))
+                .andExpect(status().isOk());
+
+        var runId = preview("NAMES_AND_NOTES");
+        mockMvc.perform(get("/api/v1/admin/nutrition/relink-runs/" + runId + "/proposals").with(operator()))
+                .andExpect(jsonPath("$[*].name").value(not(hasItem("Zucker, fein"))));
+    }
+
+    @Test
+    void aLineChangedSinceThePreviewIsLeftAlone() throws Exception {
+        var recipeId = postSauce();
+        catalogueLearnsPassata();
+        var runId = preview("NAMES_AND_NOTES");
+        decideAll(runId, "ACCEPTED", false);
+
+        // Saving a recipe writes its lines anew
+        mockMvc.perform(put("/api/v1/recipes/" + recipeId).with(user(COOK)).contentType(MediaType.APPLICATION_JSON).content(SAUCE))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/api/v1/admin/nutrition/relink-runs/" + runId + "/apply").with(operator()))
+                .andExpect(jsonPath("$.appliedCount").value(0));
+        mockMvc.perform(get("/api/v1/recipes/" + recipeId).with(user(COOK)))
+                .andExpect(jsonPath("$.neededIngredients[0].ingredient.name").value("Tomaten"));
     }
 
     @Test
@@ -314,6 +411,25 @@ class AdminRelinkApiIntegrationTest extends IntegrationTestBase {
                 .origin(CatalogueFoodName.Origin.ADMIN).build());
         sugar = foodRepository.save(sugar);
         indexUpdater.rebuild();
+    }
+
+    private long postSauce() throws Exception {
+        var body = mockMvc.perform(post("/api/v1/recipes").with(user(COOK)).contentType(MediaType.APPLICATION_JSON).content(SAUCE))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        return ((Number) JsonPath.read(body, "$.id")).longValue();
+    }
+
+    /** Tomatoes it knew already; passata it learns. */
+    private void catalogueLearnsPassata() {
+        foodRepository.saveAll(List.of(customFood("custom-tomato", "Tomate"), customFood("custom-passata", "Tomaten passiert")));
+        indexUpdater.rebuild();
+    }
+
+    private static CatalogueFood customFood(String key, String germanName) {
+        return CatalogueFood.builder().catalogueKey(key).origin(CatalogueFood.Origin.CUSTOM)
+                .nutrients(NutrientValues.builder().energyKcal(20f).build())
+                .names(new ArrayList<>(List.of(name("de", germanName)))).build();
     }
 
     private long preview(String scope) throws Exception {

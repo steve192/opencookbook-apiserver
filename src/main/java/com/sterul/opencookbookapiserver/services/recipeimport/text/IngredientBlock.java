@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import com.sterul.opencookbookapiserver.services.catalogue.IngredientNames;
+
 /**
  * @param start   the heading's line, or the first line of a list without one
  * @param heading before its colon; null for a list without one
@@ -74,7 +76,7 @@ record IngredientBlock(int start, String heading, List<String> lines, int end) {
     }
 
     private static List<String> itemsAfterColon(RecipeTextLexicon.Heading heading) {
-        return heading.inline().isBlank() ? List.of() : Lines.splitOutsideBrackets(heading.inline(), COMMA);
+        return heading.inline().isBlank() ? List.of() : IngredientNames.splitOutsideBrackets(heading.inline(), COMMA);
     }
 
     private static Optional<Integer> firstQuantityRun(List<String> lines) {

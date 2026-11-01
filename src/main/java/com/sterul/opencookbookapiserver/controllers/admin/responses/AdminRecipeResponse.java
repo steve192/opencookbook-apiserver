@@ -3,11 +3,11 @@ package com.sterul.opencookbookapiserver.controllers.admin.responses;
 import java.time.Instant;
 import java.util.List;
 
-import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.RecipeImage;
 import com.sterul.opencookbookapiserver.entities.recipe.Diet;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.entities.recipe.RecipeGroup;
+import com.sterul.opencookbookapiserver.services.ingredients.IngredientLineReader;
 
 public record AdminRecipeResponse(
         Long id,
@@ -42,7 +42,8 @@ public record AdminRecipeResponse(
                 recipe.getRecipeSource(),
                 recipe.getNeededIngredients().size(),
                 recipe.getPreparationSteps().size(),
-                recipe.getNeededIngredients().stream().map(IngredientNeed::describe).toList(),
+                recipe.getNeededIngredients().stream()
+                        .map(need -> IngredientLineReader.written(need.describe(), need.getNote())).toList(),
                 List.copyOf(recipe.getPreparationSteps()),
                 recipe.getImages().stream().map(RecipeImage::getUuid).toList(),
                 recipe.getRecipeGroups().stream().map(RecipeGroup::getTitle).toList(),

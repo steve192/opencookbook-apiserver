@@ -7,7 +7,6 @@ import com.sterul.opencookbookapiserver.entities.Ingredient;
 public record AdminIngredientResponse(
         Long id,
         String name,
-        String additionalInfo,
         Long ownerUserId,
         String ownerEmailAddress,
         Long catalogueFoodId,
@@ -27,7 +26,6 @@ public record AdminIngredientResponse(
         return new AdminIngredientResponse(
                 ingredient.getId(),
                 ingredient.getName(),
-                ingredient.getAdditionalInfo(),
                 owner.getUserId(),
                 owner.getEmailAddress(),
                 food == null ? null : food.getId(),

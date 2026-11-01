@@ -45,8 +45,6 @@ public class Ingredient extends AuditableEntity {
     @Column(nullable = false)
     private String name;
 
-    private String additionalInfo;
-
     @ManyToOne(optional = false)
     private CookpalUser owner;
 

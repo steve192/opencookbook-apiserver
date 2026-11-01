@@ -14,14 +14,15 @@ public final class RuleBook {
 
     private final Set<String> notFoods = new HashSet<>();
     private final Map<String, Set<String>> forbiddenFoodKeys = new HashMap<>();
+    private final Set<String> keptAsWritten = new HashSet<>();
 
     public RuleBook(Collection<CatalogueNameRule> rules) {
         for (var rule : rules) {
-            if (rule.getKind() == CatalogueNameRule.Kind.NOT_A_FOOD) {
-                notFoods.add(rule.getName());
-            } else {
-                forbiddenFoodKeys.computeIfAbsent(rule.getName(), name -> new HashSet<>())
+            switch (rule.getKind()) {
+                case NOT_A_FOOD -> notFoods.add(rule.getName());
+                case NEVER_LINK_TO -> forbiddenFoodKeys.computeIfAbsent(rule.getName(), name -> new HashSet<>())
                         .add(rule.getCatalogueFood().getCatalogueKey());
+                case KEEP_AS_WRITTEN -> keptAsWritten.add(rule.getName());
             }
         }
     }
@@ -32,5 +33,10 @@ public final class RuleBook {
 
     public boolean forbids(String name, String foodKey) {
         return forbiddenFoodKeys.getOrDefault(IngredientNames.normalise(name), Set.of()).contains(foodKey);
+    }
+
+    /** @param written a recipe line's name and note as written: "Salz, Pfeffer" */
+    public boolean keepsAsWritten(String written) {
+        return keptAsWritten.contains(IngredientNames.normalise(written));
     }
 }

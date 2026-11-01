@@ -41,6 +41,7 @@ public class IngredientRelinkRun extends ReviewedRun {
 
     private String datasetLabel;
 
+    /** What the proposals concern: ingredients, or for NAMES_AND_NOTES recipe lines. */
     private int ingredientCount;
     private int unchangedCount;
 
@@ -50,6 +51,8 @@ public class IngredientRelinkRun extends ReviewedRun {
         AUTOMATIC_BELOW_CONFIDENCE,
         ALL_AUTOMATIC,
         RETIRED_FOODS,
-        OLDER_MATCHER
+        OLDER_MATCHER,
+        /** Recipe lines read again as written, name and note, with today's catalogue. */
+        NAMES_AND_NOTES
     }
 }

@@ -59,7 +59,7 @@ public class RecipeCopier {
     private List<IngredientNeed> copyIngredientNeeds(List<IngredientNeed> sourceNeeds) {
         return sourceNeeds.stream()
                 .map(sourceNeed -> IngredientNeed.detached(sourceNeed.getAmount(), sourceNeed.getUnit(),
-                        sourceNeed.getIngredient().getName(), null))
+                        sourceNeed.getIngredient().getName(), sourceNeed.getNote()))
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 

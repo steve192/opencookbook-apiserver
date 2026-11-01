@@ -3,6 +3,7 @@ package com.sterul.opencookbookapiserver.entities;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -31,15 +32,21 @@ public class IngredientNeed extends AuditableEntity {
     private Float amount;
     private String unit;
 
+    /** What the line says beside its food ("weich"), empty where nothing; shown with it, never used to tell the food. */
+    @Column(length = 500, nullable = false)
+    @Builder.Default
+    private String note = "";
+
     /**
      * Of an ingredient known by its name only. RecipeReferenceResolver swaps it for the owner's own
      * ingredient of that name when the recipe is saved.
      */
-    public static IngredientNeed detached(Float amount, String unit, String name, String additionalInfo) {
+    public static IngredientNeed detached(Float amount, String unit, String name, String note) {
         return IngredientNeed.builder()
                 .amount(amount)
                 .unit(unit)
-                .ingredient(Ingredient.builder().name(name).additionalInfo(additionalInfo).build())
+                .note(note)
+                .ingredient(Ingredient.builder().name(name).build())
                 .build();
     }
 

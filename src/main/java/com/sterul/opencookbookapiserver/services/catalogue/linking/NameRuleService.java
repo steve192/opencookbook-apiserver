@@ -53,6 +53,12 @@ public class NameRuleService {
                 .createdBy(admin).build());
     }
 
+    /** @param written a recipe line's name and note as written: "Salz, Pfeffer" */
+    public CatalogueNameRule keepAsWritten(String written, CookpalUser admin) {
+        return save(CatalogueNameRule.builder().name(IngredientNames.normalise(written))
+                .kind(CatalogueNameRule.Kind.KEEP_AS_WRITTEN).createdBy(admin).build());
+    }
+
     public void deleteRule(Long id) {
         var rule = repository.findById(id).orElseThrow(ElementNotFound::new);
         log.info("Admin: Deleting name rule {} '{}'", rule.getKind(), rule.getName());

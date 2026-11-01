@@ -8,7 +8,8 @@ import com.sterul.opencookbookapiserver.entities.catalogue.Aisle;
  * @param mergeUnit what the amount adds up in: "g" or "ml" across metric units, otherwise the unit itself
  * @param mergeFactor turns the amount into mergeUnit ("1 kg" is 1000 g)
  * @param staple whether the viewer usually leaves it out
+ * @param note what the recipe says beside the food ("festkochend"), for the sheet only; empty where it says nothing
  */
 public record PreviewLine(String name, String nameKey, Float amount, String unit, String mergeUnit,
-        float mergeFactor, Aisle aisle, String icon, boolean staple) {
+        float mergeFactor, Aisle aisle, String icon, boolean staple, String note) {
 }

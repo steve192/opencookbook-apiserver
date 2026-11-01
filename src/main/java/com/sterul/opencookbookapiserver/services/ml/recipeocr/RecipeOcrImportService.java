@@ -14,7 +14,8 @@ import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.errors.ApiErrorCode;
 import com.sterul.opencookbookapiserver.services.ml.MlSubsystemException;
 import com.sterul.opencookbookapiserver.services.catalogue.UnitLexicon;
-import com.sterul.opencookbookapiserver.services.recipeimport.recipescrapers.IngredientExtractor;
+import com.sterul.opencookbookapiserver.services.ingredients.IngredientLineReader;
+import com.sterul.opencookbookapiserver.services.ingredients.IngredientLineReader.IngredientLine;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,11 +28,11 @@ public class RecipeOcrImportService {
     private static final int DEFAULT_SERVINGS = 1;
 
     private final Gson gson = new Gson();
-    private final IngredientExtractor ingredientExtractor;
+    private final IngredientLineReader lineReader;
     private final UnitLexicon unitLexicon;
 
-    public RecipeOcrImportService(IngredientExtractor ingredientExtractor, UnitLexicon unitLexicon) {
-        this.ingredientExtractor = ingredientExtractor;
+    public RecipeOcrImportService(IngredientLineReader lineReader, UnitLexicon unitLexicon) {
+        this.lineReader = lineReader;
         this.unitLexicon = unitLexicon;
     }
 
@@ -66,32 +67,26 @@ public class RecipeOcrImportService {
                 .preparationSteps(stepsOf(result))
                 .build();
 
-        recipe.setNeededIngredients(ingredientsOf(result));
+        recipe.setNeededIngredients(ingredientsOf(result, owner.getLanguage()));
         return recipe;
     }
 
-    private List<IngredientNeed> ingredientsOf(RecipeOcrResult result) {
+    private List<IngredientNeed> ingredientsOf(RecipeOcrResult result, String language) {
         return result.getIngredients().stream()
-                .flatMap(parsed -> toNeed(parsed).stream())
+                .flatMap(parsed -> lineOf(parsed, language).map(IngredientLine::toNeed).stream())
                 .toList();
     }
 
-    /** One ingredient, with the unit checked against what this instance understands. */
-    private Optional<IngredientNeed> toNeed(RecipeOcrResult.Ingredient parsed) {
+    /** One ingredient, with the unit checked against what this instance understands; empty without a name. */
+    private Optional<IngredientLine> lineOf(RecipeOcrResult.Ingredient parsed, String language) {
         var unit = trimmed(parsed.getUnit());
         if (!unit.isEmpty() && !unitLexicon.isKnownUnit(unit)) {
             var raw = trimmed(parsed.getRaw());
             log.debug("Unknown unit '{}' from the subsystem, re-reading '{}'", unit, raw);
-            return ingredientExtractor.toNeed(raw);
+            return lineReader.read(raw, language);
         }
-
-        var name = trimmed(parsed.getName());
-        if (name.isEmpty()) {
-            // Nothing to put in the cookbook; an amount without a name is not an ingredient.
-            return Optional.empty();
-        }
-        var amount = parsed.getAmount() == null ? 0f : parsed.getAmount().floatValue();
-        return Optional.of(IngredientNeed.detached(amount, unit, name, trimmed(parsed.getAdditionalInfo())));
+        var amount = parsed.getAmount() == null ? null : parsed.getAmount().floatValue();
+        return lineReader.read(amount, unit, parsed.getName(), parsed.getAdditionalInfo(), language);
     }
 
     private List<String> stepsOf(RecipeOcrResult result) {

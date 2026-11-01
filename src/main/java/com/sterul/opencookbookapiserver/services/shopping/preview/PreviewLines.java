@@ -44,6 +44,6 @@ class PreviewLines {
         var placement = placer.place(new PlacementQuery(ingredient.getName(), viewer.getLanguage(),
                 ingredient.getCatalogueFood()));
         return new PreviewLine(ingredient.getName(), key, need.getAmount(), need.getUnit(), mergeUnit.unit(),
-                mergeUnit.factor(), placement.aisle(), placement.icon(), stapleKeys.contains(key));
+                mergeUnit.factor(), placement.aisle(), placement.icon(), stapleKeys.contains(key), need.getNote());
     }
 }

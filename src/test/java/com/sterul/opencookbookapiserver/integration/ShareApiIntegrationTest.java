@@ -183,6 +183,7 @@ class ShareApiIntegrationTest extends IntegrationTestBase {
                 .andExpect(jsonPath("$.title").value("Shared lasagne"))
                 .andExpect(jsonPath("$.neededIngredients[0].ingredient.name").value("Tomato"))
                 .andExpect(jsonPath("$.neededIngredients[0].amount").value(2.0))
+                .andExpect(jsonPath("$.neededIngredients[0].note").value("in Würfeln"))
                 .andExpect(jsonPath("$.preparationSteps[0]").value("Chop the tomato"))
                 .andExpect(jsonPath("$.images[0].uuid").value(imageUuid))
                 .andExpect(jsonPath("$.servings").value(4));
@@ -270,6 +271,7 @@ class ShareApiIntegrationTest extends IntegrationTestBase {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Shared lasagne"))
                 .andExpect(jsonPath("$.servings").value(4))
+                .andExpect(jsonPath("$.neededIngredients[0].note").value("in Würfeln"))
                 .andExpect(jsonPath("$.preparationSteps[0]").value("Chop the tomato"))
                 .andReturn().getResponse().getContentAsString();
 
@@ -388,6 +390,7 @@ class ShareApiIntegrationTest extends IntegrationTestBase {
                 .neededIngredients(new ArrayList<>(List.of(IngredientNeed.builder()
                         .amount(2f)
                         .unit("Stück")
+                        .note("in Würfeln")
                         .ingredient(Ingredient.builder().name("Tomato").build())
                         .build())))
                 .images(new ArrayList<>(List.of(recipeImageService.getImagesByUser(recipeOwner).stream()

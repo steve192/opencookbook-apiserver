@@ -14,7 +14,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 import com.sterul.opencookbookapiserver.services.recipeimport.text.RecipeText;
 import com.sterul.opencookbookapiserver.services.recipeimport.text.RecipeTextReader;
-import com.sterul.opencookbookapiserver.unit.services.catalogue.ShippedCatalogueDataset;
 
 /**
  * Reading recipes from texts as people write them in captions, notes and messages. Every caption
@@ -22,7 +21,6 @@ import com.sterul.opencookbookapiserver.unit.services.catalogue.ShippedCatalogue
  */
 class RecipeTextReaderTest {
 
-    private static final String EM_DASH = Character.toString(0x2014);
     private static final String EN_DASH = Character.toString(0x2013);
     private static final String NBSP = Character.toString(0x00A0);
     private static final String WORD_JOINER = Character.toString(0x2060);
@@ -31,7 +29,7 @@ class RecipeTextReaderTest {
     private static final String LINE_SEPARATOR = Character.toString(0x2028);
     private static final String FRACTION_SLASH = Character.toString(0x2044);
 
-    private final RecipeTextReader cut = new RecipeTextReader(ShippedCatalogueDataset.UNIT_LEXICON);
+    private final RecipeTextReader cut = new RecipeTextReader();
 
     private RecipeText read(String text) {
         var recipe = cut.read(text);
@@ -141,15 +139,6 @@ class RecipeTextReaderTest {
             var recipe = read("Zutaten:\n" + "- ".repeat(4_000) + "200 g Mehl\n");
 
             assertEquals(List.of("200 g Mehl"), recipe.ingredientLines());
-        }
-
-        @Test
-        void anAmountWrittenLastIsPutFirst() {
-            var recipe = read("Zutaten:\nMehl " + EM_DASH + " 1 EL\nButter: 60 g\nSahne " + EN_DASH
-                    + " 200 ml\nPaprika (rot) - 2\nCrème fraîche " + EM_DASH + " 1 Packung\n");
-
-            assertEquals(List.of("1 EL Mehl", "60 g Butter", "200 ml Sahne", "2 Paprika (rot)", "1 Packung Crème fraîche"),
-                    recipe.ingredientLines());
         }
 
         @Test

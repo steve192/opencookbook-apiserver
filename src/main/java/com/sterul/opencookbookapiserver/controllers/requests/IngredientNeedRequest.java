@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,18 +21,21 @@ public class IngredientNeedRequest {
     private Float amount;
     private String unit;
 
+    @Size(max = 500)
+    private String note;
+
     @Valid
     private IngredientReference ingredient;
 
     @JsonIgnore
     @Schema(hidden = true)
     public boolean isEmpty() {
-        return !hasIngredientName() && amount == null && isBlank(unit);
+        return !hasIngredientName() && amount == null && isBlank(unit) && isBlank(note);
     }
 
     @JsonIgnore
     @Schema(hidden = true)
-    @AssertTrue(message = "A line with an amount or a unit needs an ingredient name")
+    @AssertTrue(message = "A line with an amount, a unit or a note needs an ingredient name")
     public boolean isIngredientNamedOrLineEmpty() {
         return hasIngredientName() || isEmpty();
     }

@@ -13,6 +13,7 @@ import {useCollection} from '../hooks/useAsyncData';
 const KIND_LABELS: Record<NameRuleKind, string> = {
   NEVER_LINK_TO: 'Never link to',
   NOT_A_FOOD: 'Not a food',
+  KEEP_AS_WRITTEN: 'Keep as written',
 };
 
 const fields: FieldDefinition<NameRule>[] = [
@@ -39,7 +40,8 @@ interface RuleForm {
 
 const ruleFormFields: FormFieldDefinition<RuleForm>[] = [
   {name: 'name', label: 'Ingredient name', type: 'text', required: true,
-    helperText: 'Compared as matching compares names: ignoring case and extra spaces'},
+    helperText: 'Compared as matching compares names: ignoring case and extra spaces. For "Keep as written", the ' +
+      'name and note as a line writes them: "Salz, Pfeffer"'},
   {name: 'kind', label: 'Rule', type: 'select', required: true,
     options: Object.entries(KIND_LABELS).map(([value, label]) => ({value, label}))},
   {name: 'catalogueFoodId', label: 'Id of the food never to link to', type: 'number',

@@ -45,7 +45,7 @@ public class AdminNameRuleController extends BaseController {
     /** @param catalogueFoodId for NEVER_LINK_TO only */
     public record NameRuleRequest(@NotBlank String name, @NotNull CatalogueNameRule.Kind kind, Long catalogueFoodId) {
 
-        @AssertTrue(message = "a food for NEVER_LINK_TO, none for NOT_A_FOOD")
+        @AssertTrue(message = "a food for NEVER_LINK_TO, none for the others")
         @Schema(hidden = true)
         public boolean isFoodGivenWhereNeeded() {
             return (kind == CatalogueNameRule.Kind.NEVER_LINK_TO) == (catalogueFoodId != null);
@@ -62,9 +62,11 @@ public class AdminNameRuleController extends BaseController {
     @PostMapping
     public AdminNameRuleResponse addRule(@Valid @RequestBody NameRuleRequest request) {
         var admin = getLoggedInUser();
-        var rule = request.kind() == CatalogueNameRule.Kind.NOT_A_FOOD
-                ? nameRules.notAFood(request.name(), admin)
-                : nameRules.neverLinkTo(request.name(), catalogueService.getFood(request.catalogueFoodId()), admin);
+        var rule = switch (request.kind()) {
+            case NOT_A_FOOD -> nameRules.notAFood(request.name(), admin);
+            case NEVER_LINK_TO -> nameRules.neverLinkTo(request.name(), catalogueService.getFood(request.catalogueFoodId()), admin);
+            case KEEP_AS_WRITTEN -> nameRules.keepAsWritten(request.name(), admin);
+        };
         return AdminNameRuleResponse.fromEntity(rule);
     }
 

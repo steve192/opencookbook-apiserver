@@ -67,11 +67,12 @@ public class RecipeResponse {
     /** The reader's households whose cookbook shows it; only in the cookbook listing. */
     private Set<String> householdIds;
 
-    public record IngredientNeedResponse(Long id, Float amount, String unit, IngredientSummary ingredient) {
+    /** @param note empty where the line has none */
+    public record IngredientNeedResponse(Long id, Float amount, String unit, String note, IngredientSummary ingredient) {
 
-        static IngredientNeedResponse fromEntity(IngredientNeed need) {
+        public static IngredientNeedResponse fromEntity(IngredientNeed need) {
             var ingredient = need.getIngredient();
-            return new IngredientNeedResponse(need.getId(), need.getAmount(), need.getUnit(),
+            return new IngredientNeedResponse(need.getId(), need.getAmount(), need.getUnit(), need.getNote(),
                     new IngredientSummary(ingredient.getId(), ingredient.getName()));
         }
     }

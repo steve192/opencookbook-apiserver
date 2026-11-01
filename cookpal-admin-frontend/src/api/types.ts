@@ -64,7 +64,6 @@ export type LinkSource = 'AUTO' | 'USER' | 'ADMIN';
 export interface Ingredient {
   id: number;
   name: string;
-  additionalInfo: string | null;
   ownerUserId: number;
   ownerEmailAddress: string;
   catalogueFoodId: number | null;
@@ -224,7 +223,8 @@ export type RelinkScope =
   | 'AUTOMATIC_BELOW_CONFIDENCE'
   | 'ALL_AUTOMATIC'
   | 'RETIRED_FOODS'
-  | 'OLDER_MATCHER';
+  | 'OLDER_MATCHER'
+  | 'NAMES_AND_NOTES';
 
 export type ReviewedRunStatus = 'PREVIEWED' | 'APPLIED' | 'REVERTED' | 'DISCARDED';
 /** SKIPPED is the run's own decision, never a reviewer's. */
@@ -253,14 +253,19 @@ export interface RelinkRun extends ReviewedRun {
   unchangedCount: number;
 }
 
-export type RelinkChange = 'NEW_LINK' | 'CHANGED' | 'UNLINKED' | 'CONFIDENCE';
+export type RelinkChange = 'NEW_LINK' | 'CHANGED' | 'UNLINKED' | 'CONFIDENCE' | 'NAME_AND_NOTE';
 export type RelinkDecision = Exclude<ReviewDecision, 'SKIPPED'>;
 
 export interface RelinkProposal {
   id: number;
   name: string;
+  /** Note, new name, new note and lines only for NAME_AND_NOTE, which has no ingredients. */
+  note: string | null;
+  newName: string | null;
+  newNote: string | null;
   language: string | null;
   ingredientCount: number;
+  lineCount: number;
   oldFood: FoodReference | null;
   newFood: FoodReference | null;
   newConfidence: number | null;
@@ -301,7 +306,7 @@ export interface ClassificationProposal {
   reason: string | null;
 }
 
-export type NameRuleKind = 'NEVER_LINK_TO' | 'NOT_A_FOOD';
+export type NameRuleKind = 'NEVER_LINK_TO' | 'NOT_A_FOOD' | 'KEEP_AS_WRITTEN';
 
 export interface NameRule {
   id: number;

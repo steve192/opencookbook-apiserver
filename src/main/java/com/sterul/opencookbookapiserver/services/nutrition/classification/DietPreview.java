@@ -28,7 +28,7 @@ public class DietPreview {
         var unsaved = Recipe.builder()
                 .neededIngredients(ingredientNames.stream()
                         .map(name -> IngredientNeed.builder()
-                                .ingredient(ingredientService.existingOrUnsaved(name, null, owner))
+                                .ingredient(ingredientService.existingOrUnsaved(name, owner))
                                 .build())
                         .toList())
                 .build();

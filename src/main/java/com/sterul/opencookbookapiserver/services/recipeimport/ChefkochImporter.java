@@ -7,10 +7,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.sterul.opencookbookapiserver.configurations.OpencookbookConfiguration;
-import com.sterul.opencookbookapiserver.entities.IngredientNeed;
 import com.sterul.opencookbookapiserver.entities.account.CookpalUser;
 import com.sterul.opencookbookapiserver.entities.recipe.Recipe;
 import com.sterul.opencookbookapiserver.services.RecipeImageService;
+import com.sterul.opencookbookapiserver.services.ingredients.IngredientLineReader;
+import com.sterul.opencookbookapiserver.services.ingredients.IngredientLineReader.IngredientLine;
 
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
@@ -21,9 +22,12 @@ import lombok.Data;
 @Component
 public class ChefkochImporter extends AbstractRecipeImporter {
 
+    private final IngredientLineReader lineReader;
+
     public ChefkochImporter(RecipeImageService recipeImageService,
-            OpencookbookConfiguration opencookbookConfiguration) {
+            OpencookbookConfiguration opencookbookConfiguration, IngredientLineReader lineReader) {
         super(recipeImageService, opencookbookConfiguration);
+        this.lineReader = lineReader;
     }
 
     @Override
@@ -48,7 +52,7 @@ public class ChefkochImporter extends AbstractRecipeImporter {
             addImage(importRecipe,
                     "https://api.chefkoch.de/v2/recipes/" + recipeId + "/images/" + image.id + "/crop-960x640", owner);
         }
-        extractIngredientNeeds(importRecipe, publicRecipe);
+        extractIngredientNeeds(importRecipe, publicRecipe, owner.getLanguage());
 
         importRecipe.setRecipeGroups(new ArrayList<>());
         importRecipe.setOwner(owner);
@@ -56,13 +60,16 @@ public class ChefkochImporter extends AbstractRecipeImporter {
         return importRecipe;
     }
 
-    private void extractIngredientNeeds(Recipe importedRecipe, ChefkochPublicRecipe publicRecipe) {
+    private void extractIngredientNeeds(Recipe importedRecipe, ChefkochPublicRecipe publicRecipe, String language) {
         importedRecipe.setNeededIngredients(new ArrayList<>());
         for (var ingredientGroup : publicRecipe.recipe.ingredientGroups) {
             // Ingredient groups are not supported for now, just import all
             for (var ingredient : ingredientGroup.ingredients) {
-                importedRecipe.getNeededIngredients()
-                        .add(IngredientNeed.detached(ingredient.amount, ingredient.unit, ingredient.name, null));
+                // Chefkoch writes 0 where a line states no amount
+                var amount = ingredient.amount == null || ingredient.amount == 0 ? null : ingredient.amount;
+                lineReader.read(amount, ingredient.unit, ingredient.name, ingredient.usageInfo, language)
+                        .map(IngredientLine::toNeed)
+                        .ifPresent(importedRecipe.getNeededIngredients()::add);
             }
         }
     }

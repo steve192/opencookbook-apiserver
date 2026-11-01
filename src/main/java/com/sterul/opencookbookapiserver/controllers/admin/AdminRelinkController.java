@@ -43,7 +43,7 @@ public class AdminRelinkController extends BaseController {
     public record PreviewRequest(@NotNull IngredientRelinkRun.Scope scope, @DecimalMin("0") @DecimalMax("1") Float belowConfidence) {
     }
 
-    /** @param remember for rejections: never propose this food for this name again */
+    /** @param remember for rejections: never propose this food for this name again, or never read these lines otherwise */
     public record DecisionRequest(@NotEmpty List<Long> proposalIds, @NotNull IngredientRelinkProposal.Decision decision,
             boolean remember) {
     }
@@ -54,7 +54,8 @@ public class AdminRelinkController extends BaseController {
         return relinkService.getRuns().stream().map(AdminRelinkRunResponse::fromEntity).toList();
     }
 
-    @Operation(summary = "Preview a relink run", description = "Proposes links for every name in scope; changes no ingredient.")
+    @Operation(summary = "Preview a relink run",
+            description = "Proposes links for every name in scope, or other names and notes for recipe lines; changes nothing.")
     @PostMapping
     public AdminRelinkRunResponse preview(@Valid @RequestBody PreviewRequest request) {
         return AdminRelinkRunResponse.fromEntity(relinkService.preview(
@@ -86,13 +87,14 @@ public class AdminRelinkController extends BaseController {
         return relinkService.sampleRecipes(id, proposalId).stream().map(AdminRecipeResponse::fromEntity).toList();
     }
 
-    @Operation(summary = "Apply the accepted proposals", description = "Ingredients changed since the preview are skipped.")
+    @Operation(summary = "Apply the accepted proposals", description = "Ingredients and lines changed since the preview are skipped.")
     @PostMapping("/{id}/apply")
     public AdminRelinkRunResponse apply(@PathVariable Long id) {
         return AdminRelinkRunResponse.fromEntity(relinkService.apply(id));
     }
 
-    @Operation(summary = "Revert an applied run", description = "Only ingredients the run was the last to link are restored.")
+    @Operation(summary = "Revert an applied run",
+            description = "Only ingredients the run was the last to link are restored, and lines still as the run left them.")
     @PostMapping("/{id}/revert")
     public AdminRelinkRunResponse revert(@PathVariable Long id) {
         return AdminRelinkRunResponse.fromEntity(relinkService.revert(id));

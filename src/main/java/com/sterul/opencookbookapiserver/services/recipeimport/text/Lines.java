@@ -1,6 +1,5 @@
 package com.sterul.opencookbookapiserver.services.recipeimport.text;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -79,30 +78,6 @@ final class Lines {
     static int wordCount(String text) {
         var trimmed = text.trim();
         return trimmed.isEmpty() ? 0 : WHITESPACE.split(trimmed).length;
-    }
-
-    /** "Joghurt, Beeren (Himbeeren, Brombeeren)" is two parts. */
-    static List<String> splitOutsideBrackets(String text, Pattern separator) {
-        var parts = new ArrayList<String>();
-        var depth = 0;
-        var start = 0;
-        for (var i = 0; i < text.length(); i++) {
-            var character = text.charAt(i);
-            if (character == '(' || character == '[') {
-                depth++;
-            } else if ((character == ')' || character == ']') && depth > 0) {
-                depth--;
-            } else if (depth == 0) {
-                var match = separator.matcher(text).region(i, text.length());
-                if (match.lookingAt()) {
-                    parts.add(text.substring(start, i).trim());
-                    start = match.end();
-                    i = start - 1;
-                }
-            }
-        }
-        parts.add(text.substring(start).trim());
-        return parts.stream().filter(part -> !part.isEmpty()).toList();
     }
 
     static Optional<Integer> nextNonBlank(List<String> lines, int after) {

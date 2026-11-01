@@ -22,7 +22,10 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-/** A relink run's proposal for the ingredients sharing a name, language, food and confidence band. */
+/**
+ * A relink run's proposal for the ingredients sharing a name, language, food and confidence band; or, for NAME_AND_NOTE,
+ * for the recipe lines sharing a name, note, language and food.
+ */
 @Entity
 @Data
 @Builder
@@ -56,6 +59,15 @@ public class IngredientRelinkProposal {
 
     private Float newConfidence;
 
+    /** Only for NAME_AND_NOTE; empty where the lines have none. */
+    @Column(length = 500)
+    private String note;
+
+    private String newName;
+
+    @Column(length = 500)
+    private String newNote;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Change change;
@@ -69,12 +81,20 @@ public class IngredientRelinkProposal {
     @Builder.Default
     private List<IngredientRelinkMember> members = new ArrayList<>();
 
+    /** Only for NAME_AND_NOTE, which has no members. */
+    @ElementCollection
+    @CollectionTable(name = "ingredient_relink_line", joinColumns = @JoinColumn(name = "proposal_id"))
+    @Builder.Default
+    private List<IngredientRelinkLine> lines = new ArrayList<>();
+
     public enum Change {
         NEW_LINK,
         CHANGED,
         UNLINKED,
         /** Same food, confidence in another band. */
-        CONFIDENCE
+        CONFIDENCE,
+        /** The lines move to another name and note, and with it, maybe, to another food. */
+        NAME_AND_NOTE
     }
 
     public enum Decision {

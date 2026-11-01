@@ -35,6 +35,7 @@ import com.sterul.opencookbookapiserver.services.RecipeCopier;
 import com.sterul.opencookbookapiserver.services.RecipeImportService;
 import com.sterul.opencookbookapiserver.services.RecipeService;
 import com.sterul.opencookbookapiserver.services.SignedInUserService;
+import com.sterul.opencookbookapiserver.services.catalogue.IngredientNames;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -165,8 +166,10 @@ public class RecipeController extends BaseController {
                 .build();
     }
 
+    /** The note tidied as the reader tidies one, so reading the line again finds nothing to change. */
     private IngredientNeed needToEntity(IngredientNeedRequest need) {
-        return IngredientNeed.detached(need.getAmount(), need.getUnit(), need.getIngredient().getName(), null);
+        var note = need.getNote() == null ? "" : IngredientNames.tidy(need.getNote());
+        return IngredientNeed.detached(need.getAmount(), need.getUnit(), need.getIngredient().getName(), note);
     }
 
 }
