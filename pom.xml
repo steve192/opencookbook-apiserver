@@ -21,7 +21,7 @@
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
 
         <!-- JaCoCo Properties -->
-        <jacoco.version>0.8.15</jacoco.version>
+        <jacoco.version>0.8.16</jacoco.version>
         <sonar.language>java</sonar.language>
         <velocity.version>2.4.1</velocity.version>
         <lucene.version>10.5.2</lucene.version>
