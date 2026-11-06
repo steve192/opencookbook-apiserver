@@ -24,7 +24,7 @@
         <jacoco.version>0.8.16</jacoco.version>
         <sonar.language>java</sonar.language>
         <velocity.version>2.4.1</velocity.version>
-        <lucene.version>10.5.2</lucene.version>
+        <lucene.version>10.6.0</lucene.version>
         <bucket4j.version>8.21.0</bucket4j.version>
 
         <!-- The admin panel, which is bundled into this server's static resources -->
