@@ -25,7 +25,7 @@
         <sonar.language>java</sonar.language>
         <velocity.version>2.4.1</velocity.version>
         <lucene.version>10.6.0</lucene.version>
-        <bucket4j.version>8.21.0</bucket4j.version>
+        <bucket4j.version>8.22.0</bucket4j.version>
 
         <!-- The admin panel, which is bundled into this server's static resources -->
         <frontend-maven-plugin.version>2.0.2</frontend-maven-plugin.version>
@@ -175,7 +175,7 @@
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
-            <version>1.23.2</version>
+            <version>1.24.1</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
